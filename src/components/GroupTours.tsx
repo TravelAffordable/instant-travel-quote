@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Users, MapPin } from 'lucide-react';
+import sunCityImage from '@/assets/sun-city.jpeg';
 
 const groupTours = [
   {
@@ -8,7 +9,7 @@ const groupTours = [
     title: 'Christmas in Cape Town',
     dates: '24-27 December 2025',
     price: 2500,
-    image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800',
+    image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg',
     badge: 'CHRISTMAS',
     location: 'Cape Town',
   },
@@ -17,7 +18,7 @@ const groupTours = [
     title: 'New Year in Sun City',
     dates: '31 Dec - 02 Jan 2026',
     price: 2800,
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+    image: sunCityImage,
     badge: 'NEW YEAR',
     location: 'Sun City',
   },
