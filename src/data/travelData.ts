@@ -1,5 +1,7 @@
 // Complete Travel Affordable package and hotel data with pricing
 
+import sunCityImage from '@/assets/sun-city.jpeg';
+
 export interface Hotel {
   id: string;
   name: string;
@@ -142,7 +144,7 @@ export const destinations: Destination[] = [
   { id: 'durban', name: 'Durban Beachfront', country: 'South Africa', description: 'Sunny beach holidays with warm waters and vibrant city life.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/durban.png', startingPrice: 2100, popular: true, international: false },
   { id: 'umhlanga', name: 'Umhlanga', country: 'South Africa', description: 'Coastal escape near Durban with beautiful beaches and upscale shopping.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/umhlanga.jpg', startingPrice: 2500, popular: true, international: false },
   { id: 'cape-town', name: 'Cape Town', country: 'South Africa', description: 'Iconic Table Mountain, stunning beaches, and world-class vineyards.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg', startingPrice: 2100, popular: true, international: false },
-  { id: 'sun-city', name: 'Sun City', country: 'South Africa', description: 'World-famous resort with Valley of Waves and endless entertainment.', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800', startingPrice: 2200, popular: true, international: false },
+  { id: 'sun-city', name: 'Sun City', country: 'South Africa', description: 'World-famous resort with Valley of Waves and endless entertainment.', image: sunCityImage, startingPrice: 2200, popular: true, international: false },
   { id: 'mpumalanga', name: 'Mpumalanga', country: 'South Africa', description: 'Panorama Route, Blyde River Canyon, and Kruger National Park adventures.', image: 'https://images.unsplash.com/photo-1580256087713-963146b8d1a3?w=800', startingPrice: 2200, popular: true, international: false },
   { id: 'knysna', name: 'Knysna', country: 'South Africa', description: 'Garden Route gem with lagoon, forests, and oyster experiences.', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', startingPrice: 2400, popular: false, international: false },
   { id: 'vaal-river', name: 'Vaal River', country: 'South Africa', description: 'Riverside relaxation and water sports just outside Johannesburg.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800', startingPrice: 1600, popular: false, international: false },
