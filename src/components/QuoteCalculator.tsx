@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { ImagePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,80 @@ import {
   type QuoteResult 
 } from '@/data/travelData';
 import { CalendarDays, Users, Home, Package, Sparkles, Check, Calculator, BedDouble } from 'lucide-react';
+
+// Hotel Image Grid Component with Drag & Drop
+function HotelImageGrid() {
+  const [images, setImages] = useState<(string | null)[]>([null, null, null, null]);
+
+  const handleDrop = useCallback((index: number, e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const result = event.target?.result as string;
+          setImages(prev => {
+            const newImages = [...prev];
+            newImages[index] = result;
+            return newImages;
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleRemove = useCallback((index: number) => {
+    setImages(prev => {
+      const newImages = [...prev];
+      newImages[index] = null;
+      return newImages;
+    });
+  }, []);
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className="relative aspect-video rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors overflow-hidden bg-muted/30 cursor-pointer group"
+          onDrop={(e) => handleDrop(index, e)}
+          onDragOver={handleDragOver}
+        >
+          {image ? (
+            <>
+              <img 
+                src={image} 
+                alt={`Hotel image ${index + 1}`} 
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={() => handleRemove(index)}
+                className="absolute top-1 right-1 w-6 h-6 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-bold"
+              >
+                ×
+              </button>
+            </>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
+              <ImagePlus className="w-6 h-6 mb-1" />
+              <span className="text-xs">Drop image</span>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 import { toast } from 'sonner';
 
 interface QuoteCalculatorProps {
@@ -372,18 +447,6 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">Quote Breakdown</h4>
-                {quote.breakdown.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
-                    <span className="text-sm">{item.label}</span>
-                    <span className={`font-medium ${item.amount < 0 ? 'text-accent' : ''}`}>
-                      {item.amount === 0 ? 'Included' : (item.amount < 0 ? '-' : '') + formatCurrency(Math.abs(item.amount))}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
               <div className="bg-secondary/30 rounded-lg p-4">
                 <h4 className="font-semibold mb-2 flex items-center gap-2">
                   <Home className="w-4 h-4" />
@@ -403,6 +466,12 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                 <p className="text-xs text-muted-foreground">
                   {packages.find(p => p.shortName === quote.packageName)?.description}
                 </p>
+              </div>
+
+              {/* Hotel Images - Drag & Drop */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">Hotel Images</h4>
+                <HotelImageGrid />
               </div>
 
               <div className="flex gap-3">
