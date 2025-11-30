@@ -153,6 +153,30 @@ function generateHotels(): Hotel[] {
   destinationIds.forEach(destId => {
     const shortName = destinationShortNames[destId];
     
+    // Budget Option images - simple, clean guesthouses
+    const budgetImages = [
+      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800', // Simple clean room
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800', // Cozy bedroom
+      'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800', // Basic room interior
+      'https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?w=800', // Simple guesthouse room
+    ];
+
+    // Affordable images - modern comfortable hotels with amenities
+    const affordableImages = [
+      'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800', // Modern hotel room
+      'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800', // Comfortable hotel bed
+      'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800', // Nice hotel with pool view
+      'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800', // Mid-range hotel room
+    ];
+
+    // Premium images - luxury boutique hotels
+    const premiumImages = [
+      'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800', // Luxury resort pool
+      'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800', // Elegant suite
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800', // Premium hotel pool
+      'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800', // Luxury hotel exterior
+    ];
+
     // Very Affordable Hotels (4 per destination: A-D)
     hotelLetters.forEach((letter, index) => {
       allHotels.push({
@@ -163,7 +187,7 @@ function generateHotels(): Hotel[] {
         rating: 3.5 + (Math.random() * 0.5),
         type: 'very-affordable',
         amenities: ['WiFi', 'Parking', 'TV'],
-        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+        image: budgetImages[index],
       });
     });
 
@@ -177,7 +201,7 @@ function generateHotels(): Hotel[] {
         rating: 4.0 + (Math.random() * 0.3),
         type: 'affordable',
         amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant'],
-        image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
+        image: affordableImages[index],
       });
     });
 
@@ -192,7 +216,7 @@ function generateHotels(): Hotel[] {
         rating: 4.5 + (Math.random() * 0.5),
         type: 'premium',
         amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
-        image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800',
+        image: premiumImages[index],
         includesBreakfast: hotel.includesBreakfast,
       });
     });
