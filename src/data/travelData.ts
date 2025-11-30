@@ -55,10 +55,10 @@ const destinationShortNames: Record<string, string> = {
   'thailand': 'Thailand',
 };
 
-// Very Affordable pricing tiers (per night)
-const veryAffordablePrices = [550, 600, 700, 800, 950];
-// Affordable pricing tiers (per night)
-const affordablePrices = [850, 950, 1050, 1150, 1250];
+// Very Affordable pricing tiers (per night) - 4 hotels A-D
+const veryAffordablePrices = [550, 600, 700, 800];
+// Affordable pricing tiers (per night) - 4 hotels A-D
+const affordablePrices = [850, 950, 1050, 1150];
 
 // Premium Hotels with their actual names and prices
 const premiumHotels: Record<string, { name: string; price: number; includesBreakfast?: boolean }[]> = {
@@ -134,12 +134,12 @@ const premiumHotels: Record<string, { name: string; price: number; includesBreak
 function generateHotels(): Hotel[] {
   const allHotels: Hotel[] = [];
   const destinationIds = Object.keys(destinationShortNames);
-  const hotelLetters = ['A', 'B', 'C', 'D', 'E'];
+  const hotelLetters = ['A', 'B', 'C', 'D'];
 
   destinationIds.forEach(destId => {
     const shortName = destinationShortNames[destId];
     
-    // Very Affordable Hotels (5 per destination)
+    // Very Affordable Hotels (4 per destination: A-D)
     hotelLetters.forEach((letter, index) => {
       allHotels.push({
         id: `${destId}-very-affordable-${letter.toLowerCase()}`,
@@ -153,7 +153,7 @@ function generateHotels(): Hotel[] {
       });
     });
 
-    // Affordable Hotels (5 per destination)
+    // Affordable Hotels (4 per destination: A-D)
     hotelLetters.forEach((letter, index) => {
       allHotels.push({
         id: `${destId}-affordable-${letter.toLowerCase()}`,
