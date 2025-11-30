@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Check, Home, Package, MessageCircle, Mail, BedDouble } from 'lucide-react';
+import { Check, Home, Package, MessageCircle, Mail, BedDouble, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { type QuoteResult, packages } from '@/data/travelData';
+import { type QuoteResult } from '@/data/travelData';
 import { toast } from 'sonner';
 
 interface QuoteListProps {
@@ -187,9 +187,18 @@ Per Person: ${formatCurrency(quote.totalPerPerson)}
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
               <div className="flex items-start gap-2">
                 <Package className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-semibold text-sm text-primary mb-1">Package: {quote.packageName}</p>
-                  <p className="text-sm text-foreground leading-relaxed">{quote.packageDescription}</p>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm text-primary mb-2">Package: {quote.packageName}</p>
+                  {quote.activitiesIncluded && quote.activitiesIncluded.length > 0 && (
+                    <ul className="space-y-1.5">
+                      {quote.activitiesIncluded.map((activity, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                          <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                          <span>{activity}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>
