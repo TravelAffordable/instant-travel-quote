@@ -21,6 +21,7 @@ export interface Package {
   description: string;
   destination: string;
   basePrice: number; // Base price per person
+  kidsPrice?: number; // Kids package cost (optional)
   activitiesIncluded: string[];
   duration: string;
   image?: string;
@@ -53,6 +54,7 @@ const destinationShortNames: Record<string, string> = {
   'bali': 'Bali',
   'dubai': 'Dubai',
   'thailand': 'Thailand',
+  'pretoria': 'Pretoria',
 };
 
 // Very Affordable pricing tiers (per night) - 4 hotels A-D
@@ -142,6 +144,12 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Amanpuri Resort' },
     { name: 'Trisara Phuket' },
   ],
+  'pretoria': [
+    { name: 'Sheraton Pretoria Hotel' },
+    { name: 'Irene Country Lodge' },
+    { name: 'Kievits Kroon' },
+    { name: 'Castello di Monte' },
+  ],
 };
 
 // Generate hotels dynamically
@@ -227,67 +235,638 @@ function generateHotels(): Hotel[] {
 
 export const hotels: Hotel[] = generateHotels();
 
-// Packages Database
+// Packages Database - Complete list from Travel Affordable
 export const packages: Package[] = [
-  // Harties Packages
-  { id: 'hg1', name: 'HG1 - HARTIES LEISURETIME GETAWAY PACKAGE', shortName: 'Leisuretime Getaway', description: 'Includes ACCOMMODATION, 2 HOUR SUNSET CHAMPAGNE CRUISE WITH A DELICIOUS GOURMET BUFFET, THE HARTIES CABLEWAY EXPERIENCE.', destination: 'harties', basePrice: 1800, activitiesIncluded: ['Sunset Champagne Cruise', 'Harties Cableway'], duration: '2 nights' },
-  { id: 'hg2', name: 'HG2 - HARTIES FUNTIME GETAWAY PACKAGE', shortName: 'Funtime Getaway', description: 'Includes ACCOMMODATION, 1 HOUR HORSE RIDING EXPERIENCE, 1 HOUR QUAD BIKING OR 60 MIN FULL BODY MASSAGE, 2 HOUR SUNSET CHAMPAGNE CRUISE.', destination: 'harties', basePrice: 2200, activitiesIncluded: ['Horse Riding', 'Quad Biking/Massage', 'Sunset Cruise'], duration: '2 nights' },
-  { id: 'hg3', name: 'HG3 - HARTIES FAMILY FUN WEEKENDER', shortName: 'Family Fun Weekender', description: 'Includes ACCOMMODATION, 1 HOUR QUAD BIKING, HARTIES ZOO ANIMAL AND SNAKE PARK, 2 HOUR SUNDAY BUFFET LUNCH CRUISE.', destination: 'harties', basePrice: 1950, activitiesIncluded: ['Quad Biking', 'Zoo Visit', 'Lunch Cruise'], duration: '2 nights' },
-  { id: 'hg4', name: 'HG4 - HARTIES SUN CITY COMBO', shortName: 'Sun City Combo', description: 'Includes ACCOMMODATION, FREE ENTRY INTO SUN CITY, FULL DAY VALLEY OF THE WAVES, FREE LUNCH, SHUTTLE, 2 HOUR SUNDAY BUFFET LUNCH CRUISE.', destination: 'harties', basePrice: 2800, activitiesIncluded: ['Sun City Entry', 'Valley of Waves', 'Lunch Cruise'], duration: '2 nights' },
-  
-  // Magalies Packages
-  { id: 'mag1', name: 'MAG1 - MAGALIES EXPLORER GETAWAY', shortName: 'Explorer Getaway', description: 'Includes accommodation, Cradle of Mankind Origins Centre, Wonder Caves, game drive, predator enclosure, snake show.', destination: 'magalies', basePrice: 2100, activitiesIncluded: ['Cradle of Mankind', 'Game Drive', 'Predator Enclosure'], duration: '2 nights' },
-  { id: 'mag2', name: 'MAG2 - MAGALIES ULTIMATE LUX GETAWAY', shortName: 'Ultimate Lux', description: 'Includes accommodation, buffet cruise, Cradle of Mankind, 60-minute massage, guided game drive, predator enclosure.', destination: 'magalies', basePrice: 2800, activitiesIncluded: ['Buffet Cruise', 'Massage', 'Game Drive'], duration: '2 nights' },
-  { id: 'mag3', name: 'MAG3 - MAGALIES DELUXE SPA WEEKENDER', shortName: 'Spa Weekender', description: 'Includes accommodation, half-day spa, game drive including snake show and cub interactions, sunset cruise.', destination: 'magalies', basePrice: 3200, activitiesIncluded: ['Half-day Spa', 'Game Drive', 'Sunset Cruise'], duration: '2 nights' },
-  
-  // Durban Packages
-  { id: 'dur1', name: 'DUR1 - DURBAN FUN ON THE BEACH', shortName: 'Fun on the Beach', description: 'Includes accommodation, uShaka Marine World combo tickets, Isle of Capri Boat Cruise, 60 minute massage, shuttle transport.', destination: 'durban', basePrice: 2250, activitiesIncluded: ['uShaka Marine World', 'Boat Cruise', 'Massage', 'Shuttle'], duration: '2 nights' },
-  { id: 'dur2', name: 'DUR2 - DURBAN SMILES AND SEA SHELLS', shortName: 'Smiles & Sea Shells', description: 'Includes accommodation, uShaka Marine World, 3 hour open bus city tour, Isle of Capri Boat Cruise, shuttle.', destination: 'durban', basePrice: 2100, activitiesIncluded: ['uShaka Marine World', 'City Tour', 'Boat Cruise'], duration: '2 nights' },
-  { id: 'dur3', name: 'DUR3 - DURBAN BEACH AND SPA EASE', shortName: 'Beach & Spa', description: 'Includes accommodation, half-day spa experience, luxury boat canal cruise, shuttle transport.', destination: 'durban', basePrice: 2450, activitiesIncluded: ['Half-day Spa', 'Canal Cruise', 'Shuttle'], duration: '2 nights' },
-  
-  // Umhlanga Packages
-  { id: 'umhla1', name: 'UMHLA1 - UMHLANGA BEACH AND LEISURE', shortName: 'Beach & Leisure', description: 'Includes accommodation, breakfast, Gateway Theatre of Dreams, Umhlanga Rocks Beach, Oceans Mall, shuttle.', destination: 'umhlanga', basePrice: 2500, activitiesIncluded: ['Breakfast', 'Shopping Mall', 'Beach', 'Shuttle'], duration: '2 nights' },
-  { id: 'umhla2', name: 'UMHLA2 - UMHLANGA BEACH LIFESTYLE', shortName: 'Beach Lifestyle', description: 'Includes accommodation, breakfast, uShaka Marine World, Point Waterfront luxury canal boat cruise, uMhlanga Rocks Beach, shuttle.', destination: 'umhlanga', basePrice: 2800, activitiesIncluded: ['Breakfast', 'uShaka', 'Canal Cruise', 'Shuttle'], duration: '2 nights' },
-  
-  // Cape Town Packages
-  { id: 'cpt1', name: 'CPT1 - CAPE TOWN ICONIC TOUR', shortName: 'Iconic Tour', description: 'Includes accommodation, full Cape Town Sightseeing Tour, Robben Island Tour, Table Mountain Cableway, canal boat cruise.', destination: 'cape-town', basePrice: 3200, activitiesIncluded: ['City Tour', 'Robben Island', 'Table Mountain', 'Canal Cruise'], duration: '3 nights' },
-  { id: 'cpt2', name: 'CPT2 - CAPE TOWN SUNSET EXPLORER', shortName: 'Sunset Explorer', description: 'Includes accommodation, 2 Day Sightseeing Tour, Table Mountain Cableway, Canal cruise, Signal Hill Sunset Tour.', destination: 'cape-town', basePrice: 2900, activitiesIncluded: ['2-Day Tour', 'Table Mountain', 'Sunset Tour'], duration: '2 nights' },
-  
-  // Sun City Packages
-  { id: 'sun1', name: 'SUN1 - SUN CITY VALLEY & QUADS', shortName: 'Valley & Quads', description: 'Includes accommodation, Sun City and Valley of The Waves entry, quad biking, lunch, shuttle transport.', destination: 'sun-city', basePrice: 2600, activitiesIncluded: ['Valley of Waves', 'Quad Biking', 'Lunch', 'Shuttle'], duration: '2 nights' },
-  { id: 'sun2', name: 'SUN2 - SUN CITY VALLEY GETAWAY', shortName: 'Valley Getaway', description: 'Includes accommodation, Sun City and Valley of The Waves entry, lunch, shuttle transport.', destination: 'sun-city', basePrice: 2200, activitiesIncluded: ['Valley of Waves', 'Lunch', 'Shuttle'], duration: '2 nights' },
-  { id: 'sun3', name: 'SUN3 - SUN CITY SAFARI WEEKENDER', shortName: 'Safari Weekender', description: 'Includes accommodation, Valley of The Waves, lunch, Pilanesberg game drive, shuttle.', destination: 'sun-city', basePrice: 3100, activitiesIncluded: ['Valley of Waves', 'Game Drive', 'Shuttle'], duration: '2 nights' },
-  
-  // Mpumalanga Packages
-  { id: 'mp1', name: 'MP1 - MPUMALANGA INSTYLE GETAWAY', shortName: 'InStyle Getaway', description: 'Includes accommodation, Blyde River Canyon boat cruise, 3 Rondavels, Gods Window, Graskop Gorge Lift with suspension bridge.', destination: 'mpumalanga', basePrice: 2400, activitiesIncluded: ['Canyon Cruise', 'Graskop Gorge Lift', 'Panorama Views'], duration: '2 nights' },
-  { id: 'mp2', name: 'MP2 - MPUMALANGA FUN ADVENTURE', shortName: 'Fun Adventure', description: 'Includes accommodation, Graskop Lift with suspension bridge, ziplining, quad biking.', destination: 'mpumalanga', basePrice: 2200, activitiesIncluded: ['Graskop Lift', 'Ziplining', 'Quad Biking'], duration: '2 nights' },
-  { id: 'mp3', name: 'MP3 - KRUGER PARK EXPERIENCE', shortName: 'Kruger Experience', description: 'Includes accommodation, Graskop Gorge Lift, Suspension Bridge, Kruger National Park game drive.', destination: 'mpumalanga', basePrice: 2900, activitiesIncluded: ['Kruger Safari', 'Graskop Lift', 'Suspension Bridge'], duration: '2 nights' },
-  
-  // International - Bali
-  { id: 'bali-explorer', name: 'BALI UBUD EXPLORER 6-DAY', shortName: '6-Day Explorer', description: 'Cultural sites, quad biking, rice terraces, waterfalls, beach outings, sunset cruise.', destination: 'bali', basePrice: 5400, activitiesIncluded: ['Cultural Tours', 'Quad Biking', 'Sunset Cruise', 'Waterfalls'], duration: '6 nights' },
-  
-  // International - Dubai
-  { id: 'dubai-exclusive', name: 'DUBAI EXCLUSIVE MOMENTS', shortName: 'Exclusive Moments', description: 'Dubai\'s modern marvels, desert adventures, Burj Khalifa, luxurious excursions.', destination: 'dubai', basePrice: 6400, activitiesIncluded: ['Burj Khalifa', 'Desert Safari', 'City Tour'], duration: '5 nights' },
-  
-  // International - Thailand
-  { id: 'thailand-adventure', name: 'PHUKET ADVENTURE EXPLORER', shortName: 'Adventure Explorer', description: 'Island excursions, waterpark visit, quad biking tour with panoramic views.', destination: 'thailand', basePrice: 4800, activitiesIncluded: ['Island Hopping', 'Waterpark', 'Quad Biking'], duration: '5 nights' },
+  // ============= VAAL RIVER PACKAGES =============
+  {
+    id: 'emer1',
+    name: 'VAAL RIVER CRUISE AND EMERALD WITH AQUADOME, GAME DRIVE, LUNCH CRUISE',
+    shortName: 'Aquadome & Cruise',
+    description: 'Includes Entry to Aquadome Pools and Waterpark, Game drive in safari truck, Animal World, 2 Hour Sunday lunch buffet boat cruise.',
+    destination: 'vaal-river',
+    basePrice: 1100,
+    kidsPrice: 800,
+    activitiesIncluded: ['Aquadome Pools and Waterpark', 'Game drive in safari truck', 'Animal World', '2 Hour Sunday lunch buffet boat cruise'],
+    duration: '2 nights'
+  },
+  {
+    id: 'emer2',
+    name: 'VAAL RIVER CRUISE EMERALD CASINO FAMILY FUN GETAWAY WITH AQUADOME, 1 HOUR LEISURE CRUISE, GAME DRIVE AND SUNDAY LUNCH BUFFET',
+    shortName: 'Family Fun Getaway',
+    description: 'Includes Emerald Casino Resort, Entry to Aquadome Pools and Waterpark, 1 hour leisure cruise, Game drive in safari truck, Sunday lunch buffet and carvery.',
+    destination: 'vaal-river',
+    basePrice: 1050,
+    kidsPrice: 700,
+    activitiesIncluded: ['Emerald Casino Resort', 'Aquadome Pools and Waterpark', '1 hour leisure cruise', 'Game drive in safari truck', 'Sunday lunch buffet and carvery'],
+    duration: '2 nights'
+  },
+  {
+    id: 'emer3',
+    name: 'VAAL RIVER CRUISE EMERALD LEISURE WITH MASSAGE, GAME DRIVE LUNCH CRUISE',
+    shortName: 'Leisure & Spa',
+    description: 'Includes Emerald Casino Resort, 60 Minute Full Body Massage, Game drive experience, Lunch cruise.',
+    destination: 'vaal-river',
+    basePrice: 1700,
+    kidsPrice: 950,
+    activitiesIncluded: ['Emerald Casino Resort', '60 Minute Full Body Massage', 'Game drive experience', 'Lunch cruise'],
+    duration: '2 nights'
+  },
+
+  // ============= UMHLANGA PACKAGES =============
+  {
+    id: 'umhla1',
+    name: 'UMHLA1 - UMHLANGA BEACH AND LEISURE GETAWAY, BREAKFAST, OUTING TO GATEWAY THEATRE OF DREAMS SHOPPING MALL, UMHLANGA ROCKS MAIN BEACH AND THE OCEANS MALL, SHUTTLE',
+    shortName: 'Beach & Leisure',
+    description: 'Includes accommodation, breakfast, visit to Gateway Theatre of Dreams Shopping Mall, Umhlanga Rocks Main Beach and The Oceans Mall, shuttle transport included.',
+    destination: 'umhlanga',
+    basePrice: 500,
+    kidsPrice: 180,
+    activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', 'Gateway Theatre of Dreams Shopping Mall', 'Umhlanga Rocks Main Beach', 'The Oceans Mall', 'Shuttle transport'],
+    duration: '2 nights'
+  },
+  {
+    id: 'umhla2',
+    name: 'UMHLA2 - UMHLANGA THE BEACH LIFESTYLE GETAWAY, BREAKFAST, USHAKA MARINE WORLD, WATEFRONT LUXURY CANAL BOAT CRUISE, UMHLANGA ROCKS MAIN BEACH, SHUTTLE',
+    shortName: 'Beach Lifestyle',
+    description: 'Includes accommodation, breakfast, visit to uShaka Marine World, Point Waterfront luxury canal boat cruise, uMhlanga Rocks Main Beach, shuttle transport included.',
+    destination: 'umhlanga',
+    basePrice: 1450,
+    kidsPrice: 900,
+    activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', 'uShaka Marine World full combo tickets', 'uShaka Marine Beach', 'Point Waterfront luxury canal boat cruise', 'uMhlanga Rocks Main Beach', 'Shuttle transport'],
+    duration: '2 nights'
+  },
+  {
+    id: 'umhla3',
+    name: 'UMHLA3 - UMHLANGA THREE BEACHES GETAWAY BUFFET BREAKFAST, USHAKA MARINE WORLD AND USHAKA BEACH, BOAT CRUISE, UMHLANGA ROCKS MAIN BEACH, BALLITO BEACH, SHUTTLE',
+    shortName: 'Three Beaches',
+    description: 'Includes accommodation, buffet breakfast, visit to uShaka Marine World and uShaka Beach, boat cruise, Umhlanga Rocks Beach and Ballito Beach, shuttle transport included.',
+    destination: 'umhlanga',
+    basePrice: 1850,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Buffet breakfast at selected hotels', 'uShaka Marine World full combo tickets', 'Boat cruise-Durban Harbour', 'Umhlanga Rocks Main Beach', 'Ballito Beach', 'Shuttle transport'],
+    duration: '2 nights'
+  },
+  {
+    id: 'umhla4',
+    name: 'UMHLA4 - UMHLANGA ROMANCE, BREAKFAST, DINNER DATE, ROMANTIC DECOR IN ROOM, USHAKA, PICNIC ON GONDOLA BOAT CANAL CRUISE',
+    shortName: 'Romance Package',
+    description: 'Includes accommodation, breakfast, romantic dinner date, romantic room decor, entry to uShaka Marine World, and a picnic experience on the gondola boat canal cruise.',
+    destination: 'umhlanga',
+    basePrice: 2400,
+    kidsPrice: 900,
+    activitiesIncluded: ['Accommodation', 'Buffet breakfast at selected hotels', 'Romantic dinner date', 'Romantic room decor', 'uShaka Marine World full combo tickets', 'Gondola boat canal cruise with picnic basket', 'Shuttle transport'],
+    duration: '2 nights'
+  },
+
+  // ============= KNYSNA PACKAGES =============
+  {
+    id: 'kny1',
+    name: 'KNY1 - KNYSNA BOATS AND QUADS ADVENTURE GETAWAY, BREAKFAST, KNYSNA WINE AND OYSTER LUXURY LOUNGER SUNSET CRUISE, KNYSNA FOREST GUIDED QUAD BIKING EXPERIENCE',
+    shortName: 'Boats & Quads Adventure',
+    description: 'Includes accommodation, breakfast, Knysna wine and oyster luxury lounger sunset cruise, boat cruise, Knysna Forest guided quad biking adventure.',
+    destination: 'knysna',
+    basePrice: 1550,
+    activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', 'Knysna wine and oyster luxury lounger sunset cruise', 'Knysna Forest guided quad biking adventure', 'Shuttle transport'],
+    duration: '2 nights'
+  },
+
+  // ============= HARTIES PACKAGES =============
+  {
+    id: 'hg1',
+    name: 'HG1 - HARTIES LEISURETIME GETAWAY PACKAGE',
+    shortName: 'Leisuretime Getaway',
+    description: 'Includes ACCOMMODATION, 2 HOUR SUNSET CHAMPAGNE CRUISE WITH A DELICIOUS GOURMET BUFFET, THE HARTIES CABLEWAY EXPERIENCE.',
+    destination: 'harties',
+    basePrice: 1010,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', '2 hour sunset champagne cruise with gourmet buffet', 'Harties Cableway experience'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg2',
+    name: 'HG2 - HARTIES FUNTIME GETAWAY PACKAGE',
+    shortName: 'Funtime Getaway',
+    description: 'Includes ACCOMMODATION, 1 HOUR HORSE RIDING EXPERIENCE, 1 HOUR QUAD BIKING FUN OR A 60 MINUTE FULL BODY SWEDISH MASSAGE, 2 HOUR SUNSET CHAMPAGNE CRUISE WITH A DELICIOUS GOURMET BUFFET.',
+    destination: 'harties',
+    basePrice: 1700,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', '1 hour horse riding experience', '1 hour quad biking OR 60 minute full body Swedish massage', '2 hour sunset champagne cruise with gourmet buffet'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg3',
+    name: 'HG3 - HARTIES FAMILY FUN WEEKENDER GETAWAY',
+    shortName: 'Family Fun Weekender',
+    description: 'Includes ACCOMMODATION, 1 HOUR QUAD BIKING FUN, HARTIES ZOO ANIMAL AND SNAKE PARK, 2 HOUR SUNDAY BUFFET LUNCH BOAT CRUISE.',
+    destination: 'harties',
+    basePrice: 1450,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', '1 hour quad biking fun', 'Harties Zoo animal and snake park', '2 hour Sunday buffet lunch boat cruise'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg4',
+    name: 'HG4 - HARTIES SUN CITY, VALLEY OF THE WAVES SUNDAY BUFFET LUNCH CRUISE',
+    shortName: 'Sun City Combo',
+    description: 'Includes ACCOMMODATION IN THE SUN CITY AREA, FREE ENTRY INTO SUN CITY, FULL DAY ACCESS TO VALLEY OF THE WAVES, FREE LUNCH INSIDE SUN CITY, SHUTTLE FROM THE GUESTHOUSE/HOTEL TO SUN CITY AND BACK, 2 HOUR SUNDAY BUFFET LUNCH BOAT CRUISE IN HARTIES.',
+    destination: 'harties',
+    basePrice: 1570,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation in Sun City area', 'Entry to explore Sun City', 'Full day fun access to Valley of the Waves', 'Lunch in Sun City', 'Shuttle service to Sun City and back', '2 hour Sunday buffet lunch boat cruise in Harties'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg5',
+    name: 'HG5 - HARTIES MAX JET SKI FUN HARTIES WITH ACCOMMODATION, HARTIES CABLEWAY EXPERIENCE, 60 MIN FULL BODY MASSAGE GETAWAY OR 2 HOUR SUNSET BUFFET CRUISE',
+    shortName: 'Jet Ski Fun',
+    description: 'Includes Jet Ski adventure, Harties Cableway and a 60 minute full body massage or 2 hour sunset champagne cruise with buffet.',
+    destination: 'harties',
+    basePrice: 1280,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Jet Ski adventure', 'Harties Cableway experience', 'Choice of 60 minute full body massage OR 2 hour sunset champagne cruise with buffet'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg6',
+    name: 'HG6 - HARTIES UPSIDE DOWN HOUSE GETAWAY WITH ACCOMMODATION LITTLE PARIS THE HARTIES CABLEWAY EXPERIENCE, 1 HOUR QUAD BIKING FUN',
+    shortName: 'Upside Down House',
+    description: 'Includes accommodation, Upside Down House, Little Paris, the Harties Cableway Experience, 1 hour quad biking fun.',
+    destination: 'harties',
+    basePrice: 1330,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Fun at Upside Down House adventure', 'Enjoy Little Paris', 'Harties Cableway Experience', '1 hour quad biking fun adventure'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg7',
+    name: 'HG7 - HARTIES WATER TUBE RIDE AND 60 MINUTE FULL BODY MASSAGE GETAWAY',
+    shortName: 'Tube Ride & Massage',
+    description: 'Includes accommodation, tube ride ski, 60 minute full body massage.',
+    destination: 'harties',
+    basePrice: 1400,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Tube ride ski', '60 minute full body massage'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg8',
+    name: 'HG8 - HARTIES WATER WAKE SNAKE SLIDER SKI AND 2 HOUR HARTIES SUNSET CRUISE',
+    shortName: 'Wake Snake & Cruise',
+    description: 'Includes accommodation, fun Wake Snake Ski slide, 2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet.',
+    destination: 'harties',
+    basePrice: 1180,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Fun Wake Snake Ski slide', '2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg9',
+    name: 'HG9 - HARTIES GETAWAY WITH ACCOMMODATION AND FULL DAY HARTIES CABLEWAY EXPERIENCE',
+    shortName: 'Cableway Experience',
+    description: 'Includes accommodation and full day access to the Harties Cableway Experience.',
+    destination: 'harties',
+    basePrice: 380,
+    kidsPrice: 300,
+    activitiesIncluded: ['Accommodation', 'Full day access to the Harties Cableway Experience'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg10',
+    name: 'HG10 - HARTIES COUPLE GETAWAY WITH ACCOMMODATION AND 2 HOUR SUNSET BOAT CRUISE WITH DELICIOUS BUFFET',
+    shortName: 'Couple Cruise Getaway',
+    description: 'Includes accommodation and a romantic 2 hour sunset boat cruise with delicious buffet.',
+    destination: 'harties',
+    basePrice: 700,
+    kidsPrice: 350,
+    activitiesIncluded: ['Accommodation', 'Romantic 2 hour sunset boat cruise with delicious buffet'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg11',
+    name: 'HG11 - HARTIES COUPLE ADVENTURE WITH ACCOMMODATION AND 1 HOUR QUAD BIKING EXPERIENCE',
+    shortName: 'Couple Quad Adventure',
+    description: 'Includes accommodation and an exciting 1 hour quad biking experience.',
+    destination: 'harties',
+    basePrice: 550,
+    kidsPrice: 300,
+    activitiesIncluded: ['Accommodation', 'Exciting 1 hour quad biking experience'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg12',
+    name: 'HG12 - HARTIES ROMANCE IN THE AIR WITH ACCOMMODATION, 1 HOUR HORSE RIDE, FULL DAY HARTIES CABLEWAY',
+    shortName: 'Romance in the Air',
+    description: 'Includes accommodation, a romantic 1 hour horse ride, and full day access to the Harties Cableway.',
+    destination: 'harties',
+    basePrice: 810,
+    kidsPrice: 400,
+    activitiesIncluded: ['Accommodation', 'Romantic 1 hour horse ride', 'Full day access to the Harties Cableway'],
+    duration: '2 nights'
+  },
+
+  // ============= MAGALIES PACKAGES =============
+  {
+    id: 'mag1',
+    name: 'MAG1 - MAGALIES EXPLORER GETAWAY PACKAGE WITH ACCOMMODATION, CRADLE OF MANKIND, STERKFONTEIN CAVES, GAME DRIVE, PREDATOR ENCLOSURE, SNAKE AND REPTILE SHOW',
+    shortName: 'Explorer Getaway',
+    description: 'Includes accommodation, entrance to Cradle of Mankind Origins Centre, Sterkfontein Caves, game drive, predator enclosure, snake and reptile show.',
+    destination: 'magalies',
+    basePrice: 900,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Cradle of Mankind Origins Centre', 'Sterkfontein Caves exploration tour', 'Rhino and Lion Park Guided game drive in Safari Truck', 'Reptile show and Predator enclosure at the park Welcome Centre'],
+    duration: '2 nights'
+  },
+  {
+    id: 'mag2',
+    name: 'MAG2 - MAGALIES ULTIMATE LUX GETAWAY PACKAGE WITH BUFFET CRUISE, CRADLE OF MANKIND, MASSAGE, GAME DRIVE, PREDATOR ENCLOSURE, SNAKE AND REPTILE SHOW',
+    shortName: 'Ultimate Lux',
+    description: 'Includes accommodation, 2-hour buffet lunch cruise, Cradle of Mankind Origins Centre, 60-minute full body massage, guided game drive in Rhino and Lion Park, predator enclosure, and snake and reptile show.',
+    destination: 'magalies',
+    basePrice: 2130,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Cradle of Mankind Origins Centre', 'Guided game drive in Rhino and Lion Park', '2-hour buffet lunch cruise', '60-minute full body massage', 'Reptile show and Predator enclosure at the park Welcome Centre'],
+    duration: '2 nights'
+  },
+  {
+    id: 'mag3',
+    name: 'MAG3 - MAGALIES DELUXE HALF DAY SPA, GAME DRIVE AND SUNSET CRUISE WEEKENDER',
+    shortName: 'Deluxe Spa Weekender',
+    description: 'Includes accommodation, half-day spa session with massages and treats, game drive in Rhino and Lion Park including snake show, Predator World and cub interactions, sunset cruise.',
+    destination: 'magalies',
+    basePrice: 1950,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Half-day spa experience, full body massage and other treatments', 'Rhino and Lion Park Game drive in safari truck', 'Reptile and predator show at the Park Welcome Centre', '2 Hour Champagne Sunset cruise with delicious buffet'],
+    duration: '2 nights'
+  },
+  {
+    id: 'mag4',
+    name: 'MAG4 - MAGALIES BUDGET WITH GAME DRIVE IN RHINO PARK AND FULL BODY MASSAGE',
+    shortName: 'Budget Game Drive',
+    description: 'Includes accommodation, entrance to Rhino and Lion Park, guided game drive, snake show, Predator World, cub interactions, and 60-minute full body massage.',
+    destination: 'magalies',
+    basePrice: 1200,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Entrance to Rhino and Lion Park', 'Rhino and Lion Park Guided game drive', '60-minute full body massage'],
+    duration: '2 nights'
+  },
+  {
+    id: 'mag5',
+    name: 'MAG5 - THE PERFECT DATE IN MAGALIES WITH HORSE RIDING, QUAD BIKING, AND PRIVATE PICNIC',
+    shortName: 'Perfect Date',
+    description: 'Includes accommodation, 60-minute horse riding, quad biking, private romantic picnic with champagne and a picnic basket, set on a romantically laid out blanket.',
+    destination: 'magalies',
+    basePrice: 2330,
+    kidsPrice: 900,
+    activitiesIncluded: ['Accommodation', '60-minute horse riding experience', 'Quad biking adventure', 'Private romantic picnic setup', 'Champagne and picnic basket', 'Romantic blanket layout'],
+    duration: '2 nights'
+  },
+  {
+    id: 'mag6',
+    name: 'MAG6 - HORSE, SPA AND PICNIC MAGALIES GETAWAY',
+    shortName: 'Horse, Spa & Picnic',
+    description: 'Includes accommodation, 1-hour horse trail, 60-minute full body massage, private romantic picnic with champagne and a picnic basket.',
+    destination: 'magalies',
+    basePrice: 1600,
+    kidsPrice: 700,
+    activitiesIncluded: ['Accommodation', '1-hour horse trail', '60-minute full body massage', 'Private romantic picnic setup', 'Champagne and picnic basket'],
+    duration: '2 nights'
+  },
+
+  // ============= DURBAN PACKAGES =============
+  {
+    id: 'dur1',
+    name: 'DUR1 - DURBAN GETAWAY FUN ON THE BEACH WITH ACCOMMODATION, USHAKA MARINE WORLD COMBO TICKET, ISLE OF CAPRI BOAT CRUISE, 60 MINUTE FULL BODY MASSAGE, SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK',
+    shortName: 'Fun on the Beach',
+    description: 'Includes accommodation, uShaka Marine World combo tickets, Isle of Capri Boat Cruise, 60 minute full body massage at a beachfront spa, transport to shuttle you from the hotel to the activities and back to the hotel.',
+    destination: 'durban',
+    basePrice: 1800,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'uShaka Marine World combo tickets (Sea World & Wet n Wild)', 'Isle of Capri Boat Cruise', '60 minute full body massage', 'Shuttle service between hotel and activities'],
+    duration: '2 nights'
+  },
+  {
+    id: 'dur2',
+    name: 'DUR2 - DURBAN GETAWAY SMILES AND SEA SHELLS WITH ACCOMMODATION, USHAKA MARINE WORLD, 3 HOUR OPEN BUS CITY TOUR, ISLE OF CAPRI BOAT CRUISE, SHUTTLE TO TAKE YOU FROM THE HOTEL TO ACTIVITIES AND BACK TO THE HOTEL',
+    shortName: 'Smiles & Sea Shells',
+    description: 'Includes accommodation, uShaka Marine World, 3 hour open bus city tour, Isle of Capri Boat Cruise, shuttle to take you from the hotel to activities and back to the hotel.',
+    destination: 'durban',
+    basePrice: 1300,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'uShaka Marine World combo tickets (Sea World & Wet n Wild)', '3 hour open bus city tour', 'Isle of Capri Boat Cruise', 'Shuttle service between hotel and activities'],
+    duration: '2 nights'
+  },
+  {
+    id: 'dur3',
+    name: 'DUR3 - DURBAN GETAWAY SMILES BEACH AND SPA EASE WITH SPA DAY AND LUXURY CANAL BOAT CRUISE',
+    shortName: 'Beach & Spa Ease',
+    description: 'Includes accommodation, half-day spa experience, luxury boat canal cruise, and shuttle transport to activities and back to hotel.',
+    destination: 'durban',
+    basePrice: 1550,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Half-day spa experience with full body massage and drinks', 'Luxury Canal boat cruise', 'Shuttle service between hotel and activities'],
+    duration: '2 nights'
+  },
+  {
+    id: 'dur4',
+    name: 'DUR4 - DURBAN PARTY VIBES GETAWAY TIME WITH NIGHTLIFE BEACH SPA AND BOAT, FULL BODY MASSAGE, LUXURY CANAL BOAT CRUISE',
+    shortName: 'Party Vibes',
+    description: 'Includes accommodation, nightlife outing, uShaka Marine World combo ticket, luxury boat canal cruise, 60 minute full body massage.',
+    destination: 'durban',
+    basePrice: 2000,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Nightlife outing to Florida Road Cubana', 'uShaka Marine World combo tickets (Sea World & Wet n Wild)', 'Luxury boat canal cruise', '60 minute full body massage'],
+    duration: '2 nights'
+  },
+  {
+    id: 'dur5',
+    name: 'DUR5 - DURBAN BEACH COUPLE GETAWAY WITH USHAKA MARINE AND SHUTTLE',
+    shortName: 'Beach Couple uShaka',
+    description: 'Includes accommodation, uShaka Marine World, and shuttle service to activities and back.',
+    destination: 'durban',
+    basePrice: 850,
+    kidsPrice: 400,
+    activitiesIncluded: ['Accommodation', 'uShaka Marine World combo tickets (Sea World & Wet n Wild)', 'Suncoast Casino outing', 'Shuttle service between hotel and activities'],
+    duration: '2 nights'
+  },
+  {
+    id: 'dur6',
+    name: 'DUR6 - DURBAN BEACH COUPLE GETAWAY WITH BOAT CRUISE AND SHUTTLE',
+    shortName: 'Beach Couple Cruise',
+    description: 'Includes accommodation, boat cruise, and shuttle service to and from activities.',
+    destination: 'durban',
+    basePrice: 550,
+    kidsPrice: 300,
+    activitiesIncluded: ['Accommodation', 'Isle of Capri Boat Cruise', 'Suncoast Casino outing', 'Shuttle service between hotel and activities'],
+    duration: '2 nights'
+  },
+  {
+    id: 'dur7',
+    name: 'DUR7 - DURBAN BEACH AND NIGHTLIFE COUPLE ESCAPE',
+    shortName: 'Beach & Nightlife',
+    description: 'Includes accommodation, Cubana Lounge outing, and shuttle service.',
+    destination: 'durban',
+    basePrice: 400,
+    kidsPrice: 200,
+    activitiesIncluded: ['Accommodation', 'Florida Road Cubana Outing', 'Suncoast Casino outing', 'Shuttle service between hotel and activities'],
+    duration: '2 nights'
+  },
+  {
+    id: 'dur8',
+    name: 'DUR8 - DURBAN BEACH COUPLE ESCAPE WITH OPEN TOP BUS TOUR',
+    shortName: 'Open Top Bus Tour',
+    description: 'Includes accommodation and a 3 hour open top bus tour of Durban.',
+    destination: 'durban',
+    basePrice: 600,
+    kidsPrice: 350,
+    activitiesIncluded: ['Accommodation', 'Suncoast Casino outing', '3 hour open top bus city tour', 'Shuttle service between hotel and activities'],
+    duration: '2 nights'
+  },
+
+  // ============= MPUMALANGA PACKAGES =============
+  {
+    id: 'mp1',
+    name: 'MP1 - MPUMALANGA INSTYLE GETAWAY WITH BLYDE RIVER CANYON BOAT CRUISE, GRASKOP GORGE LIFT AND GORGE SUSPENSION BRIDGE',
+    shortName: 'InStyle Getaway',
+    description: 'Includes accommodation, boat cruise exploring the Blyde River Canyon, view 3 Rondavels, Gods Window from the water, the rare Kadishi Tufa Waterfalls, Blyde River Canyon Nature Reserve, Graskop Gorge Lift experience with suspension bridge.',
+    destination: 'mpumalanga',
+    basePrice: 1320,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Blyde River Canyon boat cruise with spectacular views', 'View of 3 Rondavels and Gods Window at unique vantage point', 'Rare Kadishi Tufa Waterfalls experience', 'Wildlife viewing on the banks of the river', 'Graskop Gorge Lift, suspension bridge and gorge walking trails'],
+    duration: '2 nights'
+  },
+  {
+    id: 'mp2',
+    name: 'MP2 - MPUMALANGA FUN ADVENTURE WITH GRASKOP GORGE LIFT, ZIPLINING ADVENTURE, SUSPENSION BRIDGE, QUAD BIKING FUN',
+    shortName: 'Fun Adventure',
+    description: 'Includes accommodation, entrance to Graskop Lift with suspension bridge, forest experience, quad biking fun, and zip lining adventure.',
+    destination: 'mpumalanga',
+    basePrice: 1750,
+    kidsPrice: 900,
+    activitiesIncluded: ['Accommodation', 'Graskop Lift', 'Gorge suspension bridge', 'Deep in the gorge Forest experience', 'Quad biking fun', 'Zip lining adventure'],
+    duration: '2 nights'
+  },
+  {
+    id: 'mp3',
+    name: 'MP3 - KRUGER NATIONAL PARK EXPERIENCE WITH GRASKOP GORGE LIFT, GORGE SUSPENSION BRIDGE',
+    shortName: 'Kruger Experience',
+    description: 'Includes accommodation, Graskop Gorge Lift, Gorge Suspension Bridge, Kruger National Park - game drive in safari truck (choice of morning or sunset game drive).',
+    destination: 'mpumalanga',
+    basePrice: 2100,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Graskop Gorge Lift', 'Gorge suspension bridge', 'Deep in the gorge Forest experience', 'Guided Kruger National Park game drive in safari truck (morning or sunset)'],
+    duration: '2 nights'
+  },
+  {
+    id: 'mp4',
+    name: 'MP4 - MPUMALANGA WEEKENDER',
+    shortName: 'Weekender',
+    description: 'Includes accommodation, game drive in the Kruger National Park, full day tour of the Panorama Route (Gods Window & Wonderview, Berlin Falls, Pinnacle Rock, Bourkes Luck Potholes, Blyde River Canyon, and Three Rondavels).',
+    destination: 'mpumalanga',
+    basePrice: 2800,
+    kidsPrice: 1200,
+    activitiesIncluded: ['Accommodation', 'Game drive in Kruger National Park', 'Full day Panorama Route tour', 'Gods Window & Wonderview', 'Berlin Falls, Pinnacle Rock, Bourkes Luck Potholes', 'Blyde River Canyon and Three Rondavels'],
+    duration: '2 nights'
+  },
+
+  // ============= SUN CITY PACKAGES =============
+  {
+    id: 'sun1',
+    name: 'SUN1 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF WAVES AND QUAD BIKING',
+    shortName: 'Valley & Quads',
+    description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, quad biking, lunch inside Sun City, and shuttle transport to and from Sun City (if staying outside).',
+    destination: 'sun-city',
+    basePrice: 1250,
+    kidsPrice: 850,
+    activitiesIncluded: ['Accommodation', 'Entrance to Sun City', 'Valley of The Waves access', 'Quad biking', 'Lunch inside Sun City', 'Shuttle service (if booked just outside Sun City)'],
+    duration: '2 nights'
+  },
+  {
+    id: 'sun2',
+    name: 'SUN2 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF WAVES AND SHUTTLE',
+    shortName: 'Valley Getaway',
+    description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, lunch inside Sun City, and shuttle transport to and from Sun City (if staying outside).',
+    destination: 'sun-city',
+    basePrice: 850,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Entrance to Sun City', 'Valley of The Waves access', 'Lunch inside Sun City', 'Shuttle service (if booked just outside Sun City)'],
+    duration: '2 nights'
+  },
+  {
+    id: 'sun3',
+    name: 'SUN3 - SUN CITY WEEKENDER WITH VALLEY OF THE WAVES & GAME DRIVE',
+    shortName: 'Safari Weekender',
+    description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, lunch inside Sun City, game drive in Pilanesberg National Park, and shuttle transport (if staying outside).',
+    destination: 'sun-city',
+    basePrice: 1550,
+    kidsPrice: 750,
+    activitiesIncluded: ['Accommodation', 'Entrance to Sun City', 'Valley of The Waves access', 'Game drive in Pilanesberg National Park', 'Lunch inside Sun City', 'Shuttle service (if booked just outside Sun City)'],
+    duration: '2 nights'
+  },
+  {
+    id: 'sun4',
+    name: 'SUN4 - SUN CITY WEEKENDER WITH HALF DAY SPA, GAME DRIVE, VALLEY OF THE WAVES',
+    shortName: 'Spa & Safari',
+    description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, half-day spa experience, lunch inside Sun City, Guided Game Drive in The Pilanesberg National Park. shuttle transport from hotel to Sun City and back (if staying outside sun city).',
+    destination: 'sun-city',
+    basePrice: 2150,
+    kidsPrice: 900,
+    activitiesIncluded: ['Accommodation', 'Entrance to Sun City', 'Valley of The Waves access', 'Half-day spa experience', 'Lunch inside Sun City', 'Shuttle service (if booked just outside Sun City)'],
+    duration: '2 nights'
+  },
+  {
+    id: 'sun5',
+    name: 'SUN5 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF THE WAVES AND SEGWAY GLIDES',
+    shortName: 'Valley & Segway',
+    description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, segway glides, lunch inside Sun City, and shuttle transport (if staying outside).',
+    destination: 'sun-city',
+    basePrice: 1700,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Entrance to Sun City', 'Valley of The Waves access', 'Segway glides', 'Lunch inside Sun City', 'Shuttle service (if booked just outside Sun City)'],
+    duration: '2 nights'
+  },
+  {
+    id: 'sun6',
+    name: 'SUN6 - SUN CITY GETAWAY WITH VALLEY OF WAVES, THE MAZE AND SHUTTLE',
+    shortName: 'Valley & Maze',
+    description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, maze adventure, lunch inside Sun City, and shuttle transport (if staying outside).',
+    destination: 'sun-city',
+    basePrice: 800,
+    kidsPrice: 700,
+    activitiesIncluded: ['Accommodation', 'Entrance to Sun City', 'Valley of The Waves access', 'Maze adventure', 'Lunch inside Sun City', 'Shuttle service (if booked just outside Sun City)'],
+    duration: '2 nights'
+  },
+  {
+    id: 'sun7',
+    name: 'SUN7 - SUN CITY GETAWAY WITH VALLEY OF THE WAVES & ZIP LINE ADVENTURE',
+    shortName: 'Valley & Zipline',
+    description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, zip lining adventure, lunch inside Sun City, and shuttle transport (if staying outside).',
+    destination: 'sun-city',
+    basePrice: 1600,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', 'Entrance to Sun City', 'Valley of The Waves access', 'Zip lining adventure', 'Lunch inside Sun City', 'Shuttle service (if booked just outside Sun City)'],
+    duration: '2 nights'
+  },
+
+  // ============= CAPE TOWN PACKAGES =============
+  {
+    id: 'cpt1',
+    name: 'CPT1 - CAPE TOWN WITH FULL DAY CAPE TOWN TOUR, ROBBEN ISLAND TOUR, TABLE MOUNTAIN AERIAL CABLEWAY',
+    shortName: 'Iconic Tour',
+    description: 'Includes accommodation, 1 Day full Cape Town Tour on the Cape Town Sightseeing Tour Bus, Tour of Robben Island including the luxury boat to ferry you to the Island, Table Mountain Cableway, A canal boat cruise.',
+    destination: 'cape-town',
+    basePrice: 1800,
+    kidsPrice: 850,
+    activitiesIncluded: ['Accommodation', 'Cape Town Sightseeing Tour Bus', 'Robben Island tour with luxury boat transfer', 'Table Mountain Aerial Cableway ticket', 'Canal boat cruise'],
+    duration: '3 nights'
+  },
+  {
+    id: 'cpt2',
+    name: 'CPT2 - CAPE TOWN WITH 2 DAY SIGHTSEEING TOUR BUS, TABLE MOUNTAIN, CANAL CRUISE, CAPE TOWN SUNSET TOUR TO SIGNAL HILL',
+    shortName: 'Sunset Explorer',
+    description: 'Includes accommodation, 2 Day full Cape Town Tour on the Sightseeing Tour Bus, Table Mountain Cableway, Canal boat cruise, Cape Town sunset tour with Sundowners at Signal Hill viewpoint overlooking the ocean.',
+    destination: 'cape-town',
+    basePrice: 1200,
+    kidsPrice: 800,
+    activitiesIncluded: ['Accommodation', '2 day Cape Town sightseeing tour', 'Table Mountain Cableway ticket', 'Canal boat cruise', 'Sunset tour with sundowners at Signal Hill'],
+    duration: '2 nights'
+  },
+
+  // ============= PRETORIA PACKAGES =============
+  {
+    id: 'pret1',
+    name: 'PRETORIA - CITY TOUR',
+    shortName: 'City Tour',
+    description: 'Includes accommodation, Breakfast at hotel, The Union Buildings, Church Square, Melrose House, Voortrekker Monument.',
+    destination: 'pretoria',
+    basePrice: 1200,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'The Union Buildings', 'Church Square', 'Melrose House', 'Voortrekker Monument'],
+    duration: '2 nights'
+  },
+
+  // ============= INTERNATIONAL - BALI =============
+  {
+    id: 'bali-ubud-6day-explorer',
+    name: 'BALI UBUD EXPLORER: 6-DAY CULTURAL, ADVENTURE & SUNSET GETAWAY',
+    shortName: '6-Day Ubud Explorer',
+    description: 'An affordable 6-day package based in the cultural heartland of Ubud, covering immersive cultural sites, thrilling quad biking, beautiful rice terraces, serene waterfalls, relaxing beach outings, and a memorable sunset cruise.',
+    destination: 'bali',
+    basePrice: 3400,
+    activitiesIncluded: [
+      '5 nights accommodation in an affordable guesthouse/homestay in Ubud',
+      'Return airport transfers (Denpasar-Ubud)',
+      '4 full days of private vehicle transport for day trips',
+      'Sacred Monkey Forest Sanctuary entrance',
+      'Tegalalang Rice Terraces with swing/photo spot',
+      'Tirta Empul Holy Water Temple entrance',
+      'Coffee Plantation visit with tastings',
+      'Traditional Balinese Dance Performance',
+      'Quad Biking (ATV) adventure',
+      'Beautiful Balinese waterfall entrance',
+      'Sunset Cruise with dinner/entertainment',
+      'Besakih Temple entrance',
+      'Daily transport to activities and back',
+      'Estimated budget for all meals at local warungs'
+    ],
+    duration: '6 nights'
+  },
+
+  // ============= INTERNATIONAL - DUBAI =============
+  {
+    id: 'dubai-getaway-1',
+    name: 'DUBAI EXCLUSIVE MOMENTS GETAWAY: ICONIC SIGHTS, BEACHES & DESERT ADVENTURES',
+    shortName: 'Exclusive Moments',
+    description: 'Experience the best of Dubai\'s modern marvels, thrilling desert adventures, and luxurious excursions with this comprehensive package.',
+    destination: 'dubai',
+    basePrice: 4400,
+    activitiesIncluded: [
+      'Entry to Burj Khalifa (Levels 124 and 125)',
+      'Dubai Mega Yacht Cruise with Buffet Dinner',
+      'Entry to Museum Of The Future',
+      'Speedboat Tour of Dubai Marina, Atlantis, Palm & Burj Al Arab',
+      'Entry to Sky Views Observatory',
+      'Dubai Desert Safari (including Quad Bikes and Al Khayma Camp experience)'
+    ],
+    duration: '5 nights'
+  },
+
+  // ============= INTERNATIONAL - THAILAND =============
+  {
+    id: 'phuket-adventure-explorer',
+    name: 'PHUKET ADVENTURE EXPLORER: ISLANDS, WATERPARK & QUAD BIKING',
+    shortName: 'Adventure Explorer',
+    description: 'Experience the best of Phuket with a package featuring thrilling island excursions, a visit to a top waterpark, and an adventurous quad biking tour with panoramic views.',
+    destination: 'thailand',
+    basePrice: 3800,
+    activitiesIncluded: [
+      'James Bond Island day tour by speed boat including 2 delicious meals',
+      'Phuket Guided city tour',
+      'Yona Floating beach club full day visit',
+      'Phi Phi, Maya Bay and Khai Island by speed boat',
+      'Elephant Jungle Sanctuary experience',
+      'Phuket Andamanda Water Park entry',
+      'Quad bikes adventure with 360 degrees view of Phuket including a view of Big Buddha'
+    ],
+    duration: '5 nights'
+  },
 ];
 
 // Destinations
 export const destinations: Destination[] = [
-  { id: 'harties', name: 'Hartbeespoort', shortName: 'Harties', country: 'South Africa', description: 'Scenic escape near the dam with breathtaking views and activities.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/Harties.jpg', startingPrice: 1800, popular: true, international: false },
-  { id: 'magalies', name: 'Magaliesberg', shortName: 'Magalies', country: 'South Africa', description: 'Mountain retreats and nature getaways for a refreshing break.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/magalies1.jpg', startingPrice: 1950, popular: true, international: false },
-  { id: 'durban', name: 'Durban Beachfront', shortName: 'Durban', country: 'South Africa', description: 'Sunny beach holidays with warm waters and vibrant city life.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/durban.png', startingPrice: 2100, popular: true, international: false },
-  { id: 'umhlanga', name: 'Umhlanga', shortName: 'Umhlanga', country: 'South Africa', description: 'Coastal escape near Durban with beautiful beaches and upscale shopping.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/umhlanga.jpg', startingPrice: 2500, popular: true, international: false },
-  { id: 'cape-town', name: 'Cape Town', shortName: 'Cape Town', country: 'South Africa', description: 'Iconic Table Mountain, stunning beaches, and world-class vineyards.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg', startingPrice: 2100, popular: true, international: false },
-  { id: 'sun-city', name: 'Sun City', shortName: 'Sun City', country: 'South Africa', description: 'World-famous resort with Valley of Waves and endless entertainment.', image: sunCityImage, startingPrice: 2200, popular: true, international: false },
-  { id: 'mpumalanga', name: 'Mpumalanga', shortName: 'Mpumalanga', country: 'South Africa', description: 'Panorama Route, Blyde River Canyon, and Kruger National Park adventures.', image: 'https://images.unsplash.com/photo-1580256087713-963146b8d1a3?w=800', startingPrice: 2200, popular: true, international: false },
-  { id: 'knysna', name: 'Knysna', shortName: 'Knysna', country: 'South Africa', description: 'Garden Route gem with lagoon, forests, and oyster experiences.', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', startingPrice: 2400, popular: false, international: false },
-  { id: 'vaal-river', name: 'Vaal River', shortName: 'Vaal', country: 'South Africa', description: 'Riverside relaxation and water sports just outside Johannesburg.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800', startingPrice: 1600, popular: false, international: false },
+  { id: 'harties', name: 'Hartbeespoort', shortName: 'Harties', country: 'South Africa', description: 'Scenic escape near the dam with breathtaking views and activities.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/Harties.jpg', startingPrice: 380, popular: true, international: false },
+  { id: 'magalies', name: 'Magaliesberg', shortName: 'Magalies', country: 'South Africa', description: 'Mountain retreats and nature getaways for a refreshing break.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/magalies1.jpg', startingPrice: 900, popular: true, international: false },
+  { id: 'durban', name: 'Durban Beachfront', shortName: 'Durban', country: 'South Africa', description: 'Sunny beach holidays with warm waters and vibrant city life.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/durban.png', startingPrice: 400, popular: true, international: false },
+  { id: 'umhlanga', name: 'Umhlanga', shortName: 'Umhlanga', country: 'South Africa', description: 'Coastal escape near Durban with beautiful beaches and upscale shopping.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/umhlanga.jpg', startingPrice: 500, popular: true, international: false },
+  { id: 'cape-town', name: 'Cape Town', shortName: 'Cape Town', country: 'South Africa', description: 'Iconic Table Mountain, stunning beaches, and world-class vineyards.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg', startingPrice: 1200, popular: true, international: false },
+  { id: 'sun-city', name: 'Sun City', shortName: 'Sun City', country: 'South Africa', description: 'World-famous resort with Valley of Waves and endless entertainment.', image: sunCityImage, startingPrice: 800, popular: true, international: false },
+  { id: 'mpumalanga', name: 'Mpumalanga', shortName: 'Mpumalanga', country: 'South Africa', description: 'Panorama Route, Blyde River Canyon, and Kruger National Park adventures.', image: 'https://images.unsplash.com/photo-1580256087713-963146b8d1a3?w=800', startingPrice: 1320, popular: true, international: false },
+  { id: 'knysna', name: 'Knysna', shortName: 'Knysna', country: 'South Africa', description: 'Garden Route gem with lagoon, forests, and oyster experiences.', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', startingPrice: 1550, popular: false, international: false },
+  { id: 'vaal-river', name: 'Vaal River', shortName: 'Vaal', country: 'South Africa', description: 'Riverside relaxation and water sports just outside Johannesburg.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800', startingPrice: 1050, popular: false, international: false },
   { id: 'bela-bela', name: 'Bela Bela', shortName: 'Bela Bela', country: 'South Africa', description: 'Hot springs, game reserves, and adventure activities in Limpopo.', image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800', startingPrice: 1400, popular: false, international: false },
-  { id: 'bali', name: 'Bali', shortName: 'Bali', country: 'Indonesia', description: 'Volcanic mountains, rice paddies, beaches and coral reefs.', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800', startingPrice: 5400, popular: true, international: true },
-  { id: 'dubai', name: 'Dubai', shortName: 'Dubai', country: 'UAE', description: 'Luxury shopping, ultramodern architecture and lively nightlife.', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800', startingPrice: 6400, popular: true, international: true },
-  { id: 'thailand', name: 'Thailand', shortName: 'Thailand', country: 'Thailand', description: 'Tropical beaches, opulent palaces, ancient ruins and ornate temples.', image: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=800', startingPrice: 4800, popular: true, international: true },
+  { id: 'pretoria', name: 'Pretoria', shortName: 'Pretoria', country: 'South Africa', description: 'Jacaranda city with historic landmarks and cultural attractions.', image: 'https://images.unsplash.com/photo-1577948000111-9c970dfe3743?w=800', startingPrice: 1200, popular: false, international: false },
+  { id: 'bali', name: 'Bali', shortName: 'Bali', country: 'Indonesia', description: 'Volcanic mountains, rice paddies, beaches and coral reefs.', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800', startingPrice: 3400, popular: true, international: true },
+  { id: 'dubai', name: 'Dubai', shortName: 'Dubai', country: 'UAE', description: 'Luxury shopping, ultramodern architecture and lively nightlife.', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800', startingPrice: 4400, popular: true, international: true },
+  { id: 'thailand', name: 'Thailand', shortName: 'Thailand', country: 'Thailand', description: 'Tropical beaches, opulent palaces, ancient ruins and ornate temples.', image: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=800', startingPrice: 3800, popular: true, international: true },
 ];
 
 // Quote Calculation Logic
@@ -326,6 +905,7 @@ export interface QuoteResult {
   adults: number;
   children: number;
   rooms: number;
+  activitiesIncluded: string[];
   breakdown: {
     label: string;
     amount: number;
@@ -364,20 +944,28 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   // Package base price (includes activities)
   const packageBaseCost = pkg.basePrice * request.adults;
   
-  // Children pricing (50% for under 12, 75% for 12-17)
+  // Children pricing - use kidsPrice if available, otherwise calculate discount
   let childrenCost = 0;
   let childDiscount = 0;
-  request.childrenAges.forEach(age => {
-    if (age < 12) {
-      childrenCost += pkg.basePrice * 0.5;
-      childDiscount += pkg.basePrice * 0.5;
-    } else if (age < 18) {
-      childrenCost += pkg.basePrice * 0.75;
-      childDiscount += pkg.basePrice * 0.25;
-    } else {
-      childrenCost += pkg.basePrice;
-    }
-  });
+  
+  if (pkg.kidsPrice && request.children > 0) {
+    // Use the fixed kids price for all children
+    childrenCost = pkg.kidsPrice * request.children;
+    childDiscount = (pkg.basePrice * request.children) - childrenCost;
+  } else {
+    // Fallback: 50% for under 12, 75% for 12-17
+    request.childrenAges.forEach(age => {
+      if (age < 12) {
+        childrenCost += pkg.basePrice * 0.5;
+        childDiscount += pkg.basePrice * 0.5;
+      } else if (age < 18) {
+        childrenCost += pkg.basePrice * 0.75;
+        childDiscount += pkg.basePrice * 0.25;
+      } else {
+        childrenCost += pkg.basePrice;
+      }
+    });
+  }
   
   // Total calculations
   const totalPackageCost = packageBaseCost + childrenCost;
@@ -427,6 +1015,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     is4SleeperRoom,
     roomType,
     includesBreakfast: hotel.includesBreakfast || false,
+    activitiesIncluded: pkg.activitiesIncluded,
     breakdown,
     checkIn: request.checkIn,
     checkOut: request.checkOut,
