@@ -157,7 +157,7 @@ function generateHotels(): Hotel[] {
     hotelLetters.forEach((letter, index) => {
       allHotels.push({
         id: `${destId}-very-affordable-${letter.toLowerCase()}`,
-        name: `${shortName} Very Affordable Hotel ${letter}`,
+        name: `${shortName} Budget Option ${letter}`,
         destination: destId,
         pricePerNight: veryAffordablePrices[index],
         rating: 3.5 + (Math.random() * 0.5),
@@ -444,7 +444,7 @@ export function getPackagesByDestination(destinationId: string): Package[] {
 
 // Hotel type display names
 export const hotelTypeLabels: Record<string, string> = {
-  'very-affordable': 'Very Affordable',
+  'very-affordable': 'Budget Option',
   'affordable': 'Affordable',
   'premium': 'Premium',
 };
