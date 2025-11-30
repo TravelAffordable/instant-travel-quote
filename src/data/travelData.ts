@@ -282,6 +282,7 @@ export interface QuoteRequest {
 
 export interface QuoteResult {
   packageName: string;
+  packageDescription: string;
   hotelName: string;
   hotelId: string;
   destination: string;
@@ -386,6 +387,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   
   return {
     packageName: pkg.shortName,
+    packageDescription: pkg.description,
     hotelName: hotelNameDisplay,
     hotelId: hotel.id,
     destination: destinations.find(d => d.id === request.destination)?.name || request.destination,
