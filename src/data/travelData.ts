@@ -8,9 +8,10 @@ export interface Hotel {
   destination: string;
   pricePerNight: number; // Base price per room per night
   rating: number;
-  type: 'budget' | 'standard' | 'premium';
+  type: 'very-affordable' | 'affordable' | 'premium';
   amenities: string[];
   image: string;
+  includesBreakfast?: boolean;
 }
 
 export interface Package {
@@ -28,6 +29,7 @@ export interface Package {
 export interface Destination {
   id: string;
   name: string;
+  shortName: string; // For hotel naming
   country: string;
   description: string;
   image: string;
@@ -36,60 +38,156 @@ export interface Destination {
   international: boolean;
 }
 
-// Hotels Database - 2 hotels per destination
-export const hotels: Hotel[] = [
-  // Harties
-  { id: 'harties-1', name: 'Harties Waterfront Lodge', destination: 'harties', pricePerNight: 850, rating: 4.2, type: 'standard', amenities: ['WiFi', 'Pool', 'Restaurant', 'Parking'], image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-  { id: 'harties-2', name: 'Magalies Manor Hotel', destination: 'harties', pricePerNight: 1200, rating: 4.6, type: 'premium', amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Bar'], image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-  
-  // Magalies
-  { id: 'magalies-1', name: 'Riverleaf Hotel', destination: 'magalies', pricePerNight: 780, rating: 4.0, type: 'budget', amenities: ['WiFi', 'Pool', 'Breakfast'], image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800' },
-  { id: 'magalies-2', name: 'Cocomo Boutique Hotel', destination: 'magalies', pricePerNight: 1350, rating: 4.7, type: 'premium', amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Game Viewing'], image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-  
-  // Durban
-  { id: 'durban-1', name: 'Beach Hotel Durban', destination: 'durban', pricePerNight: 950, rating: 4.1, type: 'standard', amenities: ['WiFi', 'Pool', 'Beach Access', 'Restaurant'], image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800' },
-  { id: 'durban-2', name: 'Oyster Box Hotel', destination: 'durban', pricePerNight: 2200, rating: 4.9, type: 'premium', amenities: ['WiFi', 'Pool', 'Spa', 'Fine Dining', 'Ocean View'], image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
-  
-  // Umhlanga
-  { id: 'umhlanga-1', name: 'Cabana Beach Resort', destination: 'umhlanga', pricePerNight: 1100, rating: 4.3, type: 'standard', amenities: ['WiFi', 'Pool', 'Beach', 'Kids Club'], image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-  { id: 'umhlanga-2', name: 'The Capital Pearls', destination: 'umhlanga', pricePerNight: 1800, rating: 4.8, type: 'premium', amenities: ['WiFi', 'Pool', 'Gym', 'Restaurant', 'Ocean View'], image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-  
-  // Cape Town
-  { id: 'capetown-1', name: 'Protea Hotel Sea Point', destination: 'cape-town', pricePerNight: 1050, rating: 4.2, type: 'standard', amenities: ['WiFi', 'Pool', 'Restaurant', 'Ocean View'], image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800' },
-  { id: 'capetown-2', name: 'Table Bay Hotel', destination: 'cape-town', pricePerNight: 2500, rating: 4.9, type: 'premium', amenities: ['WiFi', 'Pool', 'Spa', 'Fine Dining', 'Mountain View'], image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-  
-  // Sun City
-  { id: 'suncity-1', name: 'Sun City Cabanas', destination: 'sun-city', pricePerNight: 1400, rating: 4.4, type: 'standard', amenities: ['WiFi', 'Pool', 'Casino Access', 'Valley of Waves'], image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-  { id: 'suncity-2', name: 'The Palace of Lost City', destination: 'sun-city', pricePerNight: 3200, rating: 4.9, type: 'premium', amenities: ['WiFi', 'Pool', 'Spa', 'Golf', 'Valley of Waves'], image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
-  
-  // Mpumalanga
-  { id: 'mpumalanga-1', name: 'Graskop Hotel', destination: 'mpumalanga', pricePerNight: 750, rating: 4.0, type: 'budget', amenities: ['WiFi', 'Restaurant', 'Parking'], image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800' },
-  { id: 'mpumalanga-2', name: 'Perry\'s Bridge Hollow', destination: 'mpumalanga', pricePerNight: 1450, rating: 4.6, type: 'premium', amenities: ['WiFi', 'Pool', 'Spa', 'Safari Tours'], image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-  
-  // Knysna
-  { id: 'knysna-1', name: 'Knysna Hollow', destination: 'knysna', pricePerNight: 1100, rating: 4.3, type: 'standard', amenities: ['WiFi', 'Pool', 'Garden', 'Restaurant'], image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800' },
-  { id: 'knysna-2', name: 'Pezula Resort', destination: 'knysna', pricePerNight: 2800, rating: 4.9, type: 'premium', amenities: ['WiFi', 'Pool', 'Spa', 'Golf', 'Ocean View'], image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-  
-  // Bali
-  { id: 'bali-1', name: 'Ubud Village Resort', destination: 'bali', pricePerNight: 1800, rating: 4.5, type: 'standard', amenities: ['WiFi', 'Pool', 'Spa', 'Rice Paddy Views'], image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800' },
-  { id: 'bali-2', name: 'Hanging Gardens of Bali', destination: 'bali', pricePerNight: 4500, rating: 5.0, type: 'premium', amenities: ['WiFi', 'Infinity Pool', 'Spa', 'Fine Dining'], image: 'https://images.unsplash.com/photo-1573790387438-4da905039392?w=800' },
-  
-  // Dubai
-  { id: 'dubai-1', name: 'Rove Downtown Dubai', destination: 'dubai', pricePerNight: 2200, rating: 4.4, type: 'standard', amenities: ['WiFi', 'Pool', 'Gym', 'City View'], image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800' },
-  { id: 'dubai-2', name: 'Atlantis The Palm', destination: 'dubai', pricePerNight: 5500, rating: 4.9, type: 'premium', amenities: ['WiFi', 'Water Park', 'Aquarium', 'Fine Dining'], image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800' },
-  
-  // Thailand
-  { id: 'thailand-1', name: 'Patong Beach Resort', destination: 'thailand', pricePerNight: 1500, rating: 4.3, type: 'standard', amenities: ['WiFi', 'Pool', 'Beach', 'Restaurant'], image: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=800' },
-  { id: 'thailand-2', name: 'Banyan Tree Phuket', destination: 'thailand', pricePerNight: 3800, rating: 4.9, type: 'premium', amenities: ['WiFi', 'Private Pool', 'Spa', 'Fine Dining'], image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800' },
-  
-  // Bela Bela
-  { id: 'belabela-1', name: 'Warmbaths Forever Resort', destination: 'bela-bela', pricePerNight: 650, rating: 4.0, type: 'budget', amenities: ['WiFi', 'Hot Springs', 'Water Park'], image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800' },
-  { id: 'belabela-2', name: 'Mabula Game Lodge', destination: 'bela-bela', pricePerNight: 2100, rating: 4.7, type: 'premium', amenities: ['WiFi', 'Pool', 'Safari', 'Spa'], image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800' },
+// Destination short names for hotel naming
+const destinationShortNames: Record<string, string> = {
+  'harties': 'Harties',
+  'magalies': 'Magalies',
+  'durban': 'Durban',
+  'umhlanga': 'Umhlanga',
+  'cape-town': 'Cape Town',
+  'sun-city': 'Sun City',
+  'mpumalanga': 'Mpumalanga',
+  'knysna': 'Knysna',
+  'vaal-river': 'Vaal',
+  'bela-bela': 'Bela Bela',
+  'bali': 'Bali',
+  'dubai': 'Dubai',
+  'thailand': 'Thailand',
+};
 
-  // Vaal River
-  { id: 'vaal-1', name: 'Emerald Resort & Casino', destination: 'vaal-river', pricePerNight: 900, rating: 4.2, type: 'standard', amenities: ['WiFi', 'Pool', 'Casino', 'Golf'], image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800' },
-  { id: 'vaal-2', name: 'Stonehaven on Vaal', destination: 'vaal-river', pricePerNight: 1600, rating: 4.6, type: 'premium', amenities: ['WiFi', 'Pool', 'Spa', 'River Views'], image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800' },
-];
+// Very Affordable pricing tiers (per night)
+const veryAffordablePrices = [550, 600, 700, 800, 950];
+// Affordable pricing tiers (per night)
+const affordablePrices = [850, 950, 1050, 1150, 1250];
+
+// Premium Hotels with their actual names and prices
+const premiumHotels: Record<string, { name: string; price: number; includesBreakfast?: boolean }[]> = {
+  'harties': [
+    { name: 'Villa Paradiso Hotel', price: 1100 },
+    { name: 'Cocomo Boutique Hotel', price: 1300 },
+    { name: 'Mount Grace Hotel And Spa', price: 2600 },
+    { name: 'The Riverleaf Hotel', price: 1450, includesBreakfast: true },
+    { name: 'Palm Swift Luxury', price: 1450, includesBreakfast: true },
+    { name: 'Kosmos Manor', price: 1400 },
+    { name: 'Stirling Manor Boutique Hotel', price: 2000 },
+    { name: 'Chatteux La Mer', price: 2500 },
+    { name: 'Three Oaks and Aloe Boutique Hotel', price: 3000 },
+  ],
+  'magalies': [
+    { name: 'Cocomo Boutique Hotel', price: 1350 },
+    { name: 'Mount Grace Hotel And Spa', price: 2600 },
+    { name: 'Cradle Boutique Hotel', price: 1800 },
+  ],
+  'durban': [
+    { name: 'Oyster Box Hotel', price: 2200 },
+    { name: 'The Capital Pearls Durban', price: 1800 },
+    { name: 'Coastlands Umhlanga Hotel', price: 1600 },
+  ],
+  'umhlanga': [
+    { name: 'The Capital Pearls', price: 1800 },
+    { name: 'Oyster Box Hotel', price: 2500 },
+    { name: 'Beverly Hills Hotel', price: 2200 },
+  ],
+  'cape-town': [
+    { name: 'Table Bay Hotel', price: 2500 },
+    { name: 'Victoria & Alfred Hotel', price: 2200 },
+    { name: 'The Silo Hotel', price: 4500 },
+  ],
+  'sun-city': [
+    { name: 'The Palace of Lost City', price: 3200 },
+    { name: 'Cascades Hotel', price: 2400 },
+    { name: 'Sun City Hotel', price: 1800 },
+  ],
+  'mpumalanga': [
+    { name: "Perry's Bridge Hollow", price: 1450 },
+    { name: 'White River Manor', price: 1800 },
+    { name: 'Kruger Gate Hotel', price: 2200 },
+  ],
+  'knysna': [
+    { name: 'Pezula Resort', price: 2800 },
+    { name: 'The Turbine Hotel', price: 2200 },
+    { name: 'Conrad Pezula', price: 3500 },
+  ],
+  'vaal-river': [
+    { name: 'Stonehaven on Vaal', price: 1600 },
+    { name: 'Three Rivers Lodge', price: 1400 },
+  ],
+  'bela-bela': [
+    { name: 'Mabula Game Lodge', price: 2100 },
+    { name: 'Mabalingwe Nature Reserve', price: 1600 },
+  ],
+  'bali': [
+    { name: 'Hanging Gardens of Bali', price: 4500 },
+    { name: 'Four Seasons Bali', price: 5500 },
+  ],
+  'dubai': [
+    { name: 'Atlantis The Palm', price: 5500 },
+    { name: 'Burj Al Arab Jumeirah', price: 8000 },
+  ],
+  'thailand': [
+    { name: 'Banyan Tree Phuket', price: 3800 },
+    { name: 'Six Senses Yao Noi', price: 4500 },
+  ],
+};
+
+// Generate hotels dynamically
+function generateHotels(): Hotel[] {
+  const allHotels: Hotel[] = [];
+  const destinationIds = Object.keys(destinationShortNames);
+  const hotelLetters = ['A', 'B', 'C', 'D', 'E'];
+
+  destinationIds.forEach(destId => {
+    const shortName = destinationShortNames[destId];
+    
+    // Very Affordable Hotels (5 per destination)
+    hotelLetters.forEach((letter, index) => {
+      allHotels.push({
+        id: `${destId}-very-affordable-${letter.toLowerCase()}`,
+        name: `${shortName} Very Affordable Hotel ${letter}`,
+        destination: destId,
+        pricePerNight: veryAffordablePrices[index],
+        rating: 3.5 + (Math.random() * 0.5),
+        type: 'very-affordable',
+        amenities: ['WiFi', 'Parking', 'TV'],
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+      });
+    });
+
+    // Affordable Hotels (5 per destination)
+    hotelLetters.forEach((letter, index) => {
+      allHotels.push({
+        id: `${destId}-affordable-${letter.toLowerCase()}`,
+        name: `${shortName} Affordable Hotel ${letter}`,
+        destination: destId,
+        pricePerNight: affordablePrices[index],
+        rating: 4.0 + (Math.random() * 0.3),
+        type: 'affordable',
+        amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant'],
+        image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
+      });
+    });
+
+    // Premium Hotels (actual names)
+    const premiums = premiumHotels[destId] || [];
+    premiums.forEach((hotel, index) => {
+      allHotels.push({
+        id: `${destId}-premium-${index + 1}`,
+        name: hotel.name,
+        destination: destId,
+        pricePerNight: hotel.price,
+        rating: 4.5 + (Math.random() * 0.5),
+        type: 'premium',
+        amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
+        image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800',
+        includesBreakfast: hotel.includesBreakfast,
+      });
+    });
+  });
+
+  return allHotels;
+}
+
+export const hotels: Hotel[] = generateHotels();
 
 // Packages Database
 export const packages: Package[] = [
@@ -139,19 +237,19 @@ export const packages: Package[] = [
 
 // Destinations
 export const destinations: Destination[] = [
-  { id: 'harties', name: 'Hartbeespoort', country: 'South Africa', description: 'Scenic escape near the dam with breathtaking views and activities.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/Harties.jpg', startingPrice: 1800, popular: true, international: false },
-  { id: 'magalies', name: 'Magaliesberg', country: 'South Africa', description: 'Mountain retreats and nature getaways for a refreshing break.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/magalies1.jpg', startingPrice: 1950, popular: true, international: false },
-  { id: 'durban', name: 'Durban Beachfront', country: 'South Africa', description: 'Sunny beach holidays with warm waters and vibrant city life.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/durban.png', startingPrice: 2100, popular: true, international: false },
-  { id: 'umhlanga', name: 'Umhlanga', country: 'South Africa', description: 'Coastal escape near Durban with beautiful beaches and upscale shopping.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/umhlanga.jpg', startingPrice: 2500, popular: true, international: false },
-  { id: 'cape-town', name: 'Cape Town', country: 'South Africa', description: 'Iconic Table Mountain, stunning beaches, and world-class vineyards.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg', startingPrice: 2100, popular: true, international: false },
-  { id: 'sun-city', name: 'Sun City', country: 'South Africa', description: 'World-famous resort with Valley of Waves and endless entertainment.', image: sunCityImage, startingPrice: 2200, popular: true, international: false },
-  { id: 'mpumalanga', name: 'Mpumalanga', country: 'South Africa', description: 'Panorama Route, Blyde River Canyon, and Kruger National Park adventures.', image: 'https://images.unsplash.com/photo-1580256087713-963146b8d1a3?w=800', startingPrice: 2200, popular: true, international: false },
-  { id: 'knysna', name: 'Knysna', country: 'South Africa', description: 'Garden Route gem with lagoon, forests, and oyster experiences.', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', startingPrice: 2400, popular: false, international: false },
-  { id: 'vaal-river', name: 'Vaal River', country: 'South Africa', description: 'Riverside relaxation and water sports just outside Johannesburg.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800', startingPrice: 1600, popular: false, international: false },
-  { id: 'bela-bela', name: 'Bela Bela', country: 'South Africa', description: 'Hot springs, game reserves, and adventure activities in Limpopo.', image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800', startingPrice: 1400, popular: false, international: false },
-  { id: 'bali', name: 'Bali', country: 'Indonesia', description: 'Volcanic mountains, rice paddies, beaches and coral reefs.', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800', startingPrice: 5400, popular: true, international: true },
-  { id: 'dubai', name: 'Dubai', country: 'UAE', description: 'Luxury shopping, ultramodern architecture and lively nightlife.', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800', startingPrice: 6400, popular: true, international: true },
-  { id: 'thailand', name: 'Thailand', country: 'Thailand', description: 'Tropical beaches, opulent palaces, ancient ruins and ornate temples.', image: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=800', startingPrice: 4800, popular: true, international: true },
+  { id: 'harties', name: 'Hartbeespoort', shortName: 'Harties', country: 'South Africa', description: 'Scenic escape near the dam with breathtaking views and activities.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/Harties.jpg', startingPrice: 1800, popular: true, international: false },
+  { id: 'magalies', name: 'Magaliesberg', shortName: 'Magalies', country: 'South Africa', description: 'Mountain retreats and nature getaways for a refreshing break.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/magalies1.jpg', startingPrice: 1950, popular: true, international: false },
+  { id: 'durban', name: 'Durban Beachfront', shortName: 'Durban', country: 'South Africa', description: 'Sunny beach holidays with warm waters and vibrant city life.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/durban.png', startingPrice: 2100, popular: true, international: false },
+  { id: 'umhlanga', name: 'Umhlanga', shortName: 'Umhlanga', country: 'South Africa', description: 'Coastal escape near Durban with beautiful beaches and upscale shopping.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/umhlanga.jpg', startingPrice: 2500, popular: true, international: false },
+  { id: 'cape-town', name: 'Cape Town', shortName: 'Cape Town', country: 'South Africa', description: 'Iconic Table Mountain, stunning beaches, and world-class vineyards.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg', startingPrice: 2100, popular: true, international: false },
+  { id: 'sun-city', name: 'Sun City', shortName: 'Sun City', country: 'South Africa', description: 'World-famous resort with Valley of Waves and endless entertainment.', image: sunCityImage, startingPrice: 2200, popular: true, international: false },
+  { id: 'mpumalanga', name: 'Mpumalanga', shortName: 'Mpumalanga', country: 'South Africa', description: 'Panorama Route, Blyde River Canyon, and Kruger National Park adventures.', image: 'https://images.unsplash.com/photo-1580256087713-963146b8d1a3?w=800', startingPrice: 2200, popular: true, international: false },
+  { id: 'knysna', name: 'Knysna', shortName: 'Knysna', country: 'South Africa', description: 'Garden Route gem with lagoon, forests, and oyster experiences.', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', startingPrice: 2400, popular: false, international: false },
+  { id: 'vaal-river', name: 'Vaal River', shortName: 'Vaal', country: 'South Africa', description: 'Riverside relaxation and water sports just outside Johannesburg.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800', startingPrice: 1600, popular: false, international: false },
+  { id: 'bela-bela', name: 'Bela Bela', shortName: 'Bela Bela', country: 'South Africa', description: 'Hot springs, game reserves, and adventure activities in Limpopo.', image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800', startingPrice: 1400, popular: false, international: false },
+  { id: 'bali', name: 'Bali', shortName: 'Bali', country: 'Indonesia', description: 'Volcanic mountains, rice paddies, beaches and coral reefs.', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800', startingPrice: 5400, popular: true, international: true },
+  { id: 'dubai', name: 'Dubai', shortName: 'Dubai', country: 'UAE', description: 'Luxury shopping, ultramodern architecture and lively nightlife.', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800', startingPrice: 6400, popular: true, international: true },
+  { id: 'thailand', name: 'Thailand', shortName: 'Thailand', country: 'Thailand', description: 'Tropical beaches, opulent palaces, ancient ruins and ornate temples.', image: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=800', startingPrice: 4800, popular: true, international: true },
 ];
 
 // Quote Calculation Logic
@@ -164,7 +262,8 @@ export interface QuoteRequest {
   children: number;
   childrenAges: number[];
   rooms: number;
-  hotelType: 'budget' | 'standard' | 'premium';
+  hotelType: 'very-affordable' | 'affordable' | 'premium';
+  selectedHotelId?: string;
 }
 
 export interface QuoteResult {
@@ -178,6 +277,9 @@ export interface QuoteResult {
   childDiscount: number;
   totalPerPerson: number;
   totalForGroup: number;
+  is4SleeperRoom: boolean;
+  roomType: string;
+  includesBreakfast: boolean;
   breakdown: {
     label: string;
     amount: number;
@@ -187,7 +289,11 @@ export interface QuoteResult {
 export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   const pkg = packages.find(p => p.id === request.packageId);
   const availableHotels = hotels.filter(h => h.destination === request.destination && h.type === request.hotelType);
-  const hotel = availableHotels[0];
+  
+  // Use selected hotel or first available
+  const hotel = request.selectedHotelId 
+    ? availableHotels.find(h => h.id === request.selectedHotelId) || availableHotels[0]
+    : availableHotels[0];
   
   if (!pkg || !hotel) return null;
   
@@ -195,8 +301,19 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   const nights = Math.ceil((request.checkOut.getTime() - request.checkIn.getTime()) / (1000 * 60 * 60 * 24));
   if (nights < 1) return null;
   
+  // Calculate total guests per room to determine if 4-sleeper is needed
+  const totalGuests = request.adults + request.children;
+  const guestsPerRoom = totalGuests / request.rooms;
+  const is4SleeperRoom = guestsPerRoom >= 3 && guestsPerRoom <= 4;
+  
+  // Apply 30% surcharge for 4-sleeper rooms
+  let pricePerNight = hotel.pricePerNight;
+  if (is4SleeperRoom) {
+    pricePerNight = Math.round(pricePerNight * 1.3);
+  }
+  
   // Accommodation cost (per room per night)
-  const accommodationCost = hotel.pricePerNight * request.rooms * nights;
+  const accommodationCost = pricePerNight * request.rooms * nights;
   
   // Package base price (includes activities)
   const packageBaseCost = pkg.basePrice * request.adults;
@@ -222,9 +339,34 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   const totalPeople = request.adults + request.children;
   const totalPerPerson = Math.round(totalCost / totalPeople);
   
+  const roomType = is4SleeperRoom ? '4-Sleeper Room' : 'Standard Room';
+  const hotelNameDisplay = hotel.includesBreakfast 
+    ? `${hotel.name} (includes breakfast)` 
+    : hotel.name;
+  
+  const breakdown = [
+    { 
+      label: `Accommodation (${nights} nights × ${request.rooms} ${is4SleeperRoom ? '4-sleeper' : 'standard'} rooms)`, 
+      amount: accommodationCost 
+    },
+    { label: `Package - ${request.adults} Adults`, amount: packageBaseCost },
+  ];
+  
+  if (request.children > 0) {
+    breakdown.push({ label: `Package - ${request.children} Children`, amount: childrenCost });
+  }
+  
+  if (childDiscount > 0) {
+    breakdown.push({ label: 'Child Discount Applied', amount: -childDiscount });
+  }
+  
+  if (is4SleeperRoom) {
+    breakdown.push({ label: '4-Sleeper Room Upgrade (+30%)', amount: 0 }); // Info line, cost already included
+  }
+  
   return {
     packageName: pkg.shortName,
-    hotelName: hotel.name,
+    hotelName: hotelNameDisplay,
     destination: destinations.find(d => d.id === request.destination)?.name || request.destination,
     nights,
     accommodationCost,
@@ -233,21 +375,31 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     childDiscount,
     totalPerPerson,
     totalForGroup: totalCost,
-    breakdown: [
-      { label: `Accommodation (${nights} nights × ${request.rooms} rooms)`, amount: accommodationCost },
-      { label: `Package - ${request.adults} Adults`, amount: packageBaseCost },
-      ...(request.children > 0 ? [{ label: `Package - ${request.children} Children`, amount: childrenCost }] : []),
-      ...(childDiscount > 0 ? [{ label: 'Child Discount Applied', amount: -childDiscount }] : []),
-    ],
+    is4SleeperRoom,
+    roomType,
+    includesBreakfast: hotel.includesBreakfast || false,
+    breakdown,
   };
 }
 
-// Helper to get hotels by destination
+// Helper to get hotels by destination and type
 export function getHotelsByDestination(destinationId: string): Hotel[] {
   return hotels.filter(h => h.destination === destinationId);
+}
+
+// Helper to get hotels by destination and specific type
+export function getHotelsByDestinationAndType(destinationId: string, type: 'very-affordable' | 'affordable' | 'premium'): Hotel[] {
+  return hotels.filter(h => h.destination === destinationId && h.type === type);
 }
 
 // Helper to get packages by destination
 export function getPackagesByDestination(destinationId: string): Package[] {
   return packages.filter(p => p.destination === destinationId);
 }
+
+// Hotel type display names
+export const hotelTypeLabels: Record<string, string> = {
+  'very-affordable': 'Very Affordable',
+  'affordable': 'Affordable',
+  'premium': 'Premium',
+};

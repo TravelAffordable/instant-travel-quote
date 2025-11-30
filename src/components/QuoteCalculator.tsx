@@ -4,8 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { destinations, packages, hotels, calculateQuote, getPackagesByDestination, getHotelsByDestination, type QuoteResult } from '@/data/travelData';
-import { CalendarDays, Users, Home, Package, Sparkles, Check, Calculator } from 'lucide-react';
+import { 
+  destinations, 
+  packages, 
+  calculateQuote, 
+  getPackagesByDestination, 
+  getHotelsByDestinationAndType,
+  hotelTypeLabels,
+  type QuoteResult 
+} from '@/data/travelData';
+import { CalendarDays, Users, Home, Package, Sparkles, Check, Calculator, BedDouble } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface QuoteCalculatorProps {
@@ -21,17 +29,24 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   const [children, setChildren] = useState(0);
   const [childrenAges, setChildrenAges] = useState<string>('');
   const [rooms, setRooms] = useState(1);
-  const [hotelType, setHotelType] = useState<'budget' | 'standard' | 'premium'>('standard');
+  const [hotelType, setHotelType] = useState<'very-affordable' | 'affordable' | 'premium'>('affordable');
+  const [selectedHotelId, setSelectedHotelId] = useState<string>('');
   const [quote, setQuote] = useState<QuoteResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
-  const availableHotels = destination ? getHotelsByDestination(destination) : [];
+  const availableHotels = destination ? getHotelsByDestinationAndType(destination, hotelType) : [];
 
-  // Reset package when destination changes
+  // Reset package and hotel when destination changes
   useEffect(() => {
     setPackageId('');
+    setSelectedHotelId('');
   }, [destination]);
+
+  // Reset hotel when type changes
+  useEffect(() => {
+    setSelectedHotelId('');
+  }, [hotelType]);
 
   // Auto-set checkout to day after check-in
   useEffect(() => {
@@ -76,6 +91,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
         childrenAges: ages,
         rooms,
         hotelType,
+        selectedHotelId: selectedHotelId || undefined,
       });
 
       if (result) {
@@ -98,6 +114,11 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   };
 
   const today = new Date().toISOString().split('T')[0];
+  
+  // Check if 4-sleeper room will be applied
+  const totalGuests = adults + children;
+  const guestsPerRoom = totalGuests / rooms;
+  const will4SleeperApply = guestsPerRoom >= 3 && guestsPerRoom <= 4;
 
   return (
     <div className="grid lg:grid-cols-2 gap-8">
@@ -231,7 +252,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {[1, 2, 3, 4, 5].map(n => (
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                     <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
                   ))}
                 </SelectContent>
@@ -256,21 +277,54 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
           <div className="space-y-2">
             <Label className="text-sm font-medium">Accommodation Type</Label>
             <div className="grid grid-cols-3 gap-2">
-              {(['budget', 'standard', 'premium'] as const).map(type => (
+              {(['very-affordable', 'affordable', 'premium'] as const).map(type => (
                 <button
                   key={type}
                   onClick={() => setHotelType(type)}
-                  className={`px-4 py-3 rounded-lg border-2 transition-all text-sm font-medium capitalize ${
+                  className={`px-3 py-3 rounded-lg border-2 transition-all text-sm font-medium ${
                     hotelType === type
                       ? 'border-primary bg-primary/10 text-primary'
                       : 'border-border hover:border-primary/50'
                   }`}
                 >
-                  {type}
+                  {hotelTypeLabels[type]}
                 </button>
               ))}
             </div>
           </div>
+
+          {/* Hotel Selection */}
+          {destination && availableHotels.length > 0 && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2 text-sm font-medium">
+                <BedDouble className="w-4 h-4 text-primary" />
+                Select Hotel
+              </Label>
+              <Select value={selectedHotelId} onValueChange={setSelectedHotelId}>
+                <SelectTrigger className="h-11">
+                  <SelectValue placeholder="Choose a hotel (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableHotels.map(hotel => (
+                    <SelectItem key={hotel.id} value={hotel.id}>
+                      {hotel.name} - {formatCurrency(hotel.pricePerNight)}/night
+                      {hotel.includesBreakfast && ' (incl. breakfast)'}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* 4-Sleeper Notice */}
+          {will4SleeperApply && (
+            <div className="bg-accent/10 border border-accent/30 rounded-lg p-3">
+              <p className="text-sm text-accent-foreground flex items-center gap-2">
+                <BedDouble className="w-4 h-4" />
+                <span>4-Sleeper room rate will apply (+30% per night)</span>
+              </p>
+            </div>
+          )}
 
           <Button
             onClick={handleCalculate}
@@ -324,7 +378,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                   <div key={idx} className="flex justify-between items-center py-2 border-b border-border/50 last:border-0">
                     <span className="text-sm">{item.label}</span>
                     <span className={`font-medium ${item.amount < 0 ? 'text-accent' : ''}`}>
-                      {item.amount < 0 ? '-' : ''}{formatCurrency(Math.abs(item.amount))}
+                      {item.amount === 0 ? 'Included' : (item.amount < 0 ? '-' : '') + formatCurrency(Math.abs(item.amount))}
                     </span>
                   </div>
                 ))}
@@ -336,6 +390,9 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                   Accommodation
                 </h4>
                 <p className="text-sm text-muted-foreground">{quote.hotelName}</p>
+                {quote.is4SleeperRoom && (
+                  <p className="text-xs text-accent mt-1">4-Sleeper room (for 3-4 guests)</p>
+                )}
               </div>
 
               <div className="bg-secondary/30 rounded-lg p-4">
@@ -356,7 +413,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                   variant="outline" 
                   className="flex-1"
                   onClick={() => {
-                    const text = `Hi! I'd like to book the ${quote.packageName} package to ${quote.destination} for ${quote.nights} nights. Total: ${formatCurrency(quote.totalForGroup)}`;
+                    const text = `Hi! I'd like to book the ${quote.packageName} package to ${quote.destination} for ${quote.nights} nights. Hotel: ${quote.hotelName}. Total: ${formatCurrency(quote.totalForGroup)}`;
                     window.open(`https://wa.me/27796813869?text=${encodeURIComponent(text)}`, '_blank');
                   }}
                 >
