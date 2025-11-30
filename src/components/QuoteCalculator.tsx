@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
-import { ImagePlus } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,87 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   destinations, 
   packages, 
-  calculateQuote, 
+  calculateAllQuotes,
   getPackagesByDestination, 
-  getHotelsByDestinationAndType,
   hotelTypeLabels,
   type QuoteResult 
 } from '@/data/travelData';
-import { CalendarDays, Users, Home, Package, Sparkles, Check, Calculator, BedDouble } from 'lucide-react';
-
-// Hotel Image Grid Component with Drag & Drop
-function HotelImageGrid() {
-  const [images, setImages] = useState<(string | null)[]>([null, null, null, null]);
-
-  const handleDrop = useCallback((index: number, e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const files = e.dataTransfer.files;
-    if (files && files[0]) {
-      const file = files[0];
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const result = event.target?.result as string;
-          setImages(prev => {
-            const newImages = [...prev];
-            newImages[index] = result;
-            return newImages;
-          });
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
-  const handleRemove = useCallback((index: number) => {
-    setImages(prev => {
-      const newImages = [...prev];
-      newImages[index] = null;
-      return newImages;
-    });
-  }, []);
-
-  return (
-    <div className="grid grid-cols-2 gap-3">
-      {images.map((image, index) => (
-        <div
-          key={index}
-          className="relative aspect-video rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors overflow-hidden bg-muted/30 cursor-pointer group"
-          onDrop={(e) => handleDrop(index, e)}
-          onDragOver={handleDragOver}
-        >
-          {image ? (
-            <>
-              <img 
-                src={image} 
-                alt={`Hotel image ${index + 1}`} 
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={() => handleRemove(index)}
-                className="absolute top-1 right-1 w-6 h-6 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-bold"
-              >
-                ×
-              </button>
-            </>
-          ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-              <ImagePlus className="w-6 h-6 mb-1" />
-              <span className="text-xs">Drop image</span>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
+import { CalendarDays, Users, Home, Package, Sparkles, Calculator, BedDouble } from 'lucide-react';
+import { QuoteList } from './QuoteList';
 import { toast } from 'sonner';
 
 interface QuoteCalculatorProps {
@@ -105,22 +30,20 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   const [childrenAges, setChildrenAges] = useState<string>('');
   const [rooms, setRooms] = useState(1);
   const [hotelType, setHotelType] = useState<'very-affordable' | 'affordable' | 'premium'>('affordable');
-  const [selectedHotelId, setSelectedHotelId] = useState<string>('');
-  const [quote, setQuote] = useState<QuoteResult | null>(null);
+  const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
-  const availableHotels = destination ? getHotelsByDestinationAndType(destination, hotelType) : [];
 
-  // Reset package and hotel when destination changes
+  // Reset package when destination changes
   useEffect(() => {
     setPackageId('');
-    setSelectedHotelId('');
+    setQuotes([]);
   }, [destination]);
 
-  // Reset hotel when type changes
+  // Reset quotes when hotel type changes
   useEffect(() => {
-    setSelectedHotelId('');
+    setQuotes([]);
   }, [hotelType]);
 
   // Auto-set checkout to day after check-in
@@ -156,7 +79,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     }
 
     setTimeout(() => {
-      const result = calculateQuote({
+      const results = calculateAllQuotes({
         destination,
         packageId,
         checkIn: new Date(checkIn),
@@ -166,15 +89,14 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
         childrenAges: ages,
         rooms,
         hotelType,
-        selectedHotelId: selectedHotelId || undefined,
       });
 
-      if (result) {
-        setQuote(result);
-        onQuoteGenerated?.(result);
-        toast.success('Quote calculated successfully!');
+      if (results.length > 0) {
+        setQuotes(results);
+        onQuoteGenerated?.(results[0]);
+        toast.success(`${results.length} quote options generated!`);
       } else {
-        toast.error('Could not calculate quote. Please check your selections.');
+        toast.error('Could not calculate quotes. Please check your selections.');
       }
       setIsCalculating(false);
     }, 800);
@@ -368,29 +290,6 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
             </div>
           </div>
 
-          {/* Hotel Selection */}
-          {destination && availableHotels.length > 0 && (
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-sm font-medium">
-                <BedDouble className="w-4 h-4 text-primary" />
-                Select Hotel
-              </Label>
-              <Select value={selectedHotelId} onValueChange={setSelectedHotelId}>
-                <SelectTrigger className="h-11">
-                  <SelectValue placeholder="Choose a hotel (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableHotels.map(hotel => (
-                    <SelectItem key={hotel.id} value={hotel.id}>
-                      {hotel.name} - {formatCurrency(hotel.pricePerNight)}/night
-                      {hotel.includesBreakfast && ' (incl. breakfast)'}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
           {/* 4-Sleeper Notice */}
           {will4SleeperApply && (
             <div className="bg-accent/10 border border-accent/30 rounded-lg p-3">
@@ -421,85 +320,29 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
         </CardContent>
       </Card>
 
-      {/* Quote Result Section */}
+      {/* Quote Results Section */}
       <div className="space-y-6">
-        {quote ? (
-          <Card className="border-0 shadow-soft bg-gradient-to-br from-primary/5 to-accent/5 animate-scale-in">
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
-                  <Check className="w-5 h-5 text-accent-foreground" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl font-display">Your Quote is Ready!</CardTitle>
-                  <p className="text-sm text-muted-foreground">{quote.destination} • {quote.nights} nights</p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="text-center py-6 bg-background/60 rounded-xl">
-                <p className="text-sm text-muted-foreground mb-1">Total for your group</p>
-                <p className="text-4xl font-bold text-gradient-ocean font-display">
-                  {formatCurrency(quote.totalForGroup)}
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {formatCurrency(quote.totalPerPerson)} per person
-                </p>
-              </div>
-
-              <div className="bg-secondary/30 rounded-lg p-4">
-                <h4 className="font-semibold mb-2 flex items-center gap-2">
-                  <Home className="w-4 h-4" />
-                  Accommodation
-                </h4>
-                <p className="text-sm text-muted-foreground">{quote.hotelName}</p>
-                {quote.is4SleeperRoom && (
-                  <p className="text-xs text-accent mt-1">4-Sleeper room (for 3-4 guests)</p>
-                )}
-              </div>
-
-              <div className="bg-secondary/30 rounded-lg p-4">
-                <h4 className="font-semibold mb-2 flex items-center gap-2">
-                  <Package className="w-4 h-4" />
-                  Package: {quote.packageName}
-                </h4>
-                <p className="text-xs text-muted-foreground">
-                  {packages.find(p => p.shortName === quote.packageName)?.description}
-                </p>
-              </div>
-
-              {/* Hotel Images - Drag & Drop */}
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">Hotel Images</h4>
-                <HotelImageGrid />
-              </div>
-
-              <div className="flex gap-3">
-                <Button className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground">
-                  Book Now
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => {
-                    const text = `Hi! I'd like to book the ${quote.packageName} package to ${quote.destination} for ${quote.nights} nights. Hotel: ${quote.hotelName}. Total: ${formatCurrency(quote.totalForGroup)}`;
-                    window.open(`https://wa.me/27796813869?text=${encodeURIComponent(text)}`, '_blank');
-                  }}
-                >
-                  WhatsApp Us
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        {quotes.length > 0 ? (
+          <>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-display font-semibold">
+                Available Options ({quotes.length})
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Sorted by price (cheapest first)
+              </p>
+            </div>
+            <QuoteList quotes={quotes} onQuoteSelected={onQuoteGenerated} />
+          </>
         ) : (
           <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background h-full flex items-center justify-center min-h-[400px]">
             <CardContent className="text-center py-12">
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
                 <Calculator className="w-10 h-10 text-primary" />
               </div>
-              <h3 className="text-xl font-display font-semibold mb-2">Your Quote Will Appear Here</h3>
+              <h3 className="text-xl font-display font-semibold mb-2">Your Quotes Will Appear Here</h3>
               <p className="text-muted-foreground max-w-sm mx-auto">
-                Fill in your travel details and click "Calculate Quote" to get an instant price for your dream getaway.
+                Fill in your travel details and click "Calculate Quote" to see all available hotel options sorted by price.
               </p>
             </CardContent>
           </Card>
