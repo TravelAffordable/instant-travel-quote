@@ -56,77 +56,91 @@ const destinationShortNames: Record<string, string> = {
 };
 
 // Very Affordable pricing tiers (per night) - 4 hotels A-D
-const veryAffordablePrices = [550, 600, 700, 800];
+const veryAffordablePrices = [350, 450, 550, 650];
 // Affordable pricing tiers (per night) - 4 hotels A-D
-const affordablePrices = [850, 950, 1050, 1150];
+const affordablePrices = [700, 750, 800, 850];
+// Premium pricing tiers (per night) - 4 hotels
+const premiumPrices = [950, 1000, 1100, 1200];
 
-// Premium Hotels with their actual names and prices
-const premiumHotels: Record<string, { name: string; price: number; includesBreakfast?: boolean }[]> = {
+// Premium Hotels with their actual names (prices will use premiumPrices array - 4 hotels per destination)
+const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean }[]> = {
   'harties': [
-    { name: 'Villa Paradiso Hotel', price: 1100 },
-    { name: 'Cocomo Boutique Hotel', price: 1300 },
-    { name: 'Mount Grace Hotel And Spa', price: 2600 },
-    { name: 'The Riverleaf Hotel', price: 1450, includesBreakfast: true },
-    { name: 'Palm Swift Luxury', price: 1450, includesBreakfast: true },
-    { name: 'Kosmos Manor', price: 1400 },
-    { name: 'Stirling Manor Boutique Hotel', price: 2000 },
-    { name: 'Chatteux La Mer', price: 2500 },
-    { name: 'Three Oaks and Aloe Boutique Hotel', price: 3000 },
+    { name: 'Villa Paradiso Hotel' },
+    { name: 'Cocomo Boutique Hotel' },
+    { name: 'The Riverleaf Hotel', includesBreakfast: true },
+    { name: 'Kosmos Manor' },
   ],
   'magalies': [
-    { name: 'Cocomo Boutique Hotel', price: 1350 },
-    { name: 'Mount Grace Hotel And Spa', price: 2600 },
-    { name: 'Cradle Boutique Hotel', price: 1800 },
+    { name: 'Cocomo Boutique Hotel' },
+    { name: 'Mount Grace Hotel And Spa' },
+    { name: 'Cradle Boutique Hotel' },
+    { name: 'Valley Lodge & Spa' },
   ],
   'durban': [
-    { name: 'Oyster Box Hotel', price: 2200 },
-    { name: 'The Capital Pearls Durban', price: 1800 },
-    { name: 'Coastlands Umhlanga Hotel', price: 1600 },
+    { name: 'Coastlands Umhlanga Hotel' },
+    { name: 'The Capital Pearls Durban' },
+    { name: 'Oyster Box Hotel' },
+    { name: 'Southern Sun Elangeni' },
   ],
   'umhlanga': [
-    { name: 'The Capital Pearls', price: 1800 },
-    { name: 'Oyster Box Hotel', price: 2500 },
-    { name: 'Beverly Hills Hotel', price: 2200 },
+    { name: 'The Capital Pearls' },
+    { name: 'Beverly Hills Hotel' },
+    { name: 'Oyster Box Hotel' },
+    { name: 'The Lighthouse' },
   ],
   'cape-town': [
-    { name: 'Table Bay Hotel', price: 2500 },
-    { name: 'Victoria & Alfred Hotel', price: 2200 },
-    { name: 'The Silo Hotel', price: 4500 },
+    { name: 'Victoria & Alfred Hotel' },
+    { name: 'Table Bay Hotel' },
+    { name: 'Cape Grace Hotel' },
+    { name: 'The Silo Hotel' },
   ],
   'sun-city': [
-    { name: 'The Palace of Lost City', price: 3200 },
-    { name: 'Cascades Hotel', price: 2400 },
-    { name: 'Sun City Hotel', price: 1800 },
+    { name: 'Sun City Hotel' },
+    { name: 'Cascades Hotel' },
+    { name: 'Cabanas Hotel' },
+    { name: 'The Palace of Lost City' },
   ],
   'mpumalanga': [
-    { name: "Perry's Bridge Hollow", price: 1450 },
-    { name: 'White River Manor', price: 1800 },
-    { name: 'Kruger Gate Hotel', price: 2200 },
+    { name: "Perry's Bridge Hollow" },
+    { name: 'White River Manor' },
+    { name: 'Kruger Gate Hotel' },
+    { name: 'Protea Hotel Hazyview' },
   ],
   'knysna': [
-    { name: 'Pezula Resort', price: 2800 },
-    { name: 'The Turbine Hotel', price: 2200 },
-    { name: 'Conrad Pezula', price: 3500 },
+    { name: 'The Turbine Hotel' },
+    { name: 'Pezula Resort' },
+    { name: 'Conrad Pezula' },
+    { name: 'Knysna Hollow' },
   ],
   'vaal-river': [
-    { name: 'Stonehaven on Vaal', price: 1600 },
-    { name: 'Three Rivers Lodge', price: 1400 },
+    { name: 'Three Rivers Lodge' },
+    { name: 'Stonehaven on Vaal' },
+    { name: 'Emerald Resort' },
+    { name: 'Riverside Sun' },
   ],
   'bela-bela': [
-    { name: 'Mabula Game Lodge', price: 2100 },
-    { name: 'Mabalingwe Nature Reserve', price: 1600 },
+    { name: 'Mabalingwe Nature Reserve' },
+    { name: 'Mabula Game Lodge' },
+    { name: 'Warmbaths Forever Resort' },
+    { name: 'Zebra Country Lodge' },
   ],
   'bali': [
-    { name: 'Hanging Gardens of Bali', price: 4500 },
-    { name: 'Four Seasons Bali', price: 5500 },
+    { name: 'Hanging Gardens of Bali' },
+    { name: 'Four Seasons Bali' },
+    { name: 'Viceroy Bali' },
+    { name: 'Mandapa Reserve' },
   ],
   'dubai': [
-    { name: 'Atlantis The Palm', price: 5500 },
-    { name: 'Burj Al Arab Jumeirah', price: 8000 },
+    { name: 'Atlantis The Palm' },
+    { name: 'Jumeirah Beach Hotel' },
+    { name: 'One&Only Royal Mirage' },
+    { name: 'Burj Al Arab Jumeirah' },
   ],
   'thailand': [
-    { name: 'Banyan Tree Phuket', price: 3800 },
-    { name: 'Six Senses Yao Noi', price: 4500 },
+    { name: 'Banyan Tree Phuket' },
+    { name: 'Six Senses Yao Noi' },
+    { name: 'Amanpuri Resort' },
+    { name: 'Trisara Phuket' },
   ],
 };
 
@@ -167,14 +181,14 @@ function generateHotels(): Hotel[] {
       });
     });
 
-    // Premium Hotels (actual names)
-    const premiums = premiumHotels[destId] || [];
-    premiums.forEach((hotel, index) => {
+    // Premium Hotels (actual names with standardized pricing)
+    const premiums = premiumHotelNames[destId] || [];
+    premiums.slice(0, 4).forEach((hotel, index) => {
       allHotels.push({
         id: `${destId}-premium-${index + 1}`,
         name: hotel.name,
         destination: destId,
-        pricePerNight: hotel.price,
+        pricePerNight: premiumPrices[index],
         rating: 4.5 + (Math.random() * 0.5),
         type: 'premium',
         amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
@@ -269,6 +283,7 @@ export interface QuoteRequest {
 export interface QuoteResult {
   packageName: string;
   hotelName: string;
+  hotelId: string;
   destination: string;
   nights: number;
   accommodationCost: number;
@@ -280,6 +295,11 @@ export interface QuoteResult {
   is4SleeperRoom: boolean;
   roomType: string;
   includesBreakfast: boolean;
+  checkIn: Date;
+  checkOut: Date;
+  adults: number;
+  children: number;
+  rooms: number;
   breakdown: {
     label: string;
     amount: number;
@@ -367,6 +387,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   return {
     packageName: pkg.shortName,
     hotelName: hotelNameDisplay,
+    hotelId: hotel.id,
     destination: destinations.find(d => d.id === request.destination)?.name || request.destination,
     nights,
     accommodationCost,
@@ -379,10 +400,32 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     roomType,
     includesBreakfast: hotel.includesBreakfast || false,
     breakdown,
+    checkIn: request.checkIn,
+    checkOut: request.checkOut,
+    adults: request.adults,
+    children: request.children,
+    rooms: request.rooms,
   };
 }
 
-// Helper to get hotels by destination and type
+// Calculate quotes for ALL hotels in a type, sorted by price (cheapest first)
+export function calculateAllQuotes(request: Omit<QuoteRequest, 'selectedHotelId'>): QuoteResult[] {
+  const availableHotels = hotels.filter(h => h.destination === request.destination && h.type === request.hotelType);
+  
+  const quotes: QuoteResult[] = [];
+  
+  availableHotels.forEach(hotel => {
+    const quote = calculateQuote({ ...request, selectedHotelId: hotel.id });
+    if (quote) {
+      quotes.push(quote);
+    }
+  });
+  
+  // Sort by total price (cheapest first)
+  return quotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
+}
+
+// Helper to get hotels by destination
 export function getHotelsByDestination(destinationId: string): Hotel[] {
   return hotels.filter(h => h.destination === destinationId);
 }
