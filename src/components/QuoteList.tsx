@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { ImagePlus, Check, Home, Package, MessageCircle, Mail, BedDouble } from 'lucide-react';
+import { useState } from 'react';
+import { Check, Home, Package, MessageCircle, Mail, BedDouble } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,80 +9,6 @@ import { toast } from 'sonner';
 interface QuoteListProps {
   quotes: QuoteResult[];
   onQuoteSelected?: (quote: QuoteResult) => void;
-}
-
-// Hotel Image Grid Component with Drag & Drop
-function HotelImageGrid() {
-  const [images, setImages] = useState<(string | null)[]>([null, null, null, null]);
-
-  const handleDrop = useCallback((index: number, e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const files = e.dataTransfer.files;
-    if (files && files[0]) {
-      const file = files[0];
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const result = event.target?.result as string;
-          setImages(prev => {
-            const newImages = [...prev];
-            newImages[index] = result;
-            return newImages;
-          });
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-  }, []);
-
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
-  const handleRemove = useCallback((index: number) => {
-    setImages(prev => {
-      const newImages = [...prev];
-      newImages[index] = null;
-      return newImages;
-    });
-  }, []);
-
-  return (
-    <div className="grid grid-cols-2 gap-2">
-      {images.map((image, index) => (
-        <div
-          key={index}
-          className="relative aspect-video rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors overflow-hidden bg-muted/30 cursor-pointer group"
-          onDrop={(e) => handleDrop(index, e)}
-          onDragOver={handleDragOver}
-        >
-          {image ? (
-            <>
-              <img 
-                src={image} 
-                alt={`Hotel image ${index + 1}`} 
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={() => handleRemove(index)}
-                className="absolute top-1 right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs font-bold"
-              >
-                ×
-              </button>
-            </>
-          ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-              <ImagePlus className="w-5 h-5 mb-1" />
-              <span className="text-[10px]">Drop image</span>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
 }
 
 const formatCurrency = (amount: number) => {
@@ -288,10 +214,13 @@ Per Person: ${formatCurrency(quote.totalPerPerson)}
               )}
             </div>
 
-            {/* Hotel Images */}
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hotel Images</p>
-              <HotelImageGrid />
+            {/* Hotel Image */}
+            <div className="rounded-lg overflow-hidden">
+              <img 
+                src={quote.hotelImage} 
+                alt={quote.hotelName}
+                className="w-full h-48 object-cover"
+              />
             </div>
 
             {/* Action Buttons */}
