@@ -257,17 +257,25 @@ Per Person: ${formatCurrency(quote.totalPerPerson)}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            {/* Package Description - THE KEY INFO */}
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+              <div className="flex items-start gap-2">
+                <Package className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-sm text-primary mb-1">Package: {quote.packageName}</p>
+                  <p className="text-sm text-foreground leading-relaxed">{quote.packageDescription}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Room & Additional Info */}
+            <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Home className="w-4 h-4" />
                 <span>{quote.roomType}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Package className="w-4 h-4" />
-                <span>{quote.packageName}</span>
-              </div>
               {quote.includesBreakfast && (
-                <div className="flex items-center gap-2 text-accent col-span-2">
+                <div className="flex items-center gap-2 text-accent">
                   <Check className="w-4 h-4" />
                   <span>Breakfast included</span>
                 </div>
