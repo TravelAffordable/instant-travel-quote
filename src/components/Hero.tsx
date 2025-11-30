@@ -130,13 +130,7 @@ export function Hero({ onGetQuote }: HeroProps) {
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         {/* Header Content */}
-        <div className="text-center mb-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/90 text-secondary-foreground mb-6 animate-float">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-semibold">LIMITED TIME: Up to 30% OFF Selected Packages!</span>
-          </div>
-
+        <div className="text-center mb-6">
           {/* Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4 leading-tight animate-slide-up">
             Discover Your
@@ -167,9 +161,15 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
 
           {/* Call to action text */}
-          <p className="text-white/90 text-lg font-medium mb-2 animate-slide-up" style={{ animationDelay: '0.25s' }}>
+          <p className="text-white/90 text-lg font-medium mb-4 animate-slide-up" style={{ animationDelay: '0.25s' }}>
             Get Instant Quote by completing the search form below
           </p>
+
+          {/* Badge - just above form */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/90 text-secondary-foreground animate-float">
+            <Sparkles className="w-4 h-4" />
+            <span className="text-sm font-semibold">LIMITED TIME: Up to 30% OFF Selected Packages!</span>
+          </div>
         </div>
 
         {/* Quote Form Card */}
