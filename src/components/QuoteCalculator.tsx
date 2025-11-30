@@ -169,7 +169,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
               <SelectContent>
                 {availablePackages.map(pkg => (
                   <SelectItem key={pkg.id} value={pkg.id}>
-                    {pkg.shortName} - from {formatCurrency(pkg.basePrice)}
+                    {pkg.id.toUpperCase()} - {pkg.shortName} - from {formatCurrency(pkg.basePrice)}
                   </SelectItem>
                 ))}
               </SelectContent>
