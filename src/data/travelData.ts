@@ -332,27 +332,8 @@ export const packages: Package[] = [
 
   // ============= HARTIES PACKAGES =============
   {
-    id: 'sun1',
-    name: 'SUN1 - SUN CITY GETAWAY WITH VALLEY OF THE WAVES, THE SUN CITY MAZE, 2 HOUR SUNDAY BUFFET LUNCH CRUISE WITH DELICIOUS FOOD AND GREAT SUNDAY ATMOSPHERE',
-    shortName: 'Sun City & Cruise Combo',
-    description: 'Includes ACCOMMODATION IN THE SUN CITY AREA, ENTRANCE FEES TO SUN CITY, VALLEY OF THE WAVES, LUNCH INSIDE SUN CITY, THE SUN CITY MAZE, YOU WILL HAVE TRANSPORT TO SHUTTLE YOU FROM THE GUESTHOUSE/HOTEL TO SUN CITY AND BACK, 2 HOUR SUNDAY BUFFET LUNCH BOAT CRUISE IN HARTIES, YOU MAY STAY AFTER THE CRUISE TO ENJOY A PICNIC AND BRAAI AT KOMANDO NEK RESORT WHERE THE CRUISE DOCKS, YOU MAY ALSO DANCE TO MUSIC BY RESIDENT AND INVITED DJs, DRINKS AND LIGHT MEALS AT BEACH CAFE LOCATED ON THE RESORT WHERE YOUR CRUISE ENDS.',
-    destination: 'harties',
-    basePrice: 1550,
-    kidsPrice: 600,
-    activitiesIncluded: [
-      'Accommodation',
-      'Entrance fees Sun City included',
-      'Entrance fees to Valley of the Waves included',
-      'Lunch in Sun City included',
-      'You will have transport to take you from your hotel to Sun City and back when you are ready',
-      '2 hour Sunday buffet lunch boat cruise in Harties with delicious Sunday lunch menu and a great Sunday Afternoon atmosphere',
-      'Enjoy Kommando Nek Resort and music and drinks at Beach Cafe located right where your cruise ends'
-    ],
-    duration: '2 nights'
-  },
-  {
-    id: 'hg2',
-    name: 'HG2 - HARTIES LEISURETIME GETAWAY PACKAGE',
+    id: 'hg1',
+    name: 'HG1 - HARTIES LEISURETIME GETAWAY PACKAGE',
     shortName: 'Leisuretime Getaway',
     description: 'Includes ACCOMMODATION, 2 HOUR SUNSET CHAMPAGNE CRUISE WITH A DELICIOUS GOURMET BUFFET, THE HARTIES CABLEWAY EXPERIENCE.',
     destination: 'harties',
@@ -362,8 +343,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg3',
-    name: 'HG3 - HARTIES FUNTIME GETAWAY PACKAGE',
+    id: 'hg2',
+    name: 'HG2 - HARTIES FUNTIME GETAWAY PACKAGE',
     shortName: 'Funtime Getaway',
     description: 'Includes ACCOMMODATION, 1 HOUR HORSE RIDING EXPERIENCE, 1 HOUR QUAD BIKING FUN OR A 60 MINUTE FULL BODY SWEDISH MASSAGE, 2 HOUR SUNSET CHAMPAGNE CRUISE WITH A DELICIOUS GOURMET BUFFET.',
     destination: 'harties',
@@ -373,8 +354,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg4',
-    name: 'HG4 - HARTIES FAMILY FUN WEEKENDER GETAWAY',
+    id: 'hg3',
+    name: 'HG3 - HARTIES FAMILY FUN WEEKENDER GETAWAY',
     shortName: 'Family Fun Weekender',
     description: 'Includes ACCOMMODATION, 1 HOUR QUAD BIKING FUN, HARTIES ZOO ANIMAL AND SNAKE PARK, 2 HOUR SUNDAY BUFFET LUNCH BOAT CRUISE.',
     destination: 'harties',
@@ -384,8 +365,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg5',
-    name: 'HG5 - HARTIES MAX JET SKI FUN HARTIES WITH ACCOMMODATION, HARTIES CABLEWAY EXPERIENCE, 60 MIN FULL BODY MASSAGE GETAWAY OR 2 HOUR SUNSET BUFFET CRUISE',
+    id: 'hg4',
+    name: 'HG4 - HARTIES MAX JET SKI FUN HARTIES WITH ACCOMMODATION, HARTIES CABLEWAY EXPERIENCE, 60 MIN FULL BODY MASSAGE GETAWAY OR 2 HOUR SUNSET BUFFET CRUISE',
     shortName: 'Jet Ski Fun',
     description: 'Includes Jet Ski adventure, Harties Cableway and a 60 minute full body massage or 2 hour sunset champagne cruise with buffet.',
     destination: 'harties',
@@ -395,8 +376,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg6',
-    name: 'HG6 - HARTIES UPSIDE DOWN HOUSE GETAWAY WITH ACCOMMODATION LITTLE PARIS THE HARTIES CABLEWAY EXPERIENCE, 1 HOUR QUAD BIKING FUN',
+    id: 'hg5',
+    name: 'HG5 - HARTIES UPSIDE DOWN HOUSE GETAWAY WITH ACCOMMODATION LITTLE PARIS THE HARTIES CABLEWAY EXPERIENCE, 1 HOUR QUAD BIKING FUN',
     shortName: 'Upside Down House',
     description: 'Includes accommodation, Upside Down House, Little Paris, the Harties Cableway Experience, 1 hour quad biking fun.',
     destination: 'harties',
@@ -406,8 +387,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg7',
-    name: 'HG7 - HARTIES WATER TUBE RIDE AND 60 MINUTE FULL BODY MASSAGE GETAWAY',
+    id: 'hg6',
+    name: 'HG6 - HARTIES WATER TUBE RIDE AND 60 MINUTE FULL BODY MASSAGE GETAWAY',
     shortName: 'Tube Ride & Massage',
     description: 'Includes accommodation, tube ride ski, 60 minute full body massage.',
     destination: 'harties',
@@ -678,8 +659,27 @@ export const packages: Package[] = [
 
   // ============= SUN CITY PACKAGES =============
   {
-    id: 'sc1',
-    name: 'SC1 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF WAVES AND QUAD BIKING',
+    id: 'sun1',
+    name: 'SUN1 - SUN CITY GETAWAY WITH VALLEY OF THE WAVES, THE SUN CITY MAZE, 2 HOUR SUNDAY BUFFET LUNCH CRUISE WITH DELICIOUS FOOD AND GREAT SUNDAY ATMOSPHERE',
+    shortName: 'Sun City & Cruise Combo',
+    description: 'Includes ACCOMMODATION IN THE SUN CITY AREA, ENTRANCE FEES TO SUN CITY, VALLEY OF THE WAVES, LUNCH INSIDE SUN CITY, THE SUN CITY MAZE, YOU WILL HAVE TRANSPORT TO SHUTTLE YOU FROM THE GUESTHOUSE/HOTEL TO SUN CITY AND BACK, 2 HOUR SUNDAY BUFFET LUNCH BOAT CRUISE IN HARTIES, YOU MAY STAY AFTER THE CRUISE TO ENJOY A PICNIC AND BRAAI AT KOMANDO NEK RESORT WHERE THE CRUISE DOCKS, YOU MAY ALSO DANCE TO MUSIC BY RESIDENT AND INVITED DJs, DRINKS AND LIGHT MEALS AT BEACH CAFE LOCATED ON THE RESORT WHERE YOUR CRUISE ENDS.',
+    destination: 'sun-city',
+    basePrice: 1550,
+    kidsPrice: 600,
+    activitiesIncluded: [
+      'Accommodation',
+      'Entrance fees Sun City included',
+      'Entrance fees to Valley of the Waves included',
+      'Lunch in Sun City included',
+      'You will have transport to take you from your hotel to Sun City and back when you are ready',
+      '2 hour Sunday buffet lunch boat cruise in Harties with delicious Sunday lunch menu and a great Sunday Afternoon atmosphere',
+      'Enjoy Kommando Nek Resort and music and drinks at Beach Cafe located right where your cruise ends'
+    ],
+    duration: '2 nights'
+  },
+  {
+    id: 'sun2',
+    name: 'SUN2 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF WAVES AND QUAD BIKING',
     shortName: 'Valley & Quads',
     description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, quad biking, lunch inside Sun City, and shuttle transport to and from Sun City (if staying outside).',
     destination: 'sun-city',
@@ -689,8 +689,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'sc2',
-    name: 'SC2 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF WAVES AND SHUTTLE',
+    id: 'sun3',
+    name: 'SUN3 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF WAVES AND SHUTTLE',
     shortName: 'Valley Getaway',
     description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, lunch inside Sun City, and shuttle transport to and from Sun City (if staying outside).',
     destination: 'sun-city',
@@ -700,8 +700,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'sc3',
-    name: 'SC3 - SUN CITY WEEKENDER WITH VALLEY OF THE WAVES & GAME DRIVE',
+    id: 'sun4',
+    name: 'SUN4 - SUN CITY WEEKENDER WITH VALLEY OF THE WAVES & GAME DRIVE',
     shortName: 'Safari Weekender',
     description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, lunch inside Sun City, game drive in Pilanesberg National Park, and shuttle transport (if staying outside).',
     destination: 'sun-city',
@@ -711,8 +711,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'sc4',
-    name: 'SC4 - SUN CITY WEEKENDER WITH HALF DAY SPA, GAME DRIVE, VALLEY OF THE WAVES',
+    id: 'sun5',
+    name: 'SUN5 - SUN CITY WEEKENDER WITH HALF DAY SPA, GAME DRIVE, VALLEY OF THE WAVES',
     shortName: 'Spa & Safari',
     description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, half-day spa experience, lunch inside Sun City, Guided Game Drive in The Pilanesberg National Park. shuttle transport from hotel to Sun City and back (if staying outside sun city).',
     destination: 'sun-city',
@@ -722,8 +722,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'sc5',
-    name: 'SC5 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF THE WAVES AND SEGWAY GLIDES',
+    id: 'sun6',
+    name: 'SUN6 - SUN CITY GETAWAY PACKAGE WITH VALLEY OF THE WAVES AND SEGWAY GLIDES',
     shortName: 'Valley & Segway',
     description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, segway glides, lunch inside Sun City, and shuttle transport (if staying outside).',
     destination: 'sun-city',
@@ -733,8 +733,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'sc6',
-    name: 'SC6 - SUN CITY GETAWAY WITH VALLEY OF WAVES, THE MAZE AND SHUTTLE',
+    id: 'sun7',
+    name: 'SUN7 - SUN CITY GETAWAY WITH VALLEY OF WAVES, THE MAZE AND SHUTTLE',
     shortName: 'Valley & Maze',
     description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, maze adventure, lunch inside Sun City, and shuttle transport (if staying outside).',
     destination: 'sun-city',
@@ -744,8 +744,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'sc7',
-    name: 'SC7 - SUN CITY GETAWAY WITH VALLEY OF THE WAVES & ZIP LINE ADVENTURE',
+    id: 'sun8',
+    name: 'SUN8 - SUN CITY GETAWAY WITH VALLEY OF THE WAVES & ZIP LINE ADVENTURE',
     shortName: 'Valley & Zipline',
     description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, zip lining adventure, lunch inside Sun City, and shuttle transport (if staying outside).',
     destination: 'sun-city',
