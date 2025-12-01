@@ -230,10 +230,10 @@ export function Hero({ onGetQuote }: HeroProps) {
                     <SelectTrigger className="h-11 bg-white border-gray-200">
                       <SelectValue placeholder={destination ? "Select Package" : "Select destination first"} />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-w-[600px]">
                       {availablePackages.map(pkg => (
-                        <SelectItem key={pkg.id} value={pkg.id}>
-                          {pkg.shortName}
+                        <SelectItem key={pkg.id} value={pkg.id} className="whitespace-normal py-2">
+                          {pkg.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
