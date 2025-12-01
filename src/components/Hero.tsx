@@ -3,7 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowRight, Sparkles, MapPin, Star, Users, CalendarDays, Home, Package, Calculator, BedDouble } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ArrowRight, Sparkles, MapPin, Star, Users, CalendarDays, Home, Package, Calculator, BedDouble, ChevronDown } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -21,7 +23,8 @@ interface HeroProps {
 
 export function Hero({ onGetQuote }: HeroProps) {
   const [destination, setDestination] = useState('');
-  const [packageId, setPackageId] = useState('');
+  const [packageIds, setPackageIds] = useState<string[]>([]);
+  const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(false);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [adults, setAdults] = useState(2);
@@ -34,9 +37,9 @@ export function Hero({ onGetQuote }: HeroProps) {
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
 
-  // Reset package when destination changes
+  // Reset packages when destination changes
   useEffect(() => {
-    setPackageId('');
+    setPackageIds([]);
     setQuotes([]);
   }, [destination]);
 
@@ -58,8 +61,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   }, [checkIn]);
 
   const handleCalculate = () => {
-    if (!destination || !packageId || !checkIn || !checkOut) {
-      toast.error('Please fill in all required fields');
+    if (!destination || packageIds.length === 0 || !checkIn || !checkOut) {
+      toast.error('Please fill in all required fields and select at least one package');
       return;
     }
 
@@ -78,58 +81,13 @@ export function Hero({ onGetQuote }: HeroProps) {
     }
 
     setTimeout(() => {
-      const results = calculateAllQuotes({
-        destination,
-        packageId,
-        checkIn: new Date(checkIn),
-        checkOut: new Date(checkOut),
-        adults,
-        children,
-        childrenAges: ages,
-        rooms,
-        hotelType,
-      });
-
-      if (results.length > 0) {
-        setQuotes(results);
-        toast.success(`${results.length} quote options generated!`);
-      } else {
-        toast.error('Could not calculate quotes. Please check your selections.');
-      }
-      setIsCalculating(false);
-    }, 800);
-  };
-
-  const handleCalculateAllPackages = () => {
-    if (!destination || !checkIn || !checkOut) {
-      toast.error('Please select destination, check-in, and check-out dates');
-      return;
-    }
-
-    setIsCalculating(true);
-
-    // Parse children ages
-    const ages = childrenAges
-      .split(',')
-      .map(a => parseInt(a.trim()))
-      .filter(a => !isNaN(a))
-      .slice(0, children);
-
-    // Ensure we have ages for all children
-    while (ages.length < children) {
-      ages.push(5); // Default age
-    }
-
-    setTimeout(() => {
-      // Get all packages for this destination
-      const destPackages = availablePackages;
       let allResults: QuoteResult[] = [];
 
-      // Calculate quotes for each package
-      destPackages.forEach(pkg => {
+      // Calculate quotes for each selected package
+      packageIds.forEach(pkgId => {
         const results = calculateAllQuotes({
           destination,
-          packageId: pkg.id,
+          packageId: pkgId,
           checkIn: new Date(checkIn),
           checkOut: new Date(checkOut),
           adults,
@@ -145,12 +103,20 @@ export function Hero({ onGetQuote }: HeroProps) {
         // Sort by price
         allResults.sort((a, b) => a.totalForGroup - b.totalForGroup);
         setQuotes(allResults);
-        toast.success(`${allResults.length} quote options generated for all packages!`);
+        toast.success(`${allResults.length} quote options generated for ${packageIds.length} package(s)!`);
       } else {
         toast.error('Could not calculate quotes. Please check your selections.');
       }
       setIsCalculating(false);
-    }, 1000);
+    }, 800);
+  };
+
+  const togglePackageSelection = (pkgId: string) => {
+    setPackageIds(prev => 
+      prev.includes(pkgId) 
+        ? prev.filter(id => id !== pkgId)
+        : [...prev, pkgId]
+    );
   };
 
   const formatCurrency = (amount: number) => {
@@ -278,28 +244,48 @@ export function Hero({ onGetQuote }: HeroProps) {
               {/* Row 2: Package, Adults, Kids, Rooms */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="space-y-2 col-span-2 md:col-span-1">
-                  <Label className="text-sm font-medium text-gray-700">Package *</Label>
-                  {destination && (
-                    <button
-                      onClick={handleCalculateAllPackages}
-                      disabled={isCalculating}
-                      className="text-sm text-primary hover:text-primary/80 underline font-medium mb-1 text-left disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Please give me quote for all the packages in this destination
-                    </button>
-                  )}
-                  <Select value={packageId} onValueChange={setPackageId} disabled={!destination}>
-                    <SelectTrigger className="h-11 bg-white border-gray-200">
-                      <SelectValue placeholder={destination ? "Select Package" : "Select destination first"} />
-                    </SelectTrigger>
-                    <SelectContent className="max-w-[600px]">
-                      {availablePackages.map(pkg => (
-                        <SelectItem key={pkg.id} value={pkg.id} className="whitespace-normal py-2">
-                          {pkg.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Please select the package/s you'd like quote for by selecting in the dropdown
+                  </p>
+                  <Popover open={isPackageDropdownOpen} onOpenChange={setIsPackageDropdownOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        disabled={!destination}
+                        className="w-full h-11 justify-between bg-white border-gray-200 text-left font-normal"
+                      >
+                        <span className="truncate">
+                          {packageIds.length === 0 
+                            ? (destination ? "Select packages" : "Select destination first")
+                            : `${packageIds.length} package${packageIds.length > 1 ? 's' : ''} selected`
+                          }
+                        </span>
+                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[600px] max-h-[400px] overflow-y-auto p-2" align="start">
+                      <div className="space-y-1">
+                        {availablePackages.map(pkg => (
+                          <div
+                            key={pkg.id}
+                            className="flex items-start space-x-3 p-2 hover:bg-accent/50 rounded-md cursor-pointer"
+                            onClick={() => togglePackageSelection(pkg.id)}
+                          >
+                            <Checkbox
+                              checked={packageIds.includes(pkg.id)}
+                              onCheckedChange={() => togglePackageSelection(pkg.id)}
+                              className="mt-1"
+                            />
+                            <label className="text-sm cursor-pointer flex-1 leading-tight">
+                              {pkg.name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Adults *</Label>
