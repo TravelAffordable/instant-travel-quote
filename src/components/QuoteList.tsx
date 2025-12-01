@@ -164,10 +164,10 @@ Per Person: ${formatCurrency(quote.totalPerPerson)}
                       Best Value
                     </span>
                   )}
-                  <h3 className="text-lg font-bold uppercase tracking-wide text-foreground mb-1">
+                  <h3 className="text-lg font-bold uppercase tracking-wide text-foreground mb-2">
                     {quote.hotelName}
                   </h3>
-                  <p className="text-sm font-semibold text-primary">
+                  <p className="text-base font-bold uppercase tracking-wide text-primary">
                     {quote.packageName}
                   </p>
                 </div>
