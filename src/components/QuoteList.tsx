@@ -151,7 +151,7 @@ Per Person: ${formatCurrency(quote.totalPerPerson)}
           } ${index === 0 ? 'ring-2 ring-accent/50' : ''}`}
         >
           <CardHeader className="pb-3 bg-muted/30 border-b">
-            <div className="flex items-start justify-between gap-3 mb-2">
+            <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-3 flex-1">
                 <Checkbox 
                   checked={selectedQuotes.has(quote.hotelId)}
@@ -159,17 +159,15 @@ Per Person: ${formatCurrency(quote.totalPerPerson)}
                   className="mt-1"
                 />
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {index === 0 && (
-                      <span className="text-[10px] font-bold uppercase tracking-wide bg-accent text-accent-foreground px-2 py-0.5 rounded-full">
-                        Best Value
-                      </span>
-                    )}
-                    <span className="text-xs font-bold uppercase tracking-wide bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
-                      {quote.packageName.split(' - ')[0]}
+                  {index === 0 && (
+                    <span className="text-[10px] font-bold uppercase tracking-wide bg-accent text-accent-foreground px-2 py-0.5 rounded-full mb-2 inline-block">
+                      Best Value
                     </span>
-                  </div>
-                  <p className="text-sm font-semibold text-foreground mt-1 leading-tight">
+                  )}
+                  <h3 className="text-lg font-bold uppercase tracking-wide text-foreground mb-1">
+                    {quote.hotelName}
+                  </h3>
+                  <p className="text-sm font-semibold text-primary">
                     {quote.packageName}
                   </p>
                 </div>
@@ -183,12 +181,12 @@ Per Person: ${formatCurrency(quote.totalPerPerson)}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <CardTitle className="text-base font-display">{quote.hotelName}</CardTitle>
-              <span className="text-muted-foreground">•</span>
-              <span className="text-sm text-muted-foreground">
-                {quote.destination} • {quote.nights} nights • {quote.rooms} {quote.is4SleeperRoom ? '4-sleeper' : '2-sleeper'} room{quote.rooms > 1 ? 's' : ''}
-              </span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>{quote.destination}</span>
+              <span>•</span>
+              <span>{quote.nights} nights</span>
+              <span>•</span>
+              <span>{quote.rooms} {quote.is4SleeperRoom ? '4-sleeper' : '2-sleeper'} room{quote.rooms > 1 ? 's' : ''}</span>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
