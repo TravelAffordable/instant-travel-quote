@@ -100,6 +100,59 @@ export function Hero({ onGetQuote }: HeroProps) {
     }, 800);
   };
 
+  const handleCalculateAllPackages = () => {
+    if (!destination || !checkIn || !checkOut) {
+      toast.error('Please select destination, check-in, and check-out dates');
+      return;
+    }
+
+    setIsCalculating(true);
+
+    // Parse children ages
+    const ages = childrenAges
+      .split(',')
+      .map(a => parseInt(a.trim()))
+      .filter(a => !isNaN(a))
+      .slice(0, children);
+
+    // Ensure we have ages for all children
+    while (ages.length < children) {
+      ages.push(5); // Default age
+    }
+
+    setTimeout(() => {
+      // Get all packages for this destination
+      const destPackages = availablePackages;
+      let allResults: QuoteResult[] = [];
+
+      // Calculate quotes for each package
+      destPackages.forEach(pkg => {
+        const results = calculateAllQuotes({
+          destination,
+          packageId: pkg.id,
+          checkIn: new Date(checkIn),
+          checkOut: new Date(checkOut),
+          adults,
+          children,
+          childrenAges: ages,
+          rooms,
+          hotelType,
+        });
+        allResults = [...allResults, ...results];
+      });
+
+      if (allResults.length > 0) {
+        // Sort by price
+        allResults.sort((a, b) => a.totalForGroup - b.totalForGroup);
+        setQuotes(allResults);
+        toast.success(`${allResults.length} quote options generated for all packages!`);
+      } else {
+        toast.error('Could not calculate quotes. Please check your selections.');
+      }
+      setIsCalculating(false);
+    }, 1000);
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
@@ -226,6 +279,15 @@ export function Hero({ onGetQuote }: HeroProps) {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="space-y-2 col-span-2 md:col-span-1">
                   <Label className="text-sm font-medium text-gray-700">Package *</Label>
+                  {destination && (
+                    <button
+                      onClick={handleCalculateAllPackages}
+                      disabled={isCalculating}
+                      className="text-sm text-primary hover:text-primary/80 underline font-medium mb-1 text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Please give me quote for all the packages in this destination
+                    </button>
+                  )}
                   <Select value={packageId} onValueChange={setPackageId} disabled={!destination}>
                     <SelectTrigger className="h-11 bg-white border-gray-200">
                       <SelectValue placeholder={destination ? "Select Package" : "Select destination first"} />
