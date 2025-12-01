@@ -166,10 +166,10 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
               <SelectTrigger className="h-11">
                 <SelectValue placeholder={destination ? "Select a package" : "Select destination first"} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-w-[500px]">
                 {availablePackages.map(pkg => (
-                  <SelectItem key={pkg.id} value={pkg.id}>
-                    {pkg.id.toUpperCase()} - {pkg.shortName} - from {formatCurrency(pkg.basePrice)}
+                  <SelectItem key={pkg.id} value={pkg.id} className="whitespace-normal py-2">
+                    {pkg.name}
                   </SelectItem>
                 ))}
               </SelectContent>
