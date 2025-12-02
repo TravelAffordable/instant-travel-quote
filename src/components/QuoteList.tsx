@@ -47,21 +47,49 @@ export function QuoteList({ quotes, onQuoteSelected }: QuoteListProps) {
   };
 
   const generateQuoteText = (quote: QuoteResult) => {
-    return `
-Quote Request - ${quote.destination}
-━━━━━━━━━━━━━━━━━━━━━━━━
-Hotel: ${quote.hotelName}
-Package: ${quote.packageName}
-Check-in: ${formatDate(quote.checkIn)}
-Check-out: ${formatDate(quote.checkOut)}
-Nights: ${quote.nights}
-Guests: ${quote.adults} Adults${quote.children > 0 ? `, ${quote.children} Children` : ''}
-Rooms: ${quote.rooms} ${quote.is4SleeperRoom ? '(4-Sleeper)' : '(2-Sleeper)'}
-${quote.includesBreakfast ? 'Breakfast: Included' : ''}
-━━━━━━━━━━━━━━━━━━━━━━━━
-Total: ${formatCurrency(quote.totalForGroup)}
-Per Person: ${formatCurrency(quote.totalPerPerson)}
-    `.trim();
+    let quoteText = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUOTE REQUEST - ${quote.destination.toUpperCase()}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HOTEL: ${quote.hotelName}
+PACKAGE: ${quote.packageName}
+
+TRAVEL DETAILS:
+• Check-in: ${formatDate(quote.checkIn)}
+• Check-out: ${formatDate(quote.checkOut)}
+• Duration: ${quote.nights} nights
+• Guests: ${quote.adults} Adult${quote.adults > 1 ? 's' : ''}${quote.children > 0 ? `, ${quote.children} Child${quote.children > 1 ? 'ren' : ''}` : ''}
+• Accommodation: ${quote.rooms} ${quote.is4SleeperRoom ? '4-Sleeper' : '2-Sleeper'} Room${quote.rooms > 1 ? 's' : ''}
+• Room Type: ${quote.roomType}${quote.includesBreakfast ? '\n• Breakfast: Included' : ''}
+`;
+
+    // Add package inclusions if available
+    if (quote.activitiesIncluded && quote.activitiesIncluded.length > 0) {
+      quoteText += `\nPACKAGE INCLUSIONS:\n`;
+      quote.activitiesIncluded.forEach(activity => {
+        quoteText += `✓ ${activity}\n`;
+      });
+    }
+
+    // Add cost breakdown if available
+    if (quote.breakdown && quote.breakdown.length > 0) {
+      quoteText += `\nCOST BREAKDOWN:\n`;
+      quote.breakdown.forEach(item => {
+        if (item.amount > 0 || item.label.includes('4-Sleeper')) {
+          quoteText += `${item.label}: ${item.amount > 0 ? formatCurrency(item.amount) : 'Included'}\n`;
+        }
+      });
+    }
+
+    quoteText += `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TOTAL COST: ${formatCurrency(quote.totalForGroup)}
+COST PER PERSON: ${formatCurrency(quote.totalPerPerson)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+    return quoteText.trim();
   };
 
   const handleRequestToBook = async (quote: QuoteResult) => {
