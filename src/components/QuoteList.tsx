@@ -72,16 +72,6 @@ TRAVEL DETAILS:
       });
     }
 
-    // Add cost breakdown if available
-    if (quote.breakdown && quote.breakdown.length > 0) {
-      quoteText += `\nCOST BREAKDOWN:\n`;
-      quote.breakdown.forEach(item => {
-        if (item.amount > 0 || item.label.includes('4-Sleeper')) {
-          quoteText += `${item.label}: ${item.amount > 0 ? formatCurrency(item.amount) : 'Included'}\n`;
-        }
-      });
-    }
-
     quoteText += `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 TOTAL COST: ${formatCurrency(quote.totalForGroup)}
