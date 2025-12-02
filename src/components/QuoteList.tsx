@@ -103,12 +103,43 @@ Per Person: ${formatCurrency(quote.totalPerPerson)}
     }
   };
 
+  const handleSendAllQuotes = () => {
+    const quotesText = quotes.map(q => generateQuoteText(q)).join('\n\n═══════════════════════════\n\n');
+    const subject = `Quote Requests - ${quotes.length} option(s)`;
+    const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
+    window.open(mailtoLink, '_blank');
+    toast.success('Opening email client with all quotes');
+  };
+
   if (quotes.length === 0) {
     return null;
   }
 
   return (
     <div className="space-y-4">
+      {/* Send All Quotes Button */}
+      <Card className="border-accent/50 bg-gradient-to-br from-accent/10 to-accent/5">
+        <CardContent className="py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                Found {quotes.length} quote{quotes.length > 1 ? 's' : ''} for your search
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Send all quotes via email to compare options
+              </p>
+            </div>
+            <Button 
+              onClick={handleSendAllQuotes}
+              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+            >
+              <Mail className="w-4 h-4 mr-2" />
+              Send All Quotes
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Selection Actions */}
       {selectedQuotes.size > 0 && (
         <Card className="border-primary/50 bg-primary/5">
