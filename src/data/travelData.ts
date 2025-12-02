@@ -1007,7 +1007,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   }
   
   return {
-    packageName: pkg.shortName,
+    packageName: pkg.name,
     packageDescription: pkg.description,
     hotelName: hotelNameDisplay,
     hotelId: hotel.id,
