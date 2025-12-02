@@ -975,9 +975,22 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     });
   }
   
+  // Calculate service fees based on number of adults
+  let serviceFeePerAdult = 0;
+  if (request.adults === 1) {
+    serviceFeePerAdult = 1000;
+  } else if (request.adults >= 2 && request.adults <= 3) {
+    serviceFeePerAdult = 850;
+  } else if (request.adults >= 4 && request.adults <= 10) {
+    serviceFeePerAdult = 800;
+  } else if (request.adults > 10) {
+    serviceFeePerAdult = 750;
+  }
+  const totalServiceFees = serviceFeePerAdult * request.adults;
+  
   // Total calculations
   const totalPackageCost = packageBaseCost + childrenCost;
-  const totalCost = accommodationCost + totalPackageCost;
+  const totalCost = accommodationCost + totalPackageCost + totalServiceFees;
   const totalPeople = request.adults + request.children;
   const totalPerPerson = Math.round(totalCost / totalPeople);
   
@@ -1005,6 +1018,9 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   if (is4SleeperRoom) {
     breakdown.push({ label: '4-Sleeper Room Upgrade (+30%)', amount: 0 }); // Info line, cost already included
   }
+  
+  // Add service fees to breakdown
+  breakdown.push({ label: `Service Fees (${request.adults} Adults @ R${serviceFeePerAdult})`, amount: totalServiceFees });
   
   return {
     packageName: pkg.name,
