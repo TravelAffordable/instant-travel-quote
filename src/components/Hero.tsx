@@ -21,6 +21,20 @@ interface HeroProps {
   onGetQuote: () => void;
 }
 
+interface FamilyData {
+  parentName: string;
+  adults: number;
+  children: number;
+  childrenAges: string;
+  rooms: number;
+}
+
+interface FamilyQuotes {
+  familyIndex: number;
+  parentName: string;
+  quotes: QuoteResult[];
+}
+
 export function Hero({ onGetQuote }: HeroProps) {
   const [destination, setDestination] = useState('');
   const [packageIds, setPackageIds] = useState<string[]>([]);
@@ -35,18 +49,52 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
 
+  // Family split mode
+  const [showFamilySplitOption, setShowFamilySplitOption] = useState(false);
+  const [isFamilySplitMode, setIsFamilySplitMode] = useState(false);
+  const [numberOfFamilies, setNumberOfFamilies] = useState(2);
+  const [families, setFamilies] = useState<FamilyData[]>([
+    { parentName: '', adults: 2, children: 1, childrenAges: '', rooms: 1 },
+    { parentName: '', adults: 2, children: 1, childrenAges: '', rooms: 1 },
+  ]);
+  const [familyQuotes, setFamilyQuotes] = useState<FamilyQuotes[]>([]);
+
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
 
   // Reset packages when destination changes
   useEffect(() => {
     setPackageIds([]);
     setQuotes([]);
+    setFamilyQuotes([]);
   }, [destination]);
 
   // Reset quotes when hotel type changes
   useEffect(() => {
     setQuotes([]);
+    setFamilyQuotes([]);
   }, [hotelType]);
+
+  // Show family split option when 4+ adults AND children
+  useEffect(() => {
+    const hasChildren = children > 0;
+    setShowFamilySplitOption(adults >= 4 && hasChildren);
+    if (adults < 4 || !hasChildren) {
+      setIsFamilySplitMode(false);
+    }
+  }, [adults, children]);
+
+  // Update families array when number of families changes
+  useEffect(() => {
+    const newFamilies: FamilyData[] = [];
+    for (let i = 0; i < numberOfFamilies; i++) {
+      if (families[i]) {
+        newFamilies.push(families[i]);
+      } else {
+        newFamilies.push({ parentName: '', adults: 2, children: 1, childrenAges: '', rooms: 1 });
+      }
+    }
+    setFamilies(newFamilies);
+  }, [numberOfFamilies]);
 
   // Auto-set checkout to day after check-in
   useEffect(() => {
@@ -60,6 +108,12 @@ export function Hero({ onGetQuote }: HeroProps) {
     }
   }, [checkIn]);
 
+  const updateFamilyData = (index: number, field: keyof FamilyData, value: string | number) => {
+    const newFamilies = [...families];
+    newFamilies[index] = { ...newFamilies[index], [field]: value };
+    setFamilies(newFamilies);
+  };
+
   const handleCalculate = () => {
     if (!destination || packageIds.length === 0 || !checkIn || !checkOut) {
       toast.error('Please fill in all required fields and select at least one package');
@@ -68,47 +122,104 @@ export function Hero({ onGetQuote }: HeroProps) {
 
     setIsCalculating(true);
 
-    // Parse children ages
-    const ages = childrenAges
-      .split(',')
-      .map(a => parseInt(a.trim()))
-      .filter(a => !isNaN(a))
-      .slice(0, children);
+    if (isFamilySplitMode) {
+      // Calculate quotes for each family separately
+      setTimeout(() => {
+        const allFamilyQuotes: FamilyQuotes[] = [];
+        
+        families.forEach((family, index) => {
+          // Parse children ages for this family
+          const ages = family.childrenAges
+            .split(',')
+            .map(a => parseInt(a.trim()))
+            .filter(a => !isNaN(a) && a >= 3 && a <= 17)
+            .slice(0, family.children);
+          
+          // Fill missing ages with default
+          while (ages.length < family.children) {
+            ages.push(5);
+          }
 
-    // Ensure we have ages for all children
-    while (ages.length < children) {
-      ages.push(5); // Default age
-    }
+          let familyResults: QuoteResult[] = [];
+          packageIds.forEach(pkgId => {
+            const results = calculateAllQuotes({
+              destination,
+              packageId: pkgId,
+              checkIn: new Date(checkIn),
+              checkOut: new Date(checkOut),
+              adults: family.adults,
+              children: family.children,
+              childrenAges: ages,
+              rooms: family.rooms,
+              hotelType,
+            });
+            familyResults = [...familyResults, ...results];
+          });
 
-    setTimeout(() => {
-      let allResults: QuoteResult[] = [];
-
-      // Calculate quotes for each selected package
-      packageIds.forEach(pkgId => {
-        const results = calculateAllQuotes({
-          destination,
-          packageId: pkgId,
-          checkIn: new Date(checkIn),
-          checkOut: new Date(checkOut),
-          adults,
-          children,
-          childrenAges: ages,
-          rooms,
-          hotelType,
+          if (familyResults.length > 0) {
+            familyResults.sort((a, b) => a.totalForGroup - b.totalForGroup);
+            allFamilyQuotes.push({
+              familyIndex: index + 1,
+              parentName: family.parentName || `Family ${index + 1}`,
+              quotes: familyResults,
+            });
+          }
         });
-        allResults = [...allResults, ...results];
-      });
 
-      if (allResults.length > 0) {
-        // Sort by price
-        allResults.sort((a, b) => a.totalForGroup - b.totalForGroup);
-        setQuotes(allResults);
-        toast.success(`${allResults.length} quote options generated for ${packageIds.length} package(s)!`);
-      } else {
-        toast.error('Could not calculate quotes. Please check your selections.');
+        if (allFamilyQuotes.length > 0) {
+          setFamilyQuotes(allFamilyQuotes);
+          setQuotes([]);
+          toast.success(`Quotes generated for ${allFamilyQuotes.length} families!`);
+        } else {
+          toast.error('Could not calculate quotes. Please check your selections.');
+        }
+        setIsCalculating(false);
+      }, 800);
+    } else {
+      // Standard single booking calculation
+      // Parse children ages
+      const ages = childrenAges
+        .split(',')
+        .map(a => parseInt(a.trim()))
+        .filter(a => !isNaN(a))
+        .slice(0, children);
+
+      // Ensure we have ages for all children
+      while (ages.length < children) {
+        ages.push(5); // Default age
       }
-      setIsCalculating(false);
-    }, 800);
+
+      setTimeout(() => {
+        let allResults: QuoteResult[] = [];
+
+        // Calculate quotes for each selected package
+        packageIds.forEach(pkgId => {
+          const results = calculateAllQuotes({
+            destination,
+            packageId: pkgId,
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            adults,
+            children,
+            childrenAges: ages,
+            rooms,
+            hotelType,
+          });
+          allResults = [...allResults, ...results];
+        });
+
+        if (allResults.length > 0) {
+          // Sort by price
+          allResults.sort((a, b) => a.totalForGroup - b.totalForGroup);
+          setQuotes(allResults);
+          setFamilyQuotes([]);
+          toast.success(`${allResults.length} quote options generated for ${packageIds.length} package(s)!`);
+        } else {
+          toast.error('Could not calculate quotes. Please check your selections.');
+        }
+        setIsCalculating(false);
+      }, 800);
+    }
   };
 
   const togglePackageSelection = (pkgId: string) => {
@@ -348,8 +459,139 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
+              {/* Family Split Option */}
+              {showFamilySplitOption && !isFamilySplitMode && (
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+                  <p className="text-sm text-gray-700 mb-2">
+                    If you are different families and each family would be paying separately, please click here:
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsFamilySplitMode(true)}
+                    className="border-primary text-primary hover:bg-primary/10"
+                  >
+                    Split by Family
+                  </Button>
+                </div>
+              )}
+
+              {/* Family Split Mode */}
+              {isFamilySplitMode && (
+                <div className="space-y-4 bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium text-gray-700">How many families are you?</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setIsFamilySplitMode(false);
+                        setFamilyQuotes([]);
+                      }}
+                      className="text-gray-500"
+                    >
+                      Cancel Split
+                    </Button>
+                  </div>
+                  <Select value={numberOfFamilies.toString()} onValueChange={v => setNumberOfFamilies(parseInt(v))}>
+                    <SelectTrigger className="h-11 bg-white border-gray-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                        <SelectItem key={n} value={n.toString()}>{n} Families</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Family Forms */}
+                  <div className="space-y-4 max-h-[350px] overflow-y-auto">
+                    {families.map((family, index) => (
+                      <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                        <h4 className="font-semibold text-sm text-primary">Family {index + 1}</h4>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-xs text-gray-600">Name of Parent</Label>
+                          <Input
+                            placeholder="Parent name"
+                            value={family.parentName}
+                            onChange={e => updateFamilyData(index, 'parentName', e.target.value)}
+                            className="h-9 bg-white border-gray-200"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">Adults</Label>
+                            <Select 
+                              value={family.adults.toString()} 
+                              onValueChange={v => updateFamilyData(index, 'adults', parseInt(v))}
+                            >
+                              <SelectTrigger className="h-9 bg-white border-gray-200">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[1, 2, 3, 4, 5, 6].map(n => (
+                                  <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">Kids</Label>
+                            <Select 
+                              value={family.children.toString()} 
+                              onValueChange={v => updateFamilyData(index, 'children', parseInt(v))}
+                            >
+                              <SelectTrigger className="h-9 bg-white border-gray-200">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[0, 1, 2, 3, 4, 5, 6].map(n => (
+                                  <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">Rooms</Label>
+                            <Select 
+                              value={family.rooms.toString()} 
+                              onValueChange={v => updateFamilyData(index, 'rooms', parseInt(v))}
+                            >
+                              <SelectTrigger className="h-9 bg-white border-gray-200">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[1, 2, 3, 4, 5].map(n => (
+                                  <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        {family.children > 0 && (
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">Kids Ages (comma separated, 3-17)</Label>
+                            <Input
+                              placeholder="e.g. 5, 8"
+                              value={family.childrenAges}
+                              onChange={e => updateFamilyData(index, 'childrenAges', e.target.value)}
+                              className="h-9 bg-white border-gray-200"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* 4-Sleeper Notice */}
-              {will4SleeperApply && (
+              {will4SleeperApply && !isFamilySplitMode && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                   <p className="text-sm text-amber-800 flex items-center gap-2">
                     <BedDouble className="w-4 h-4" />
@@ -391,7 +633,38 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Quote Results */}
-        {quotes.length > 0 && (
+        {familyQuotes.length > 0 ? (
+          <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
+              <div className="space-y-8">
+                {familyQuotes.map((fq, index) => (
+                  <div key={index} className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                      <h3 className="text-xl font-display font-semibold text-primary">
+                        {fq.parentName}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {fq.quotes.length} options
+                      </p>
+                    </div>
+                    <QuoteList quotes={fq.quotes} />
+                  </div>
+                ))}
+                {/* Grand Total Section */}
+                <div className="mt-6 pt-4 border-t-2 border-primary/20">
+                  <div className="flex items-center justify-between bg-primary/5 rounded-lg p-4">
+                    <h4 className="text-lg font-semibold text-gray-900">Combined Grand Total (Cheapest Options)</h4>
+                    <p className="text-2xl font-bold text-primary">
+                      {new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 0 }).format(
+                        familyQuotes.reduce((sum, fq) => sum + (fq.quotes[0]?.totalForGroup || 0), 0)
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : quotes.length > 0 && (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
               <div className="flex items-center justify-between mb-6">
