@@ -952,28 +952,35 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   // Package base price (includes activities)
   const packageBaseCost = pkg.basePrice * request.adults;
   
-  // Children pricing - use kidsPrice if available, otherwise calculate discount
-  let childrenCost = 0;
-  let childDiscount = 0;
+// Children pricing - only for ages 3-17
+  // Package cost for kids + once-off fees based on age
+  let childrenPackageCost = 0;
+  let childrenOnceFees = 0;
+  let validChildren = 0;
   
-  if (pkg.kidsPrice && request.children > 0) {
-    // Use the fixed kids price for all children
-    childrenCost = pkg.kidsPrice * request.children;
-    childDiscount = (pkg.basePrice * request.children) - childrenCost;
-  } else {
-    // Fallback: 50% for under 12, 75% for 12-17
-    request.childrenAges.forEach(age => {
-      if (age < 12) {
-        childrenCost += pkg.basePrice * 0.5;
-        childDiscount += pkg.basePrice * 0.5;
-      } else if (age < 18) {
-        childrenCost += pkg.basePrice * 0.75;
-        childDiscount += pkg.basePrice * 0.25;
+  request.childrenAges.forEach(age => {
+    // Only children 3-17 are charged
+    if (age >= 3 && age <= 17) {
+      validChildren++;
+      // Add package cost for child (use kidsPrice if available)
+      if (pkg.kidsPrice) {
+        childrenPackageCost += pkg.kidsPrice;
       } else {
-        childrenCost += pkg.basePrice;
+        // Fallback if no kidsPrice defined
+        childrenPackageCost += pkg.basePrice * 0.5;
       }
-    });
-  }
+      
+      // Once-off fees based on age
+      if (age >= 3 && age <= 12) {
+        childrenOnceFees += 200; // R200 per child 3-12 years
+      } else if (age >= 13 && age <= 17) {
+        childrenOnceFees += 300; // R300 service fee per child 13-17 years
+      }
+    }
+    // Children under 3 are free
+  });
+  
+  const childDiscount = 0; // No longer using discount model
   
   // Calculate service fees based on number of adults
   let serviceFeePerAdult = 0;
@@ -988,10 +995,11 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   }
   const totalServiceFees = serviceFeePerAdult * request.adults;
   
-  // Total calculations
-  const totalPackageCost = packageBaseCost + childrenCost;
+// Total calculations
+  // Accommodation cost is divided among adults only (already calculated for group)
+  const totalPackageCost = packageBaseCost + childrenPackageCost + childrenOnceFees;
   const totalCost = accommodationCost + totalPackageCost + totalServiceFees;
-  const totalPeople = request.adults + request.children;
+  const totalPeople = request.adults + validChildren;
   const totalPerPerson = Math.round(totalCost / totalPeople);
   
   const roomType = is4SleeperRoom ? '4-Sleeper Room' : 'Standard Room';
@@ -1007,12 +1015,11 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     { label: `Package - ${request.adults} Adults`, amount: packageBaseCost },
   ];
   
-  if (request.children > 0) {
-    breakdown.push({ label: `Package - ${request.children} Children`, amount: childrenCost });
-  }
-  
-  if (childDiscount > 0) {
-    breakdown.push({ label: 'Child Discount Applied', amount: -childDiscount });
+  if (validChildren > 0) {
+    breakdown.push({ label: `Package - ${validChildren} Children`, amount: childrenPackageCost });
+    if (childrenOnceFees > 0) {
+      breakdown.push({ label: `Children Once-off Fees`, amount: childrenOnceFees });
+    }
   }
   
   if (is4SleeperRoom) {

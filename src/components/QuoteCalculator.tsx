@@ -20,6 +20,20 @@ interface QuoteCalculatorProps {
   onQuoteGenerated?: (quote: QuoteResult) => void;
 }
 
+interface FamilyData {
+  parentName: string;
+  adults: number;
+  children: number;
+  childrenAges: string;
+  rooms: number;
+}
+
+interface FamilyQuotes {
+  familyIndex: number;
+  parentName: string;
+  quotes: QuoteResult[];
+}
+
 export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   const [destination, setDestination] = useState('');
   const [packageId, setPackageId] = useState('');
@@ -32,6 +46,16 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   const [hotelType, setHotelType] = useState<'very-affordable' | 'affordable' | 'premium'>('affordable');
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  
+  // Family split mode
+  const [showFamilySplitOption, setShowFamilySplitOption] = useState(false);
+  const [isFamilySplitMode, setIsFamilySplitMode] = useState(false);
+  const [numberOfFamilies, setNumberOfFamilies] = useState(2);
+  const [families, setFamilies] = useState<FamilyData[]>([
+    { parentName: '', adults: 2, children: 1, childrenAges: '', rooms: 1 },
+    { parentName: '', adults: 2, children: 1, childrenAges: '', rooms: 1 },
+  ]);
+  const [familyQuotes, setFamilyQuotes] = useState<FamilyQuotes[]>([]);
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
 
@@ -39,12 +63,37 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   useEffect(() => {
     setPackageId('');
     setQuotes([]);
+    setFamilyQuotes([]);
   }, [destination]);
 
   // Reset quotes when hotel type changes
   useEffect(() => {
     setQuotes([]);
+    setFamilyQuotes([]);
   }, [hotelType]);
+
+  // Show family split option when 4+ adults AND children
+  useEffect(() => {
+    const totalAdults = adults;
+    const hasChildren = children > 0;
+    setShowFamilySplitOption(totalAdults >= 4 && hasChildren);
+    if (totalAdults < 4 || !hasChildren) {
+      setIsFamilySplitMode(false);
+    }
+  }, [adults, children]);
+
+  // Update families array when number of families changes
+  useEffect(() => {
+    const newFamilies: FamilyData[] = [];
+    for (let i = 0; i < numberOfFamilies; i++) {
+      if (families[i]) {
+        newFamilies.push(families[i]);
+      } else {
+        newFamilies.push({ parentName: '', adults: 2, children: 1, childrenAges: '', rooms: 1 });
+      }
+    }
+    setFamilies(newFamilies);
+  }, [numberOfFamilies]);
 
   // Auto-set checkout to day after check-in
   useEffect(() => {
@@ -58,6 +107,12 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     }
   }, [checkIn]);
 
+  const updateFamilyData = (index: number, field: keyof FamilyData, value: string | number) => {
+    const newFamilies = [...families];
+    newFamilies[index] = { ...newFamilies[index], [field]: value };
+    setFamilies(newFamilies);
+  };
+
   const handleCalculate = () => {
     if (!destination || !packageId || !checkIn || !checkOut) {
       toast.error('Please fill in all required fields');
@@ -66,40 +121,92 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
 
     setIsCalculating(true);
 
-    // Parse children ages
-    const ages = childrenAges
-      .split(',')
-      .map(a => parseInt(a.trim()))
-      .filter(a => !isNaN(a))
-      .slice(0, children);
+    if (isFamilySplitMode) {
+      // Calculate quotes for each family separately
+      setTimeout(() => {
+        const allFamilyQuotes: FamilyQuotes[] = [];
+        
+        families.forEach((family, index) => {
+          // Parse children ages for this family
+          const ages = family.childrenAges
+            .split(',')
+            .map(a => parseInt(a.trim()))
+            .filter(a => !isNaN(a) && a >= 3 && a <= 17)
+            .slice(0, family.children);
+          
+          // Fill missing ages with default
+          while (ages.length < family.children) {
+            ages.push(5);
+          }
 
-    // Ensure we have ages for all children
-    while (ages.length < children) {
-      ages.push(5); // Default age
-    }
+          const results = calculateAllQuotes({
+            destination,
+            packageId,
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            adults: family.adults,
+            children: family.children,
+            childrenAges: ages,
+            rooms: family.rooms,
+            hotelType,
+          });
 
-    setTimeout(() => {
-      const results = calculateAllQuotes({
-        destination,
-        packageId,
-        checkIn: new Date(checkIn),
-        checkOut: new Date(checkOut),
-        adults,
-        children,
-        childrenAges: ages,
-        rooms,
-        hotelType,
-      });
+          if (results.length > 0) {
+            allFamilyQuotes.push({
+              familyIndex: index + 1,
+              parentName: family.parentName || `Family ${index + 1}`,
+              quotes: results,
+            });
+          }
+        });
 
-      if (results.length > 0) {
-        setQuotes(results);
-        onQuoteGenerated?.(results[0]);
-        toast.success(`${results.length} quote options generated!`);
-      } else {
-        toast.error('Could not calculate quotes. Please check your selections.');
+        if (allFamilyQuotes.length > 0) {
+          setFamilyQuotes(allFamilyQuotes);
+          setQuotes([]);
+          toast.success(`Quotes generated for ${allFamilyQuotes.length} families!`);
+        } else {
+          toast.error('Could not calculate quotes. Please check your selections.');
+        }
+        setIsCalculating(false);
+      }, 800);
+    } else {
+      // Standard single booking calculation
+      // Parse children ages
+      const ages = childrenAges
+        .split(',')
+        .map(a => parseInt(a.trim()))
+        .filter(a => !isNaN(a) && a >= 3 && a <= 17)
+        .slice(0, children);
+
+      // Ensure we have ages for all children
+      while (ages.length < children) {
+        ages.push(5); // Default age
       }
-      setIsCalculating(false);
-    }, 800);
+
+      setTimeout(() => {
+        const results = calculateAllQuotes({
+          destination,
+          packageId,
+          checkIn: new Date(checkIn),
+          checkOut: new Date(checkOut),
+          adults,
+          children,
+          childrenAges: ages,
+          rooms,
+          hotelType,
+        });
+
+        if (results.length > 0) {
+          setQuotes(results);
+          setFamilyQuotes([]);
+          onQuoteGenerated?.(results[0]);
+          toast.success(`${results.length} quote options generated!`);
+        } else {
+          toast.error('Could not calculate quotes. Please check your selections.');
+        }
+        setIsCalculating(false);
+      }, 800);
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -257,16 +364,145 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
             </div>
           </div>
 
-          {children > 0 && (
+          {children > 0 && !isFamilySplitMode && (
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Children Ages (comma separated)</Label>
+              <Label className="text-sm font-medium">Children Ages (comma separated, 3-17 years)</Label>
               <Input
                 placeholder="e.g. 5, 8, 12"
                 value={childrenAges}
                 onChange={e => setChildrenAges(e.target.value)}
                 className="h-11"
               />
-              <p className="text-xs text-muted-foreground">Under 12: 50% off | Ages 12-17: 25% off</p>
+              <p className="text-xs text-muted-foreground">Ages 3-12: R200 once-off fee | Ages 13-17: R300 service fee</p>
+            </div>
+          )}
+
+          {/* Family Split Option */}
+          {showFamilySplitOption && !isFamilySplitMode && (
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+              <p className="text-sm text-foreground mb-2">
+                If you are different families and each family would be paying separately, please click here:
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsFamilySplitMode(true)}
+                className="border-primary text-primary hover:bg-primary/10"
+              >
+                Split by Family
+              </Button>
+            </div>
+          )}
+
+          {/* Family Split Mode */}
+          {isFamilySplitMode && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">How many families are you?</Label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setIsFamilySplitMode(false);
+                    setFamilyQuotes([]);
+                  }}
+                  className="text-muted-foreground"
+                >
+                  Cancel Split
+                </Button>
+              </div>
+              <Select value={numberOfFamilies.toString()} onValueChange={v => setNumberOfFamilies(parseInt(v))}>
+                <SelectTrigger className="h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                    <SelectItem key={n} value={n.toString()}>{n} Families</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Family Forms */}
+              <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                {families.map((family, index) => (
+                  <div key={index} className="bg-muted/30 border border-border rounded-lg p-4 space-y-3">
+                    <h4 className="font-semibold text-sm text-primary">Family {index + 1}</h4>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-xs">Name of Parent</Label>
+                      <Input
+                        placeholder="Parent name"
+                        value={family.parentName}
+                        onChange={e => updateFamilyData(index, 'parentName', e.target.value)}
+                        className="h-9"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs">Adults</Label>
+                        <Select 
+                          value={family.adults.toString()} 
+                          onValueChange={v => updateFamilyData(index, 'adults', parseInt(v))}
+                        >
+                          <SelectTrigger className="h-9">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {[1, 2, 3, 4, 5, 6].map(n => (
+                              <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Kids</Label>
+                        <Select 
+                          value={family.children.toString()} 
+                          onValueChange={v => updateFamilyData(index, 'children', parseInt(v))}
+                        >
+                          <SelectTrigger className="h-9">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {[0, 1, 2, 3, 4, 5, 6].map(n => (
+                              <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Rooms</Label>
+                        <Select 
+                          value={family.rooms.toString()} 
+                          onValueChange={v => updateFamilyData(index, 'rooms', parseInt(v))}
+                        >
+                          <SelectTrigger className="h-9">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {[1, 2, 3, 4, 5].map(n => (
+                              <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {family.children > 0 && (
+                      <div className="space-y-1">
+                        <Label className="text-xs">Kids Ages (comma separated, 3-17)</Label>
+                        <Input
+                          placeholder="e.g. 5, 8"
+                          value={family.childrenAges}
+                          onChange={e => updateFamilyData(index, 'childrenAges', e.target.value)}
+                          className="h-9"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -322,7 +558,24 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
 
       {/* Quote Results Section */}
       <div className="space-y-6">
-        {quotes.length > 0 ? (
+        {familyQuotes.length > 0 ? (
+          // Family split mode results
+          <div className="space-y-8">
+            {familyQuotes.map((fq, index) => (
+              <div key={index} className="space-y-4">
+                <div className="flex items-center justify-between border-b border-border pb-2">
+                  <h3 className="text-xl font-display font-semibold text-primary">
+                    {fq.parentName}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {fq.quotes.length} options
+                  </p>
+                </div>
+                <QuoteList quotes={fq.quotes} onQuoteSelected={onQuoteGenerated} />
+              </div>
+            ))}
+          </div>
+        ) : quotes.length > 0 ? (
           <>
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-display font-semibold">
