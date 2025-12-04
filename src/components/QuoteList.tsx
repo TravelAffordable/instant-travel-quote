@@ -188,6 +188,15 @@ TOTAL COST: ${formatCurrency(quote.totalForGroup)}${quote.children === 0 ? `\nCO
         </Card>
       )}
 
+      {/* Disclaimer Notice */}
+      {quotes.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+          <p className="text-sm text-amber-800 font-medium">
+            Please note that the pictures you see below are not for the hotels in the quote – they are for illustration purposes only.
+          </p>
+        </div>
+      )}
+
       {/* Quote Cards - Grouped by Package */}
       {(() => {
         // Group quotes by package name
