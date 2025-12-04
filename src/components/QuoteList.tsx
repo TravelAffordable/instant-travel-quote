@@ -72,10 +72,9 @@ TRAVEL DETAILS:
       });
     }
 
-    quoteText += `
+  quoteText += `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TOTAL COST: ${formatCurrency(quote.totalForGroup)}
-COST PER PERSON: ${formatCurrency(quote.totalPerPerson)}
+TOTAL COST: ${formatCurrency(quote.totalForGroup)}${quote.children === 0 ? `\nCOST PER PERSON: ${formatCurrency(quote.totalPerPerson)}` : ''}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
 
@@ -189,16 +188,43 @@ COST PER PERSON: ${formatCurrency(quote.totalPerPerson)}
         </Card>
       )}
 
-      {/* Quote Cards */}
-      {quotes.map((quote, index) => (
-        <Card 
-          key={`${quote.hotelId}-${quote.packageName}`}
-          className={`border-0 shadow-soft transition-all ${
-            selectedQuotes.has(quote.hotelId) 
-              ? 'ring-2 ring-primary bg-primary/5' 
-              : 'bg-gradient-to-br from-card to-muted/20'
-          } ${index === 0 ? 'ring-2 ring-accent/50' : ''}`}
-        >
+      {/* Quote Cards - Grouped by Package */}
+      {(() => {
+        // Group quotes by package name
+        const packageGroups: { [key: string]: QuoteResult[] } = {};
+        quotes.forEach(quote => {
+          if (!packageGroups[quote.packageName]) {
+            packageGroups[quote.packageName] = [];
+          }
+          packageGroups[quote.packageName].push(quote);
+        });
+        
+        const packageNames = Object.keys(packageGroups);
+        const hasMultiplePackages = packageNames.length > 1;
+        let globalIndex = 0;
+        
+        return packageNames.map((packageName) => (
+          <div key={packageName} className="space-y-4">
+            {/* Package Header - Only show if multiple packages */}
+            {hasMultiplePackages && (
+              <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-4 mt-6 first:mt-0">
+                <h2 className="text-xl md:text-2xl font-bold uppercase tracking-wide text-primary text-center">
+                  {packageName}
+                </h2>
+              </div>
+            )}
+            
+            {packageGroups[packageName].map((quote) => {
+              const index = globalIndex++;
+              return (
+                <Card 
+                  key={`${quote.hotelId}-${quote.packageName}`}
+                  className={`border-0 shadow-soft transition-all ${
+                    selectedQuotes.has(quote.hotelId) 
+                      ? 'ring-2 ring-primary bg-primary/5' 
+                      : 'bg-gradient-to-br from-card to-muted/20'
+                  } ${index === 0 ? 'ring-2 ring-accent/50' : ''}`}
+                >
           <CardHeader className="pb-3 bg-muted/30 border-b">
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-3 flex-1">
@@ -225,9 +251,11 @@ COST PER PERSON: ${formatCurrency(quote.totalPerPerson)}
                 <p className="text-2xl font-bold text-primary font-display">
                   {formatCurrency(quote.totalForGroup)}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {formatCurrency(quote.totalPerPerson)}/person
-                </p>
+                {quote.children === 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {formatCurrency(quote.totalPerPerson)}/person
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -307,8 +335,12 @@ COST PER PERSON: ${formatCurrency(quote.totalPerPerson)}
               </Button>
             </div>
           </CardContent>
-        </Card>
-      ))}
+              </Card>
+              );
+            })}
+          </div>
+        ));
+      })()}
     </div>
   );
 }
