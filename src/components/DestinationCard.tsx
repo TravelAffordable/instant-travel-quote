@@ -49,7 +49,7 @@ export function DestinationCard({ destination, onViewPackages }: DestinationCard
           <div>
             <p className="text-xs text-muted-foreground">From</p>
             <p className="text-lg font-bold text-primary">
-              {formatCurrency(destination.startingPrice)}
+              {formatCurrency(destination.startingPrice)} <span className="text-sm font-medium">pp</span>
             </p>
           </div>
           <Button
