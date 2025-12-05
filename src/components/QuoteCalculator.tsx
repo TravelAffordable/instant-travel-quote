@@ -44,6 +44,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   const [childrenAges, setChildrenAges] = useState<string>('');
   const [rooms, setRooms] = useState(1);
   const [hotelType, setHotelType] = useState<'very-affordable' | 'affordable' | 'premium'>('affordable');
+  const [budget, setBudget] = useState('');
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   
@@ -114,8 +115,8 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   };
 
   const handleCalculate = () => {
-    if (!destination || !packageId || !checkIn || !checkOut) {
-      toast.error('Please fill in all required fields');
+    if (!destination || !packageId || !checkIn || !checkOut || !budget) {
+      toast.error('Please fill in all required fields including your budget');
       return;
     }
 
@@ -524,6 +525,21 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Budget Field */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium">
+              My total budget for the trip is *
+            </Label>
+            <Input
+              type="text"
+              placeholder="e.g. R10,000"
+              value={budget}
+              onChange={e => setBudget(e.target.value)}
+              className="h-11"
+            />
+            <p className="text-xs text-muted-foreground">This helps us understand your preferences</p>
           </div>
 
           {/* 4-Sleeper Notice */}
