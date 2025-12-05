@@ -48,6 +48,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [hotelType, setHotelType] = useState<'very-affordable' | 'affordable' | 'premium'>('affordable');
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [budget, setBudget] = useState('');
 
   // Family split mode
   const [showFamilySplitOption, setShowFamilySplitOption] = useState(false);
@@ -115,8 +116,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   };
 
   const handleCalculate = () => {
-    if (!destination || packageIds.length === 0 || !checkIn || !checkOut) {
-      toast.error('Please fill in all required fields and select at least one package');
+    if (!destination || packageIds.length === 0 || !checkIn || !checkOut || !budget) {
+      toast.error('Please fill in all required fields including your budget');
       return;
     }
 
@@ -589,6 +590,20 @@ export function Hero({ onGetQuote }: HeroProps) {
                   </div>
                 </div>
               )}
+
+              {/* Budget Field */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">My total budget for the trip is *</Label>
+                <Input
+                  type="text"
+                  placeholder="e.g. R10,000"
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                  className="h-11 bg-white border-gray-200"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">This helps us understand your preferences</p>
+              </div>
 
               {/* 4-Sleeper Notice */}
               {will4SleeperApply && !isFamilySplitMode && (

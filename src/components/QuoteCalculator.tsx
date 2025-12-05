@@ -529,15 +529,16 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
 
           {/* Budget Field */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-sm font-medium">
+            <Label className="flex items-center gap-2 text-sm font-medium text-foreground">
               My total budget for the trip is *
             </Label>
             <Input
               type="text"
               placeholder="e.g. R10,000"
               value={budget}
-              onChange={e => setBudget(e.target.value)}
-              className="h-11"
+              onChange={(e) => setBudget(e.target.value)}
+              className="h-11 bg-background border-input"
+              required
             />
             <p className="text-xs text-muted-foreground">This helps us understand your preferences</p>
           </div>
