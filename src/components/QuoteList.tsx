@@ -190,10 +190,17 @@ TOTAL COST: ${formatCurrency(quote.totalForGroup)}${quote.children === 0 ? `\nCO
 
       {/* Disclaimer Notice */}
       {quotes.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
-          <p className="text-sm text-amber-800 font-medium leading-relaxed">
-            Please note that the images you see below are not for the hotels in the quote – they are for illustration purposes only. The price you see includes hotel accommodation and the activities associated with the package. Please select the package that you like and that fits your budget, email or WhatsApp it to us using the buttons below so we can send you an accurate quote with available hotel options that suit your budget and preferences.
-          </p>
+        <div className="space-y-3">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+            <p className="text-sm text-amber-800 font-medium leading-relaxed">
+              Please note that the images you see below are not for the hotels in the quote – they are for illustration purposes only. The price you see includes hotel accommodation and the activities associated with the package. Please select the package that you like and that fits your budget, email or WhatsApp it to us using the buttons below so we can send you an accurate quote with available hotel options that suit your budget and preferences.
+            </p>
+          </div>
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-center">
+            <p className="text-sm text-primary font-medium leading-relaxed">
+              You may select individual package/s to send to us via email or WhatsApp by selecting the package/s using the selectors located near the package tour code. To send all the packages you may use the email and WhatsApp buttons at the top of the quotes.
+            </p>
+          </div>
         </div>
       )}
 
