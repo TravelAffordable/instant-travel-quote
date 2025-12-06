@@ -264,12 +264,19 @@ TOTAL COST: ${formatCurrency(quote.totalForGroup)}${quote.children === 0 ? `\nCO
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-2xl font-bold text-primary font-display">
-                  {formatCurrency(quote.totalForGroup)}
-                </p>
-                {quote.children === 0 && (
-                  <p className="text-xs text-muted-foreground">
-                    {formatCurrency(quote.totalPerPerson)}/person
+                {quote.children === 0 ? (
+                  <>
+                    <p className="text-2xl font-bold text-primary font-display">
+                      {formatCurrency(quote.totalPerPerson)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">per person</p>
+                    <p className="text-sm font-semibold text-foreground mt-1">
+                      {formatCurrency(quote.totalForGroup)} total
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-2xl font-bold text-primary font-display">
+                    {formatCurrency(quote.totalForGroup)}
                   </p>
                 )}
               </div>
