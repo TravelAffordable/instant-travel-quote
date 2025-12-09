@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 interface QuoteListProps {
   quotes: QuoteResult[];
   onQuoteSelected?: (quote: QuoteResult) => void;
+  budget?: string;
 }
 
 const formatCurrency = (amount: number) => {
@@ -27,7 +28,7 @@ const formatDate = (date: Date) => {
   });
 };
 
-export function QuoteList({ quotes, onQuoteSelected }: QuoteListProps) {
+export function QuoteList({ quotes, onQuoteSelected, budget }: QuoteListProps) {
   const [selectedQuotes, setSelectedQuotes] = useState<Set<string>>(new Set());
 
   const toggleQuoteSelection = (hotelId: string) => {
@@ -48,33 +49,68 @@ export function QuoteList({ quotes, onQuoteSelected }: QuoteListProps) {
 
   const generateQuoteText = (quote: QuoteResult) => {
     let quoteText = `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-QUOTE REQUEST - ${quote.destination.toUpperCase()}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╔══════════════════════════════════════════════════════════════╗
+║                    TRAVEL AFFORDABLE                          ║
+║                   QUOTE REQUEST                               ║
+╚══════════════════════════════════════════════════════════════╝
 
-HOTEL: ${quote.hotelName}
-PACKAGE: ${quote.packageName}
+📍 DESTINATION: ${quote.destination.toUpperCase()}
 
-TRAVEL DETAILS:
-• Check-in: ${formatDate(quote.checkIn)}
-• Check-out: ${formatDate(quote.checkOut)}
-• Duration: ${quote.nights} nights
-• Guests: ${quote.adults} Adult${quote.adults > 1 ? 's' : ''}${quote.children > 0 ? `, ${quote.children} Child${quote.children > 1 ? 'ren' : ''}` : ''}
-• Accommodation: ${quote.rooms} ${quote.is4SleeperRoom ? '4-Sleeper' : '2-Sleeper'} Room${quote.rooms > 1 ? 's' : ''}
-• Room Type: ${quote.roomType}${quote.includesBreakfast ? '\n• Breakfast: Included' : ''}
+🏨 HOTEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${quote.hotelName}
+
+📦 PACKAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${quote.packageName}
+
+📅 TRAVEL DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Check-in:      ${formatDate(quote.checkIn)}
+   Check-out:     ${formatDate(quote.checkOut)}
+   Duration:      ${quote.nights} nights
+   Guests:        ${quote.adults} Adult${quote.adults > 1 ? 's' : ''}${quote.children > 0 ? `, ${quote.children} Child${quote.children > 1 ? 'ren' : ''}` : ''}
+   Rooms:         ${quote.rooms} ${quote.is4SleeperRoom ? '4-Sleeper' : '2-Sleeper'} Room${quote.rooms > 1 ? 's' : ''}
+   Room Type:     ${quote.roomType}${quote.includesBreakfast ? '\n   Breakfast:     Included ✓' : ''}
 `;
 
     // Add package inclusions if available
     if (quote.activitiesIncluded && quote.activitiesIncluded.length > 0) {
-      quoteText += `\nPACKAGE INCLUSIONS:\n`;
+      quoteText += `
+✨ PACKAGE INCLUSIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
       quote.activitiesIncluded.forEach(activity => {
-        quoteText += `✓ ${activity}\n`;
+        quoteText += `   ✓ ${activity}\n`;
       });
     }
 
-  quoteText += `
+    // Add budget if provided
+    if (budget) {
+      quoteText += `
+💰 CLIENT BUDGET
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TOTAL COST: ${formatCurrency(quote.totalForGroup)}${quote.children === 0 ? `\nCOST PER PERSON: ${formatCurrency(quote.totalPerPerson)}` : ''}
+   Total Budget:  R${budget}
+`;
+    }
+
+    quoteText += `
+╔══════════════════════════════════════════════════════════════╗
+║  💵 PRICING                                                   ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                               ║
+║  ${quote.children === 0 ? `PER PERSON:    ${formatCurrency(quote.totalPerPerson).padEnd(15)}` : ''}                             ║
+║  TOTAL COST:   ${formatCurrency(quote.totalForGroup).padEnd(15)}                             ║
+║                                                               ║
+╚══════════════════════════════════════════════════════════════╝
+
+This quote includes hotel accommodation and all activities 
+associated with the package.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📧 info@travelaffordable.co.za
+📱 WhatsApp: +27 79 681 3869
+🌐 www.travelaffordable.co.za
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `;
 

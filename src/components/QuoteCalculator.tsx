@@ -588,7 +588,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                     {fq.quotes.length} options
                   </p>
                 </div>
-                <QuoteList quotes={fq.quotes} onQuoteSelected={onQuoteGenerated} />
+                <QuoteList quotes={fq.quotes} onQuoteSelected={onQuoteGenerated} budget={budget} />
               </div>
             ))}
           </div>
@@ -602,7 +602,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                 Sorted by price (cheapest first)
               </p>
             </div>
-            <QuoteList quotes={quotes} onQuoteSelected={onQuoteGenerated} />
+            <QuoteList quotes={quotes} onQuoteSelected={onQuoteGenerated} budget={budget} />
           </>
         ) : (
           <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background h-full flex items-center justify-center min-h-[400px]">
