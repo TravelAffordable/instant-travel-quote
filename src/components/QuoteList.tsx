@@ -48,71 +48,52 @@ export function QuoteList({ quotes, onQuoteSelected, budget }: QuoteListProps) {
   };
 
   const generateQuoteText = (quote: QuoteResult) => {
-    let quoteText = `
-╔══════════════════════════════════════════════════════════════╗
-║                    TRAVEL AFFORDABLE                          ║
-║                   QUOTE REQUEST                               ║
-╚══════════════════════════════════════════════════════════════╝
+    let quoteText = `TRAVEL AFFORDABLE
+QUOTE REQUEST
 
-📍 DESTINATION: ${quote.destination.toUpperCase()}
+DESTINATION: ${quote.destination.toUpperCase()}
 
-🏨 HOTEL
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOTEL
 ${quote.hotelName}
 
-📦 PACKAGE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PACKAGE
 ${quote.packageName}
 
-📅 TRAVEL DETAILS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Check-in:      ${formatDate(quote.checkIn)}
-   Check-out:     ${formatDate(quote.checkOut)}
-   Duration:      ${quote.nights} nights
-   Guests:        ${quote.adults} Adult${quote.adults > 1 ? 's' : ''}${quote.children > 0 ? `, ${quote.children} Child${quote.children > 1 ? 'ren' : ''}` : ''}
-   Rooms:         ${quote.rooms} ${quote.is4SleeperRoom ? '4-Sleeper' : '2-Sleeper'} Room${quote.rooms > 1 ? 's' : ''}
-   Room Type:     ${quote.roomType}${quote.includesBreakfast ? '\n   Breakfast:     Included ✓' : ''}
+TRAVEL DETAILS
+Check-in: ${formatDate(quote.checkIn)}
+Check-out: ${formatDate(quote.checkOut)}
+Duration: ${quote.nights} nights
+Guests: ${quote.adults} Adult${quote.adults > 1 ? 's' : ''}${quote.children > 0 ? `, ${quote.children} Child${quote.children > 1 ? 'ren' : ''}` : ''}
+Rooms: ${quote.rooms} ${quote.is4SleeperRoom ? '4-Sleeper' : '2-Sleeper'} Room${quote.rooms > 1 ? 's' : ''}
+Room Type: ${quote.roomType}${quote.includesBreakfast ? '\nBreakfast: Included' : ''}
 `;
 
-    // Add package inclusions if available
     if (quote.activitiesIncluded && quote.activitiesIncluded.length > 0) {
       quoteText += `
-✨ PACKAGE INCLUSIONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PACKAGE INCLUSIONS
 `;
       quote.activitiesIncluded.forEach(activity => {
-        quoteText += `   ✓ ${activity}\n`;
+        quoteText += `• ${activity}\n`;
       });
     }
 
-    // Add budget if provided
     if (budget) {
       quoteText += `
-💰 CLIENT BUDGET
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Total Budget:  R${budget}
+CLIENT BUDGET
+R${budget}
 `;
     }
 
     quoteText += `
-╔══════════════════════════════════════════════════════════════╗
-║  💵 PRICING                                                   ║
-╠══════════════════════════════════════════════════════════════╣
-║                                                               ║
-║  ${quote.children === 0 ? `PER PERSON:    ${formatCurrency(quote.totalPerPerson).padEnd(15)}` : ''}                             ║
-║  TOTAL COST:   ${formatCurrency(quote.totalForGroup).padEnd(15)}                             ║
-║                                                               ║
-╚══════════════════════════════════════════════════════════════╝
+PRICING
+${quote.children === 0 ? `Per Person: ${formatCurrency(quote.totalPerPerson)}\n` : ''}Total Cost: ${formatCurrency(quote.totalForGroup)}
 
-This quote includes hotel accommodation and all activities 
-associated with the package.
+This quote includes hotel accommodation and all activities associated with the package.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📧 info@travelaffordable.co.za
-📱 WhatsApp: +27 79 681 3869
-🌐 www.travelaffordable.co.za
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`;
+Contact Us
+Email: info@travelaffordable.co.za
+WhatsApp: +27 79 681 3869
+Web: www.travelaffordable.co.za`;
 
     return quoteText.trim();
   };
@@ -143,7 +124,7 @@ associated with the package.
       return;
     }
 
-    const quotesText = selected.map(q => generateQuoteText(q)).join('\n\n═══════════════════════════\n\n');
+    const quotesText = selected.map(q => generateQuoteText(q)).join('\n\n---\n\n');
     
     if (method === 'email') {
       const subject = `Quote Requests - ${selected.length} option(s) selected`;
@@ -157,7 +138,7 @@ associated with the package.
   };
 
   const handleSendAllQuotes = () => {
-    const quotesText = quotes.map(q => generateQuoteText(q)).join('\n\n═══════════════════════════\n\n');
+    const quotesText = quotes.map(q => generateQuoteText(q)).join('\n\n---\n\n');
     const subject = `Quote Requests - ${quotes.length} option(s)`;
     const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
     window.open(mailtoLink, '_blank');
