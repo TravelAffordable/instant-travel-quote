@@ -121,8 +121,8 @@ serve(async (req) => {
 
     console.log('Hotelbeds request payload:', JSON.stringify(searchPayload));
 
-    // Production environment
-    const response = await fetch('https://api.hotelbeds.com/hotel-api/1.0/hotels', {
+    // Test environment (production requires upgraded credentials from Hotelbeds)
+    const response = await fetch('https://api.test.hotelbeds.com/hotel-api/1.0/hotels', {
       method: 'POST',
       headers: {
         'Api-key': apiKey,
