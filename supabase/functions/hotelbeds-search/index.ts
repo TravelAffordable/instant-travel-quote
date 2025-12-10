@@ -117,12 +117,12 @@ serve(async (req) => {
         maxHotels: 30,
         maxRooms: 5,
       },
-      reviews: true,
     };
 
     console.log('Hotelbeds request payload:', JSON.stringify(searchPayload));
 
-    const response = await fetch('https://api.hotelbeds.com/hotel-api/1.0/hotels', {
+    // Using TEST environment - switch to api.hotelbeds.com for production
+    const response = await fetch('https://api.test.hotelbeds.com/hotel-api/1.0/hotels', {
       method: 'POST',
       headers: {
         'Api-key': apiKey,
