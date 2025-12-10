@@ -12,8 +12,10 @@ import {
   hotelTypeLabels,
   type QuoteResult 
 } from '@/data/travelData';
-import { CalendarDays, Users, Home, Package, Sparkles, Calculator, BedDouble } from 'lucide-react';
+import { CalendarDays, Users, Home, Package, Sparkles, Calculator, BedDouble, Wifi } from 'lucide-react';
 import { QuoteList } from './QuoteList';
+import { LiveHotelQuotes } from './LiveHotelQuotes';
+import { useHotelbedsSearch, type LiveHotelsResult } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
 
 interface QuoteCalculatorProps {
@@ -48,6 +50,10 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   
+  // Live hotel search
+  const { searchHotels, hotels: liveHotels, source: hotelSource, isLoading: isSearchingHotels, error: hotelError, clearHotels } = useHotelbedsSearch();
+  const [useLiveHotels, setUseLiveHotels] = useState(true);
+  
   // Family split mode
   const [showFamilySplitOption, setShowFamilySplitOption] = useState(false);
   const [isFamilySplitMode, setIsFamilySplitMode] = useState(false);
@@ -65,12 +71,14 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     setPackageId('');
     setQuotes([]);
     setFamilyQuotes([]);
+    clearHotels();
   }, [destination]);
 
   // Reset quotes when hotel type changes
   useEffect(() => {
     setQuotes([]);
     setFamilyQuotes([]);
+    clearHotels();
   }, [hotelType]);
 
   // Show family split option when 4+ adults AND children
@@ -114,30 +122,96 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     setFamilies(newFamilies);
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     if (!destination || !packageId || !checkIn || !checkOut || !budget) {
       toast.error('Please fill in all required fields including your budget');
       return;
     }
 
     setIsCalculating(true);
+    clearHotels();
 
-    if (isFamilySplitMode) {
-      // Calculate quotes for each family separately
+    // Parse children ages
+    const ages = childrenAges
+      .split(',')
+      .map(a => parseInt(a.trim()))
+      .filter(a => !isNaN(a) && a >= 3 && a <= 17)
+      .slice(0, children);
+
+    // Ensure we have ages for all children
+    while (ages.length < children) {
+      ages.push(5); // Default age
+    }
+
+    if (useLiveHotels && !isFamilySplitMode) {
+      // Fetch live hotels from Hotelbeds
+      try {
+        const result = await searchHotels({
+          destination,
+          checkIn,
+          checkOut,
+          adults,
+          children,
+          childrenAges: ages,
+          rooms,
+        });
+
+        if (result) {
+          toast.success('Hotels found! Showing available options.');
+        } else {
+          // Fallback to static quotes if live search fails
+          toast.info('Using cached hotel options.');
+          const results = calculateAllQuotes({
+            destination,
+            packageId,
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            adults,
+            children,
+            childrenAges: ages,
+            rooms,
+            hotelType,
+          });
+          if (results.length > 0) {
+            setQuotes(results);
+            onQuoteGenerated?.(results[0]);
+          }
+        }
+      } catch (error) {
+        console.error('Live hotel search error:', error);
+        toast.error('Could not fetch live hotels. Showing cached options.');
+        // Fallback
+        const results = calculateAllQuotes({
+          destination,
+          packageId,
+          checkIn: new Date(checkIn),
+          checkOut: new Date(checkOut),
+          adults,
+          children,
+          childrenAges: ages,
+          rooms,
+          hotelType,
+        });
+        if (results.length > 0) {
+          setQuotes(results);
+          onQuoteGenerated?.(results[0]);
+        }
+      }
+      setIsCalculating(false);
+    } else if (isFamilySplitMode) {
+      // Calculate quotes for each family separately (uses static data for now)
       setTimeout(() => {
         const allFamilyQuotes: FamilyQuotes[] = [];
         
         families.forEach((family, index) => {
-          // Parse children ages for this family
-          const ages = family.childrenAges
+          const familyAges = family.childrenAges
             .split(',')
             .map(a => parseInt(a.trim()))
             .filter(a => !isNaN(a) && a >= 3 && a <= 17)
             .slice(0, family.children);
           
-          // Fill missing ages with default
-          while (ages.length < family.children) {
-            ages.push(5);
+          while (familyAges.length < family.children) {
+            familyAges.push(5);
           }
 
           const results = calculateAllQuotes({
@@ -147,7 +221,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
             checkOut: new Date(checkOut),
             adults: family.adults,
             children: family.children,
-            childrenAges: ages,
+            childrenAges: familyAges,
             rooms: family.rooms,
             hotelType,
           });
@@ -171,19 +245,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
         setIsCalculating(false);
       }, 800);
     } else {
-      // Standard single booking calculation
-      // Parse children ages
-      const ages = childrenAges
-        .split(',')
-        .map(a => parseInt(a.trim()))
-        .filter(a => !isNaN(a) && a >= 3 && a <= 17)
-        .slice(0, children);
-
-      // Ensure we have ages for all children
-      while (ages.length < children) {
-        ages.push(5); // Default age
-      }
-
+      // Standard static calculation
       setTimeout(() => {
         const results = calculateAllQuotes({
           destination,
@@ -556,17 +618,17 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
           <Button
             onClick={handleCalculate}
             className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
-            disabled={isCalculating}
+            disabled={isCalculating || isSearchingHotels}
           >
-            {isCalculating ? (
+            {isCalculating || isSearchingHotels ? (
               <>
                 <Sparkles className="w-5 h-5 mr-2 animate-spin" />
-                Calculating...
+                {isSearchingHotels ? 'Searching Hotels...' : 'Calculating...'}
               </>
             ) : (
               <>
                 <Calculator className="w-5 h-5 mr-2" />
-                Calculate Quote
+                Search Packages
               </>
             )}
           </Button>
@@ -575,7 +637,21 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
 
       {/* Quote Results Section */}
       <div className="space-y-6">
-        {familyQuotes.length > 0 ? (
+        {/* Live Hotel Results */}
+        {liveHotels && packageId ? (
+          <LiveHotelQuotes
+            hotels={liveHotels}
+            pkg={packages.find(p => p.id === packageId)!}
+            nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
+            adults={adults}
+            children={children}
+            childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
+            rooms={rooms}
+            budget={budget}
+            hotelType={hotelType}
+            source={hotelSource}
+          />
+        ) : familyQuotes.length > 0 ? (
           // Family split mode results
           <div className="space-y-8">
             {familyQuotes.map((fq, index) => (
@@ -612,7 +688,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
               </div>
               <h3 className="text-xl font-display font-semibold mb-2">Your Quotes Will Appear Here</h3>
               <p className="text-muted-foreground max-w-sm mx-auto">
-                Fill in your travel details and click "Calculate Quote" to see all available hotel options sorted by price.
+                Fill in your travel details and click "Search Packages" to see all available hotel options sorted by price.
               </p>
             </CardContent>
           </Card>
