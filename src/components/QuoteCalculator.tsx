@@ -255,7 +255,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-2xl font-display">
             <Calculator className="w-6 h-6 text-primary" />
-            Get Your Instant Quote
+            Get Your Live Quote
           </CardTitle>
           <p className="text-muted-foreground text-sm">Fill in your travel details below</p>
         </CardHeader>

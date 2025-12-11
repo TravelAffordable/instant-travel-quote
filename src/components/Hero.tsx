@@ -5,16 +5,17 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight, Sparkles, MapPin, Star, Users, CalendarDays, Home, Package, Calculator, BedDouble, ChevronDown } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown } from 'lucide-react';
 import { 
   destinations, 
   packages, 
   calculateAllQuotes,
   getPackagesByDestination, 
-  hotelTypeLabels,
   type QuoteResult 
 } from '@/data/travelData';
 import { QuoteList } from './QuoteList';
+import { LiveHotelQuotes } from './LiveHotelQuotes';
+import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
 
 interface HeroProps {
@@ -45,9 +46,11 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [children, setChildren] = useState(0);
   const [childrenAges, setChildrenAges] = useState<string>('');
   const [rooms, setRooms] = useState(1);
-  const [hotelType, setHotelType] = useState<'very-affordable' | 'affordable' | 'premium'>('affordable');
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  
+  // Live hotel search
+  const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, clearHotels } = useHotelbedsSearch();
   const [budget, setBudget] = useState('');
 
   // Family split mode
@@ -69,11 +72,10 @@ export function Hero({ onGetQuote }: HeroProps) {
     setFamilyQuotes([]);
   }, [destination]);
 
-  // Reset quotes when hotel type changes
+  // Clear live hotels when destination changes
   useEffect(() => {
-    setQuotes([]);
-    setFamilyQuotes([]);
-  }, [hotelType]);
+    clearHotels();
+  }, [destination]);
 
   // Show family split option when 4+ adults AND children
   useEffect(() => {
@@ -115,111 +117,101 @@ export function Hero({ onGetQuote }: HeroProps) {
     setFamilies(newFamilies);
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     if (!destination || packageIds.length === 0 || !checkIn || !checkOut || !budget) {
       toast.error('Please fill in all required fields including your budget');
       return;
     }
 
     setIsCalculating(true);
+    clearHotels();
+
+    // Parse children ages
+    const ages = childrenAges
+      .split(',')
+      .map(a => parseInt(a.trim()))
+      .filter(a => !isNaN(a) && a >= 3 && a <= 17)
+      .slice(0, children);
+
+    // Ensure we have ages for all children
+    while (ages.length < children) {
+      ages.push(5); // Default age
+    }
 
     if (isFamilySplitMode) {
-      // Calculate quotes for each family separately
-      setTimeout(() => {
-        const allFamilyQuotes: FamilyQuotes[] = [];
+      // Calculate quotes for each family separately (uses static data)
+      const allFamilyQuotes: FamilyQuotes[] = [];
+      
+      families.forEach((family, index) => {
+        const familyAges = family.childrenAges
+          .split(',')
+          .map(a => parseInt(a.trim()))
+          .filter(a => !isNaN(a) && a >= 3 && a <= 17)
+          .slice(0, family.children);
         
-        families.forEach((family, index) => {
-          // Parse children ages for this family
-          const ages = family.childrenAges
-            .split(',')
-            .map(a => parseInt(a.trim()))
-            .filter(a => !isNaN(a) && a >= 3 && a <= 17)
-            .slice(0, family.children);
-          
-          // Fill missing ages with default
-          while (ages.length < family.children) {
-            ages.push(5);
-          }
-
-          let familyResults: QuoteResult[] = [];
-          packageIds.forEach(pkgId => {
-            const results = calculateAllQuotes({
-              destination,
-              packageId: pkgId,
-              checkIn: new Date(checkIn),
-              checkOut: new Date(checkOut),
-              adults: family.adults,
-              children: family.children,
-              childrenAges: ages,
-              rooms: family.rooms,
-              hotelType,
-            });
-            familyResults = [...familyResults, ...results];
-          });
-
-          if (familyResults.length > 0) {
-            familyResults.sort((a, b) => a.totalForGroup - b.totalForGroup);
-            allFamilyQuotes.push({
-              familyIndex: index + 1,
-              parentName: family.parentName || `Family ${index + 1}`,
-              quotes: familyResults,
-            });
-          }
-        });
-
-        if (allFamilyQuotes.length > 0) {
-          setFamilyQuotes(allFamilyQuotes);
-          setQuotes([]);
-          toast.success(`Quotes generated for ${allFamilyQuotes.length} families!`);
-        } else {
-          toast.error('Could not calculate quotes. Please check your selections.');
+        while (familyAges.length < family.children) {
+          familyAges.push(5);
         }
-        setIsCalculating(false);
-      }, 800);
-    } else {
-      // Standard single booking calculation
-      // Parse children ages
-      const ages = childrenAges
-        .split(',')
-        .map(a => parseInt(a.trim()))
-        .filter(a => !isNaN(a))
-        .slice(0, children);
 
-      // Ensure we have ages for all children
-      while (ages.length < children) {
-        ages.push(5); // Default age
-      }
-
-      setTimeout(() => {
-        let allResults: QuoteResult[] = [];
-
-        // Calculate quotes for each selected package
+        let familyResults: QuoteResult[] = [];
         packageIds.forEach(pkgId => {
           const results = calculateAllQuotes({
             destination,
             packageId: pkgId,
             checkIn: new Date(checkIn),
             checkOut: new Date(checkOut),
-            adults,
-            children,
-            childrenAges: ages,
-            rooms,
-            hotelType,
+            adults: family.adults,
+            children: family.children,
+            childrenAges: familyAges,
+            rooms: family.rooms,
+            hotelType: 'affordable',
           });
-          allResults = [...allResults, ...results];
+          familyResults = [...familyResults, ...results];
         });
 
-        if (allResults.length > 0) {
-          // Sort by price
-          allResults.sort((a, b) => a.totalForGroup - b.totalForGroup);
-          setQuotes(allResults);
-          setFamilyQuotes([]);
-          toast.success(`${allResults.length} quote options generated for ${packageIds.length} package(s)!`);
-        } else {
-          toast.error('Could not calculate quotes. Please check your selections.');
+        if (familyResults.length > 0) {
+          familyResults.sort((a, b) => a.totalForGroup - b.totalForGroup);
+          allFamilyQuotes.push({
+            familyIndex: index + 1,
+            parentName: family.parentName || `Family ${index + 1}`,
+            quotes: familyResults,
+          });
         }
-        setIsCalculating(false);
-      }, 800);
+      });
+
+      if (allFamilyQuotes.length > 0) {
+        setFamilyQuotes(allFamilyQuotes);
+        setQuotes([]);
+        toast.success(`Quotes generated for ${allFamilyQuotes.length} families!`);
+      } else {
+        toast.error('Could not calculate quotes. Please check your selections.');
+      }
+      setIsCalculating(false);
+    } else {
+      // Standard booking - use live hotel search
+      try {
+        const result = await searchHotels({
+          destination,
+          checkIn,
+          checkOut,
+          adults,
+          children,
+          childrenAges: ages,
+          rooms,
+        });
+
+        if (result && result.length > 0) {
+          setQuotes([]);
+          setFamilyQuotes([]);
+          toast.success(`${result.length} hotels found!`);
+        } else {
+          toast.info('No hotels available for this search. Please try different dates or contact us.');
+        }
+      } catch (error) {
+        console.error('Live hotel search error:', error);
+        toast.error('Could not fetch hotels. Please try again.');
+      }
+      setIsCalculating(false);
     }
   };
 
@@ -440,25 +432,6 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
-              {/* Row 3: Accommodation Type */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Accommodation Type</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(['very-affordable', 'affordable', 'premium'] as const).map(type => (
-                    <button
-                      key={type}
-                      onClick={() => setHotelType(type)}
-                      className={`px-3 py-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                        hotelType === type
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-gray-200 hover:border-primary/50 text-gray-700'
-                      }`}
-                    >
-                      {hotelTypeLabels[type]}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* Family Split Option */}
               {showFamilySplitOption && !isFamilySplitMode && (
@@ -620,12 +593,12 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <Button
                   onClick={handleCalculate}
                   className="flex-1 h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
-                  disabled={isCalculating}
+                  disabled={isCalculating || isSearchingHotels}
                 >
-                  {isCalculating ? (
+                  {isCalculating || isSearchingHotels ? (
                     <>
                       <Sparkles className="w-5 h-5 mr-2 animate-spin" />
-                      Calculating...
+                      {isSearchingHotels ? 'Searching Hotels...' : 'Calculating...'}
                     </>
                   ) : (
                     <>
@@ -648,7 +621,22 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Quote Results */}
-        {familyQuotes.length > 0 ? (
+        {liveHotels.length > 0 && packageIds.length > 0 ? (
+          <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
+              <LiveHotelQuotes
+                hotels={liveHotels}
+                pkg={packages.find(p => packageIds.includes(p.id))!}
+                nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
+                adults={adults}
+                children={children}
+                childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
+                rooms={rooms}
+                budget={budget}
+              />
+            </div>
+          </div>
+        ) : familyQuotes.length > 0 ? (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
               <div className="space-y-8">
