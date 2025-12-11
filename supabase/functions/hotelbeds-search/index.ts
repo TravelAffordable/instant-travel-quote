@@ -34,22 +34,25 @@ const destinationCodes: Record<string, string> = {
   'bela-bela': 'PRY',
 };
 
-// Fallback coordinates for destinations
-const destinationCoordinates: Record<string, { latitude: number; longitude: number }> = {
-  'harties': { latitude: -25.7461, longitude: 27.8711 },
-  'magalies': { latitude: -25.8333, longitude: 27.5333 },
-  'sun-city': { latitude: -25.3356, longitude: 27.0928 },
-  'durban': { latitude: -29.8587, longitude: 31.0218 },
-  'cape-town': { latitude: -33.9249, longitude: 18.4241 },
-  'mpumalanga': { latitude: -25.4753, longitude: 30.9694 },
-  'drakensberg': { latitude: -29.4500, longitude: 29.4500 },
-  'garden-route': { latitude: -33.9600, longitude: 22.4600 },
-  'johannesburg': { latitude: -26.2041, longitude: 28.0473 },
-  'pretoria': { latitude: -25.7479, longitude: 28.2293 },
-  'umhlanga': { latitude: -29.7300, longitude: 31.0800 },
-  'knysna': { latitude: -34.0356, longitude: 23.0488 },
-  'vaal-river': { latitude: -26.8700, longitude: 27.9800 },
-  'bela-bela': { latitude: -24.8850, longitude: 28.2870 },
+// Destination coordinates and radius settings
+const destinationConfig: Record<string, { latitude: number; longitude: number; radius: number }> = {
+  'harties': { latitude: -25.7461, longitude: 27.8711, radius: 20 },
+  'magalies': { latitude: -25.8333, longitude: 27.5333, radius: 20 },
+  'sun-city': { latitude: -25.3356, longitude: 27.0928, radius: 15 },
+  // Durban Golden Mile/Beachfront - centered on North Beach for beachfront hotels
+  'durban': { latitude: -29.8470, longitude: 31.0350, radius: 2 },
+  'cape-town': { latitude: -33.9249, longitude: 18.4241, radius: 15 },
+  'mpumalanga': { latitude: -25.4753, longitude: 30.9694, radius: 30 },
+  'drakensberg': { latitude: -29.4500, longitude: 29.4500, radius: 30 },
+  'garden-route': { latitude: -33.9600, longitude: 22.4600, radius: 30 },
+  'johannesburg': { latitude: -26.2041, longitude: 28.0473, radius: 20 },
+  'pretoria': { latitude: -25.7479, longitude: 28.2293, radius: 20 },
+  // Umhlanga beachfront
+  'umhlanga': { latitude: -29.7250, longitude: 31.0850, radius: 3 },
+  'knysna': { latitude: -34.0356, longitude: 23.0488, radius: 20 },
+  // Vaal - centered on Emerald Resort Casino
+  'vaal-river': { latitude: -26.6833, longitude: 27.8667, radius: 15 },
+  'bela-bela': { latitude: -24.8850, longitude: 28.2870, radius: 15 },
 };
 
 function generateSignature(apiKey: string, secret: string): string {
@@ -85,7 +88,9 @@ serve(async (req) => {
     console.log('Search request:', { destination, checkIn, checkOut, adults, children, rooms });
 
     const signature = generateSignature(apiKey, apiSecret);
-    const coords = destinationCoordinates[destination] || destinationCoordinates['johannesburg'];
+    const config = destinationConfig[destination] || destinationConfig['johannesburg'];
+    const coords = { latitude: config.latitude, longitude: config.longitude };
+    const searchRadius = config.radius;
 
     // Build occupancy array
     const occupancies = [];
@@ -119,11 +124,11 @@ serve(async (req) => {
       geolocation: {
         latitude: coords.latitude,
         longitude: coords.longitude,
-        radius: 50,
+        radius: searchRadius,
         unit: 'km'
       },
       filter: {
-        maxHotels: 50,
+        maxHotels: 20,
         maxRooms: 5,
       },
     };
