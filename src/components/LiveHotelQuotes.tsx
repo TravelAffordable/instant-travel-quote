@@ -1,12 +1,14 @@
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Mail, MessageSquare, Building2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Building2, DollarSign } from 'lucide-react';
 import { LiveHotelQuoteCard } from './LiveHotelQuoteCard';
-import { type LiveHotelsResult, type LiveHotel } from '@/hooks/useHotelbedsSearch';
+import { type LiveHotel } from '@/hooks/useHotelbedsSearch';
 import { type Package } from '@/data/travelData';
 
 interface LiveHotelQuotesProps {
-  hotels: LiveHotelsResult;
+  hotels: LiveHotel[];
   pkg: Package;
   nights: number;
   adults: number;
@@ -14,8 +16,6 @@ interface LiveHotelQuotesProps {
   childrenAges: number[];
   rooms: number;
   budget: string;
-  hotelType: 'very-affordable' | 'affordable' | 'premium';
-  source: 'live' | 'mock' | null;
 }
 
 export function LiveHotelQuotes({
@@ -27,37 +27,25 @@ export function LiveHotelQuotes({
   childrenAges,
   rooms,
   budget,
-  hotelType,
-  source,
 }: LiveHotelQuotesProps) {
-  // Map hotelType to Hotelbeds categories
-  const categoryMap: Record<string, keyof LiveHotelsResult> = {
-    'very-affordable': 'budget',
-    'affordable': 'affordable',
-    'premium': 'premium',
-  };
-  
-  const selectedCategory = categoryMap[hotelType];
-  const filteredHotels = hotels[selectedCategory] || [];
+  const [maxBudget, setMaxBudget] = useState<string>('');
 
-  const getCategoryLabel = (type: string) => {
-    switch (type) {
-      case 'very-affordable': return 'Budget Option';
-      case 'affordable': return 'Affordable';
-      case 'premium': return 'Premium';
-      default: return type;
-    }
-  };
+  // Parse the optional budget filter
+  const budgetNumber = maxBudget ? parseInt(maxBudget.replace(/[^\d]/g, '')) : null;
 
-  if (filteredHotels.length === 0) {
+  // Filter hotels by budget if set
+  const filteredHotels = budgetNumber 
+    ? hotels.filter(hotel => hotel.minRate <= budgetNumber)
+    : hotels;
+
+  if (hotels.length === 0) {
     return (
       <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
         <CardContent className="py-12 text-center">
           <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No Hotels Available</h3>
           <p className="text-muted-foreground text-sm">
-            No {getCategoryLabel(hotelType)} hotels found for this destination and dates.
-            Try selecting a different accommodation type.
+            No hotels found for this destination and dates. Please try different dates or contact us directly for assistance.
           </p>
         </CardContent>
       </Card>
@@ -66,15 +54,6 @@ export function LiveHotelQuotes({
 
   return (
     <div className="space-y-6">
-      {/* Source indicator */}
-      {source === 'mock' && (
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-          <p className="text-sm text-amber-700">
-            Showing sample hotel options. Live availability will be confirmed upon booking request.
-          </p>
-        </div>
-      )}
-
       {/* Disclaimer */}
       <div className="bg-muted/50 border border-border rounded-lg p-4 space-y-2">
         <p className="text-sm text-muted-foreground">
@@ -87,32 +66,62 @@ export function LiveHotelQuotes({
         </p>
       </div>
 
+      {/* Budget Filter */}
+      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+        <Label className="flex items-center gap-2 text-sm font-medium mb-2">
+          <DollarSign className="w-4 h-4 text-primary" />
+          What would you like to spend for your getaway? (Optional)
+        </Label>
+        <Input
+          type="text"
+          placeholder="e.g. R5000 - Enter max amount to filter hotels"
+          value={maxBudget}
+          onChange={(e) => setMaxBudget(e.target.value)}
+          className="h-10 bg-background"
+        />
+        {budgetNumber && filteredHotels.length !== hotels.length && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Showing {filteredHotels.length} of {hotels.length} hotels within your budget
+          </p>
+        )}
+      </div>
+
       {/* Package Header */}
       <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
         <h3 className="text-lg font-display font-bold text-primary uppercase">
           {pkg.name}
         </h3>
         <p className="text-sm text-muted-foreground mt-1">
-          {filteredHotels.length} {getCategoryLabel(hotelType)} hotel{filteredHotels.length !== 1 ? 's' : ''} available
+          {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''} available
         </p>
       </div>
 
       {/* Hotel Cards */}
-      <div className="space-y-4">
-        {filteredHotels.map((hotel) => (
-          <LiveHotelQuoteCard
-            key={hotel.code}
-            hotel={hotel}
-            pkg={pkg}
-            nights={nights}
-            adults={adults}
-            children={children}
-            childrenAges={childrenAges}
-            rooms={rooms}
-            budget={budget}
-          />
-        ))}
-      </div>
+      {filteredHotels.length === 0 ? (
+        <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
+          <CardContent className="py-8 text-center">
+            <p className="text-muted-foreground text-sm">
+              No hotels match your budget. Try increasing your budget amount or remove the filter to see all options.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredHotels.map((hotel) => (
+            <LiveHotelQuoteCard
+              key={hotel.code}
+              hotel={hotel}
+              pkg={pkg}
+              nights={nights}
+              adults={adults}
+              children={children}
+              childrenAges={childrenAges}
+              rooms={rooms}
+              budget={budget}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

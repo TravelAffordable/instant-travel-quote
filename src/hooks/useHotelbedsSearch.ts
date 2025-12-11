@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 export interface LiveHotel {
   code: string;
   name: string;
-  category: 'budget' | 'affordable' | 'premium';
   stars: number;
   image: string | null;
   address: string;
@@ -22,12 +21,6 @@ export interface LiveHotel {
   }>;
 }
 
-export interface LiveHotelsResult {
-  budget: LiveHotel[];
-  affordable: LiveHotel[];
-  premium: LiveHotel[];
-}
-
 interface SearchParams {
   destination: string;
   checkIn: string;
@@ -41,8 +34,7 @@ interface SearchParams {
 export function useHotelbedsSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hotels, setHotels] = useState<LiveHotelsResult | null>(null);
-  const [source, setSource] = useState<'live' | 'mock' | null>(null);
+  const [hotels, setHotels] = useState<LiveHotel[]>([]);
 
   const searchHotels = async (params: SearchParams) => {
     setIsLoading(true);
@@ -57,26 +49,27 @@ export function useHotelbedsSearch() {
         throw new Error(invokeError.message || 'Failed to search hotels');
       }
 
-      if (!data.success) {
-        throw new Error(data.error || 'Hotel search failed');
+      if (!data.success && data.error) {
+        setError(data.error);
+        setHotels([]);
+        return [];
       }
 
-      setHotels(data.hotels);
-      setSource(data.source);
-      return data.hotels as LiveHotelsResult;
+      const hotelList = data.hotels || [];
+      setHotels(hotelList);
+      return hotelList as LiveHotel[];
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       setError(message);
       console.error('Hotel search error:', err);
-      return null;
+      return [];
     } finally {
       setIsLoading(false);
     }
   };
 
   const clearHotels = () => {
-    setHotels(null);
-    setSource(null);
+    setHotels([]);
     setError(null);
   };
 
@@ -84,7 +77,6 @@ export function useHotelbedsSearch() {
     searchHotels,
     clearHotels,
     hotels,
-    source,
     isLoading,
     error,
   };

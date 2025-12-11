@@ -65,22 +65,16 @@ export function LiveHotelQuoteCard({
     }).format(amount);
   };
 
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case 'budget': return 'Budget Option';
-      case 'affordable': return 'Affordable';
-      case 'premium': return 'Premium';
-      default: return category;
-    }
+  const getStarsLabel = (stars: number) => {
+    if (stars >= 4.5) return 'Premium';
+    if (stars >= 3.5) return 'Comfortable';
+    return 'Budget Friendly';
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'budget': return 'bg-green-500/10 text-green-600 border-green-500/20';
-      case 'affordable': return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
-      case 'premium': return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
-      default: return '';
-    }
+  const getStarsColor = (stars: number) => {
+    if (stars >= 4.5) return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
+    if (stars >= 3.5) return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
+    return 'bg-green-500/10 text-green-600 border-green-500/20';
   };
 
   const handleWhatsApp = () => {
@@ -124,8 +118,8 @@ export function LiveHotelQuoteCard({
             className="w-full h-full object-cover"
           />
           <div className="absolute top-3 left-3">
-            <Badge className={`${getCategoryColor(hotel.category)} border`}>
-              {getCategoryLabel(hotel.category)}
+            <Badge className={`${getStarsColor(hotel.stars)} border`}>
+              {getStarsLabel(hotel.stars)}
             </Badge>
           </div>
           <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-black/60 px-2 py-1 rounded">
