@@ -8,14 +8,13 @@ import {
   destinations, 
   packages, 
   calculateAllQuotes,
-  getPackagesByDestination, 
-  hotelTypeLabels,
+  getPackagesByDestination,
   type QuoteResult 
 } from '@/data/travelData';
-import { CalendarDays, Users, Home, Package, Sparkles, Calculator, BedDouble, Wifi } from 'lucide-react';
+import { CalendarDays, Users, Home, Package, Sparkles, Calculator, BedDouble } from 'lucide-react';
 import { QuoteList } from './QuoteList';
 import { LiveHotelQuotes } from './LiveHotelQuotes';
-import { useHotelbedsSearch, type LiveHotelsResult } from '@/hooks/useHotelbedsSearch';
+import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
 
 interface QuoteCalculatorProps {
@@ -45,14 +44,12 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   const [children, setChildren] = useState(0);
   const [childrenAges, setChildrenAges] = useState<string>('');
   const [rooms, setRooms] = useState(1);
-  const [hotelType, setHotelType] = useState<'very-affordable' | 'affordable' | 'premium'>('affordable');
   const [budget, setBudget] = useState('');
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   
   // Live hotel search
-  const { searchHotels, hotels: liveHotels, source: hotelSource, isLoading: isSearchingHotels, error: hotelError, clearHotels } = useHotelbedsSearch();
-  const [useLiveHotels, setUseLiveHotels] = useState(true);
+  const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, error: hotelError, clearHotels } = useHotelbedsSearch();
   
   // Family split mode
   const [showFamilySplitOption, setShowFamilySplitOption] = useState(false);
@@ -73,13 +70,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     setFamilyQuotes([]);
     clearHotels();
   }, [destination]);
-
-  // Reset quotes when hotel type changes
-  useEffect(() => {
-    setQuotes([]);
-    setFamilyQuotes([]);
-    clearHotels();
-  }, [hotelType]);
+  
 
   // Show family split option when 4+ adults AND children
   useEffect(() => {
@@ -143,7 +134,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
       ages.push(5); // Default age
     }
 
-    if (useLiveHotels && !isFamilySplitMode) {
+    if (!isFamilySplitMode) {
       // Fetch live hotels from Hotelbeds
       try {
         const result = await searchHotels({
@@ -156,46 +147,16 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
           rooms,
         });
 
-        if (result) {
-          toast.success('Hotels found! Showing available options.');
+        if (result && result.length > 0) {
+          toast.success(`${result.length} hotels found!`);
+        } else if (hotelError) {
+          toast.error(hotelError);
         } else {
-          // Fallback to static quotes if live search fails
-          toast.info('Using cached hotel options.');
-          const results = calculateAllQuotes({
-            destination,
-            packageId,
-            checkIn: new Date(checkIn),
-            checkOut: new Date(checkOut),
-            adults,
-            children,
-            childrenAges: ages,
-            rooms,
-            hotelType,
-          });
-          if (results.length > 0) {
-            setQuotes(results);
-            onQuoteGenerated?.(results[0]);
-          }
+          toast.info('No hotels available for this search. Please try different dates.');
         }
       } catch (error) {
         console.error('Live hotel search error:', error);
-        toast.error('Could not fetch live hotels. Showing cached options.');
-        // Fallback
-        const results = calculateAllQuotes({
-          destination,
-          packageId,
-          checkIn: new Date(checkIn),
-          checkOut: new Date(checkOut),
-          adults,
-          children,
-          childrenAges: ages,
-          rooms,
-          hotelType,
-        });
-        if (results.length > 0) {
-          setQuotes(results);
-          onQuoteGenerated?.(results[0]);
-        }
+        toast.error('Could not fetch hotels. Please try again.');
       }
       setIsCalculating(false);
     } else if (isFamilySplitMode) {
@@ -223,7 +184,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
             children: family.children,
             childrenAges: familyAges,
             rooms: family.rooms,
-            hotelType,
+            hotelType: 'affordable',
           });
 
           if (results.length > 0) {
@@ -256,7 +217,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
           children,
           childrenAges: ages,
           rooms,
-          hotelType,
+          hotelType: 'affordable',
         });
 
         if (results.length > 0) {
@@ -569,26 +530,6 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
             </div>
           )}
 
-          {/* Hotel Type */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Accommodation Type</Label>
-            <div className="grid grid-cols-3 gap-2">
-              {(['very-affordable', 'affordable', 'premium'] as const).map(type => (
-                <button
-                  key={type}
-                  onClick={() => setHotelType(type)}
-                  className={`px-3 py-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                    hotelType === type
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border hover:border-primary/50'
-                  }`}
-                >
-                  {hotelTypeLabels[type]}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Budget Field */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -638,7 +579,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
       {/* Quote Results Section */}
       <div className="space-y-6">
         {/* Live Hotel Results */}
-        {liveHotels && packageId ? (
+        {liveHotels.length > 0 && packageId ? (
           <LiveHotelQuotes
             hotels={liveHotels}
             pkg={packages.find(p => p.id === packageId)!}
@@ -648,8 +589,6 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
             childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
             rooms={rooms}
             budget={budget}
-            hotelType={hotelType}
-            source={hotelSource}
           />
         ) : familyQuotes.length > 0 ? (
           // Family split mode results

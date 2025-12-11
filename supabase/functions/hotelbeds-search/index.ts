@@ -18,16 +18,20 @@ interface HotelSearchRequest {
 
 // Map destinations to Hotelbeds destination codes
 const destinationCodes: Record<string, string> = {
-  'harties': 'HLA', // Hartbeespoort area
-  'magalies': 'HLA', // Magaliesberg area (same region)
-  'sun-city': 'SUN', // Sun City
-  'durban': 'DUR', // Durban
-  'cape-town': 'CPT', // Cape Town
-  'mpumalanga': 'MQP', // Mpumalanga/Kruger area
-  'drakensberg': 'PMB', // Drakensberg/Pietermaritzburg area
-  'garden-route': 'GRJ', // Garden Route/George
-  'johannesburg': 'JNB', // Johannesburg
-  'pretoria': 'PRY', // Pretoria
+  'harties': 'HLA',
+  'magalies': 'HLA',
+  'sun-city': 'SUN',
+  'durban': 'DUR',
+  'cape-town': 'CPT',
+  'mpumalanga': 'MQP',
+  'drakensberg': 'PMB',
+  'garden-route': 'GRJ',
+  'johannesburg': 'JNB',
+  'pretoria': 'PRY',
+  'umhlanga': 'DUR',
+  'knysna': 'GRJ',
+  'vaal-river': 'JNB',
+  'bela-bela': 'PRY',
 };
 
 // Fallback coordinates for destinations
@@ -42,6 +46,10 @@ const destinationCoordinates: Record<string, { latitude: number; longitude: numb
   'garden-route': { latitude: -33.9600, longitude: 22.4600 },
   'johannesburg': { latitude: -26.2041, longitude: 28.0473 },
   'pretoria': { latitude: -25.7479, longitude: 28.2293 },
+  'umhlanga': { latitude: -29.7300, longitude: 31.0800 },
+  'knysna': { latitude: -34.0356, longitude: 23.0488 },
+  'vaal-river': { latitude: -26.8700, longitude: 27.9800 },
+  'bela-bela': { latitude: -24.8850, longitude: 28.2870 },
 };
 
 function generateSignature(apiKey: string, secret: string): string {
@@ -50,12 +58,6 @@ function generateSignature(apiKey: string, secret: string): string {
   const hash = createHash('sha256');
   hash.update(signatureString);
   return hash.digest('hex') as string;
-}
-
-function categorizeHotelByStars(stars: number, minRate: number): 'budget' | 'affordable' | 'premium' {
-  if (stars >= 4.5 || minRate >= 2000) return 'premium';
-  if (stars >= 3.5 || minRate >= 1000) return 'affordable';
-  return 'budget';
 }
 
 serve(async (req) => {
@@ -68,7 +70,14 @@ serve(async (req) => {
     const apiSecret = Deno.env.get('HOTELBEDS_API_SECRET');
 
     if (!apiKey || !apiSecret) {
-      throw new Error('Hotelbeds API credentials not configured');
+      console.error('Hotelbeds API credentials not configured');
+      return new Response(JSON.stringify({
+        success: false,
+        hotels: [],
+        error: 'API credentials not configured. Please contact support.'
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const { destination, checkIn, checkOut, adults, children, childrenAges, rooms }: HotelSearchRequest = await req.json();
@@ -114,7 +123,7 @@ serve(async (req) => {
         unit: 'km'
       },
       filter: {
-        maxHotels: 30,
+        maxHotels: 50,
         maxRooms: 5,
       },
     };
@@ -138,13 +147,10 @@ serve(async (req) => {
 
     if (!response.ok) {
       console.error('Hotelbeds API error:', responseText);
-      
-      // Return mock data for development/testing when API fails
       return new Response(JSON.stringify({
-        success: true,
-        hotels: generateMockHotels(destination, checkIn, checkOut, adults, rooms),
-        source: 'mock',
-        message: 'Using sample data - live API unavailable'
+        success: false,
+        hotels: [],
+        error: 'Hotel search unavailable. Please try again later or contact us directly.'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -153,22 +159,20 @@ serve(async (req) => {
     const data = JSON.parse(responseText);
     
     if (!data.hotels || !data.hotels.hotels || data.hotels.hotels.length === 0) {
-      console.log('No hotels found, returning mock data');
+      console.log('No hotels found from Hotelbeds API');
       return new Response(JSON.stringify({
         success: true,
-        hotels: generateMockHotels(destination, checkIn, checkOut, adults, rooms),
-        source: 'mock',
-        message: 'No live availability - showing sample options'
+        hotels: [],
+        message: 'No hotels available for this destination and dates. Please try different dates or contact us.'
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Process and categorize hotels
+    // Process hotels - flat list, no categories
     const processedHotels = data.hotels.hotels.map((hotel: any) => {
       const minRate = hotel.minRate ? parseFloat(hotel.minRate) : 0;
       const stars = hotel.categoryCode ? parseFloat(hotel.categoryCode.replace('EST', '').replace('*', '')) : 3;
-      const category = categorizeHotelByStars(stars, minRate);
       
       // Apply 5% markup
       const markedUpRate = minRate * 1.05;
@@ -176,7 +180,6 @@ serve(async (req) => {
       return {
         code: hotel.code,
         name: hotel.name,
-        category: category,
         stars: stars,
         image: hotel.images && hotel.images.length > 0 
           ? `https://photos.hotelbeds.com/giata/medium/${hotel.images[0].path}`
@@ -199,17 +202,14 @@ serve(async (req) => {
       };
     });
 
-    // Group by category
-    const categorizedHotels = {
-      budget: processedHotels.filter((h: any) => h.category === 'budget').slice(0, 4),
-      affordable: processedHotels.filter((h: any) => h.category === 'affordable').slice(0, 4),
-      premium: processedHotels.filter((h: any) => h.category === 'premium').slice(0, 4),
-    };
+    // Sort by price (cheapest first)
+    processedHotels.sort((a: any, b: any) => a.minRate - b.minRate);
+
+    console.log(`Found ${processedHotels.length} hotels from Hotelbeds`);
 
     return new Response(JSON.stringify({
       success: true,
-      hotels: categorizedHotels,
-      source: 'live',
+      hotels: processedHotels,
       total: processedHotels.length
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -220,6 +220,7 @@ serve(async (req) => {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(JSON.stringify({ 
       success: false, 
+      hotels: [],
       error: errorMessage 
     }), {
       status: 500,
@@ -227,79 +228,3 @@ serve(async (req) => {
     });
   }
 });
-
-// Mock data generator for when API is unavailable
-function generateMockHotels(destination: string, checkIn: string, checkOut: string, adults: number, rooms: number) {
-  const destName = destination.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  
-  const nights = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
-  
-  return {
-    budget: [
-      {
-        code: `${destination}-budget-1`,
-        name: `${destName} Budget Inn`,
-        category: 'budget',
-        stars: 2.5,
-        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400',
-        address: `${destName} Central`,
-        minRate: 350 * nights * rooms,
-        currency: 'ZAR',
-      },
-      {
-        code: `${destination}-budget-2`,
-        name: `${destName} Traveller's Rest`,
-        category: 'budget',
-        stars: 2.5,
-        image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400',
-        address: `${destName} Downtown`,
-        minRate: 450 * nights * rooms,
-        currency: 'ZAR',
-      },
-    ],
-    affordable: [
-      {
-        code: `${destination}-affordable-1`,
-        name: `${destName} Comfort Hotel`,
-        category: 'affordable',
-        stars: 3.5,
-        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400',
-        address: `${destName} Main Road`,
-        minRate: 750 * nights * rooms,
-        currency: 'ZAR',
-      },
-      {
-        code: `${destination}-affordable-2`,
-        name: `${destName} Garden Suites`,
-        category: 'affordable',
-        stars: 3.5,
-        image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400',
-        address: `${destName} Gardens`,
-        minRate: 850 * nights * rooms,
-        currency: 'ZAR',
-      },
-    ],
-    premium: [
-      {
-        code: `${destination}-premium-1`,
-        name: `${destName} Luxury Resort & Spa`,
-        category: 'premium',
-        stars: 4.5,
-        image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400',
-        address: `${destName} Waterfront`,
-        minRate: 1200 * nights * rooms,
-        currency: 'ZAR',
-      },
-      {
-        code: `${destination}-premium-2`,
-        name: `${destName} Grand Hotel`,
-        category: 'premium',
-        stars: 5,
-        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400',
-        address: `${destName} Premium District`,
-        minRate: 1500 * nights * rooms,
-        currency: 'ZAR',
-      },
-    ],
-  };
-}
