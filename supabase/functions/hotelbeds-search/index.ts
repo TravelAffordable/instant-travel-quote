@@ -39,8 +39,8 @@ const destinationConfig: Record<string, { latitude: number; longitude: number; r
   'harties': { latitude: -25.7461, longitude: 27.8711, radius: 20 },
   'magalies': { latitude: -25.8333, longitude: 27.5333, radius: 20 },
   'sun-city': { latitude: -25.3356, longitude: 27.0928, radius: 15 },
-  // Durban Golden Mile/Beachfront - centered on North Beach for beachfront hotels
-  'durban': { latitude: -29.8470, longitude: 31.0350, radius: 2 },
+  // Durban Golden Mile/Beachfront - expanded to capture more beachfront hotels
+  'durban': { latitude: -29.8587, longitude: 31.0218, radius: 10 },
   'cape-town': { latitude: -33.9249, longitude: 18.4241, radius: 15 },
   'mpumalanga': { latitude: -25.4753, longitude: 30.9694, radius: 30 },
   'drakensberg': { latitude: -29.4500, longitude: 29.4500, radius: 30 },
