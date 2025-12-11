@@ -114,7 +114,7 @@ serve(async (req) => {
       occupancies.push(roomOccupancy);
     }
 
-    // Hotelbeds availability request
+    // Hotelbeds availability request - use larger radius to get more hotels
     const searchPayload = {
       stay: {
         checkIn: checkIn,
@@ -128,12 +128,13 @@ serve(async (req) => {
         unit: 'km'
       },
       filter: {
-        maxHotels: 20,
+        maxHotels: 50, // Request more to see what's available
         maxRooms: 5,
       },
     };
 
     console.log('Hotelbeds request payload:', JSON.stringify(searchPayload));
+    console.log(`Searching ${destination} with radius ${searchRadius}km from coords ${coords.latitude}, ${coords.longitude}`);
 
     // Test environment (production requires upgraded credentials from Hotelbeds)
     const response = await fetch('https://api.test.hotelbeds.com/hotel-api/1.0/hotels', {
