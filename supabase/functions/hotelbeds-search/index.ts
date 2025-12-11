@@ -169,13 +169,16 @@ serve(async (req) => {
       });
     }
 
+    // EUR to ZAR conversion rate (approximate - in production use live rates)
+    const EUR_TO_ZAR = 19.5;
+    
     // Process hotels - flat list, no categories
     const processedHotels = data.hotels.hotels.map((hotel: any) => {
-      const minRate = hotel.minRate ? parseFloat(hotel.minRate) : 0;
+      const minRateEUR = hotel.minRate ? parseFloat(hotel.minRate) : 0;
       const stars = hotel.categoryCode ? parseFloat(hotel.categoryCode.replace('EST', '').replace('*', '')) : 3;
       
-      // Apply 5% markup
-      const markedUpRate = minRate * 1.05;
+      // Convert EUR to ZAR and apply 5% markup
+      const minRateZAR = minRateEUR * EUR_TO_ZAR * 1.05;
       
       return {
         code: hotel.code,
@@ -185,14 +188,14 @@ serve(async (req) => {
           ? `https://photos.hotelbeds.com/giata/medium/${hotel.images[0].path}`
           : null,
         address: hotel.address?.content || '',
-        minRate: markedUpRate,
-        currency: hotel.currency || 'ZAR',
+        minRate: Math.round(minRateZAR), // Rounded ZAR amount
+        currency: 'ZAR',
         rooms: hotel.rooms?.map((room: any) => ({
           code: room.code,
           name: room.name,
           rates: room.rates?.map((rate: any) => ({
             rateKey: rate.rateKey,
-            net: parseFloat(rate.net) * 1.05,
+            net: Math.round(parseFloat(rate.net) * EUR_TO_ZAR * 1.05),
             boardCode: rate.boardCode,
             boardName: rate.boardName,
             cancellationPolicies: rate.cancellationPolicies,
