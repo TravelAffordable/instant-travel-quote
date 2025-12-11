@@ -159,49 +159,28 @@ export function LiveHotelQuoteCard({
             )}
           </div>
 
-          {/* Pricing Breakdown */}
-          <div className="bg-muted/30 rounded-lg p-3 mb-4 space-y-1.5">
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Accommodation ({nights} nights × {rooms} room{rooms > 1 ? 's' : ''})</span>
-              <span>{formatCurrency(accommodationCost)}</span>
-            </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Package activities ({adults} adult{adults > 1 ? 's' : ''} × {formatCurrency(packageCostPerAdult)})</span>
-              <span>{formatCurrency(packageTotal)}</span>
-            </div>
-            {kidsPackageCost > 0 && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Kids package ({children} child{children > 1 ? 'ren' : ''})</span>
-                <span>{formatCurrency(kidsPackageCost)}</span>
-              </div>
-            )}
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Service fees ({adults} × {formatCurrency(serviceFeePerAdult)})</span>
-              <span>{formatCurrency(totalServiceFees)}</span>
-            </div>
-            {kidsFees > 0 && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Kids fees</span>
-                <span>{formatCurrency(kidsFees)}</span>
-              </div>
-            )}
-            <div className="border-t border-border pt-2 mt-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-sm">Total Package Price</span>
-                <span className="text-xl font-bold text-primary">{formatCurrency(totalCost)}</span>
-              </div>
+          {/* Package Description */}
+          <div className="bg-muted/30 rounded-lg p-3 mb-4">
+            <p className="text-sm text-foreground leading-relaxed">
+              The discounted price below includes {nights} night{nights > 1 ? 's' : ''} accommodation, {pkg.activitiesIncluded.join(', ')}. Our getaways are stylish and trendy with a bit of affordable sophistication.
+            </p>
+          </div>
+
+          {/* Total Price */}
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">Total Package Price</p>
+              <p className="text-2xl font-bold text-primary">{formatCurrency(totalCost)}</p>
               {children === 0 && (
-                <p className="text-right text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {formatCurrency(pricePerPerson)} per person
                 </p>
               )}
             </div>
-          </div>
-          
-          {/* Trip Details */}
-          <div className="text-right text-xs text-muted-foreground mb-4">
-            <p>{nights} nights • {rooms} room{rooms > 1 ? 's' : ''}</p>
-            <p>{adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` • ${children} child${children > 1 ? 'ren' : ''}` : ''}</p>
+            <div className="text-right text-xs text-muted-foreground">
+              <p>{nights} nights • {rooms} room{rooms > 1 ? 's' : ''}</p>
+              <p>{adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` • ${children} child${children > 1 ? 'ren' : ''}` : ''}</p>
+            </div>
           </div>
 
           {/* Actions */}
