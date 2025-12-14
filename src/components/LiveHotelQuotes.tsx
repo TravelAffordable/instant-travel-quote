@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Building2, DollarSign } from 'lucide-react';
 import { LiveHotelQuoteCard } from './LiveHotelQuoteCard';
-import { type LiveHotel } from '@/hooks/useHotelbedsSearch';
+import { type AmadeusHotel as LiveHotel } from '@/hooks/useAmadeusSearch';
 import { type Package } from '@/data/travelData';
 
 interface LiveHotelQuotesProps {
