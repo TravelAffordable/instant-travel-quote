@@ -16,17 +16,26 @@ interface HotelSearchRequest {
 }
 
 // Destination coordinates for geographic search
+// Keys support both hyphenated and space-separated formats
 const destinationConfig: Record<string, { latitude: number; longitude: number; radius: number; cityCode: string }> = {
   'durban': { latitude: -29.8560, longitude: 31.0315, radius: 3, cityCode: 'DUR' },
   'umhlanga': { latitude: -29.725, longitude: 31.085, radius: 3, cityCode: 'DUR' },
   'ballito': { latitude: -29.539, longitude: 31.214, radius: 5, cityCode: 'DUR' },
   'harties': { latitude: -25.7461, longitude: 27.8614, radius: 10, cityCode: 'JNB' },
-  'magalies': { latitude: -25.7833, longitude: 27.5167, radius: 10, cityCode: 'JNB' },
+  'hartbeespoort': { latitude: -25.7461, longitude: 27.8614, radius: 10, cityCode: 'JNB' },
+  'magalies': { latitude: -25.7833, longitude: 27.5167, radius: 15, cityCode: 'JNB' },
+  'magaliesburg': { latitude: -25.9833, longitude: 27.5500, radius: 20, cityCode: 'JNB' },
   'pilanesberg': { latitude: -25.2667, longitude: 27.0833, radius: 15, cityCode: 'JNB' },
-  'sun city': { latitude: -25.3350, longitude: 27.0992, radius: 10, cityCode: 'JNB' },
-  'vaal': { latitude: -26.8700, longitude: 28.1100, radius: 15, cityCode: 'JNB' },
+  'sun-city': { latitude: -25.3350, longitude: 27.0992, radius: 15, cityCode: 'JNB' },
+  'suncity': { latitude: -25.3350, longitude: 27.0992, radius: 15, cityCode: 'JNB' },
+  'vaal': { latitude: -26.8700, longitude: 28.1100, radius: 20, cityCode: 'JNB' },
+  'vaal-river': { latitude: -26.8700, longitude: 28.1100, radius: 20, cityCode: 'JNB' },
   'mpumalanga': { latitude: -25.4358, longitude: 30.9861, radius: 30, cityCode: 'MQP' },
-  'cape town': { latitude: -33.9249, longitude: 18.4241, radius: 10, cityCode: 'CPT' },
+  'cape-town': { latitude: -33.9249, longitude: 18.4241, radius: 15, cityCode: 'CPT' },
+  'capetown': { latitude: -33.9249, longitude: 18.4241, radius: 15, cityCode: 'CPT' },
+  'knysna': { latitude: -34.0356, longitude: 23.0488, radius: 20, cityCode: 'GRJ' },
+  'garden-route': { latitude: -34.0356, longitude: 23.0488, radius: 30, cityCode: 'GRJ' },
+  'plettenberg': { latitude: -34.0527, longitude: 23.3716, radius: 15, cityCode: 'GRJ' },
   'zanzibar': { latitude: -6.1659, longitude: 39.2026, radius: 20, cityCode: 'ZNZ' },
   'mozambique': { latitude: -25.9692, longitude: 32.5732, radius: 20, cityCode: 'MPM' },
   'mauritius': { latitude: -20.1609, longitude: 57.5012, radius: 30, cityCode: 'MRU' },
