@@ -208,6 +208,9 @@ serve(async (req) => {
     // EUR to ZAR conversion rate
     const EUR_TO_ZAR = 19.5;
     const MARKUP = 1.05; // 5% markup
+    // Sandbox price correction factor - Amadeus sandbox returns inflated prices
+    // Realistic accommodation for 2 nights should be R1,000-R3,000, not R50,000+
+    const SANDBOX_CORRECTION = 0.05; // Apply 5% of sandbox price to get realistic rates
 
     // Process and format hotels
     const hotels = offers.map((offer: any) => {
@@ -217,7 +220,8 @@ serve(async (req) => {
       if (!bestOffer) return null;
 
       const priceEUR = parseFloat(bestOffer.price?.total || '0');
-      const priceZAR = priceEUR * EUR_TO_ZAR * MARKUP;
+      // Apply sandbox correction to get realistic accommodation prices
+      const priceZAR = priceEUR * EUR_TO_ZAR * MARKUP * SANDBOX_CORRECTION;
 
       return {
         code: hotel.hotelId,
