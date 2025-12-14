@@ -91,7 +91,7 @@ async function getHotelsByLocation(
   const data = await response.json();
   const hotelIds = data.data?.map((hotel: any) => hotel.hotelId) || [];
   console.log(`Found ${hotelIds.length} hotel IDs`);
-  return hotelIds.slice(0, 50); // Limit to 50 hotels for API constraints
+  return hotelIds; // Return all hotels found
 }
 
 // Search hotel offers/prices
