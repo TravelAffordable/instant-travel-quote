@@ -2,3 +2,6 @@ project_id = "jvmkyqrwhbcdkdsccezg"
 
 [functions.hotelbeds-search]
 verify_jwt = false
+
+[functions.amadeus-search]
+verify_jwt = false
