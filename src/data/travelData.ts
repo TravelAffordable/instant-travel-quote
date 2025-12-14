@@ -42,7 +42,7 @@ export interface Destination {
 // Destination short names for hotel naming
 const destinationShortNames: Record<string, string> = {
   'harties': 'Harties',
-  'magalies': 'Magalies',
+  'magalies': 'Magaliesburg',
   'durban': 'Durban',
   'umhlanga': 'Umhlanga',
   'cape-town': 'Cape Town',
@@ -57,12 +57,12 @@ const destinationShortNames: Record<string, string> = {
   'pretoria': 'Pretoria',
 };
 
-// Very Affordable pricing tiers (per night) - 4 hotels A-D
-const veryAffordablePrices = [350, 450, 550, 650];
-// Affordable pricing tiers (per night) - 4 hotels A-D
-const affordablePrices = [700, 750, 800, 850];
-// Premium pricing tiers (per night) - 4 hotels
-const premiumPrices = [950, 1000, 1100, 1200];
+// Budget Option pricing tiers (per night) - 10 hotels A-J
+const budgetPrices = [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
+// Affordable pricing tiers (per night) - 10 hotels A-J
+const affordablePrices = [1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100];
+// Premium pricing tiers (per night) - 10 hotels A-J
+const premiumPrices = [2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100];
 
 // Premium Hotels with their actual names (prices will use premiumPrices array - 4 hotels per destination)
 const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean }[]> = {
@@ -156,7 +156,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
 function generateHotels(): Hotel[] {
   const allHotels: Hotel[] = [];
   const destinationIds = Object.keys(destinationShortNames);
-  const hotelLetters = ['A', 'B', 'C', 'D'];
+  const hotelLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
   destinationIds.forEach(destId => {
     const shortName = destinationShortNames[destId];
@@ -185,21 +185,21 @@ function generateHotels(): Hotel[] {
       'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800', // Luxury hotel exterior
     ];
 
-    // Very Affordable Hotels (4 per destination: A-D)
+    // Budget Option Hotels (10 per destination: A-J)
     hotelLetters.forEach((letter, index) => {
       allHotels.push({
         id: `${destId}-very-affordable-${letter.toLowerCase()}`,
-        name: `${shortName} Budget Option ${letter}`,
+        name: `${shortName} Budget Hotel Option ${letter}`,
         destination: destId,
-        pricePerNight: veryAffordablePrices[index],
+        pricePerNight: budgetPrices[index],
         rating: 3.5 + (Math.random() * 0.5),
         type: 'very-affordable',
         amenities: ['WiFi', 'Parking', 'TV'],
-        image: budgetImages[index],
+        image: budgetImages[index % budgetImages.length],
       });
     });
 
-    // Affordable Hotels (4 per destination: A-D)
+    // Affordable Hotels (10 per destination: A-J)
     hotelLetters.forEach((letter, index) => {
       allHotels.push({
         id: `${destId}-affordable-${letter.toLowerCase()}`,
@@ -209,23 +209,21 @@ function generateHotels(): Hotel[] {
         rating: 4.0 + (Math.random() * 0.3),
         type: 'affordable',
         amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant'],
-        image: affordableImages[index],
+        image: affordableImages[index % affordableImages.length],
       });
     });
 
-    // Premium Hotels (actual names with standardized pricing)
-    const premiums = premiumHotelNames[destId] || [];
-    premiums.slice(0, 4).forEach((hotel, index) => {
+    // Premium Hotels (10 per destination: A-J)
+    hotelLetters.forEach((letter, index) => {
       allHotels.push({
-        id: `${destId}-premium-${index + 1}`,
-        name: hotel.name,
+        id: `${destId}-premium-${letter.toLowerCase()}`,
+        name: `${shortName} Premium Hotel ${letter}`,
         destination: destId,
         pricePerNight: premiumPrices[index],
         rating: 4.5 + (Math.random() * 0.5),
         type: 'premium',
         amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
-        image: premiumImages[index],
-        includesBreakfast: hotel.includesBreakfast,
+        image: premiumImages[index % premiumImages.length],
       });
     });
   });
@@ -863,7 +861,7 @@ export const packages: Package[] = [
 // Formula: (R700 accommodation + basePrice×2 + R1700 service fees) / 2 = R1200 + basePrice
 export const destinations: Destination[] = [
   { id: 'harties', name: 'Hartbeespoort', shortName: 'Harties', country: 'South Africa', description: 'Scenic escape near the dam with breathtaking views and activities.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/Harties.jpg', startingPrice: 1580, popular: true, international: false },
-  { id: 'magalies', name: 'Magaliesberg', shortName: 'Magalies', country: 'South Africa', description: 'Mountain retreats and nature getaways for a refreshing break.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/magalies1.jpg', startingPrice: 2100, popular: true, international: false },
+  { id: 'magalies', name: 'Magaliesburg', shortName: 'Magaliesburg', country: 'South Africa', description: 'Mountain retreats and nature getaways for a refreshing break.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/magalies1.jpg', startingPrice: 2100, popular: true, international: false },
   { id: 'durban', name: 'Durban Beachfront', shortName: 'Durban', country: 'South Africa', description: 'Sunny beach holidays with warm waters and vibrant city life.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/durban.png', startingPrice: 1600, popular: true, international: false },
   { id: 'umhlanga', name: 'Umhlanga', shortName: 'Umhlanga', country: 'South Africa', description: 'Coastal escape near Durban with beautiful beaches and upscale shopping.', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800', startingPrice: 1700, popular: true, international: false },
   { id: 'cape-town', name: 'Cape Town', shortName: 'Cape Town', country: 'South Africa', description: 'Iconic Table Mountain, stunning beaches, and world-class vineyards.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg', startingPrice: 2400, popular: true, international: false },

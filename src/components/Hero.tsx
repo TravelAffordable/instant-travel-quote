@@ -350,7 +350,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <div className="space-y-2 col-span-2 md:col-span-1">
                   <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
                   <p className="text-xs text-muted-foreground mb-1">
-                    Please select the package/s you'd like quote for by selecting in the dropdown
+                    Please select the package/s you'd like quote for by selecting in the dropdown. You may choose more than one package to generate quotes for various packages.
                   </p>
                   <Popover open={isPackageDropdownOpen} onOpenChange={setIsPackageDropdownOpen}>
                     <PopoverTrigger asChild>
@@ -375,11 +375,17 @@ export function Hero({ onGetQuote }: HeroProps) {
                           <div
                             key={pkg.id}
                             className="flex items-start space-x-3 p-2 hover:bg-accent/50 rounded-md cursor-pointer"
-                            onClick={() => togglePackageSelection(pkg.id)}
+                            onClick={() => {
+                              togglePackageSelection(pkg.id);
+                              setIsPackageDropdownOpen(false);
+                            }}
                           >
                             <Checkbox
                               checked={packageIds.includes(pkg.id)}
-                              onCheckedChange={() => togglePackageSelection(pkg.id)}
+                              onCheckedChange={() => {
+                                togglePackageSelection(pkg.id);
+                                setIsPackageDropdownOpen(false);
+                              }}
                               className="mt-1"
                             />
                             <label className="text-sm cursor-pointer flex-1 leading-tight">
@@ -397,25 +403,25 @@ export function Hero({ onGetQuote }: HeroProps) {
                     <SelectTrigger className="h-11 bg-white border-gray-200">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 100 }, (_, i) => i + 1).map(n => (
                         <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Kids (Ages)</Label>
-                  <Input
-                    placeholder="e.g. 5, 8"
-                    value={childrenAges}
-                    onChange={e => {
-                      setChildrenAges(e.target.value);
-                      const count = e.target.value.split(',').filter(a => a.trim()).length;
-                      setChildren(count);
-                    }}
-                    className="h-11 bg-white border-gray-200"
-                  />
+                  <Label className="text-sm font-medium text-gray-700">Number of Kids</Label>
+                  <Select value={children.toString()} onValueChange={v => setChildren(parseInt(v))}>
+                    <SelectTrigger className="h-11 bg-white border-gray-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 101 }, (_, i) => i).map(n => (
+                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Rooms *</Label>
@@ -423,8 +429,8 @@ export function Hero({ onGetQuote }: HeroProps) {
                     <SelectTrigger className="h-11 bg-white border-gray-200">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 100 }, (_, i) => i + 1).map(n => (
                         <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
                       ))}
                     </SelectContent>
