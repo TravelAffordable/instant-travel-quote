@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Mail, MessageSquare, Star, MapPin, Building2 } from 'lucide-react';
-import { type AmadeusHotel as LiveHotel } from '@/hooks/useAmadeusSearch';
+import { type LiveHotel } from '@/hooks/useHotelbedsSearch';
 import { type Package } from '@/data/travelData';
 
 interface LiveHotelQuoteCardProps {
