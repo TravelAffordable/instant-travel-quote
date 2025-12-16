@@ -135,7 +135,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     }
 
     if (!isFamilySplitMode) {
-      // Fetch live hotels from Amadeus
+      // Fetch live hotels from Hotelbeds
       try {
         const result = await searchHotels({
           destination,
