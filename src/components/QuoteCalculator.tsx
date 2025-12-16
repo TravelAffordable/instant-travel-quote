@@ -14,7 +14,7 @@ import {
 import { CalendarDays, Users, Home, Package, Sparkles, Calculator, BedDouble } from 'lucide-react';
 import { QuoteList } from './QuoteList';
 import { LiveHotelQuotes } from './LiveHotelQuotes';
-import { useAmadeusSearch } from '@/hooks/useAmadeusSearch';
+import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
 
 interface QuoteCalculatorProps {
@@ -48,8 +48,8 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   
-  // Live hotel search - using Amadeus API
-  const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, error: hotelError, clearHotels } = useAmadeusSearch();
+  // Live hotel search - using Hotelbeds API (pre-production)
+  const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, error: hotelError, clearHotels } = useHotelbedsSearch();
   
   // Family split mode
   const [showFamilySplitOption, setShowFamilySplitOption] = useState(false);
