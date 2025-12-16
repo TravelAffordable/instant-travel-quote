@@ -38,17 +38,17 @@ const destinationCodes: Record<string, string> = {
 const destinationConfig: Record<string, { latitude: number; longitude: number; radius: number }> = {
   'harties': { latitude: -25.7461, longitude: 27.8711, radius: 20 },
   'magalies': { latitude: -25.8333, longitude: 27.5333, radius: 20 },
-  'sun-city': { latitude: -25.3356, longitude: 27.0928, radius: 15 },
-  // Durban Beachfront only - North Beach to South Beach (Golden Mile strip)
-  'durban': { latitude: -29.8560, longitude: 31.0315, radius: 3 },
+  'sun-city': { latitude: -25.3356, longitude: 27.0928, radius: 20 },
+  // Durban metro area (beachfront + CBD + Berea + surrounds)
+  'durban': { latitude: -29.8560, longitude: 31.0315, radius: 20 },
   'cape-town': { latitude: -33.9249, longitude: 18.4241, radius: 15 },
   'mpumalanga': { latitude: -25.4753, longitude: 30.9694, radius: 30 },
   'drakensberg': { latitude: -29.4500, longitude: 29.4500, radius: 30 },
   'garden-route': { latitude: -33.9600, longitude: 22.4600, radius: 30 },
   'johannesburg': { latitude: -26.2041, longitude: 28.0473, radius: 20 },
   'pretoria': { latitude: -25.7479, longitude: 28.2293, radius: 20 },
-  // Umhlanga beachfront
-  'umhlanga': { latitude: -29.7250, longitude: 31.0850, radius: 3 },
+  // Umhlanga and surrounds
+  'umhlanga': { latitude: -29.7250, longitude: 31.0850, radius: 10 },
   'knysna': { latitude: -34.0356, longitude: 23.0488, radius: 20 },
   // Vaal - centered on Emerald Resort Casino
   'vaal-river': { latitude: -26.6833, longitude: 27.8667, radius: 15 },
