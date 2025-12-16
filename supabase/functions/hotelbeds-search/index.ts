@@ -53,6 +53,8 @@ const destinationConfig: Record<string, { latitude: number; longitude: number; r
   'knysna': { latitude: -34.0356, longitude: 23.0488, radius: 20 },
   // Vaal - centered on Emerald Resort Casino
   'vaal-river': { latitude: -26.6833, longitude: 27.8667, radius: 15 },
+  // Dubai - centered on Burj Khalifa area, 20km radius
+  'dubai': { latitude: 25.1972, longitude: 55.2744, radius: 20 },
   'bela-bela': { latitude: -24.8850, longitude: 28.2870, radius: 15 },
 };
 
