@@ -124,6 +124,10 @@ export function Hero({ onGetQuote }: HeroProps) {
     }
 
     setIsCalculating(true);
+
+    // Always reset previous results before calculating a new search.
+    setQuotes([]);
+    setFamilyQuotes([]);
     clearHotels();
 
     // Parse children ages
@@ -141,14 +145,14 @@ export function Hero({ onGetQuote }: HeroProps) {
     if (isFamilySplitMode) {
       // Calculate quotes for each family separately (uses static data)
       const allFamilyQuotes: FamilyQuotes[] = [];
-      
+
       families.forEach((family, index) => {
         const familyAges = family.childrenAges
           .split(',')
           .map(a => parseInt(a.trim()))
           .filter(a => !isNaN(a) && a >= 3 && a <= 17)
           .slice(0, family.children);
-        
+
         while (familyAges.length < family.children) {
           familyAges.push(5);
         }
@@ -181,7 +185,6 @@ export function Hero({ onGetQuote }: HeroProps) {
 
       if (allFamilyQuotes.length > 0) {
         setFamilyQuotes(allFamilyQuotes);
-        setQuotes([]);
         toast.success(`Quotes generated for ${allFamilyQuotes.length} families!`);
       } else {
         toast.error('Could not calculate quotes. Please check your selections.');
@@ -201,8 +204,6 @@ export function Hero({ onGetQuote }: HeroProps) {
         });
 
         if (result && result.length > 0) {
-          setQuotes([]);
-          setFamilyQuotes([]);
           toast.success(`${result.length} hotels found!`);
         } else {
           toast.info('No hotels available for this search. Please try different dates or contact us.');
@@ -210,8 +211,9 @@ export function Hero({ onGetQuote }: HeroProps) {
       } catch (error) {
         console.error('Live hotel search error:', error);
         toast.error('Could not fetch hotels. Please try again.');
+      } finally {
+        setIsCalculating(false);
       }
-      setIsCalculating(false);
     }
   };
 
