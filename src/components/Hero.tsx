@@ -15,7 +15,7 @@ import {
 } from '@/data/travelData';
 import { QuoteList } from './QuoteList';
 import { LiveHotelQuotes } from './LiveHotelQuotes';
-import { useAmadeusSearch } from '@/hooks/useAmadeusSearch';
+import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
 
 interface HeroProps {
@@ -49,8 +49,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   
-  // Live hotel search - using Amadeus API
-  const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, clearHotels } = useAmadeusSearch();
+  // Live hotel search - using Hotelbeds API (pre-production)
+  const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, clearHotels } = useHotelbedsSearch();
   const [budget, setBudget] = useState('');
 
   // Family split mode
