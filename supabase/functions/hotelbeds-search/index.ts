@@ -55,6 +55,10 @@ const destinationConfig: Record<string, { latitude: number; longitude: number; r
   'vaal-river': { latitude: -26.6833, longitude: 27.8667, radius: 15 },
   // Dubai - centered on Burj Khalifa area, 20km radius
   'dubai': { latitude: 25.1972, longitude: 55.2744, radius: 20 },
+  // Phuket - centered on Patong Beach area, 30km radius
+  'phuket': { latitude: 7.8804, longitude: 98.3923, radius: 30 },
+  // Thailand (general) - centered on Bangkok, 30km radius
+  'thailand': { latitude: 13.7563, longitude: 100.5018, radius: 30 },
   'bela-bela': { latitude: -24.8850, longitude: 28.2870, radius: 15 },
 };
 
