@@ -29,6 +29,10 @@ interface SearchParams {
   children: number;
   childrenAges?: number[];
   rooms: number;
+  bookingType?: 'accommodation-only' | 'with-activities';
+  filterBreakfast?: boolean;
+  filterPool?: boolean;
+  filterCheapest?: boolean;
 }
 
 export function useHotelbedsSearch() {

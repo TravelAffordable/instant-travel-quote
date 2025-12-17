@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -17,6 +17,8 @@ import { QuoteList } from './QuoteList';
 import { LiveHotelQuotes } from './LiveHotelQuotes';
 import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
+
+type BookingType = 'accommodation-only' | 'with-activities';
 
 interface HeroProps {
   onGetQuote: () => void;
@@ -48,6 +50,12 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [rooms, setRooms] = useState(1);
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  
+  // Booking type and filters
+  const [bookingType, setBookingType] = useState<BookingType>('with-activities');
+  const [filterCheapest, setFilterCheapest] = useState(true);
+  const [filterBreakfast, setFilterBreakfast] = useState(false);
+  const [filterPool, setFilterPool] = useState(false);
   
   // Live hotel search - using Hotelbeds API (pre-production)
   const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, clearHotels } = useHotelbedsSearch();
@@ -118,7 +126,13 @@ export function Hero({ onGetQuote }: HeroProps) {
   };
 
   const handleCalculate = async () => {
-    if (!destination || packageIds.length === 0 || !checkIn || !checkOut || !budget) {
+    // For accommodation only, we don't need packages
+    if (bookingType === 'with-activities' && packageIds.length === 0) {
+      toast.error('Please select at least one package');
+      return;
+    }
+    
+    if (!destination || !checkIn || !checkOut || !budget) {
       toast.error('Please fill in all required fields including your budget');
       return;
     }
@@ -201,6 +215,10 @@ export function Hero({ onGetQuote }: HeroProps) {
           children,
           childrenAges: ages,
           rooms,
+          bookingType,
+          filterBreakfast,
+          filterPool,
+          filterCheapest,
         });
 
         if (result && result.length > 0) {
@@ -297,6 +315,63 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
+        {/* Booking Type Selection - Outside the white form */}
+        <div className="max-w-4xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: '0.28s' }}>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => setBookingType('accommodation-only')}
+              className={`flex items-center gap-3 px-6 py-4 rounded-xl transition-all ${
+                bookingType === 'accommodation-only'
+                  ? 'bg-white text-primary shadow-lg scale-105'
+                  : 'bg-white/30 text-white hover:bg-white/40 backdrop-blur-sm'
+              }`}
+            >
+              <Hotel className="w-5 h-5" />
+              <span className="font-medium">I would like to book accommodation only</span>
+            </button>
+            <button
+              onClick={() => setBookingType('with-activities')}
+              className={`flex items-center gap-3 px-6 py-4 rounded-xl transition-all ${
+                bookingType === 'with-activities'
+                  ? 'bg-white text-primary shadow-lg scale-105'
+                  : 'bg-white/30 text-white hover:bg-white/40 backdrop-blur-sm'
+              }`}
+            >
+              <PartyPopper className="w-5 h-5" />
+              <span className="font-medium">I would like accommodation with fun activities included</span>
+            </button>
+          </div>
+          
+          {/* Filter Preferences */}
+          <div className="flex flex-wrap justify-center gap-4 mt-4">
+            <p className="text-white/90 text-sm font-medium w-full text-center mb-1">Show me:</p>
+            <label className="flex items-center gap-2 text-white cursor-pointer hover:text-white/80 transition-colors">
+              <Checkbox 
+                checked={filterCheapest} 
+                onCheckedChange={(checked) => setFilterCheapest(checked as boolean)}
+                className="border-white/60 data-[state=checked]:bg-white data-[state=checked]:text-primary"
+              />
+              <span className="text-sm">Cheapest hotels first</span>
+            </label>
+            <label className="flex items-center gap-2 text-white cursor-pointer hover:text-white/80 transition-colors">
+              <Checkbox 
+                checked={filterBreakfast} 
+                onCheckedChange={(checked) => setFilterBreakfast(checked as boolean)}
+                className="border-white/60 data-[state=checked]:bg-white data-[state=checked]:text-primary"
+              />
+              <span className="text-sm">Hotels that serve breakfast</span>
+            </label>
+            <label className="flex items-center gap-2 text-white cursor-pointer hover:text-white/80 transition-colors">
+              <Checkbox 
+                checked={filterPool} 
+                onCheckedChange={(checked) => setFilterPool(checked as boolean)}
+                className="border-white/60 data-[state=checked]:bg-white data-[state=checked]:text-primary"
+              />
+              <span className="text-sm">Hotels with swimming pool</span>
+            </label>
+          </div>
+        </div>
+
         {/* Quote Form Card */}
         <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.3s' }}>
           <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
@@ -347,58 +422,60 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
-              {/* Row 2: Package, Adults, Kids, Rooms */}
+              {/* Row 2: Package (only for with-activities), Adults, Kids, Rooms */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="space-y-2 col-span-2 md:col-span-1">
-                  <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Please select the package/s you'd like quote for by selecting in the dropdown. You may choose more than one package to generate quotes for various packages.
-                  </p>
-                  <Popover open={isPackageDropdownOpen} onOpenChange={setIsPackageDropdownOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        disabled={!destination}
-                        className="w-full h-11 justify-between bg-white border-gray-200 text-left font-normal"
-                      >
-                        <span className="truncate">
-                          {packageIds.length === 0 
-                            ? (destination ? "Select packages" : "Select destination first")
-                            : `${packageIds.length} package${packageIds.length > 1 ? 's' : ''} selected`
-                          }
-                        </span>
-                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[600px] max-h-[400px] overflow-y-auto p-2" align="start">
-                      <div className="space-y-1">
-                        {availablePackages.map(pkg => (
-                          <div
-                            key={pkg.id}
-                            className="flex items-start space-x-3 p-2 hover:bg-accent/50 rounded-md cursor-pointer"
-                            onClick={() => {
-                              togglePackageSelection(pkg.id);
-                              setIsPackageDropdownOpen(false);
-                            }}
-                          >
-                            <Checkbox
-                              checked={packageIds.includes(pkg.id)}
-                              onCheckedChange={() => {
+                {bookingType === 'with-activities' && (
+                  <div className="space-y-2 col-span-2 md:col-span-1">
+                    <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Please select the package/s you'd like quote for by selecting in the dropdown. You may choose more than one package to generate quotes for various packages.
+                    </p>
+                    <Popover open={isPackageDropdownOpen} onOpenChange={setIsPackageDropdownOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          disabled={!destination}
+                          className="w-full h-11 justify-between bg-white border-gray-200 text-left font-normal"
+                        >
+                          <span className="truncate">
+                            {packageIds.length === 0 
+                              ? (destination ? "Select packages" : "Select destination first")
+                              : `${packageIds.length} package${packageIds.length > 1 ? 's' : ''} selected`
+                            }
+                          </span>
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[600px] max-h-[400px] overflow-y-auto p-2" align="start">
+                        <div className="space-y-1">
+                          {availablePackages.map(pkg => (
+                            <div
+                              key={pkg.id}
+                              className="flex items-start space-x-3 p-2 hover:bg-accent/50 rounded-md cursor-pointer"
+                              onClick={() => {
                                 togglePackageSelection(pkg.id);
                                 setIsPackageDropdownOpen(false);
                               }}
-                              className="mt-1"
-                            />
-                            <label className="text-sm cursor-pointer flex-1 leading-tight">
-                              {pkg.name}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                            >
+                              <Checkbox
+                                checked={packageIds.includes(pkg.id)}
+                                onCheckedChange={() => {
+                                  togglePackageSelection(pkg.id);
+                                  setIsPackageDropdownOpen(false);
+                                }}
+                                className="mt-1"
+                              />
+                              <label className="text-sm cursor-pointer flex-1 leading-tight">
+                                {pkg.name}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Adults *</Label>
                   <Select value={adults.toString()} onValueChange={v => setAdults(parseInt(v))}>
@@ -629,19 +706,67 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Quote Results */}
-        {liveHotels.length > 0 && packageIds.length > 0 ? (
+        {liveHotels.length > 0 && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
-              <LiveHotelQuotes
-                hotels={liveHotels}
-                pkg={packages.find(p => packageIds.includes(p.id))!}
-                nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
-                adults={adults}
-                children={children}
-                childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
-                rooms={rooms}
-                budget={budget}
-              />
+              {bookingType === 'accommodation-only' ? (
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-display font-semibold text-gray-900">
+                      Available Hotels ({liveHotels.length})
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {filterCheapest ? 'Sorted by price (cheapest first)' : 'Available options'}
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    {liveHotels.map((hotel, index) => (
+                      <div key={hotel.code || index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="flex gap-4">
+                          {hotel.image && (
+                            <img 
+                              src={hotel.image} 
+                              alt={hotel.name}
+                              className="w-32 h-24 object-cover rounded-lg"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-lg">{hotel.name}</h4>
+                            <p className="text-sm text-gray-500">{hotel.address}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="flex">
+                                {Array.from({ length: hotel.stars || 3 }).map((_, i) => (
+                                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                ))}
+                              </div>
+                              {(hotel as any).hasBreakfast && (
+                                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Breakfast included</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold text-primary">
+                              R{hotel.minRate?.toLocaleString()}
+                            </p>
+                            <p className="text-xs text-gray-500">total stay</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <LiveHotelQuotes
+                  hotels={liveHotels}
+                  pkg={packages.find(p => packageIds.includes(p.id))!}
+                  nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
+                  adults={adults}
+                  children={children}
+                  childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
+                  rooms={rooms}
+                  budget={budget}
+                />
+              )}
             </div>
           </div>
         ) : familyQuotes.length > 0 ? (
