@@ -40,7 +40,8 @@ const destinationCodes: Record<string, string> = {
 
 // Destination coordinates and radius settings
 const destinationConfig: Record<string, { latitude: number; longitude: number; radius: number }> = {
-  'harties': { latitude: -25.7461, longitude: 27.8711, radius: 20 },
+  // Hartbeespoort - centered on Harties Aerial Cableway, 20km radius
+  'harties': { latitude: -25.7479, longitude: 27.8713, radius: 20 },
   'magalies': { latitude: -25.8333, longitude: 27.5333, radius: 20 },
   // Sun City - 30km radius
   'sun-city': { latitude: -25.3356, longitude: 27.0928, radius: 30 },
