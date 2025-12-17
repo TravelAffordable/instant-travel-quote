@@ -144,9 +144,9 @@ serve(async (req) => {
     const config = destinationConfig[destinationKey] || destinationConfig['johannesburg'];
     const coords = { latitude: config.latitude, longitude: config.longitude };
 
-    // IMPORTANT: Use the destination's configured radius for "accommodation-only"
-    // (e.g., Durban 3km from Blue Waters). For "with-activities" we keep 30km.
-    const searchRadius = normalizedBookingType === 'accommodation-only' ? config.radius : 30;
+    // Use the destination's configured radius for ALL searches.
+    // This ensures (for example) Durban stays strictly within 3km of Blue Waters Hotel.
+    const searchRadius = config.radius;
 
     // Build occupancy array
     const occupancies = [];
