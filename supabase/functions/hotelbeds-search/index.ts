@@ -304,7 +304,8 @@ serve(async (req) => {
           }
         }
       } else {
-        console.warn('Content API call failed; skipping strict geo filter for missing coordinates');
+        const errText = await contentRes.text();
+        console.warn(`Content API call failed (${contentRes.status}); strict geo filter may remove all hotels`, errText.slice(0, 300));
       }
     }
 
@@ -313,7 +314,7 @@ serve(async (req) => {
     const hotelsInRadius = hotelsRaw.filter((h) => {
       const c = typeof h.code === 'string' ? Number(h.code) : h.code;
       const hc = Number.isFinite(c) ? codeToCoords.get(c) : undefined;
-      if (!hc) return true; // if we cannot verify distance, keep it (avoid returning zero hotels)
+      if (!hc) return false; // strict: if we cannot verify distance, exclude it
       const km = haversineKm(center, hc);
       return km <= maxKm;
     });
