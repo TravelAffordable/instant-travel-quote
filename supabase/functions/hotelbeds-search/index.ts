@@ -325,8 +325,24 @@ serve(async (req) => {
     const EUR_TO_ZAR = 19.5;
     // Process hotels - flat list, no categories
     let processedHotels = hotelsInRadius.map((hotel: any) => {
-      const minRateEUR = hotel.minRate ? parseFloat(hotel.minRate) : 0;
       const stars = hotel.categoryCode ? parseFloat(hotel.categoryCode.replace('EST', '').replace('*', '')) : 3;
+      
+      // Calculate minimum rate from room rates (which include total for all rooms/occupancies requested)
+      // Hotelbeds returns combined pricing in room rates when multiple occupancies are sent
+      let minRateEUR = hotel.minRate ? parseFloat(hotel.minRate) : 0;
+      
+      // Find the actual minimum from room rates to ensure we get the combined price for all rooms
+      if (hotel.rooms && hotel.rooms.length > 0) {
+        const roomMinRates = hotel.rooms.flatMap((room: any) => 
+          (room.rates || []).map((rate: any) => parseFloat(rate.net) || Infinity)
+        );
+        if (roomMinRates.length > 0) {
+          const actualMin = Math.min(...roomMinRates);
+          if (actualMin < Infinity) {
+            minRateEUR = actualMin;
+          }
+        }
+      }
       
       // Convert EUR to ZAR and apply 5% markup
       const minRateZAR = minRateEUR * EUR_TO_ZAR * 1.05;
