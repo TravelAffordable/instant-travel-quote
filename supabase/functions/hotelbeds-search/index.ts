@@ -101,6 +101,19 @@ function generateSignature(apiKey: string, secret: string): string {
   return hash.digest('hex') as string;
 }
 
+function haversineKm(a: { latitude: number; longitude: number }, b: { latitude: number; longitude: number }) {
+  const R = 6371;
+  const dLat = ((b.latitude - a.latitude) * Math.PI) / 180;
+  const dLon = ((b.longitude - a.longitude) * Math.PI) / 180;
+  const lat1 = (a.latitude * Math.PI) / 180;
+  const lat2 = (b.latitude * Math.PI) / 180;
+
+  const sinDLat = Math.sin(dLat / 2);
+  const sinDLon = Math.sin(dLon / 2);
+  const h = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -242,11 +255,75 @@ serve(async (req) => {
       });
     }
 
+    // Strictly enforce radius by filtering returned hotels by their coordinates.
+    // Hotelbeds can sometimes return properties outside the requested geo radius.
+    const center = { latitude: coords.latitude, longitude: coords.longitude };
+    const maxKm = searchRadius;
+
+    // 1) Pull coordinates from availability response when present
+    const hotelsRaw: any[] = data.hotels.hotels;
+    const codeToCoords = new Map<number, { latitude: number; longitude: number }>();
+
+    for (const h of hotelsRaw) {
+      const c = typeof h.code === 'string' ? Number(h.code) : h.code;
+      const lat = h?.coordinates?.latitude ?? h?.coordinates?.lat ?? h?.latitude;
+      const lon = h?.coordinates?.longitude ?? h?.coordinates?.lon ?? h?.longitude;
+      if (Number.isFinite(c) && Number.isFinite(lat) && Number.isFinite(lon)) {
+        codeToCoords.set(c, { latitude: Number(lat), longitude: Number(lon) });
+      }
+    }
+
+    // 2) For missing coords, query Content API in one request using hotel codes
+    const missingCodes = hotelsRaw
+      .map((h) => (typeof h.code === 'string' ? Number(h.code) : h.code))
+      .filter((c) => Number.isFinite(c) && !codeToCoords.has(c));
+
+    if (missingCodes.length > 0) {
+      const contentSignature = generateSignature(apiKey, apiSecret);
+      const codesParam = missingCodes.join(',');
+      const contentUrl = `https://api.test.hotelbeds.com/hotel-content-api/1.0/hotels?codes=${encodeURIComponent(codesParam)}&fields=coordinates&language=ENG`;
+
+      const contentRes = await fetch(contentUrl, {
+        method: 'GET',
+        headers: {
+          'Api-key': apiKey,
+          'X-Signature': contentSignature,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (contentRes.ok) {
+        const contentJson = await contentRes.json();
+        const contentHotels: any[] = contentJson?.hotels || [];
+        for (const ch of contentHotels) {
+          const c = typeof ch.code === 'string' ? Number(ch.code) : ch.code;
+          const lat = ch?.coordinates?.latitude;
+          const lon = ch?.coordinates?.longitude;
+          if (Number.isFinite(c) && Number.isFinite(lat) && Number.isFinite(lon)) {
+            codeToCoords.set(c, { latitude: Number(lat), longitude: Number(lon) });
+          }
+        }
+      } else {
+        console.warn('Content API call failed; skipping strict geo filter for missing coordinates');
+      }
+    }
+
+    // 3) Filter out hotels outside radius when we have coordinates
+    const beforeCount = hotelsRaw.length;
+    const hotelsInRadius = hotelsRaw.filter((h) => {
+      const c = typeof h.code === 'string' ? Number(h.code) : h.code;
+      const hc = Number.isFinite(c) ? codeToCoords.get(c) : undefined;
+      if (!hc) return true; // if we cannot verify distance, keep it (avoid returning zero hotels)
+      const km = haversineKm(center, hc);
+      return km <= maxKm;
+    });
+
+    console.log(`Geo filter: kept ${hotelsInRadius.length}/${beforeCount} hotels within ${maxKm}km`);
+
     // EUR to ZAR conversion rate (approximate - in production use live rates)
     const EUR_TO_ZAR = 19.5;
-    
     // Process hotels - flat list, no categories
-    let processedHotels = data.hotels.hotels.map((hotel: any) => {
+    let processedHotels = hotelsInRadius.map((hotel: any) => {
       const minRateEUR = hotel.minRate ? parseFloat(hotel.minRate) : 0;
       const stars = hotel.categoryCode ? parseFloat(hotel.categoryCode.replace('EST', '').replace('*', '')) : 3;
       
