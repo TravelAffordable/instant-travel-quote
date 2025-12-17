@@ -45,8 +45,8 @@ const destinationConfig: Record<string, { latitude: number; longitude: number; r
   'magalies': { latitude: -25.8333, longitude: 27.5333, radius: 20 },
   // Sun City - 30km radius
   'sun-city': { latitude: -25.3356, longitude: 27.0928, radius: 30 },
-  // Durban - centered on Southern Sun Elangeni Maharani Hotel, 7km radius
-  'durban': { latitude: -29.8512, longitude: 31.0382, radius: 7 },
+  // Durban - centered on Blue Waters Hotel, 3km radius
+  'durban': { latitude: -29.8367, longitude: 31.0327, radius: 3 },
   'cape-town': { latitude: -33.9249, longitude: 18.4241, radius: 15 },
   'mpumalanga': { latitude: -25.4753, longitude: 30.9694, radius: 30 },
   'drakensberg': { latitude: -29.4500, longitude: 29.4500, radius: 30 },
