@@ -42,6 +42,7 @@ const destinationCodes: Record<string, string> = {
 const destinationConfig: Record<string, { latitude: number; longitude: number; radius: number }> = {
   // Hartbeespoort - centered on Harties Aerial Cableway, 20km radius
   'harties': { latitude: -25.7479, longitude: 27.8713, radius: 20 },
+  // Magaliesburg - 20km radius
   'magalies': { latitude: -25.8333, longitude: 27.5333, radius: 20 },
   // Sun City - 30km radius
   'sun-city': { latitude: -25.3356, longitude: 27.0928, radius: 30 },
@@ -66,6 +67,31 @@ const destinationConfig: Record<string, { latitude: number; longitude: number; r
   'thailand': { latitude: 13.7563, longitude: 100.5018, radius: 30 },
   'bela-bela': { latitude: -24.8850, longitude: 28.2870, radius: 15 },
 };
+
+function normalizeDestinationKey(input: string): string {
+  const key = (input || '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z\-]/g, '');
+
+  const aliases: Record<string, string> = {
+    // Durban area
+    'durban-central': 'durban',
+
+    // Hartbeespoort variants
+    'hartbeespoort': 'harties',
+    'hartbeesport': 'harties',
+    'harties': 'harties',
+
+    // Magaliesburg variants
+    'magaliesburg': 'magalies',
+    'magaliesberg': 'magalies',
+    'magalies': 'magalies',
+  };
+
+  return aliases[key] || key;
+}
 
 function generateSignature(apiKey: string, secret: string): string {
   const timestamp = Math.floor(Date.now() / 1000);
@@ -97,15 +123,30 @@ serve(async (req) => {
 
     const { destination, checkIn, checkOut, adults, children, childrenAges, rooms, bookingType, filterBreakfast, filterPool, filterCheapest }: HotelSearchRequest = await req.json();
 
-    console.log('Search request:', { destination, checkIn, checkOut, adults, children, rooms, bookingType, filterBreakfast, filterPool, filterCheapest });
+    const destinationKey = normalizeDestinationKey(destination);
+    const normalizedBookingType: 'accommodation-only' | 'with-activities' = bookingType || 'with-activities';
+
+    console.log('Search request:', {
+      destination,
+      destinationKey,
+      checkIn,
+      checkOut,
+      adults,
+      children,
+      rooms,
+      bookingType: normalizedBookingType,
+      filterBreakfast,
+      filterPool,
+      filterCheapest,
+    });
 
     const signature = generateSignature(apiKey, apiSecret);
-    const config = destinationConfig[destination] || destinationConfig['johannesburg'];
+    const config = destinationConfig[destinationKey] || destinationConfig['johannesburg'];
     const coords = { latitude: config.latitude, longitude: config.longitude };
-    
-    // Use larger radius for accommodation-only searches (full destination)
-    // Use 30km radius for with-activities (near attractions)
-    const searchRadius = bookingType === 'accommodation-only' ? Math.max(config.radius, 50) : 30;
+
+    // IMPORTANT: Use the destination's configured radius for "accommodation-only"
+    // (e.g., Durban 3km from Blue Waters). For "with-activities" we keep 30km.
+    const searchRadius = normalizedBookingType === 'accommodation-only' ? config.radius : 30;
 
     // Build occupancy array
     const occupancies = [];
