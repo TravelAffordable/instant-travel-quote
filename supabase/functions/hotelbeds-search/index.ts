@@ -14,6 +14,10 @@ interface HotelSearchRequest {
   children: number;
   childrenAges?: number[];
   rooms: number;
+  bookingType?: 'accommodation-only' | 'with-activities';
+  filterBreakfast?: boolean;
+  filterPool?: boolean;
+  filterCheapest?: boolean;
 }
 
 // Map destinations to Hotelbeds destination codes
@@ -90,14 +94,17 @@ serve(async (req) => {
       });
     }
 
-    const { destination, checkIn, checkOut, adults, children, childrenAges, rooms }: HotelSearchRequest = await req.json();
+    const { destination, checkIn, checkOut, adults, children, childrenAges, rooms, bookingType, filterBreakfast, filterPool, filterCheapest }: HotelSearchRequest = await req.json();
 
-    console.log('Search request:', { destination, checkIn, checkOut, adults, children, rooms });
+    console.log('Search request:', { destination, checkIn, checkOut, adults, children, rooms, bookingType, filterBreakfast, filterPool, filterCheapest });
 
     const signature = generateSignature(apiKey, apiSecret);
     const config = destinationConfig[destination] || destinationConfig['johannesburg'];
     const coords = { latitude: config.latitude, longitude: config.longitude };
-    const searchRadius = config.radius;
+    
+    // Use larger radius for accommodation-only searches (full destination)
+    // Use 30km radius for with-activities (near attractions)
+    const searchRadius = bookingType === 'accommodation-only' ? Math.max(config.radius, 50) : 30;
 
     // Build occupancy array
     const occupancies = [];
@@ -121,8 +128,22 @@ serve(async (req) => {
       occupancies.push(roomOccupancy);
     }
 
-    // Hotelbeds availability request - use larger radius to get more hotels
-    const searchPayload = {
+    // Build filter object
+    const filter: any = {
+      maxHotels: 50,
+      maxRooms: 5,
+    };
+
+    // Add board filter for breakfast (BB = Bed & Breakfast, HB = Half Board, FB = Full Board, AI = All Inclusive)
+    if (filterBreakfast) {
+      filter.boards = {
+        included: true,
+        board: ['BB', 'HB', 'FB', 'AI']
+      };
+    }
+
+    // Hotelbeds availability request
+    const searchPayload: any = {
       stay: {
         checkIn: checkIn,
         checkOut: checkOut,
@@ -134,10 +155,7 @@ serve(async (req) => {
         radius: searchRadius,
         unit: 'km'
       },
-      filter: {
-        maxHotels: 50, // Request more to see what's available
-        maxRooms: 5,
-      },
+      filter: filter,
     };
 
     console.log('Hotelbeds request payload:', JSON.stringify(searchPayload));
@@ -186,12 +204,17 @@ serve(async (req) => {
     const EUR_TO_ZAR = 19.5;
     
     // Process hotels - flat list, no categories
-    const processedHotels = data.hotels.hotels.map((hotel: any) => {
+    let processedHotels = data.hotels.hotels.map((hotel: any) => {
       const minRateEUR = hotel.minRate ? parseFloat(hotel.minRate) : 0;
       const stars = hotel.categoryCode ? parseFloat(hotel.categoryCode.replace('EST', '').replace('*', '')) : 3;
       
       // Convert EUR to ZAR and apply 5% markup
       const minRateZAR = minRateEUR * EUR_TO_ZAR * 1.05;
+      
+      // Check for breakfast in available rooms
+      const hasBreakfast = hotel.rooms?.some((room: any) => 
+        room.rates?.some((rate: any) => ['BB', 'HB', 'FB', 'AI'].includes(rate.boardCode))
+      ) || false;
       
       return {
         code: hotel.code,
@@ -203,6 +226,7 @@ serve(async (req) => {
         address: hotel.address?.content || '',
         minRate: Math.round(minRateZAR), // Rounded ZAR amount
         currency: 'ZAR',
+        hasBreakfast: hasBreakfast,
         rooms: hotel.rooms?.map((room: any) => ({
           code: room.code,
           name: room.name,
@@ -218,15 +242,31 @@ serve(async (req) => {
       };
     });
 
-    // Sort by price (cheapest first)
-    processedHotels.sort((a: any, b: any) => a.minRate - b.minRate);
+    // Apply client-side filtering for breakfast if requested
+    if (filterBreakfast) {
+      processedHotels = processedHotels.filter((h: any) => h.hasBreakfast);
+    }
 
-    console.log(`Found ${processedHotels.length} hotels from Hotelbeds`);
+    // Sort based on preference
+    if (filterCheapest !== false) {
+      // Default: sort by price (cheapest first)
+      processedHotels.sort((a: any, b: any) => a.minRate - b.minRate);
+    } else if (filterBreakfast) {
+      // Sort hotels with breakfast first, then by price
+      processedHotels.sort((a: any, b: any) => {
+        if (a.hasBreakfast && !b.hasBreakfast) return -1;
+        if (!a.hasBreakfast && b.hasBreakfast) return 1;
+        return a.minRate - b.minRate;
+      });
+    }
+
+    console.log(`Found ${processedHotels.length} hotels from Hotelbeds (after filters)`);
 
     return new Response(JSON.stringify({
       success: true,
       hotels: processedHotels,
-      total: processedHotels.length
+      total: processedHotels.length,
+      filters: { filterBreakfast, filterPool, filterCheapest }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
