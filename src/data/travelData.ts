@@ -934,16 +934,8 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   const nights = Math.ceil((request.checkOut.getTime() - request.checkIn.getTime()) / (1000 * 60 * 60 * 24));
   if (nights < 1) return null;
   
-  // Calculate total guests per room to determine if 4-sleeper is needed
-  const totalGuests = request.adults + request.children;
-  const guestsPerRoom = totalGuests / request.rooms;
-  const is4SleeperRoom = guestsPerRoom >= 3 && guestsPerRoom <= 4;
-  
-  // Apply 30% surcharge for 4-sleeper rooms
-  let pricePerNight = hotel.pricePerNight;
-  if (is4SleeperRoom) {
-    pricePerNight = Math.round(pricePerNight * 1.3);
-  }
+  // Use the rate directly from the API without any surcharge
+  const pricePerNight = hotel.pricePerNight;
   
   // Accommodation cost (per room per night)
   const accommodationCost = pricePerNight * request.rooms * nights;
@@ -1001,14 +993,14 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   const totalPeople = request.adults + validChildren;
   const totalPerPerson = Math.round(totalCost / totalPeople);
   
-  const roomType = is4SleeperRoom ? '4-Sleeper Room' : 'Standard Room';
+  const roomType = 'Standard Room';
   const hotelNameDisplay = hotel.includesBreakfast 
     ? `${hotel.name} (includes breakfast)` 
     : hotel.name;
   
   const breakdown = [
     { 
-      label: `Accommodation (${nights} nights × ${request.rooms} ${is4SleeperRoom ? '4-sleeper' : 'standard'} rooms)`, 
+      label: `Accommodation (${nights} nights × ${request.rooms} rooms)`, 
       amount: accommodationCost 
     },
     { label: `Package - ${request.adults} Adults`, amount: packageBaseCost },
@@ -1019,10 +1011,6 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     if (childrenOnceFees > 0) {
       breakdown.push({ label: `Children Once-off Fees`, amount: childrenOnceFees });
     }
-  }
-  
-  if (is4SleeperRoom) {
-    breakdown.push({ label: '4-Sleeper Room Upgrade (+30%)', amount: 0 }); // Info line, cost already included
   }
   
   // Add service fees to breakdown
@@ -1042,7 +1030,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     childDiscount,
     totalPerPerson,
     totalForGroup: totalCost,
-    is4SleeperRoom,
+    is4SleeperRoom: false,
     roomType,
     includesBreakfast: hotel.includesBreakfast || false,
     activitiesIncluded: pkg.activitiesIncluded,
