@@ -242,11 +242,6 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   };
 
   const today = new Date().toISOString().split('T')[0];
-  
-  // Check if 4-sleeper room will be applied
-  const totalGuests = adults + children;
-  const guestsPerRoom = totalGuests / rooms;
-  const will4SleeperApply = guestsPerRoom >= 3 && guestsPerRoom <= 4;
 
   return (
     <div className="grid lg:grid-cols-2 gap-8">
@@ -545,16 +540,6 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
             />
             <p className="text-xs text-muted-foreground">This helps us understand your preferences</p>
           </div>
-
-          {/* 4-Sleeper Notice */}
-          {will4SleeperApply && (
-            <div className="bg-accent/10 border border-accent/30 rounded-lg p-3">
-              <p className="text-sm text-accent-foreground flex items-center gap-2">
-                <BedDouble className="w-4 h-4" />
-                <span>4-Sleeper room rate will apply (+30% per night)</span>
-              </p>
-            </div>
-          )}
 
           <Button
             onClick={handleCalculate}
