@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -101,6 +101,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [showCustomHotels, setShowCustomHotels] = useState(false);
   const [selectedCustomHotels, setSelectedCustomHotels] = useState<string[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [editingQuoteIndex, setEditingQuoteIndex] = useState<number | null>(null);
   const [customHotelQuotes, setCustomHotelQuotes] = useState<Array<{
     hotelName: string;
     hotelTier?: string;
@@ -937,7 +938,16 @@ export function Hero({ onGetQuote }: HeroProps) {
                                       <p>{quote.stayDetails || `${nightsCount} nights • ${adults} adults${children > 0 ? ` • ${children} children` : ''} • ${rooms} room${rooms > 1 ? 's' : ''}`}</p>
                                     </div>
                                   </div>
-                                  <div className="text-right">
+                                  <div className="text-right flex flex-col items-end">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setEditingQuoteIndex(index)}
+                                      className="mb-2 text-amber-700 hover:text-amber-900 hover:bg-amber-100"
+                                    >
+                                      <Pencil className="w-4 h-4 mr-1" />
+                                      Edit
+                                    </Button>
                                     <p className="text-2xl font-bold text-primary">
                                       R{perPerson.toLocaleString()}
                                     </p>
@@ -968,6 +978,53 @@ export function Hero({ onGetQuote }: HeroProps) {
                           );
                         })}
                       </div>
+                      
+                      {/* Edit Form */}
+                      {editingQuoteIndex !== null && customHotelQuotes[editingQuoteIndex] && (
+                        <div className="mt-4 p-4 border-2 border-amber-400 rounded-lg bg-amber-100">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="font-semibold text-amber-900">
+                              Edit: {customHotelQuotes[editingQuoteIndex].hotelName}
+                            </h4>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setEditingQuoteIndex(null)}
+                              className="text-amber-700"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          <CustomHotelCard
+                            hotelName={customHotelQuotes[editingQuoteIndex].hotelName}
+                            rooms={rooms}
+                            adults={adults}
+                            children={children}
+                            nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
+                            isEditing={true}
+                            initialData={customHotelQuotes[editingQuoteIndex]}
+                            onCancelEdit={() => setEditingQuoteIndex(null)}
+                            onCalculate={(details) => {
+                              const selectedPkg = packages.find(p => packageIds.includes(p.id));
+                              if (selectedPkg) {
+                                setCustomHotelQuotes(prev => {
+                                  const updated = [...prev];
+                                  updated[editingQuoteIndex] = {
+                                    ...details,
+                                    packageId: selectedPkg.id,
+                                    packageName: selectedPkg.name,
+                                    checkInDate: checkIn,
+                                    checkOutDate: checkOut,
+                                  };
+                                  return updated;
+                                });
+                                setEditingQuoteIndex(null);
+                                toast.success(`Quote updated for ${details.hotelName}`);
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                 </>
