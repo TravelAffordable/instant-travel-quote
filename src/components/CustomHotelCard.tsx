@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,13 +24,34 @@ interface CustomHotelCardProps {
   children?: number;
   nights?: number;
   onCalculate: (details: CustomHotelDetails) => void;
+  initialData?: Partial<CustomHotelDetails>;
+  isEditing?: boolean;
+  onCancelEdit?: () => void;
 }
 
-export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights = 1, onCalculate }: CustomHotelCardProps) {
+export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights = 1, onCalculate, initialData, isEditing, onCancelEdit }: CustomHotelCardProps) {
   const [hotelDetails, setHotelDetails] = useState<string>('');
   const [totalCost, setTotalCost] = useState<string>('');
   const [calculated, setCalculated] = useState(false);
   const [parsedDetails, setParsedDetails] = useState<Partial<CustomHotelDetails>>({});
+
+  // Populate with initial data when editing
+  useEffect(() => {
+    if (initialData && isEditing) {
+      const details = [
+        initialData.hotelTier,
+        initialData.recommendation,
+        initialData.roomType,
+        initialData.bedConfig,
+        initialData.mealPlan,
+        initialData.stayDetails,
+      ].filter(Boolean).join('\n');
+      setHotelDetails(details);
+      setTotalCost(initialData.totalCost?.toString() || '');
+      setParsedDetails(initialData);
+      setCalculated(false);
+    }
+  }, [initialData, isEditing]);
 
   const parseHotelDetails = (text: string) => {
     const lines = text.split('\n').map(l => l.trim()).filter(l => l);
@@ -206,12 +227,21 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
                 className="mt-1"
               />
             </div>
+            {isEditing && onCancelEdit && (
+              <Button 
+                variant="outline"
+                onClick={onCancelEdit}
+                className="h-10"
+              >
+                Cancel
+              </Button>
+            )}
             <Button 
               onClick={handleCalculate}
               disabled={!totalCost || parseFloat(totalCost) <= 0}
               className="h-10"
             >
-              Calculate
+              {isEditing ? 'Update' : 'Calculate'}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
