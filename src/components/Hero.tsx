@@ -88,6 +88,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   // Custom hotels state (for Durban)
   const [showCustomHotels, setShowCustomHotels] = useState(false);
   const [selectedCustomHotels, setSelectedCustomHotels] = useState<string[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
   const [customHotelQuotes, setCustomHotelQuotes] = useState<Array<{
     hotelName: string;
     hotelTier?: string;
@@ -173,6 +174,8 @@ export function Hero({ onGetQuote }: HeroProps) {
     setQuotes([]);
     setFamilyQuotes([]);
     clearHotels();
+    setCustomHotelQuotes([]);
+    setHasSearched(true);
 
     // Parse children ages
     const ages = childrenAges
@@ -721,7 +724,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Custom Hotels Section - Durban Only (for with-activities booking type) */}
-        {bookingType === 'with-activities' && destination === 'durban' && liveHotels.length > 0 && (
+        {bookingType === 'with-activities' && destination === 'durban' && hasSearched && (
           <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
             <div className="bg-amber-50 border-2 border-amber-200 backdrop-blur-md rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
@@ -806,7 +809,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         )}
 
         {/* Quote Results */}
-        {liveHotels.length > 0 && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
+        {(liveHotels.length > 0 || (hasSearched && customHotelQuotes.length > 0) || (hasSearched && bookingType === 'with-activities' && destination === 'durban')) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
               {bookingType === 'accommodation-only' ? (
@@ -832,16 +835,23 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               ) : (
                 <>
-                  <LiveHotelQuotes
-                    hotels={liveHotels}
-                    pkg={packages.find(p => packageIds.includes(p.id))!}
-                    nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
-                    adults={adults}
-                    children={children}
-                    childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
-                    rooms={rooms}
-                    budget={budget}
-                  />
+                  {liveHotels.length > 0 ? (
+                    <LiveHotelQuotes
+                      hotels={liveHotels}
+                      pkg={packages.find(p => packageIds.includes(p.id))!}
+                      nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
+                      adults={adults}
+                      children={children}
+                      childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
+                      rooms={rooms}
+                      budget={budget}
+                    />
+                  ) : (
+                    <div className="text-center py-6 mb-6 bg-amber-50 rounded-xl border border-amber-200">
+                      <p className="text-amber-800 font-medium">No hotels found via our system for this search.</p>
+                      <p className="text-amber-700 text-sm mt-2">Use the custom hotels section above to generate a quote with your own hotel pricing.</p>
+                    </div>
+                  )}
                   
                   {/* Custom Hotel Quotes */}
                   {customHotelQuotes.length > 0 && (
