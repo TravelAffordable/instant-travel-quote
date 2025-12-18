@@ -1,14 +1,8 @@
 import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, Users } from 'lucide-react';
+import { Star, Users, Plus, Minus, Check } from 'lucide-react';
 import { type LiveHotel } from '@/hooks/useHotelbedsSearch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 interface AccommodationOnlyCardProps {
   hotel: LiveHotel;
@@ -44,19 +38,11 @@ const getRoomCapacity = (roomCode: string, roomName: string): number => {
   return 2;
 };
 
-interface RoomRate {
-  rateKey: string;
-  net: number;
-  boardCode: string;
-  boardName: string;
-}
-
 interface RoomOption {
   code: string;
   name: string;
   capacity: number;
   lowestRate: number;
-  rates: RoomRate[];
 }
 
 export function AccommodationOnlyCard({ hotel, rooms }: AccommodationOnlyCardProps) {
@@ -76,47 +62,78 @@ export function AccommodationOnlyCard({ hotel, rooms }: AccommodationOnlyCardPro
         name: room.name,
         capacity,
         lowestRate,
-        rates,
       };
     }).sort((a, b) => a.lowestRate - b.lowestRate);
   }, [hotel.rooms, hotel.minRate]);
 
-  // State for selected room types (one selection per room)
-  const [selectedRoomTypes, setSelectedRoomTypes] = useState<string[]>(() => {
-    const defaultRoom = roomOptions.length > 0 ? roomOptions[0].code : '';
-    return Array(rooms).fill(defaultRoom);
-  });
+  // State for room type quantities (how many of each room type selected)
+  const [roomQuantities, setRoomQuantities] = useState<Record<string, number>>({});
 
-  // Get the rate for a specific room code
-  const getRoomRate = (roomCode: string): number => {
-    const roomOption = roomOptions.find(r => r.code === roomCode);
-    return roomOption?.lowestRate || hotel.minRate;
-  };
+  // Calculate total rooms selected
+  const totalRoomsSelected = useMemo(() => {
+    return Object.values(roomQuantities).reduce((sum, qty) => sum + qty, 0);
+  }, [roomQuantities]);
 
-  // Get room details by code
-  const getRoomDetails = (roomCode: string): RoomOption | undefined => {
-    return roomOptions.find(r => r.code === roomCode);
-  };
-
-  // Calculate total accommodation based on selected rooms
+  // Calculate total cost based on selected room types
   const totalCost = useMemo(() => {
-    if (roomOptions.length === 0) {
+    if (Object.keys(roomQuantities).length === 0) {
+      // Default to cheapest room type for all rooms
+      const cheapestRoom = roomOptions[0];
+      if (cheapestRoom) {
+        return cheapestRoom.lowestRate * rooms;
+      }
       return (hotel.minRate || 0) * Math.max(1, rooms);
     }
     
-    return selectedRoomTypes.reduce((total, roomCode) => {
-      return total + getRoomRate(roomCode);
+    return Object.entries(roomQuantities).reduce((total, [roomCode, qty]) => {
+      const room = roomOptions.find(r => r.code === roomCode);
+      return total + (room ? room.lowestRate * qty : 0);
     }, 0);
-  }, [selectedRoomTypes, roomOptions, hotel.minRate, rooms]);
+  }, [roomQuantities, roomOptions, hotel.minRate, rooms]);
 
-  // Handle room type change
-  const handleRoomTypeChange = (roomIndex: number, roomCode: string) => {
-    setSelectedRoomTypes(prev => {
-      const newSelections = [...prev];
-      newSelections[roomIndex] = roomCode;
-      return newSelections;
+  // Calculate total capacity of selected rooms
+  const totalCapacity = useMemo(() => {
+    return Object.entries(roomQuantities).reduce((total, [roomCode, qty]) => {
+      const room = roomOptions.find(r => r.code === roomCode);
+      return total + (room ? room.capacity * qty : 0);
+    }, 0);
+  }, [roomQuantities, roomOptions]);
+
+  // Handle incrementing room quantity
+  const incrementRoom = (roomCode: string) => {
+    if (totalRoomsSelected >= rooms) return;
+    setRoomQuantities(prev => ({
+      ...prev,
+      [roomCode]: (prev[roomCode] || 0) + 1
+    }));
+  };
+
+  // Handle decrementing room quantity
+  const decrementRoom = (roomCode: string) => {
+    setRoomQuantities(prev => {
+      const currentQty = prev[roomCode] || 0;
+      if (currentQty <= 0) return prev;
+      const newQty = currentQty - 1;
+      if (newQty === 0) {
+        const { [roomCode]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [roomCode]: newQty };
     });
   };
+
+  // Get breakdown of selected rooms for display
+  const selectedRoomsBreakdown = useMemo(() => {
+    return Object.entries(roomQuantities)
+      .filter(([_, qty]) => qty > 0)
+      .map(([roomCode, qty]) => {
+        const room = roomOptions.find(r => r.code === roomCode);
+        return room ? { ...room, quantity: qty, subtotal: room.lowestRate * qty } : null;
+      })
+      .filter(Boolean) as (RoomOption & { quantity: number; subtotal: number })[];
+  }, [roomQuantities, roomOptions]);
+
+  const roomsRemaining = rooms - totalRoomsSelected;
 
   return (
     <Card className="border border-border hover:shadow-md transition-shadow">
@@ -151,68 +168,111 @@ export function AccommodationOnlyCard({ hotel, rooms }: AccommodationOnlyCardPro
           </div>
         </div>
 
-        {/* Room Type Selection */}
-        {rooms >= 1 && roomOptions.length > 0 && (
+        {/* Room Type Selection - Inline Style */}
+        {roomOptions.length > 0 && (
           <div className="mt-4 pt-4 border-t border-border">
-            <h5 className="text-sm font-semibold mb-3 text-foreground">Select Room Type{rooms > 1 ? 's' : ''}</h5>
-            <div className="space-y-3">
-              {Array.from({ length: rooms }, (_, roomIndex) => {
-                const selectedRoom = getRoomDetails(selectedRoomTypes[roomIndex]);
-                return (
-                  <div key={roomIndex} className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-muted-foreground min-w-[60px]">
-                      Room {roomIndex + 1}:
-                    </span>
-                    <Select
-                      value={selectedRoomTypes[roomIndex] || ''}
-                      onValueChange={(value) => handleRoomTypeChange(roomIndex, value)}
-                    >
-                      <SelectTrigger className="flex-1 h-9 text-sm">
-                        <SelectValue placeholder="Select room type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {roomOptions.map((option) => (
-                          <SelectItem key={option.code} value={option.code}>
-                            <div className="flex items-center justify-between w-full gap-2">
-                              <span className="truncate">{option.name}</span>
-                              <span className="flex items-center gap-1 text-muted-foreground text-xs">
-                                <Users className="w-3 h-3" />
-                                {option.capacity}
-                              </span>
-                              <span className="text-primary font-medium">
-                                R{option.lowestRate.toLocaleString()}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <span className="text-sm font-medium text-primary min-w-[80px] text-right">
-                      R{getRoomRate(selectedRoomTypes[roomIndex]).toLocaleString()}
-                    </span>
-                  </div>
-                );
-              })}
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="text-sm font-semibold text-foreground">Select Room Types</h5>
+              <span className={`text-sm font-medium ${roomsRemaining > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+                {roomsRemaining > 0 ? `${roomsRemaining} room${roomsRemaining > 1 ? 's' : ''} remaining` : 
+                  <span className="flex items-center gap-1"><Check className="w-4 h-4" /> All {rooms} rooms selected</span>}
+              </span>
             </div>
             
-            {/* Room Capacity Info */}
-            <div className="mt-3 space-y-1">
-              {selectedRoomTypes.map((roomCode, idx) => {
-                const room = getRoomDetails(roomCode);
-                if (!room) return null;
+            {/* Available Room Types Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {roomOptions.map((option) => {
+                const currentQty = roomQuantities[option.code] || 0;
+                const isSelected = currentQty > 0;
+                
                 return (
-                  <div key={idx} className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Users className="w-3 h-3" />
-                    <span>Room {idx + 1}: {room.name} (sleeps {room.capacity})</span>
+                  <div 
+                    key={option.code}
+                    className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                      isSelected 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border bg-background hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{option.name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Users className="w-3 h-3" />
+                          Sleeps {option.capacity}
+                        </span>
+                        <span className="text-xs font-semibold text-primary">
+                          R{option.lowestRate.toLocaleString()}/room
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-1 ml-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => decrementRoom(option.code)}
+                        disabled={currentQty === 0}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <span className="w-6 text-center text-sm font-medium">{currentQty}</span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => incrementRoom(option.code)}
+                        disabled={totalRoomsSelected >= rooms}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 );
               })}
             </div>
+
+            {/* Selected Rooms Breakdown */}
+            {selectedRoomsBreakdown.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-border/50">
+                <h6 className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Your Selection</h6>
+                <div className="space-y-1.5">
+                  {selectedRoomsBreakdown.map((room, idx) => (
+                    <div key={idx} className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {room.quantity}x {room.name} 
+                        <span className="text-xs ml-1">(sleeps {room.capacity})</span>
+                      </span>
+                      <span className="font-medium text-foreground">
+                        R{room.subtotal.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                  <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                    <span className="text-sm font-medium">
+                      Total Capacity: {totalCapacity} guests
+                    </span>
+                    <span className="text-lg font-bold text-primary">
+                      R{totalCost.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Capacity Warning */}
+            {selectedRoomsBreakdown.length > 0 && totalCapacity < 10 && totalRoomsSelected === rooms && (
+              <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700">
+                ⚠️ Selected rooms sleep {totalCapacity} guests. You may need rooms with higher capacity for 10 adults.
+              </div>
+            )}
           </div>
         )}
 
         {/* Fallback for hotels without room options */}
-        {rooms > 1 && roomOptions.length === 0 && typeof hotel.minRate === 'number' && (
+        {roomOptions.length === 0 && typeof hotel.minRate === 'number' && (
           <div className="mt-4 pt-4 border-t border-border space-y-1">
             {Array.from({ length: rooms }, (_, i) => (
               <div key={i} className="flex justify-between gap-4 text-xs text-muted-foreground">
