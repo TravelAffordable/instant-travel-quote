@@ -114,6 +114,7 @@ export function LiveHotelQuoteCard({
       `🏨 Hotel: ${hotel.name}\n` +
       `📦 Package: ${pkg.name}\n` +
       `📅 Duration: ${nights} nights\n` +
+      `🛏️ Rooms: ${rooms} room${rooms > 1 ? 's' : ''}\n` +
       `👥 Guests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\n` +
       `💰 Total: ${formatCurrency(totalCost)}\n` +
       `💵 My Budget: ${budget}\n\n` +
@@ -129,6 +130,7 @@ export function LiveHotelQuoteCard({
       `Hotel: ${hotel.name}\n` +
       `Package: ${pkg.name}\n` +
       `Duration: ${nights} nights\n` +
+      `Rooms: ${rooms} room${rooms > 1 ? 's' : ''}\n` +
       `Guests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\n` +
       `Total Price: ${formatCurrency(totalCost)}\n` +
       `My Budget: ${budget}\n\n` +
@@ -209,10 +211,10 @@ export function LiveHotelQuoteCard({
                 </p>
               )}
             </div>
-            <div className="text-right text-xs text-muted-foreground">
-              <p>{nights} nights • {rooms} room{rooms > 1 ? 's' : ''}</p>
-              <p>{adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` • ${children} child${children > 1 ? 'ren' : ''}` : ''}</p>
-            </div>
+          <div className="text-right text-sm">
+            <p className="font-medium text-foreground">{nights} nights • {rooms} room{rooms > 1 ? 's' : ''}</p>
+            <p className="text-muted-foreground">{adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` • ${children} child${children > 1 ? 'ren' : ''}` : ''}</p>
+          </div>
           </div>
 
           {/* Actions */}
