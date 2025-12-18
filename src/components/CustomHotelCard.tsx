@@ -3,26 +3,117 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Star, Hotel } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Star, Hotel, Coffee, Baby, Bed } from 'lucide-react';
+
+export interface CustomHotelDetails {
+  hotelName: string;
+  hotelTier?: string;
+  recommendation?: string;
+  roomType?: string;
+  bedConfig?: string;
+  mealPlan?: string;
+  stayDetails?: string;
+  totalCost: number;
+}
 
 interface CustomHotelCardProps {
   hotelName: string;
   rooms: number;
   adults: number;
-  onCalculate: (hotelName: string, totalCost: number) => void;
+  children?: number;
+  nights?: number;
+  onCalculate: (details: CustomHotelDetails) => void;
 }
 
-export function CustomHotelCard({ hotelName, rooms, adults, onCalculate }: CustomHotelCardProps) {
+export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights = 1, onCalculate }: CustomHotelCardProps) {
+  const [hotelDetails, setHotelDetails] = useState<string>('');
   const [totalCost, setTotalCost] = useState<string>('');
   const [calculated, setCalculated] = useState(false);
-  const [finalCost, setFinalCost] = useState(0);
+  const [parsedDetails, setParsedDetails] = useState<Partial<CustomHotelDetails>>({});
+
+  const parseHotelDetails = (text: string) => {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    const details: Partial<CustomHotelDetails> = {};
+    
+    for (const line of lines) {
+      // Check for price line (ZAR or R followed by number)
+      const priceMatch = line.match(/(?:ZAR|R)\s*([\d,]+(?:\.\d{2})?)/i);
+      if (priceMatch) {
+        const price = parseFloat(priceMatch[1].replace(/,/g, ''));
+        if (!isNaN(price)) {
+          setTotalCost(price.toString());
+        }
+        continue;
+      }
+      
+      // Check for stay details (nights, adults, children pattern)
+      if (line.match(/\d+\s*night/i) || line.match(/\d+\s*adult/i)) {
+        details.stayDetails = line;
+        continue;
+      }
+      
+      // Check for breakfast/meal plan
+      if (line.toLowerCase().includes('breakfast') || line.toLowerCase().includes('meal') || line.toLowerCase().includes('dinner')) {
+        details.mealPlan = line;
+        continue;
+      }
+      
+      // Check for bed configuration
+      if (line.toLowerCase().includes('bed') || line.toLowerCase().includes('crib') || line.toLowerCase().includes('cot')) {
+        details.bedConfig = line;
+        continue;
+      }
+      
+      // Check for recommendation
+      if (line.toLowerCase().includes('recommended')) {
+        details.recommendation = line;
+        continue;
+      }
+      
+      // Check for tier keywords
+      if (['beachfront', 'oceanview', 'poolside', 'garden', 'city view', 'sea facing', 'mountain view'].some(t => line.toLowerCase().includes(t)) && line.length < 30) {
+        details.hotelTier = line;
+        continue;
+      }
+      
+      // If it contains "room" or "suite" or "apartment", it's likely the room type
+      if (line.toLowerCase().includes('room') || line.toLowerCase().includes('suite') || line.toLowerCase().includes('apartment')) {
+        details.roomType = line;
+        continue;
+      }
+      
+      // First unmatched line could be tier
+      if (!details.hotelTier && lines.indexOf(line) === 0) {
+        details.hotelTier = line;
+      }
+    }
+    
+    return details;
+  };
+
+  const handleDetailsChange = (text: string) => {
+    setHotelDetails(text);
+    setCalculated(false);
+    const parsed = parseHotelDetails(text);
+    setParsedDetails(parsed);
+  };
 
   const handleCalculate = () => {
     const cost = parseFloat(totalCost);
     if (isNaN(cost) || cost <= 0) return;
-    setFinalCost(cost);
+    
     setCalculated(true);
-    onCalculate(hotelName, cost);
+    onCalculate({
+      hotelName,
+      hotelTier: parsedDetails.hotelTier,
+      recommendation: parsedDetails.recommendation,
+      roomType: parsedDetails.roomType,
+      bedConfig: parsedDetails.bedConfig,
+      mealPlan: parsedDetails.mealPlan,
+      stayDetails: parsedDetails.stayDetails || `${nights} night${nights > 1 ? 's' : ''}, ${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}`,
+      totalCost: cost,
+    });
   };
 
   return (
@@ -47,24 +138,66 @@ export function CustomHotelCard({ hotelName, rooms, adults, onCalculate }: Custo
           {calculated && (
             <div className="text-right">
               <p className="text-2xl font-bold text-primary">
-                R{finalCost.toLocaleString()}
+                R{parseFloat(totalCost).toLocaleString()}
               </p>
               <p className="text-xs text-muted-foreground">total stay</p>
             </div>
           )}
         </div>
 
-        {/* Cost Input */}
-        <div className="mt-4 pt-4 border-t border-border">
+        {/* Details Input */}
+        <div className="mt-4 pt-4 border-t border-border space-y-3">
+          <div>
+            <Label htmlFor={`details-${hotelName}`} className="text-sm text-muted-foreground">
+              Paste hotel details (room type, meal plan, price, etc.)
+            </Label>
+            <Textarea
+              id={`details-${hotelName}`}
+              placeholder={`Example:\nBeachfront\nRecommended for your group\nDeluxe Quadruple Room 2 Bedroom Apartment\nMultiple bed types • Free crib available\nBreakfast included\n3 nights, 3 adults, 2 children\nZAR 12,370`}
+              value={hotelDetails}
+              onChange={(e) => handleDetailsChange(e.target.value)}
+              className="mt-1 min-h-[120px] text-sm"
+            />
+          </div>
+
+          {/* Parsed Preview */}
+          {(parsedDetails.hotelTier || parsedDetails.roomType || parsedDetails.mealPlan) && (
+            <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
+              <p className="font-medium text-xs text-muted-foreground mb-2">Parsed Details:</p>
+              {parsedDetails.hotelTier && (
+                <p className="text-primary font-medium">{parsedDetails.hotelTier}</p>
+              )}
+              {parsedDetails.recommendation && (
+                <p className="text-green-600 text-xs">{parsedDetails.recommendation}</p>
+              )}
+              {parsedDetails.roomType && (
+                <p className="font-medium">{parsedDetails.roomType}</p>
+              )}
+              {parsedDetails.bedConfig && (
+                <p className="flex items-center gap-1 text-muted-foreground text-xs">
+                  <Bed className="w-3 h-3" /> {parsedDetails.bedConfig}
+                </p>
+              )}
+              {parsedDetails.mealPlan && (
+                <p className="flex items-center gap-1 text-green-600 text-xs">
+                  <Coffee className="w-3 h-3" /> {parsedDetails.mealPlan}
+                </p>
+              )}
+              {parsedDetails.stayDetails && (
+                <p className="text-muted-foreground text-xs">{parsedDetails.stayDetails}</p>
+              )}
+            </div>
+          )}
+
           <div className="flex items-end gap-3">
             <div className="flex-1">
               <Label htmlFor={`cost-${hotelName}`} className="text-sm text-muted-foreground">
-                Enter total accommodation cost for this hotel
+                Total Cost (R)
               </Label>
               <Input
                 id={`cost-${hotelName}`}
                 type="number"
-                placeholder="e.g. 5000"
+                placeholder="e.g. 12370"
                 value={totalCost}
                 onChange={(e) => {
                   setTotalCost(e.target.value);
@@ -81,8 +214,8 @@ export function CustomHotelCard({ hotelName, rooms, adults, onCalculate }: Custo
               Calculate
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            {rooms} room{rooms > 1 ? 's' : ''} for {adults} adult{adults > 1 ? 's' : ''}
+          <p className="text-xs text-muted-foreground">
+            {rooms} room{rooms > 1 ? 's' : ''} for {adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` and ${children} child${children > 1 ? 'ren' : ''}` : ''}
           </p>
         </div>
       </CardContent>
