@@ -746,7 +746,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                           </div>
                           <div className="text-right">
                             <p className="text-2xl font-bold text-primary">
-                              R{hotel.minRate?.toLocaleString()}
+                              R{((hotel.minRate || 0) * rooms).toLocaleString()}
                             </p>
                             <p className="text-xs text-gray-500">total stay</p>
 
@@ -756,7 +756,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                   <div key={i} className="flex justify-between gap-4 text-xs text-gray-500">
                                     <span>Room {i + 1} total</span>
                                     <span className="font-medium text-gray-700">
-                                      R{Math.round(hotel.minRate / rooms).toLocaleString()}
+                                      R{hotel.minRate.toLocaleString()}
                                     </span>
                                   </div>
                                 ))}
