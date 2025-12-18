@@ -156,30 +156,11 @@ export function AccommodationOnlyCard({ hotel, rooms, adults }: AccommodationOnl
           </div>
         </div>
 
-        {/* Room Breakdown */}
+        {/* Room Summary */}
         <div className="mt-4 pt-4 border-t border-border">
-          <h5 className="text-sm font-semibold text-foreground mb-2">Room Allocation ({rooms} room{rooms > 1 ? 's' : ''} for {adults} adult{adults > 1 ? 's' : ''})</h5>
-          <div className="space-y-1.5">
-            {selectedRooms.map((room, idx) => (
-              <div key={idx} className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  Room {idx + 1}: {room.name}
-                  <span className="text-xs ml-1">(sleeps {room.capacity})</span>
-                </span>
-                <span className="font-medium text-foreground">
-                  R{room.rate.toLocaleString()}
-                </span>
-              </div>
-            ))}
-            <div className="flex items-center justify-between pt-2 border-t border-border/50">
-              <span className="text-sm text-muted-foreground">
-                Total Capacity: {totalCapacity} guests
-              </span>
-              <span className="text-lg font-bold text-primary">
-                R{totalCost.toLocaleString()}
-              </span>
-            </div>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            {rooms} room{rooms > 1 ? 's' : ''} for {adults} adult{adults > 1 ? 's' : ''} • Total capacity: {totalCapacity} guests
+          </p>
         </div>
       </CardContent>
     </Card>
