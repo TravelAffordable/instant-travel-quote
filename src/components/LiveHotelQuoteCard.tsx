@@ -27,16 +27,45 @@ export function LiveHotelQuoteCard({
   budget,
 }: LiveHotelQuoteCardProps) {
   // Calculate total cost
-  const accommodationCost = hotel.minRate; // Already calculated for total stay
+  const accommodationCost = hotel.minRate; // Already calculated for total stay (all requested rooms)
   const packageCostPerAdult = pkg.basePrice;
   const packageTotal = packageCostPerAdult * adults;
-  
+
+  // Distribute adults across rooms to correctly compute accommodation cost per person.
+  // Example: 4 adults + 2 rooms => [2, 2]; 3 adults + 2 rooms => [2, 1]
+  const getRoomAdultOccupancies = (adultCount: number, roomCount: number) => {
+    const safeAdults = Math.max(0, Math.floor(adultCount));
+    const safeRooms = Math.max(1, Math.floor(roomCount));
+
+    const usedRooms = Math.min(safeRooms, Math.max(1, safeAdults));
+    const base = Math.floor(safeAdults / usedRooms);
+    const remainder = safeAdults % usedRooms;
+
+    // First `remainder` rooms get `base + 1` adults, rest get `base`.
+    return Array.from({ length: usedRooms }, (_, i) => base + (i < remainder ? 1 : 0)).filter(
+      (n) => n > 0
+    );
+  };
+
+  const roomAdultOccupancies = getRoomAdultOccupancies(adults, rooms);
+  const perRoomAccommodation = rooms > 0 ? accommodationCost / rooms : accommodationCost;
+
+  // Accommodation per adult = sum(roomCost / adultsInThatRoom)
+  // This matches the rules:
+  // - Double room (2 adults): divide that room's cost by 2
+  // - Single occupancy (1 adult): room cost stays as-is
+  // - 4-sleeper (4 adults in 1 room): divide by 4
+  const accommodationPerAdult = roomAdultOccupancies.reduce(
+    (sum, adultsInRoom) => sum + perRoomAccommodation / adultsInRoom,
+    0
+  );
+
   // Kids package cost
   let kidsPackageCost = 0;
   if (children > 0 && pkg.kidsPrice) {
     kidsPackageCost = pkg.kidsPrice * children;
   }
-  
+
   // Service fees
   const getServiceFeePerAdult = (adultCount: number) => {
     if (adultCount >= 10) return 750;
@@ -46,16 +75,19 @@ export function LiveHotelQuoteCard({
   };
   const serviceFeePerAdult = getServiceFeePerAdult(adults);
   const totalServiceFees = serviceFeePerAdult * adults;
-  
+
   // Kids fees
   let kidsFees = 0;
-  childrenAges.forEach(age => {
+  childrenAges.forEach((age) => {
     if (age >= 3 && age <= 12) kidsFees += 200;
     else if (age >= 13 && age <= 17) kidsFees += 300;
   });
-  
+
   const totalCost = accommodationCost + packageTotal + kidsPackageCost + totalServiceFees + kidsFees;
-  const pricePerPerson = children > 0 ? totalCost : totalCost / adults;
+  const pricePerPerson =
+    children > 0
+      ? totalCost
+      : accommodationPerAdult + packageCostPerAdult + serviceFeePerAdult;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
