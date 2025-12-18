@@ -708,21 +708,22 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Custom Hotels Section - Durban Only (for with-activities booking type) */}
-        {bookingType === 'with-activities' && destination === 'durban' && (
+        {bookingType === 'with-activities' && destination === 'durban' && liveHotels.length > 0 && (
           <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-6">
+            <div className="bg-amber-50 border-2 border-amber-200 backdrop-blur-md rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-lg font-semibold text-gray-900">Custom Hotels (Better Rates Available)</h4>
+                <h4 className="text-lg font-semibold text-amber-900">🏨 Custom Hotels (Better Rates Available)</h4>
                 <Button
                   variant={showCustomHotels ? "default" : "outline"}
                   size="sm"
                   onClick={() => setShowCustomHotels(!showCustomHotels)}
+                  className="bg-amber-500 hover:bg-amber-600 text-white border-0"
                 >
-                  {showCustomHotels ? 'Hide Custom Hotels' : 'Show Custom Hotels'}
+                  {showCustomHotels ? 'Hide Custom Hotels' : 'Select Custom Hotels'}
                 </Button>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Select hotels not listed in search results and enter your own quoted price
+              <p className="text-sm text-amber-700 mb-4">
+                We have special rates for these hotels. Select any hotel and enter the total accommodation cost quoted to you.
               </p>
               
               {showCustomHotels && (

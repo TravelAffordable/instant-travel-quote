@@ -344,7 +344,7 @@ export function LiveHotelQuoteCard({
                       <SelectContent>
                         {roomOptions.map((room) => (
                           <SelectItem key={room.code} value={room.code}>
-                            <div className="flex items-center justify-between gap-2 w-full">
+                            <div className="flex items-center gap-2 w-full">
                               <span className="flex-1">
                                 {room.name} ({room.code})
                               </span>
@@ -352,49 +352,20 @@ export function LiveHotelQuoteCard({
                                 <Users className="w-3 h-3" />
                                 {room.capacity}
                               </span>
-                              <span className="font-medium text-primary">
-                                {formatCurrency(room.lowestRate)}
-                              </span>
                             </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    {/* Show selected room details */}
+                    {/* Show selected room capacity only */}
                     {selectedRoomTypes[i] && (
-                      <div className="flex justify-between text-xs text-muted-foreground mt-1 px-1">
+                      <div className="text-xs text-muted-foreground mt-1 px-1">
                         <span className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
                           Sleeps {roomOptions.find(r => r.code === selectedRoomTypes[i])?.capacity || 2}
                         </span>
-                        <span className="font-medium text-foreground">
-                          {formatCurrency(getRoomRate(selectedRoomTypes[i]))}
-                        </span>
                       </div>
                     )}
-                  </div>
-                ))}
-              </div>
-              
-              {/* Total Accommodation */}
-              <div className="border-t border-border mt-3 pt-3">
-                <div className="flex justify-between text-sm font-medium">
-                  <span>Total Accommodation:</span>
-                  <span className="text-primary">{formatCurrency(accommodationCost)}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Fallback: Simple Room Breakdown when no room options */}
-          {rooms > 1 && roomOptions.length === 0 && (
-            <div className="bg-muted/30 rounded-lg p-3 mb-4">
-              <p className="text-sm font-semibold text-foreground mb-2">Room Breakdown</p>
-              <div className="space-y-1">
-                {Array.from({ length: rooms }, (_, i) => (
-                  <div key={i} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Room {i + 1} Total:</span>
-                    <span className="font-medium text-foreground">{formatCurrency(hotel.minRate)}</span>
                   </div>
                 ))}
               </div>
