@@ -32,6 +32,18 @@ const DURBAN_CUSTOM_HOTELS = [
   'Tropicana Hotel',
 ];
 
+// Hartbeespoort custom hotels
+const HARTBEESPOORT_CUSTOM_HOTELS = [
+  'Riverleaf Hotel',
+  'Harties en Suite Rooms',
+  'Villa Paradiso Hotel',
+  'Cocomo Boutique Hotel',
+  'Khayamanzi Guesthouse',
+  'Indlovukazi Guesthouse',
+  'Kosmos Manor',
+  'Metsing Guesthouse',
+];
+
 type BookingType = 'accommodation-only' | 'with-activities';
 
 interface HeroProps {
@@ -100,6 +112,8 @@ export function Hero({ onGetQuote }: HeroProps) {
     totalCost: number;
     packageId: string;
     packageName: string;
+    checkInDate?: string;
+    checkOutDate?: string;
   }>>([]);
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
@@ -109,6 +123,9 @@ export function Hero({ onGetQuote }: HeroProps) {
     setPackageIds([]);
     setQuotes([]);
     setFamilyQuotes([]);
+    setSelectedCustomHotels([]);
+    setCustomHotelQuotes([]);
+    setShowCustomHotels(false);
   }, [destination]);
 
   // Clear live hotels when destination changes
@@ -723,8 +740,8 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
-        {/* Custom Hotels Section - Durban Only (for with-activities booking type) */}
-        {bookingType === 'with-activities' && destination === 'durban' && hasSearched && (
+        {/* Custom Hotels Section - Durban & Hartbeespoort (for with-activities booking type) */}
+        {bookingType === 'with-activities' && (destination === 'durban' || destination === 'hartbeespoort') && hasSearched && (
           <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
             <div className="bg-amber-50 border-2 border-amber-200 backdrop-blur-md rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
@@ -746,7 +763,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <div className="space-y-3 mb-6">
                   <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
                   <div className="flex flex-wrap gap-2">
-                    {DURBAN_CUSTOM_HOTELS.map((hotel) => (
+                    {(destination === 'durban' ? DURBAN_CUSTOM_HOTELS : HARTBEESPOORT_CUSTOM_HOTELS).map((hotel) => (
                       <label
                         key={hotel}
                         className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
@@ -793,6 +810,8 @@ export function Hero({ onGetQuote }: HeroProps) {
                               ...details,
                               packageId: selectedPkg.id,
                               packageName: selectedPkg.name,
+                              checkInDate: checkIn,
+                              checkOutDate: checkOut,
                             }];
                           });
                           toast.success(`Quote added for ${details.hotelName}`);
@@ -809,7 +828,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         )}
 
         {/* Quote Results */}
-        {(liveHotels.length > 0 || (hasSearched && customHotelQuotes.length > 0) || (hasSearched && bookingType === 'with-activities' && destination === 'durban')) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
+        {(liveHotels.length > 0 || (hasSearched && customHotelQuotes.length > 0) || (hasSearched && bookingType === 'with-activities' && (destination === 'durban' || destination === 'hartbeespoort'))) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
               {bookingType === 'accommodation-only' ? (
@@ -911,7 +930,10 @@ export function Hero({ onGetQuote }: HeroProps) {
                                       <p className="text-xs text-green-600 font-medium mt-1">✓ {quote.mealPlan}</p>
                                     )}
                                     <p className="text-sm text-amber-700 mt-2">{quote.packageName}</p>
-                                    <div className="mt-2 text-sm text-muted-foreground">
+                                    <div className="mt-2 text-sm text-muted-foreground space-y-1">
+                                      {quote.checkInDate && quote.checkOutDate && (
+                                        <p className="font-medium text-gray-700">Check-in: {new Date(quote.checkInDate).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })} → Check-out: {new Date(quote.checkOutDate).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                      )}
                                       <p>{quote.stayDetails || `${nightsCount} nights • ${adults} adults${children > 0 ? ` • ${children} children` : ''} • ${rooms} room${rooms > 1 ? 's' : ''}`}</p>
                                     </div>
                                   </div>
