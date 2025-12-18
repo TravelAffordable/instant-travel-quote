@@ -711,6 +711,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                         key={hotel.code || index}
                         hotel={hotel}
                         rooms={rooms}
+                        adults={adults}
                       />
                     ))}
                   </div>
