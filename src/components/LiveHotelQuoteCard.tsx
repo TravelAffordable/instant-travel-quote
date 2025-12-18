@@ -200,6 +200,21 @@ export function LiveHotelQuoteCard({
             </p>
           </div>
 
+          {/* Per-Room Breakdown (when multiple rooms) */}
+          {rooms > 1 && (
+            <div className="bg-muted/30 rounded-lg p-3 mb-4">
+              <p className="text-sm font-semibold text-foreground mb-2">Room Breakdown</p>
+              <div className="space-y-1">
+                {Array.from({ length: rooms }, (_, i) => (
+                  <div key={i} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Room {i + 1} Total:</span>
+                    <span className="font-medium text-foreground">{formatCurrency(perRoomAccommodation)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Total Price */}
           <div className="flex items-end justify-between mb-4">
             <div>
