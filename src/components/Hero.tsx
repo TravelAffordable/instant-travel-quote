@@ -707,6 +707,74 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
+        {/* Custom Hotels Section - Durban Only (Always visible when Durban + accommodation-only) */}
+        {bookingType === 'accommodation-only' && destination === 'durban' && (
+          <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-lg font-semibold text-gray-900">Custom Hotels (Better Rates Available)</h4>
+                <Button
+                  variant={showCustomHotels ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setShowCustomHotels(!showCustomHotels)}
+                >
+                  {showCustomHotels ? 'Hide Custom Hotels' : 'Show Custom Hotels'}
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Select hotels not listed in search results and enter your own quoted price
+              </p>
+              
+              {showCustomHotels && (
+                <div className="space-y-3 mb-6">
+                  <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {DURBAN_CUSTOM_HOTELS.map((hotel) => (
+                      <label
+                        key={hotel}
+                        className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
+                          selectedCustomHotels.includes(hotel)
+                            ? 'bg-primary/10 border-primary text-primary'
+                            : 'bg-white border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <Checkbox
+                          checked={selectedCustomHotels.includes(hotel)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedCustomHotels([...selectedCustomHotels, hotel]);
+                            } else {
+                              setSelectedCustomHotels(selectedCustomHotels.filter(h => h !== hotel));
+                            }
+                          }}
+                        />
+                        <span className="text-sm">{hotel}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedCustomHotels.length > 0 && (
+                <div className="space-y-4">
+                  <h5 className="text-sm font-medium text-gray-700">Enter accommodation costs:</h5>
+                  {selectedCustomHotels.map((hotelName) => (
+                    <CustomHotelCard
+                      key={hotelName}
+                      hotelName={hotelName}
+                      rooms={rooms}
+                      adults={adults}
+                      onCalculate={(name, cost) => {
+                        toast.success(`Quote calculated for ${name}: R${cost.toLocaleString()}`);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Quote Results */}
         {liveHotels.length > 0 && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
@@ -731,72 +799,6 @@ export function Hero({ onGetQuote }: HeroProps) {
                       />
                     ))}
                   </div>
-
-                  {/* Custom Hotels Section - Durban Only */}
-                  {destination === 'durban' && (
-                    <div className="mt-8 pt-6 border-t border-gray-200">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-900">Custom Hotels</h4>
-                        <Button
-                          variant={showCustomHotels ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setShowCustomHotels(!showCustomHotels)}
-                        >
-                          {showCustomHotels ? 'Hide Custom Hotels' : 'Show Custom Hotels'}
-                        </Button>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Select hotels not listed above and enter your own quoted price
-                      </p>
-                      
-                      {showCustomHotels && (
-                        <div className="space-y-3 mb-6">
-                          <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {DURBAN_CUSTOM_HOTELS.map((hotel) => (
-                              <label
-                                key={hotel}
-                                className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
-                                  selectedCustomHotels.includes(hotel)
-                                    ? 'bg-primary/10 border-primary text-primary'
-                                    : 'bg-white border-gray-200 hover:border-gray-300'
-                                }`}
-                              >
-                                <Checkbox
-                                  checked={selectedCustomHotels.includes(hotel)}
-                                  onCheckedChange={(checked) => {
-                                    if (checked) {
-                                      setSelectedCustomHotels([...selectedCustomHotels, hotel]);
-                                    } else {
-                                      setSelectedCustomHotels(selectedCustomHotels.filter(h => h !== hotel));
-                                    }
-                                  }}
-                                />
-                                <span className="text-sm">{hotel}</span>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedCustomHotels.length > 0 && (
-                        <div className="space-y-4">
-                          <h5 className="text-sm font-medium text-gray-700">Enter accommodation costs:</h5>
-                          {selectedCustomHotels.map((hotelName) => (
-                            <CustomHotelCard
-                              key={hotelName}
-                              hotelName={hotelName}
-                              rooms={rooms}
-                              adults={adults}
-                              onCalculate={(name, cost) => {
-                                toast.success(`Quote calculated for ${name}: R${cost.toLocaleString()}`);
-                              }}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               ) : (
                 <LiveHotelQuotes
