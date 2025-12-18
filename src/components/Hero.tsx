@@ -5,7 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -87,6 +88,12 @@ export function Hero({ onGetQuote }: HeroProps) {
   // Custom hotels state (for Durban)
   const [showCustomHotels, setShowCustomHotels] = useState(false);
   const [selectedCustomHotels, setSelectedCustomHotels] = useState<string[]>([]);
+  const [customHotelQuotes, setCustomHotelQuotes] = useState<Array<{
+    hotelName: string;
+    totalCost: number;
+    packageId: string;
+    packageName: string;
+  }>>([]);
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
 
@@ -766,7 +773,22 @@ export function Hero({ onGetQuote }: HeroProps) {
                       rooms={rooms}
                       adults={adults}
                       onCalculate={(name, cost) => {
-                        toast.success(`Quote calculated for ${name}: R${cost.toLocaleString()}`);
+                        const selectedPkg = packages.find(p => packageIds.includes(p.id));
+                        if (selectedPkg) {
+                          setCustomHotelQuotes(prev => {
+                            // Remove existing quote for this hotel if any, then add new one
+                            const filtered = prev.filter(q => q.hotelName !== name);
+                            return [...filtered, {
+                              hotelName: name,
+                              totalCost: cost,
+                              packageId: selectedPkg.id,
+                              packageName: selectedPkg.name,
+                            }];
+                          });
+                          toast.success(`Quote added for ${name}`);
+                        } else {
+                          toast.error('Please select a package first');
+                        }
                       }}
                     />
                   ))}
@@ -802,16 +824,99 @@ export function Hero({ onGetQuote }: HeroProps) {
                   </div>
                 </div>
               ) : (
-                <LiveHotelQuotes
-                  hotels={liveHotels}
-                  pkg={packages.find(p => packageIds.includes(p.id))!}
-                  nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
-                  adults={adults}
-                  children={children}
-                  childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
-                  rooms={rooms}
-                  budget={budget}
-                />
+                <>
+                  <LiveHotelQuotes
+                    hotels={liveHotels}
+                    pkg={packages.find(p => packageIds.includes(p.id))!}
+                    nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
+                    adults={adults}
+                    children={children}
+                    childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
+                    rooms={rooms}
+                    budget={budget}
+                  />
+                  
+                  {/* Custom Hotel Quotes */}
+                  {customHotelQuotes.length > 0 && (
+                    <div className="mt-8 pt-6 border-t-2 border-amber-200">
+                      <h3 className="text-xl font-display font-semibold text-amber-900 mb-4">
+                        🏨 Custom Hotel Quotes ({customHotelQuotes.length})
+                      </h3>
+                      <div className="space-y-4">
+                        {customHotelQuotes.map((quote, index) => {
+                          const selectedPkg = packages.find(p => p.id === quote.packageId);
+                          const nightsCount = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
+                          
+                          // Calculate package costs
+                          const packageCostPerAdult = selectedPkg?.basePrice || 0;
+                          const totalPackageCost = packageCostPerAdult * adults;
+                          
+                          // Service fees (tiered)
+                          let serviceFeePerAdult = 1000;
+                          if (adults >= 10) serviceFeePerAdult = 750;
+                          else if (adults >= 4) serviceFeePerAdult = 800;
+                          else if (adults >= 2) serviceFeePerAdult = 850;
+                          const totalServiceFees = serviceFeePerAdult * adults;
+                          
+                          // Kids costs if any
+                          const kidsAges = childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17);
+                          let kidsPackageCost = 0;
+                          let kidsFees = 0;
+                          if (selectedPkg && kidsAges.length > 0) {
+                            kidsPackageCost = (selectedPkg.kidsPrice || 0) * kidsAges.length;
+                            kidsAges.forEach(age => {
+                              kidsFees += age <= 12 ? 200 : 300;
+                            });
+                          }
+                          
+                          const grandTotal = quote.totalCost + totalPackageCost + totalServiceFees + kidsPackageCost + kidsFees;
+                          const perPerson = Math.round(grandTotal / (adults + kidsAges.length));
+                          
+                          return (
+                            <Card key={index} className="border-2 border-amber-200 bg-amber-50">
+                              <CardContent className="p-4">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h4 className="font-semibold text-lg text-amber-900">{quote.hotelName}</h4>
+                                    <p className="text-sm text-amber-700">{quote.packageName}</p>
+                                    <div className="mt-2 text-sm text-muted-foreground">
+                                      <p>{nightsCount} nights • {adults} adults{children > 0 ? ` • ${children} children` : ''} • {rooms} room{rooms > 1 ? 's' : ''}</p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-2xl font-bold text-primary">
+                                      R{perPerson.toLocaleString()}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">per person</p>
+                                    <p className="text-lg font-semibold text-amber-800 mt-1">
+                                      R{grandTotal.toLocaleString()}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">total</p>
+                                  </div>
+                                </div>
+                                
+                                {/* Package inclusions */}
+                                {selectedPkg && (
+                                  <div className="mt-4 pt-4 border-t border-amber-200">
+                                    <p className="text-sm font-medium text-amber-900 mb-2">Package Inclusions:</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                                      {selectedPkg.activitiesIncluded.slice(0, 6).map((activity, i) => (
+                                        <div key={i} className="flex items-center gap-2 text-sm text-amber-800">
+                                          <Check className="w-4 h-4 text-green-600" />
+                                          <span>{activity}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
