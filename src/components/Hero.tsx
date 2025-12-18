@@ -707,8 +707,8 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
-        {/* Custom Hotels Section - Durban Only (Always visible when Durban + accommodation-only) */}
-        {bookingType === 'accommodation-only' && destination === 'durban' && (
+        {/* Custom Hotels Section - Durban Only (for with-activities booking type) */}
+        {bookingType === 'with-activities' && destination === 'durban' && (
           <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
