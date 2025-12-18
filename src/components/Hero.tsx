@@ -749,6 +749,19 @@ export function Hero({ onGetQuote }: HeroProps) {
                               R{hotel.minRate?.toLocaleString()}
                             </p>
                             <p className="text-xs text-gray-500">total stay</p>
+
+                            {rooms > 1 && typeof hotel.minRate === 'number' && (
+                              <div className="mt-2 space-y-1">
+                                {Array.from({ length: rooms }, (_, i) => (
+                                  <div key={i} className="flex justify-between gap-4 text-xs text-gray-500">
+                                    <span>Room {i + 1} total</span>
+                                    <span className="font-medium text-gray-700">
+                                      R{Math.round(hotel.minRate / rooms).toLocaleString()}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
