@@ -15,6 +15,7 @@ import {
 } from '@/data/travelData';
 import { QuoteList } from './QuoteList';
 import { LiveHotelQuotes } from './LiveHotelQuotes';
+import { AccommodationOnlyCard } from './AccommodationOnlyCard';
 import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
 
@@ -706,50 +707,11 @@ export function Hero({ onGetQuote }: HeroProps) {
                   </div>
                   <div className="space-y-4">
                     {liveHotels.map((hotel, index) => (
-                      <div key={hotel.code || index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <div className="flex gap-4">
-                          {hotel.image && (
-                            <img 
-                              src={hotel.image} 
-                              alt={hotel.name}
-                              className="w-32 h-24 object-cover rounded-lg"
-                            />
-                          )}
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-lg">{hotel.name}</h4>
-                            <p className="text-sm text-gray-500">{hotel.address}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <div className="flex">
-                                {Array.from({ length: hotel.stars || 3 }).map((_, i) => (
-                                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                                ))}
-                              </div>
-                              {(hotel as any).hasBreakfast && (
-                                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Breakfast included</span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-primary">
-                              R{((hotel.minRate || 0) * rooms).toLocaleString()}
-                            </p>
-                            <p className="text-xs text-gray-500">total stay</p>
-
-                            {rooms > 1 && typeof hotel.minRate === 'number' && (
-                              <div className="mt-2 space-y-1">
-                                {Array.from({ length: rooms }, (_, i) => (
-                                  <div key={i} className="flex justify-between gap-4 text-xs text-gray-500">
-                                    <span>Room {i + 1} total</span>
-                                    <span className="font-medium text-gray-700">
-                                      R{hotel.minRate.toLocaleString()}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+                      <AccommodationOnlyCard
+                        key={hotel.code || index}
+                        hotel={hotel}
+                        rooms={rooms}
+                      />
                     ))}
                   </div>
                 </div>
