@@ -90,6 +90,12 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [selectedCustomHotels, setSelectedCustomHotels] = useState<string[]>([]);
   const [customHotelQuotes, setCustomHotelQuotes] = useState<Array<{
     hotelName: string;
+    hotelTier?: string;
+    recommendation?: string;
+    roomType?: string;
+    bedConfig?: string;
+    mealPlan?: string;
+    stayDetails?: string;
     totalCost: number;
     packageId: string;
     packageName: string;
@@ -772,20 +778,21 @@ export function Hero({ onGetQuote }: HeroProps) {
                       hotelName={hotelName}
                       rooms={rooms}
                       adults={adults}
-                      onCalculate={(name, cost) => {
+                      children={children}
+                      nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
+                      onCalculate={(details) => {
                         const selectedPkg = packages.find(p => packageIds.includes(p.id));
                         if (selectedPkg) {
                           setCustomHotelQuotes(prev => {
                             // Remove existing quote for this hotel if any, then add new one
-                            const filtered = prev.filter(q => q.hotelName !== name);
+                            const filtered = prev.filter(q => q.hotelName !== details.hotelName);
                             return [...filtered, {
-                              hotelName: name,
-                              totalCost: cost,
+                              ...details,
                               packageId: selectedPkg.id,
                               packageName: selectedPkg.name,
                             }];
                           });
-                          toast.success(`Quote added for ${name}`);
+                          toast.success(`Quote added for ${details.hotelName}`);
                         } else {
                           toast.error('Please select a package first');
                         }
@@ -876,11 +883,26 @@ export function Hero({ onGetQuote }: HeroProps) {
                             <Card key={index} className="border-2 border-amber-200 bg-amber-50">
                               <CardContent className="p-4">
                                 <div className="flex justify-between items-start">
-                                  <div>
-                                    <h4 className="font-semibold text-lg text-amber-900">{quote.hotelName}</h4>
-                                    <p className="text-sm text-amber-700">{quote.packageName}</p>
+                                  <div className="flex-1">
+                                    {quote.hotelTier && (
+                                      <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">{quote.hotelTier}</span>
+                                    )}
+                                    {quote.recommendation && (
+                                      <p className="text-xs text-green-600 mt-1">{quote.recommendation}</p>
+                                    )}
+                                    <h4 className="font-semibold text-lg text-amber-900 mt-1">{quote.hotelName}</h4>
+                                    {quote.roomType && (
+                                      <p className="text-sm font-medium text-gray-800">{quote.roomType}</p>
+                                    )}
+                                    {quote.bedConfig && (
+                                      <p className="text-xs text-muted-foreground">{quote.bedConfig}</p>
+                                    )}
+                                    {quote.mealPlan && (
+                                      <p className="text-xs text-green-600 font-medium mt-1">✓ {quote.mealPlan}</p>
+                                    )}
+                                    <p className="text-sm text-amber-700 mt-2">{quote.packageName}</p>
                                     <div className="mt-2 text-sm text-muted-foreground">
-                                      <p>{nightsCount} nights • {adults} adults{children > 0 ? ` • ${children} children` : ''} • {rooms} room{rooms > 1 ? 's' : ''}</p>
+                                      <p>{quote.stayDetails || `${nightsCount} nights • ${adults} adults${children > 0 ? ` • ${children} children` : ''} • ${rooms} room${rooms > 1 ? 's' : ''}`}</p>
                                     </div>
                                   </div>
                                   <div className="text-right">
