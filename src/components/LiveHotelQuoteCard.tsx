@@ -26,8 +26,11 @@ export function LiveHotelQuoteCard({
   rooms,
   budget,
 }: LiveHotelQuoteCardProps) {
-  // Calculate total cost
-  const accommodationCost = hotel.minRate; // Already calculated for total stay (all requested rooms)
+  // Calculate costs
+  // IMPORTANT: In the UI we treat hotel.minRate as the total stay price for ONE room (same as accommodation-only).
+  const perRoomAccommodation = hotel.minRate || 0;
+  const accommodationCost = perRoomAccommodation * Math.max(1, rooms);
+
   const packageCostPerAdult = pkg.basePrice;
   const packageTotal = packageCostPerAdult * adults;
 
@@ -48,10 +51,8 @@ export function LiveHotelQuoteCard({
   };
 
   const roomAdultOccupancies = getRoomAdultOccupancies(adults, rooms);
-  const perRoomAccommodation = rooms > 0 ? accommodationCost / rooms : accommodationCost;
 
   // Accommodation per adult = sum(roomCost / adultsInThatRoom)
-  // This matches the rules:
   // - Double room (2 adults): divide that room's cost by 2
   // - Single occupancy (1 adult): room cost stays as-is
   // - 4-sleeper (4 adults in 1 room): divide by 4
