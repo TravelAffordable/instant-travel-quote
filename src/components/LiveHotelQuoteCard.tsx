@@ -1,9 +1,17 @@
+import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Mail, MessageSquare, Star, MapPin, Building2 } from 'lucide-react';
+import { Check, Mail, MessageSquare, Star, MapPin, Building2, Users, ChevronDown } from 'lucide-react';
 import { type LiveHotel } from '@/hooks/useHotelbedsSearch';
 import { type Package } from '@/data/travelData';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface LiveHotelQuoteCardProps {
   hotel: LiveHotel;
@@ -16,6 +24,50 @@ interface LiveHotelQuoteCardProps {
   budget: string;
 }
 
+// Room capacity mapping based on common Hotelbeds room type codes
+const getRoomCapacity = (roomCode: string, roomName: string): number => {
+  const code = roomCode.toUpperCase();
+  const name = roomName.toUpperCase();
+  
+  // Family rooms typically sleep 4-6
+  if (code.includes('FAM') || name.includes('FAMILY')) return 4;
+  
+  // Suites often sleep 3-4
+  if (code.includes('SUI') || name.includes('SUITE')) return 3;
+  
+  // Triple rooms
+  if (code.includes('TRP') || code.includes('TPL') || name.includes('TRIPLE')) return 3;
+  
+  // Quad rooms
+  if (code.includes('QUA') || code.includes('QAD') || name.includes('QUAD')) return 4;
+  
+  // Single rooms
+  if (code.includes('SGL') || code.includes('SIN') || name.includes('SINGLE')) return 1;
+  
+  // Penthouses and luxury apartments
+  if (name.includes('PENTHOUSE') || name.includes('APARTMENT')) return 5;
+  if (name.includes('THREE BEDROOM') || name.includes('3 BEDROOM')) return 6;
+  if (name.includes('TWO BEDROOM') || name.includes('2 BEDROOM')) return 4;
+  
+  // Default to double occupancy for standard rooms
+  return 2;
+};
+
+interface RoomRate {
+  rateKey: string;
+  net: number;
+  boardCode: string;
+  boardName: string;
+}
+
+interface RoomOption {
+  code: string;
+  name: string;
+  capacity: number;
+  lowestRate: number;
+  rates: RoomRate[];
+}
+
 export function LiveHotelQuoteCard({
   hotel,
   pkg,
@@ -26,16 +78,56 @@ export function LiveHotelQuoteCard({
   rooms,
   budget,
 }: LiveHotelQuoteCardProps) {
-  // Calculate costs
-  // IMPORTANT: In the UI we treat hotel.minRate as the total stay price for ONE room (same as accommodation-only).
-  const perRoomAccommodation = hotel.minRate || 0;
-  const accommodationCost = perRoomAccommodation * Math.max(1, rooms);
+  // Process available room options with capacity and pricing
+  const roomOptions: RoomOption[] = useMemo(() => {
+    if (!hotel.rooms || hotel.rooms.length === 0) return [];
+    
+    return hotel.rooms.map(room => {
+      const capacity = getRoomCapacity(room.code, room.name);
+      const rates = room.rates || [];
+      const lowestRate = rates.length > 0 
+        ? Math.min(...rates.map(r => r.net))
+        : hotel.minRate;
+      
+      return {
+        code: room.code,
+        name: room.name,
+        capacity,
+        lowestRate,
+        rates,
+      };
+    }).sort((a, b) => a.lowestRate - b.lowestRate);
+  }, [hotel.rooms, hotel.minRate]);
+
+  // State for selected room types (one selection per room)
+  const [selectedRoomTypes, setSelectedRoomTypes] = useState<string[]>(() => {
+    // Default to cheapest room for all rooms
+    const defaultRoom = roomOptions.length > 0 ? roomOptions[0].code : '';
+    return Array(rooms).fill(defaultRoom);
+  });
+
+  // Get the rate for a specific room code
+  const getRoomRate = (roomCode: string): number => {
+    const roomOption = roomOptions.find(r => r.code === roomCode);
+    return roomOption?.lowestRate || hotel.minRate;
+  };
+
+  // Calculate total accommodation based on selected rooms
+  const accommodationCost = useMemo(() => {
+    if (roomOptions.length === 0) {
+      // Fallback if no room options available
+      return (hotel.minRate || 0) * Math.max(1, rooms);
+    }
+    
+    return selectedRoomTypes.reduce((total, roomCode) => {
+      return total + getRoomRate(roomCode);
+    }, 0);
+  }, [selectedRoomTypes, roomOptions, hotel.minRate, rooms]);
 
   const packageCostPerAdult = pkg.basePrice;
   const packageTotal = packageCostPerAdult * adults;
 
   // Distribute adults across rooms to correctly compute accommodation cost per person.
-  // Example: 4 adults + 2 rooms => [2, 2]; 3 adults + 2 rooms => [2, 1]
   const getRoomAdultOccupancies = (adultCount: number, roomCount: number) => {
     const safeAdults = Math.max(0, Math.floor(adultCount));
     const safeRooms = Math.max(1, Math.floor(roomCount));
@@ -44,7 +136,6 @@ export function LiveHotelQuoteCard({
     const base = Math.floor(safeAdults / usedRooms);
     const remainder = safeAdults % usedRooms;
 
-    // First `remainder` rooms get `base + 1` adults, rest get `base`.
     return Array.from({ length: usedRooms }, (_, i) => base + (i < remainder ? 1 : 0)).filter(
       (n) => n > 0
     );
@@ -52,14 +143,22 @@ export function LiveHotelQuoteCard({
 
   const roomAdultOccupancies = getRoomAdultOccupancies(adults, rooms);
 
-  // Accommodation per adult = sum(roomCost / adultsInThatRoom)
-  // - Double room (2 adults): divide that room's cost by 2
-  // - Single occupancy (1 adult): room cost stays as-is
-  // - 4-sleeper (4 adults in 1 room): divide by 4
-  const accommodationPerAdult = roomAdultOccupancies.reduce(
-    (sum, adultsInRoom) => sum + perRoomAccommodation / adultsInRoom,
-    0
-  );
+  // Accommodation per adult based on selected room rates
+  const accommodationPerAdult = useMemo(() => {
+    if (roomOptions.length === 0 || roomAdultOccupancies.length === 0) {
+      const perRoom = hotel.minRate || 0;
+      return roomAdultOccupancies.reduce(
+        (sum, adultsInRoom) => sum + perRoom / adultsInRoom,
+        0
+      );
+    }
+    
+    return roomAdultOccupancies.reduce((sum, adultsInRoom, idx) => {
+      const roomCode = selectedRoomTypes[idx] || selectedRoomTypes[0] || '';
+      const roomRate = getRoomRate(roomCode);
+      return sum + roomRate / adultsInRoom;
+    }, 0);
+  }, [roomAdultOccupancies, selectedRoomTypes, roomOptions, hotel.minRate]);
 
   // Kids package cost
   let kidsPackageCost = 0;
@@ -110,12 +209,30 @@ export function LiveHotelQuoteCard({
     return 'bg-green-500/10 text-green-600 border-green-500/20';
   };
 
+  const handleRoomTypeChange = (roomIndex: number, roomCode: string) => {
+    setSelectedRoomTypes(prev => {
+      const updated = [...prev];
+      updated[roomIndex] = roomCode;
+      return updated;
+    });
+  };
+
+  const getSelectedRoomNames = () => {
+    return selectedRoomTypes.map(code => {
+      const room = roomOptions.find(r => r.code === code);
+      return room ? `${room.name} (${room.code})` : 'Standard Room';
+    });
+  };
+
   const handleWhatsApp = () => {
+    const roomDetails = rooms > 1 && roomOptions.length > 0
+      ? `\n🛏️ Room Types:\n${getSelectedRoomNames().map((name, i) => `   Room ${i + 1}: ${name}`).join('\n')}`
+      : `\n🛏️ Rooms: ${rooms} room${rooms > 1 ? 's' : ''}`;
+
     const text = `Hi! I'm interested in booking:\n\n` +
       `🏨 Hotel: ${hotel.name}\n` +
       `📦 Package: ${pkg.name}\n` +
-      `📅 Duration: ${nights} nights\n` +
-      `🛏️ Rooms: ${rooms} room${rooms > 1 ? 's' : ''}\n` +
+      `📅 Duration: ${nights} nights${roomDetails}\n` +
       `👥 Guests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\n` +
       `💰 Total: ${formatCurrency(totalCost)}\n` +
       `💵 My Budget: ${budget}\n\n` +
@@ -125,13 +242,17 @@ export function LiveHotelQuoteCard({
   };
 
   const handleEmail = () => {
+    const roomDetails = rooms > 1 && roomOptions.length > 0
+      ? `Room Types:\n${getSelectedRoomNames().map((name, i) => `- Room ${i + 1}: ${name}`).join('\n')}`
+      : `Rooms: ${rooms} room${rooms > 1 ? 's' : ''}`;
+
     const subject = `Booking Enquiry: ${hotel.name} - ${pkg.shortName}`;
     const body = `Hi Travel Affordable,\n\n` +
       `I would like to enquire about the following booking:\n\n` +
       `Hotel: ${hotel.name}\n` +
       `Package: ${pkg.name}\n` +
       `Duration: ${nights} nights\n` +
-      `Rooms: ${rooms} room${rooms > 1 ? 's' : ''}\n` +
+      `${roomDetails}\n` +
       `Guests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\n` +
       `Total Price: ${formatCurrency(totalCost)}\n` +
       `My Budget: ${budget}\n\n` +
@@ -201,15 +322,79 @@ export function LiveHotelQuoteCard({
             </p>
           </div>
 
-          {/* Per-Room Breakdown (when multiple rooms) */}
-          {rooms > 1 && (
+          {/* Room Selection (when multiple rooms OR room options available) */}
+          {rooms >= 1 && roomOptions.length > 0 && (
+            <div className="bg-muted/30 rounded-lg p-3 mb-4">
+              <p className="text-sm font-semibold text-foreground mb-3">
+                {rooms > 1 ? 'Select Room Types' : 'Select Room Type'}
+              </p>
+              <div className="space-y-3">
+                {Array.from({ length: rooms }, (_, i) => (
+                  <div key={i} className="space-y-1">
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Room {i + 1}
+                    </label>
+                    <Select
+                      value={selectedRoomTypes[i] || roomOptions[0]?.code}
+                      onValueChange={(value) => handleRoomTypeChange(i, value)}
+                    >
+                      <SelectTrigger className="w-full bg-background">
+                        <SelectValue placeholder="Select room type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roomOptions.map((room) => (
+                          <SelectItem key={room.code} value={room.code}>
+                            <div className="flex items-center justify-between gap-2 w-full">
+                              <span className="flex-1">
+                                {room.name} ({room.code})
+                              </span>
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Users className="w-3 h-3" />
+                                {room.capacity}
+                              </span>
+                              <span className="font-medium text-primary">
+                                {formatCurrency(room.lowestRate)}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {/* Show selected room details */}
+                    {selectedRoomTypes[i] && (
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1 px-1">
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          Sleeps {roomOptions.find(r => r.code === selectedRoomTypes[i])?.capacity || 2}
+                        </span>
+                        <span className="font-medium text-foreground">
+                          {formatCurrency(getRoomRate(selectedRoomTypes[i]))}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {/* Total Accommodation */}
+              <div className="border-t border-border mt-3 pt-3">
+                <div className="flex justify-between text-sm font-medium">
+                  <span>Total Accommodation:</span>
+                  <span className="text-primary">{formatCurrency(accommodationCost)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Fallback: Simple Room Breakdown when no room options */}
+          {rooms > 1 && roomOptions.length === 0 && (
             <div className="bg-muted/30 rounded-lg p-3 mb-4">
               <p className="text-sm font-semibold text-foreground mb-2">Room Breakdown</p>
               <div className="space-y-1">
                 {Array.from({ length: rooms }, (_, i) => (
                   <div key={i} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Room {i + 1} Total:</span>
-                    <span className="font-medium text-foreground">{formatCurrency(perRoomAccommodation)}</span>
+                    <span className="font-medium text-foreground">{formatCurrency(hotel.minRate)}</span>
                   </div>
                 ))}
               </div>
