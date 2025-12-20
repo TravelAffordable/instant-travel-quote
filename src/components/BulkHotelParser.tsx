@@ -64,53 +64,59 @@ export function BulkHotelParser({
   const parseBookingText = (text: string): ParsedHotelData[] => {
     const hotels: ParsedHotelData[] = [];
     
-    // Split by hotel entries - hotels usually start with name followed by "Opens in new window"
-    // or we can detect patterns that signal a new hotel entry
-    const hotelBlocks: string[] = [];
+    // Split by "Opens in new window" which appears after each hotel name
+    // Each hotel block typically has the hotel name appearing right before "Opens in new window"
     const lines = text.split('\n').map(l => l.trim()).filter(l => l);
     
-    let currentBlock: string[] = [];
+    // Find hotel names - they appear as standalone lines before the duplicate with "Opens in new window"
+    // Pattern: "Hotel Name" then "Hotel NameOpens in new window"
+    const hotelBlocks: { hotelName: string; content: string[] }[] = [];
+    let currentHotelName = '';
+    let currentContent: string[] = [];
     
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const nextLine = lines[i + 1] || '';
       
-      // Detect start of a new hotel: 
-      // - Line contains "Opens in new window" (usually after hotel name)
-      // - Or line followed by "Pay with Wallet" or "Scored X.X"
-      // - Or line that looks like a hotel name followed by rating pattern
-      const isHotelStart = 
-        line.includes('Opens in new window') ||
-        nextLine.includes('Pay with Wallet') ||
-        nextLine.match(/^Scored\s+\d/) ||
-        (currentBlock.length > 0 && line.match(/^[A-Z]/) && nextLine.match(/^(Pay with Wallet|Scored)/));
-      
-      if (isHotelStart && currentBlock.length > 0) {
-        hotelBlocks.push(currentBlock.join('\n'));
-        currentBlock = [line];
-      } else {
-        currentBlock.push(line);
+      // Check if this line contains "Opens in new window" - marks the start of a hotel entry
+      if (line.includes('Opens in new window')) {
+        // If we have a previous hotel, save it
+        if (currentHotelName && currentContent.length > 0) {
+          hotelBlocks.push({ hotelName: currentHotelName, content: [...currentContent] });
+        }
+        
+        // Extract hotel name from this line (remove "Opens in new window" suffix)
+        currentHotelName = line.replace(/Opens in new window$/i, '').trim();
+        currentContent = [];
+        continue;
       }
+      
+      // Check if previous line was a standalone hotel name (appears before the "Opens in new window" version)
+      // This handles the case where hotel name appears twice - once standalone, once with suffix
+      if (i > 0 && !currentHotelName) {
+        const prevLine = lines[i - 1];
+        if (!prevLine.includes('Opens in new window') && 
+            line.includes('Opens in new window') && 
+            line.startsWith(prevLine)) {
+          currentHotelName = prevLine;
+          currentContent = [];
+          continue;
+        }
+      }
+      
+      currentContent.push(line);
     }
     
-    // Add last block
-    if (currentBlock.length > 0) {
-      hotelBlocks.push(currentBlock.join('\n'));
+    // Don't forget the last hotel
+    if (currentHotelName && currentContent.length > 0) {
+      hotelBlocks.push({ hotelName: currentHotelName, content: [...currentContent] });
     }
     
-    // If we couldn't split well, try alternative approach - split by ZAR patterns
-    let blocksToProcess = hotelBlocks;
-    if (hotelBlocks.length <= 1 && text.includes('ZAR')) {
-      // Split by price patterns and work backwards to find hotel names
-      blocksToProcess = text.split(/(?=ZAR\s*[\d,]+\s*(?:ZAR\s*[\d,]+)?)/i).filter(b => b.trim());
-    }
-    
-    // Process each block
-    for (const block of blocksToProcess) {
-      const hotel = parseHotelBlock(block);
+    // Process each hotel block
+    for (const block of hotelBlocks) {
+      const hotel = parseHotelBlock(block.hotelName, block.content.join('\n'));
       if (hotel && hotel.hotelName && hotel.totalCost > 0) {
         // Avoid duplicates
-        if (!hotels.some(h => h.hotelName === hotel.hotelName)) {
+        if (!hotels.some(h => h.hotelName === hotel.hotelName && h.totalCost === hotel.totalCost)) {
           hotels.push(hotel);
         }
       }
@@ -120,12 +126,12 @@ export function BulkHotelParser({
     return hotels.slice(0, 20);
   };
 
-  const parseHotelBlock = (block: string): ParsedHotelData | null => {
-    const lines = block.split('\n').map(l => l.trim()).filter(l => l);
+  const parseHotelBlock = (hotelName: string, blockContent: string): ParsedHotelData | null => {
+    const lines = blockContent.split('\n').map(l => l.trim()).filter(l => l);
     if (lines.length === 0) return null;
 
     const hotel: ParsedHotelData = {
-      hotelName: '',
+      hotelName: hotelName,
       totalCost: 0,
     };
 
@@ -134,15 +140,16 @@ export function BulkHotelParser({
       /Opens in new window/i,
       /Pay with Wallet/i,
       /Show on map/i,
-      /^\d+\.?\d*\s*km from/,
-      /^Location\s+\d/,
-      /^Scored\s+\d/,
+      /^\d+\.?\d*\s*km from/i,
+      /^Location\s+\d/i,
+      /^Scored\s+\d/i,
       /^\d\.\d$/,
       /^(Good|Very Good|Excellent|Wonderful|Superb)\s*·/i,
-      /reviews?$/i,
+      /^\d+\s*reviews?$/i,
       /Original price/i,
       /Includes taxes and fees/i,
       /Current price/i,
+      /^[A-Za-z]+Show on map$/i,
     ];
 
     const isNoise = (line: string) => noisePatterns.some(p => p.test(line));
@@ -152,25 +159,13 @@ export function BulkHotelParser({
       
       // Skip noise lines
       if (isNoise(line)) continue;
-
-      // Hotel name - first substantial line that looks like a name
-      if (!hotel.hotelName && 
-          line.length > 3 && 
-          line.match(/^[A-Za-z]/) &&
-          !line.match(/^(Standard|Deluxe|Superior|King|Queen|Twin|Double|Family|Suite|Room|Entire|Breakfast|Free|Only|\d)/) &&
-          !line.includes('beds') &&
-          !line.includes('bathroom') &&
-          !line.includes('kitchen') &&
-          !line.includes('bedroom') &&
-          !line.match(/^\d+\s*m²/)) {
-        hotel.hotelName = line.replace(/Opens in new window$/i, '').trim();
-        continue;
-      }
       
       // Room type - contains "Room", "Suite", "Apartment", "Chalet", "Tent", "Villa", "Cottage"
+      // But NOT if it's a room details line with bullets
       if (!hotel.roomType && 
-          (line.match(/\b(Room|Suite|Apartment|Chalet|Tent|Villa|Studio|Cottage)\b/i) ||
-           line.match(/^(Standard|Deluxe|Superior|King|Queen|Twin|Double|Family|Luxury)/))) {
+          !line.includes('•') &&
+          (line.match(/\b(Room|Suite|Apartment|Chalet|Tent|Villa|Studio|Cottage|Bungalow|Lodge|Cabin)\b/i) ||
+           line.match(/^(Standard|Deluxe|Superior|King|Queen|Twin|Double|Family|Luxury|One-Bedroom|Two-Bedroom|Three-Bedroom)/i))) {
         // Skip if this is clearly just bed config
         if (!line.match(/^\d+\s+(twin|full|queen|king)/i)) {
           hotel.roomType = line;
@@ -180,7 +175,7 @@ export function BulkHotelParser({
       
       // Room details - "Entire chalet • 1 bedroom • 1 bathroom • 48 m²" pattern
       if (!hotel.roomDetails && 
-          (line.includes('•') && (line.includes('bedroom') || line.includes('bathroom') || line.includes('m²') || line.includes('kitchen')))) {
+          (line.includes('•') && (line.includes('bedroom') || line.includes('bathroom') || line.includes('m²') || line.includes('kitchen') || line.includes('living')))) {
         hotel.roomDetails = line;
         continue;
       }
@@ -207,16 +202,13 @@ export function BulkHotelParser({
         continue;
       }
       
-      // Meal plan
+      // Meal plan - but not if it contains "Free breakfast for Genius" which is a promo
       if (!hotel.mealPlan && 
-          (line.toLowerCase().includes('breakfast') || 
-           line.toLowerCase().includes('dinner') ||
-           line.toLowerCase().includes('meal'))) {
-        if (line.includes('Free breakfast for Genius')) {
-          hotel.mealPlan = 'Breakfast included';
-        } else {
-          hotel.mealPlan = line;
-        }
+          (line.toLowerCase().includes('breakfast included') || 
+           line.toLowerCase().includes('dinner included') ||
+           line.toLowerCase().includes('& dinner included') ||
+           line.toLowerCase().includes('breakfast & dinner'))) {
+        hotel.mealPlan = line;
         continue;
       }
       
