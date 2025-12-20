@@ -44,6 +44,15 @@ const HARTBEESPOORT_CUSTOM_HOTELS = [
   'Metsing Guesthouse',
 ];
 
+// Mpumalanga custom hotels
+const MPUMALANGA_CUSTOM_HOTELS = [
+  'Hotel Numbi and Garden Suites',
+  'Hazyview Cabanas',
+  'Little Pilgrims Boutique Hotel',
+  'Kruger Adventure Lodge',
+  'Sagwadi Hotel',
+];
+
 type BookingType = 'accommodation-only' | 'with-activities';
 
 interface HeroProps {
@@ -742,7 +751,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Custom Hotels Section - Durban & Hartbeespoort (for with-activities booking type) */}
-        {bookingType === 'with-activities' && (destination === 'durban' || destination === 'harties') && hasSearched && (
+        {bookingType === 'with-activities' && (destination === 'durban' || destination === 'harties' || destination === 'mpumalanga') && hasSearched && (
           <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
             <div className="bg-amber-50 border-2 border-amber-200 backdrop-blur-md rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
@@ -764,7 +773,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <div className="space-y-3 mb-6">
                   <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
                   <div className="flex flex-wrap gap-2">
-                    {(destination === 'durban' ? DURBAN_CUSTOM_HOTELS : destination === 'harties' ? HARTBEESPOORT_CUSTOM_HOTELS : []).map((hotel) => (
+                    {(destination === 'durban' ? DURBAN_CUSTOM_HOTELS : destination === 'harties' ? HARTBEESPOORT_CUSTOM_HOTELS : destination === 'mpumalanga' ? MPUMALANGA_CUSTOM_HOTELS : []).map((hotel) => (
                       <label
                         key={hotel}
                         className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
@@ -830,7 +839,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         )}
 
         {/* Quote Results */}
-        {(liveHotels.length > 0 || (hasSearched && customHotelQuotes.length > 0) || (hasSearched && bookingType === 'with-activities' && (destination === 'durban' || destination === 'harties'))) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
+        {(liveHotels.length > 0 || (hasSearched && customHotelQuotes.length > 0) || (hasSearched && bookingType === 'with-activities' && (destination === 'durban' || destination === 'harties' || destination === 'mpumalanga'))) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
               {bookingType === 'accommodation-only' ? (
