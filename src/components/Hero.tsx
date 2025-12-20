@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X, FileText } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -18,6 +18,7 @@ import { QuoteList } from './QuoteList';
 import { LiveHotelQuotes } from './LiveHotelQuotes';
 import { AccommodationOnlyCard } from './AccommodationOnlyCard';
 import { CustomHotelCard } from './CustomHotelCard';
+import { BulkHotelParser } from './BulkHotelParser';
 import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
 
@@ -111,6 +112,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [selectedCustomHotels, setSelectedCustomHotels] = useState<string[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [editingQuoteIndex, setEditingQuoteIndex] = useState<number | null>(null);
+  const [customHotelMode, setCustomHotelMode] = useState<'preset' | 'bulk'>('preset');
   const [customHotelQuotes, setCustomHotelQuotes] = useState<Array<{
     hotelName: string;
     hotelTier?: string;
@@ -770,69 +772,111 @@ export function Hero({ onGetQuote }: HeroProps) {
               </p>
               
               {showCustomHotels && (
-                <div className="space-y-3 mb-6">
-                  <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {(destination === 'durban' ? DURBAN_CUSTOM_HOTELS : destination === 'harties' ? HARTBEESPOORT_CUSTOM_HOTELS : destination === 'mpumalanga' ? MPUMALANGA_CUSTOM_HOTELS : []).map((hotel) => (
-                      <label
-                        key={hotel}
-                        className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
-                          selectedCustomHotels.includes(hotel)
-                            ? 'bg-primary/10 border-primary text-primary'
-                            : 'bg-white border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <Checkbox
-                          checked={selectedCustomHotels.includes(hotel)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedCustomHotels([...selectedCustomHotels, hotel]);
-                            } else {
-                              setSelectedCustomHotels(selectedCustomHotels.filter(h => h !== hotel));
-                            }
-                          }}
-                        />
-                        <span className="text-sm">{hotel}</span>
-                      </label>
-                    ))}
+                <>
+                  {/* Mode Toggle */}
+                  <div className="flex gap-2 mb-4">
+                    <Button
+                      variant={customHotelMode === 'preset' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setCustomHotelMode('preset')}
+                      className={customHotelMode === 'preset' ? 'bg-amber-600 hover:bg-amber-700' : ''}
+                    >
+                      <Hotel className="w-4 h-4 mr-1" />
+                      Preset Hotels
+                    </Button>
+                    <Button
+                      variant={customHotelMode === 'bulk' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setCustomHotelMode('bulk')}
+                      className={customHotelMode === 'bulk' ? 'bg-amber-600 hover:bg-amber-700' : ''}
+                    >
+                      <FileText className="w-4 h-4 mr-1" />
+                      Parse Large Copy (up to 20 hotels)
+                    </Button>
                   </div>
-                </div>
-              )}
 
-              {selectedCustomHotels.length > 0 && (
-                <div className="space-y-4">
-                  <h5 className="text-sm font-medium text-gray-700">Enter accommodation costs:</h5>
-                  {selectedCustomHotels.map((hotelName) => (
-                    <CustomHotelCard
-                      key={hotelName}
-                      hotelName={hotelName}
-                      rooms={rooms}
+                  {customHotelMode === 'preset' ? (
+                    <>
+                      <div className="space-y-3 mb-6">
+                        <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {(destination === 'durban' ? DURBAN_CUSTOM_HOTELS : destination === 'harties' ? HARTBEESPOORT_CUSTOM_HOTELS : destination === 'mpumalanga' ? MPUMALANGA_CUSTOM_HOTELS : []).map((hotel) => (
+                            <label
+                              key={hotel}
+                              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
+                                selectedCustomHotels.includes(hotel)
+                                  ? 'bg-primary/10 border-primary text-primary'
+                                  : 'bg-white border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <Checkbox
+                                checked={selectedCustomHotels.includes(hotel)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setSelectedCustomHotels([...selectedCustomHotels, hotel]);
+                                  } else {
+                                    setSelectedCustomHotels(selectedCustomHotels.filter(h => h !== hotel));
+                                  }
+                                }}
+                              />
+                              <span className="text-sm">{hotel}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      {selectedCustomHotels.length > 0 && (
+                        <div className="space-y-4">
+                          <h5 className="text-sm font-medium text-gray-700">Enter accommodation costs:</h5>
+                          {selectedCustomHotels.map((hotelName) => (
+                            <CustomHotelCard
+                              key={hotelName}
+                              hotelName={hotelName}
+                              rooms={rooms}
+                              adults={adults}
+                              children={children}
+                              nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
+                              onCalculate={(details) => {
+                                const selectedPackages = packages.filter(p => packageIds.includes(p.id));
+                                if (selectedPackages.length > 0) {
+                                  setCustomHotelQuotes(prev => {
+                                    // Remove existing quotes for this hotel, then add new ones for ALL selected packages
+                                    const filtered = prev.filter(q => q.hotelName !== details.hotelName);
+                                    const newQuotes = selectedPackages.map(pkg => ({
+                                      ...details,
+                                      packageId: pkg.id,
+                                      packageName: pkg.name,
+                                      checkInDate: checkIn,
+                                      checkOutDate: checkOut,
+                                    }));
+                                    return [...filtered, ...newQuotes];
+                                  });
+                                  toast.success(`Quote added for ${details.hotelName} (${selectedPackages.length} package${selectedPackages.length > 1 ? 's' : ''})`);
+                                } else {
+                                  toast.error('Please select a package first');
+                                }
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <BulkHotelParser
+                      nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
                       adults={adults}
                       children={children}
-                      nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
-                      onCalculate={(details) => {
-                        const selectedPackages = packages.filter(p => packageIds.includes(p.id));
-                        if (selectedPackages.length > 0) {
-                          setCustomHotelQuotes(prev => {
-                            // Remove existing quotes for this hotel, then add new ones for ALL selected packages
-                            const filtered = prev.filter(q => q.hotelName !== details.hotelName);
-                            const newQuotes = selectedPackages.map(pkg => ({
-                              ...details,
-                              packageId: pkg.id,
-                              packageName: pkg.name,
-                              checkInDate: checkIn,
-                              checkOutDate: checkOut,
-                            }));
-                            return [...filtered, ...newQuotes];
-                          });
-                          toast.success(`Quote added for ${details.hotelName} (${selectedPackages.length} package${selectedPackages.length > 1 ? 's' : ''})`);
-                        } else {
-                          toast.error('Please select a package first');
-                        }
+                      rooms={rooms}
+                      packageIds={packageIds}
+                      packages={packages}
+                      checkIn={checkIn}
+                      checkOut={checkOut}
+                      onHotelsAdded={(newQuotes) => {
+                        setCustomHotelQuotes(prev => [...prev, ...newQuotes]);
                       }}
                     />
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -889,7 +933,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                       <h3 className="text-xl font-display font-semibold text-amber-900 mb-4">
                         🏨 Custom Hotel Quotes ({customHotelQuotes.length})
                       </h3>
-                      <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {customHotelQuotes.map((quote, index) => {
                           const selectedPkg = packages.find(p => p.id === quote.packageId);
                           const nightsCount = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
@@ -920,66 +964,66 @@ export function Hero({ onGetQuote }: HeroProps) {
                           const perPerson = Math.round(grandTotal / (adults + kidsAges.length));
                           
                           return (
-                            <Card key={index} className="border-2 border-amber-200 bg-amber-50">
-                              <CardContent className="p-4">
-                                <div className="flex justify-between items-start">
-                                  <div className="flex-1">
+                            <Card key={index} className="border-2 border-amber-200 bg-amber-50 flex flex-col">
+                              <CardContent className="p-4 flex-1 flex flex-col">
+                                <div className="flex justify-between items-start mb-2">
+                                  <div className="flex-1 min-w-0">
                                     {quote.hotelTier && (
                                       <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">{quote.hotelTier}</span>
                                     )}
-                                    {quote.recommendation && (
-                                      <p className="text-xs text-green-600 mt-1">{quote.recommendation}</p>
-                                    )}
-                                    <h4 className="font-semibold text-lg text-amber-900 mt-1">{quote.hotelName}</h4>
-                                    {quote.roomType && (
-                                      <p className="text-sm font-medium text-gray-800">{quote.roomType}</p>
-                                    )}
-                                    {quote.bedConfig && (
-                                      <p className="text-xs text-muted-foreground">{quote.bedConfig}</p>
-                                    )}
-                                    {quote.mealPlan && (
-                                      <p className="text-xs text-green-600 font-medium mt-1">✓ {quote.mealPlan}</p>
-                                    )}
-                                    <p className="text-sm text-amber-700 mt-2">{quote.packageName}</p>
-                                    <div className="mt-2 text-sm text-muted-foreground space-y-1">
-                                      {quote.checkInDate && quote.checkOutDate && (
-                                        <p className="font-medium text-gray-700">Check-in: {new Date(quote.checkInDate).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })} → Check-out: {new Date(quote.checkOutDate).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                                      )}
-                                      <p>{quote.stayDetails || `${nightsCount} nights • ${adults} adults${children > 0 ? ` • ${children} children` : ''} • ${rooms} room${rooms > 1 ? 's' : ''}`}</p>
-                                    </div>
+                                    <h4 className="font-semibold text-base text-amber-900 mt-1 line-clamp-2">{quote.hotelName}</h4>
                                   </div>
-                                  <div className="text-right flex flex-col items-end">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => setEditingQuoteIndex(index)}
-                                      className="mb-2 text-amber-700 hover:text-amber-900 hover:bg-amber-100"
-                                    >
-                                      <Pencil className="w-4 h-4 mr-1" />
-                                      Edit
-                                    </Button>
-                                    <p className="text-2xl font-bold text-primary">
-                                      R{perPerson.toLocaleString()}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">per person</p>
-                                    <p className="text-lg font-semibold text-amber-800 mt-1">
-                                      R{grandTotal.toLocaleString()}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">total</p>
-                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setEditingQuoteIndex(index)}
+                                    className="shrink-0 h-7 w-7 p-0 text-amber-700 hover:text-amber-900 hover:bg-amber-100"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                  </Button>
                                 </div>
                                 
-                                {/* Package inclusions */}
+                                <div className="flex-1 space-y-1 text-xs">
+                                  {quote.roomType && (
+                                    <p className="font-medium text-gray-800 line-clamp-1">{quote.roomType}</p>
+                                  )}
+                                  {quote.bedConfig && (
+                                    <p className="text-muted-foreground line-clamp-1">{quote.bedConfig}</p>
+                                  )}
+                                  {quote.mealPlan && (
+                                    <p className="text-green-600 font-medium">✓ {quote.mealPlan}</p>
+                                  )}
+                                  <p className="text-amber-700 font-medium mt-1 line-clamp-1">{quote.packageName}</p>
+                                  <p className="text-muted-foreground">
+                                    {nightsCount} nights • {adults} adults{children > 0 ? ` • ${children} kids` : ''}
+                                  </p>
+                                </div>
+                                
+                                <div className="mt-3 pt-3 border-t border-amber-200 text-center">
+                                  <p className="text-xl font-bold text-primary">
+                                    R{perPerson.toLocaleString()}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">per person</p>
+                                  <p className="text-sm font-semibold text-amber-800 mt-1">
+                                    R{grandTotal.toLocaleString()} total
+                                  </p>
+                                </div>
+                                
+                                {/* Package inclusions - collapsed */}
                                 {selectedPkg && (
-                                  <div className="mt-4 pt-4 border-t border-amber-200">
-                                    <p className="text-sm font-medium text-amber-900 mb-2">Package Inclusions:</p>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                                      {selectedPkg.activitiesIncluded.slice(0, 6).map((activity, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-sm text-amber-800">
-                                          <Check className="w-4 h-4 text-green-600" />
-                                          <span>{activity}</span>
-                                        </div>
+                                  <div className="mt-2 pt-2 border-t border-amber-200">
+                                    <p className="text-xs text-muted-foreground mb-1">Includes:</p>
+                                    <div className="flex flex-wrap gap-1">
+                                      {selectedPkg.activitiesIncluded.slice(0, 3).map((activity, i) => (
+                                        <span key={i} className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
+                                          {activity.length > 15 ? activity.substring(0, 15) + '...' : activity}
+                                        </span>
                                       ))}
+                                      {selectedPkg.activitiesIncluded.length > 3 && (
+                                        <span className="text-xs text-muted-foreground">
+                                          +{selectedPkg.activitiesIncluded.length - 3} more
+                                        </span>
+                                      )}
                                     </div>
                                   </div>
                                 )}
