@@ -9,8 +9,11 @@ import { toast } from 'sonner';
 export interface ParsedHotelData {
   hotelName: string;
   roomType?: string;
+  roomDetails?: string;
   bedConfig?: string;
   mealPlan?: string;
+  cancellationPolicy?: string;
+  availabilityNote?: string;
   stayDetails?: string;
   totalCost: number;
   originalPrice?: number;
@@ -126,50 +129,45 @@ export function BulkHotelParser({
       totalCost: 0,
     };
 
-    // Find hotel name - usually first substantial line before "Opens in new window"
-    let hotelNameFound = false;
+    // Lines to skip entirely (noise)
+    const noisePatterns = [
+      /Opens in new window/i,
+      /Pay with Wallet/i,
+      /Show on map/i,
+      /^\d+\.?\d*\s*km from/,
+      /^Location\s+\d/,
+      /^Scored\s+\d/,
+      /^\d\.\d$/,
+      /^(Good|Very Good|Excellent|Wonderful|Superb)\s*·/i,
+      /reviews?$/i,
+      /Original price/i,
+      /Includes taxes and fees/i,
+      /Current price/i,
+    ];
+
+    const isNoise = (line: string) => noisePatterns.some(p => p.test(line));
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       
-      // Skip noise
-      if (line.includes('Opens in new window') || 
-          line.includes('Pay with Wallet') ||
-          line.includes('Show on map') ||
-          line.match(/^\d+\.\d+ km from/) ||
-          line.match(/^Location \d/) ||
-          line.match(/^Scored/) ||
-          line === 'Dinner included') {
-        continue;
-      }
-      
-      // Hotel name - first line that looks like a name (contains letters, may have & or -)
-      if (!hotelNameFound && 
+      // Skip noise lines
+      if (isNoise(line)) continue;
+
+      // Hotel name - first substantial line that looks like a name
+      if (!hotel.hotelName && 
           line.length > 3 && 
           line.match(/^[A-Za-z]/) &&
           !line.match(/^(Standard|Deluxe|Superior|King|Queen|Twin|Double|Family|Suite|Room|Entire|Breakfast|Free|Only|\d)/) &&
           !line.includes('beds') &&
           !line.includes('bathroom') &&
-          !line.includes('kitchen')) {
+          !line.includes('kitchen') &&
+          !line.includes('bedroom') &&
+          !line.match(/^\d+\s*m²/)) {
         hotel.hotelName = line.replace(/Opens in new window$/i, '').trim();
-        hotelNameFound = true;
         continue;
       }
       
-      // Rating - "Scored X.X" or just "X.X" followed by description
-      const ratingMatch = line.match(/(?:Scored\s+)?(\d\.\d)\s*(Good|Very Good|Excellent|Wonderful|Superb)?/i);
-      if (ratingMatch && !hotel.rating) {
-        hotel.rating = ratingMatch[1];
-        continue;
-      }
-      
-      // Reviews - "X reviews" or "· X reviews"
-      const reviewsMatch = line.match(/·?\s*([\d,]+)\s*reviews?/i);
-      if (reviewsMatch && !hotel.reviews) {
-        hotel.reviews = reviewsMatch[1];
-        continue;
-      }
-      
-      // Room type - contains "Room", "Suite", "Apartment", "Chalet", "Tent", "Villa"
+      // Room type - contains "Room", "Suite", "Apartment", "Chalet", "Tent", "Villa", "Cottage"
       if (!hotel.roomType && 
           (line.match(/\b(Room|Suite|Apartment|Chalet|Tent|Villa|Studio|Cottage)\b/i) ||
            line.match(/^(Standard|Deluxe|Superior|King|Queen|Twin|Double|Family|Luxury)/))) {
@@ -178,6 +176,13 @@ export function BulkHotelParser({
           hotel.roomType = line;
           continue;
         }
+      }
+      
+      // Room details - "Entire chalet • 1 bedroom • 1 bathroom • 48 m²" pattern
+      if (!hotel.roomDetails && 
+          (line.includes('•') && (line.includes('bedroom') || line.includes('bathroom') || line.includes('m²') || line.includes('kitchen')))) {
+        hotel.roomDetails = line;
+        continue;
       }
       
       // Bed configuration
@@ -190,15 +195,27 @@ export function BulkHotelParser({
         continue;
       }
       
+      // Free cancellation
+      if (!hotel.cancellationPolicy && line.toLowerCase().includes('free cancellation')) {
+        hotel.cancellationPolicy = 'Free cancellation';
+        continue;
+      }
+      
+      // Availability note - "Only X left" or "Only X rooms left"
+      if (!hotel.availabilityNote && line.match(/^Only\s+\d+/i)) {
+        hotel.availabilityNote = line;
+        continue;
+      }
+      
       // Meal plan
       if (!hotel.mealPlan && 
           (line.toLowerCase().includes('breakfast') || 
            line.toLowerCase().includes('dinner') ||
            line.toLowerCase().includes('meal'))) {
-        if (!line.includes('Free breakfast for Genius')) {
-          hotel.mealPlan = line;
-        } else {
+        if (line.includes('Free breakfast for Genius')) {
           hotel.mealPlan = 'Breakfast included';
+        } else {
+          hotel.mealPlan = line;
         }
         continue;
       }
@@ -210,19 +227,18 @@ export function BulkHotelParser({
         continue;
       }
       
-      // Price - ZAR followed by amount. Take the LAST (current) price if two are present
-      // Pattern: "ZAR 3,180ZAR 2,862" or "ZAR 2,862" or "ZAR 3,600Price ZAR 3,600"
+      // Price - ZAR followed by amount. Take the LOWEST price (current/discounted price)
       const priceMatches = [...line.matchAll(/ZAR\s*([\d,]+)/gi)];
-      if (priceMatches.length > 0) {
-        // Get the last price (current price after discount)
-        const lastPrice = priceMatches[priceMatches.length - 1][1];
-        const price = parseFloat(lastPrice.replace(/,/g, ''));
-        if (!isNaN(price) && price > 0) {
-          // If there are two prices, first is original, second is current
-          if (priceMatches.length >= 2) {
-            hotel.originalPrice = parseFloat(priceMatches[0][1].replace(/,/g, ''));
+      if (priceMatches.length > 0 && hotel.totalCost === 0) {
+        // Parse all prices and find the lowest one (usually the discounted/current price)
+        const prices = priceMatches.map(m => parseFloat(m[1].replace(/,/g, ''))).filter(p => !isNaN(p) && p > 0);
+        if (prices.length > 0) {
+          const lowestPrice = Math.min(...prices);
+          const highestPrice = Math.max(...prices);
+          hotel.totalCost = lowestPrice;
+          if (prices.length >= 2 && highestPrice > lowestPrice) {
+            hotel.originalPrice = highestPrice;
           }
-          hotel.totalCost = price;
         }
         continue;
       }
@@ -372,66 +388,68 @@ ZAR 3,180ZAR 2,862
             </div>
           </div>
 
-          {/* Grid of parsed hotels */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {/* List of parsed hotels */}
+          <div className="space-y-3">
             {parsedHotels.map((hotel, index) => (
               <Card key={index} className="border border-border relative group">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleRemoveHotel(index)}
-                  className="absolute top-1 right-1 h-7 w-7 p-0 opacity-60 hover:opacity-100 hover:bg-red-100 hover:text-red-600 z-10"
+                  className="absolute top-2 right-2 h-8 w-8 p-0 opacity-60 hover:opacity-100 hover:bg-red-100 hover:text-red-600 z-10"
                 >
                   <X className="w-4 h-4" />
                 </Button>
-                <CardContent className="p-3">
-                  <div className="flex items-start gap-2 mb-2">
-                    <div className="w-10 h-10 bg-muted rounded flex items-center justify-center shrink-0">
-                      <Hotel className="w-5 h-5 text-muted-foreground" />
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center shrink-0">
+                      <Hotel className="w-6 h-6 text-muted-foreground" />
                     </div>
-                    <div className="min-w-0">
-                      <h6 className="font-semibold text-sm text-gray-900 line-clamp-2 leading-tight">
+                    <div className="flex-1 min-w-0">
+                      <h6 className="font-semibold text-base text-gray-900 mb-1">
                         {hotel.hotelName}
                       </h6>
-                      {hotel.rating && (
-                        <span className="text-xs text-blue-600 font-medium">
-                          ★ {hotel.rating}
+                      
+                      <div className="space-y-1 text-sm">
+                        {hotel.roomType && (
+                          <p className="text-gray-700 font-medium">{hotel.roomType}</p>
+                        )}
+                        {hotel.roomDetails && (
+                          <p className="text-muted-foreground">{hotel.roomDetails}</p>
+                        )}
+                        {hotel.bedConfig && (
+                          <p className="flex items-center gap-1 text-muted-foreground">
+                            <Bed className="w-3 h-3" />
+                            <span>{hotel.bedConfig}</span>
+                          </p>
+                        )}
+                        {hotel.mealPlan && (
+                          <p className="flex items-center gap-1 text-green-600">
+                            <Coffee className="w-3 h-3" />
+                            <span>{hotel.mealPlan}</span>
+                          </p>
+                        )}
+                        {hotel.cancellationPolicy && (
+                          <p className="text-green-600 font-medium">{hotel.cancellationPolicy}</p>
+                        )}
+                        {hotel.availabilityNote && (
+                          <p className="text-amber-600 text-xs">{hotel.availabilityNote}</p>
+                        )}
+                        {hotel.stayDetails && (
+                          <p className="text-muted-foreground">{hotel.stayDetails}</p>
+                        )}
+                      </div>
+                      
+                      <div className="mt-2 pt-2 border-t border-border flex items-baseline gap-2">
+                        {hotel.originalPrice && hotel.originalPrice > hotel.totalCost && (
+                          <span className="text-sm text-muted-foreground line-through">
+                            R{hotel.originalPrice.toLocaleString()}
+                          </span>
+                        )}
+                        <span className="text-lg font-bold text-primary">
+                          R{hotel.totalCost.toLocaleString()}
                         </span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1 text-xs">
-                    {hotel.roomType && (
-                      <p className="text-gray-700 font-medium line-clamp-1">{hotel.roomType}</p>
-                    )}
-                    {hotel.bedConfig && (
-                      <p className="flex items-center gap-1 text-muted-foreground">
-                        <Bed className="w-3 h-3" />
-                        <span className="line-clamp-1">{hotel.bedConfig}</span>
-                      </p>
-                    )}
-                    {hotel.mealPlan && (
-                      <p className="flex items-center gap-1 text-green-600">
-                        <Coffee className="w-3 h-3" />
-                        <span className="line-clamp-1">{hotel.mealPlan}</span>
-                      </p>
-                    )}
-                    {hotel.stayDetails && (
-                      <p className="text-muted-foreground line-clamp-1">{hotel.stayDetails}</p>
-                    )}
-                  </div>
-                  
-                  <div className="mt-2 pt-2 border-t border-border">
-                    <div className="flex items-baseline justify-between">
-                      {hotel.originalPrice && hotel.originalPrice > hotel.totalCost && (
-                        <span className="text-xs text-muted-foreground line-through">
-                          R{hotel.originalPrice.toLocaleString()}
-                        </span>
-                      )}
-                      <span className="text-base font-bold text-primary ml-auto">
-                        R{hotel.totalCost.toLocaleString()}
-                      </span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

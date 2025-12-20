@@ -933,7 +933,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                       <h3 className="text-xl font-display font-semibold text-amber-900 mb-4">
                         🏨 Custom Hotel Quotes ({customHotelQuotes.length})
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="space-y-4">
                         {customHotelQuotes.map((quote, index) => {
                           const selectedPkg = packages.find(p => p.id === quote.packageId);
                           const nightsCount = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
