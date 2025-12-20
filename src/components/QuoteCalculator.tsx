@@ -567,7 +567,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
         {liveHotels.length > 0 && packageId ? (
           <LiveHotelQuotes
             hotels={liveHotels}
-            pkg={packages.find(p => p.id === packageId)!}
+            packages={packages.filter(p => p.id === packageId)}
             nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
             adults={adults}
             children={children}

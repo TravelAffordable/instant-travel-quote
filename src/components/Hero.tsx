@@ -802,20 +802,21 @@ export function Hero({ onGetQuote }: HeroProps) {
                       children={children}
                       nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
                       onCalculate={(details) => {
-                        const selectedPkg = packages.find(p => packageIds.includes(p.id));
-                        if (selectedPkg) {
+                        const selectedPackages = packages.filter(p => packageIds.includes(p.id));
+                        if (selectedPackages.length > 0) {
                           setCustomHotelQuotes(prev => {
-                            // Remove existing quote for this hotel if any, then add new one
+                            // Remove existing quotes for this hotel, then add new ones for ALL selected packages
                             const filtered = prev.filter(q => q.hotelName !== details.hotelName);
-                            return [...filtered, {
+                            const newQuotes = selectedPackages.map(pkg => ({
                               ...details,
-                              packageId: selectedPkg.id,
-                              packageName: selectedPkg.name,
+                              packageId: pkg.id,
+                              packageName: pkg.name,
                               checkInDate: checkIn,
                               checkOutDate: checkOut,
-                            }];
+                            }));
+                            return [...filtered, ...newQuotes];
                           });
-                          toast.success(`Quote added for ${details.hotelName}`);
+                          toast.success(`Quote added for ${details.hotelName} (${selectedPackages.length} package${selectedPackages.length > 1 ? 's' : ''})`);
                         } else {
                           toast.error('Please select a package first');
                         }
@@ -858,7 +859,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                   {liveHotels.length > 0 ? (
                     <LiveHotelQuotes
                       hotels={liveHotels}
-                      pkg={packages.find(p => packageIds.includes(p.id))!}
+                      packages={packages.filter(p => packageIds.includes(p.id))}
                       nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
                       adults={adults}
                       children={children}
@@ -1005,22 +1006,21 @@ export function Hero({ onGetQuote }: HeroProps) {
                             initialData={customHotelQuotes[editingQuoteIndex]}
                             onCancelEdit={() => setEditingQuoteIndex(null)}
                             onCalculate={(details) => {
-                              const selectedPkg = packages.find(p => packageIds.includes(p.id));
-                              if (selectedPkg) {
-                                setCustomHotelQuotes(prev => {
-                                  const updated = [...prev];
-                                  updated[editingQuoteIndex] = {
-                                    ...details,
-                                    packageId: selectedPkg.id,
-                                    packageName: selectedPkg.name,
-                                    checkInDate: checkIn,
-                                    checkOutDate: checkOut,
-                                  };
-                                  return updated;
-                                });
-                                setEditingQuoteIndex(null);
-                                toast.success(`Quote updated for ${details.hotelName}`);
-                              }
+                              // When editing, keep the same package as the original quote
+                              const originalQuote = customHotelQuotes[editingQuoteIndex];
+                              setCustomHotelQuotes(prev => {
+                                const updated = [...prev];
+                                updated[editingQuoteIndex] = {
+                                  ...details,
+                                  packageId: originalQuote.packageId,
+                                  packageName: originalQuote.packageName,
+                                  checkInDate: checkIn,
+                                  checkOutDate: checkOut,
+                                };
+                                return updated;
+                              });
+                              setEditingQuoteIndex(null);
+                              toast.success(`Quote updated for ${details.hotelName}`);
                             }}
                           />
                         </div>
