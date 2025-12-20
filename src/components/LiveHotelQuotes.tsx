@@ -9,7 +9,7 @@ import { type Package } from '@/data/travelData';
 
 interface LiveHotelQuotesProps {
   hotels: LiveHotel[];
-  pkg: Package;
+  packages: Package[];
   nights: number;
   adults: number;
   children: number;
@@ -20,7 +20,7 @@ interface LiveHotelQuotesProps {
 
 export function LiveHotelQuotes({
   hotels,
-  pkg,
+  packages: selectedPackages,
   nights,
   adults,
   children,
@@ -86,42 +86,47 @@ export function LiveHotelQuotes({
         )}
       </div>
 
-      {/* Package Header */}
-      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-        <h3 className="text-lg font-display font-bold text-primary uppercase">
-          {pkg.name}
-        </h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''} available
-        </p>
-      </div>
-
-      {/* Hotel Cards */}
-      {filteredHotels.length === 0 ? (
-        <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
-          <CardContent className="py-8 text-center">
-            <p className="text-muted-foreground text-sm">
-              No hotels match your budget. Try increasing your budget amount or remove the filter to see all options.
+      {/* Package Sections - One for each selected package */}
+      {selectedPackages.map((pkg) => (
+        <div key={pkg.id} className="space-y-4">
+          {/* Package Header */}
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+            <h3 className="text-lg font-display font-bold text-primary uppercase">
+              {pkg.name}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''} available
             </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {filteredHotels.map((hotel) => (
-            <LiveHotelQuoteCard
-              key={hotel.code}
-              hotel={hotel}
-              pkg={pkg}
-              nights={nights}
-              adults={adults}
-              children={children}
-              childrenAges={childrenAges}
-              rooms={rooms}
-              budget={budget}
-            />
-          ))}
+          </div>
+
+          {/* Hotel Cards */}
+          {filteredHotels.length === 0 ? (
+            <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
+              <CardContent className="py-8 text-center">
+                <p className="text-muted-foreground text-sm">
+                  No hotels match your budget. Try increasing your budget amount or remove the filter to see all options.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {filteredHotels.map((hotel) => (
+                <LiveHotelQuoteCard
+                  key={`${pkg.id}-${hotel.code}`}
+                  hotel={hotel}
+                  pkg={pkg}
+                  nights={nights}
+                  adults={adults}
+                  children={children}
+                  childrenAges={childrenAges}
+                  rooms={rooms}
+                  budget={budget}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      ))}
     </div>
   );
 }
