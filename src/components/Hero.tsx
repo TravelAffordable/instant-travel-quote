@@ -964,69 +964,92 @@ export function Hero({ onGetQuote }: HeroProps) {
                           const perPerson = Math.round(grandTotal / (adults + kidsAges.length));
                           
                           return (
-                            <Card key={index} className="border-2 border-amber-200 bg-amber-50 flex flex-col">
-                              <CardContent className="p-4 flex-1 flex flex-col">
-                                <div className="flex justify-between items-start mb-2">
+                            <Card key={index} className="border-2 border-amber-200 bg-amber-50">
+                              <CardContent className="p-4 md:p-5">
+                                <div className="flex justify-between items-start gap-4">
+                                  {/* Left side - Hotel details */}
                                   <div className="flex-1 min-w-0">
-                                    {quote.hotelTier && (
-                                      <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">{quote.hotelTier}</span>
+                                    {/* Room type badge */}
+                                    {quote.roomType && (
+                                      <span className="inline-block text-xs font-medium text-white bg-primary px-2 py-1 rounded mb-2">
+                                        {quote.roomType}
+                                      </span>
                                     )}
-                                    <h4 className="font-semibold text-base text-amber-900 mt-1 line-clamp-2">{quote.hotelName}</h4>
-                                  </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setEditingQuoteIndex(index)}
-                                    className="shrink-0 h-7 w-7 p-0 text-amber-700 hover:text-amber-900 hover:bg-amber-100"
-                                  >
-                                    <Pencil className="w-3 h-3" />
-                                  </Button>
-                                </div>
-                                
-                                <div className="flex-1 space-y-1 text-xs">
-                                  {quote.roomType && (
-                                    <p className="font-medium text-gray-800 line-clamp-1">{quote.roomType}</p>
-                                  )}
-                                  {quote.bedConfig && (
-                                    <p className="text-muted-foreground line-clamp-1">{quote.bedConfig}</p>
-                                  )}
-                                  {quote.mealPlan && (
-                                    <p className="text-green-600 font-medium">✓ {quote.mealPlan}</p>
-                                  )}
-                                  <p className="text-amber-700 font-medium mt-1 line-clamp-1">{quote.packageName}</p>
-                                  <p className="text-muted-foreground">
-                                    {nightsCount} nights • {adults} adults{children > 0 ? ` • ${children} kids` : ''}
-                                  </p>
-                                </div>
-                                
-                                <div className="mt-3 pt-3 border-t border-amber-200 text-center">
-                                  <p className="text-xl font-bold text-primary">
-                                    R{perPerson.toLocaleString()}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">per person</p>
-                                  <p className="text-sm font-semibold text-amber-800 mt-1">
-                                    R{grandTotal.toLocaleString()} total
-                                  </p>
-                                </div>
-                                
-                                {/* Package inclusions - collapsed */}
-                                {selectedPkg && (
-                                  <div className="mt-2 pt-2 border-t border-amber-200">
-                                    <p className="text-xs text-muted-foreground mb-1">Includes:</p>
-                                    <div className="flex flex-wrap gap-1">
-                                      {selectedPkg.activitiesIncluded.slice(0, 3).map((activity, i) => (
-                                        <span key={i} className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
-                                          {activity.length > 15 ? activity.substring(0, 15) + '...' : activity}
-                                        </span>
-                                      ))}
-                                      {selectedPkg.activitiesIncluded.length > 3 && (
-                                        <span className="text-xs text-muted-foreground">
-                                          +{selectedPkg.activitiesIncluded.length - 3} more
-                                        </span>
+                                    
+                                    {/* Hotel name */}
+                                    <h4 className="font-semibold text-lg text-amber-900 mb-1">{quote.hotelName}</h4>
+                                    
+                                    {/* Availability note / room details */}
+                                    <div className="space-y-0.5 text-sm text-muted-foreground mb-2">
+                                      {quote.recommendation && (
+                                        <p>{quote.recommendation}</p>
+                                      )}
+                                      {quote.bedConfig && (
+                                        <p>{quote.bedConfig}</p>
                                       )}
                                     </div>
+                                    
+                                    {/* Meal plan */}
+                                    {quote.mealPlan && (
+                                      <p className="text-green-600 font-medium text-sm mb-2">✓ {quote.mealPlan}</p>
+                                    )}
+                                    
+                                    {/* Package name */}
+                                    <p className="text-amber-700 font-semibold text-sm mb-1">{quote.packageName}</p>
+                                    
+                                    {/* Check-in/Check-out dates */}
+                                    <p className="text-muted-foreground text-sm mb-0.5">
+                                      Check-in: {new Date(checkIn).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} → Check-out: {new Date(checkOut).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </p>
+                                    
+                                    {/* Stay details */}
+                                    <p className="text-muted-foreground text-sm">
+                                      {nightsCount} night{nightsCount !== 1 ? 's' : ''}, {adults} adult{adults !== 1 ? 's' : ''}{children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}
+                                    </p>
+                                    
+                                    {/* Package Inclusions */}
+                                    {selectedPkg && selectedPkg.activitiesIncluded.length > 0 && (
+                                      <div className="mt-3 pt-3 border-t border-amber-200">
+                                        <p className="text-muted-foreground text-sm font-medium mb-2">Package Inclusions:</p>
+                                        <div className="space-y-1">
+                                          <p className="flex items-center gap-2 text-green-600 text-sm">
+                                            <Check className="w-4 h-4 shrink-0" />
+                                            <span>Accommodation</span>
+                                          </p>
+                                          {selectedPkg.activitiesIncluded.map((activity, i) => (
+                                            <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
+                                              <Check className="w-4 h-4 shrink-0" />
+                                              <span>{activity}</span>
+                                            </p>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
-                                )}
+                                  
+                                  {/* Right side - Price and Edit */}
+                                  <div className="text-right shrink-0">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setEditingQuoteIndex(index)}
+                                      className="h-7 text-amber-700 hover:text-amber-900 hover:bg-amber-100 mb-2"
+                                    >
+                                      <Pencil className="w-3 h-3 mr-1" />
+                                      Edit
+                                    </Button>
+                                    
+                                    <p className="text-2xl font-bold text-primary">
+                                      R{perPerson.toLocaleString()}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">per person</p>
+                                    
+                                    <p className="text-lg font-semibold text-amber-800 mt-1">
+                                      R{grandTotal.toLocaleString()}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">total</p>
+                                  </div>
+                                </div>
                               </CardContent>
                             </Card>
                           );

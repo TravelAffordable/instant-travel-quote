@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Hotel, X, Check, Coffee, Bed, Trash2 } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export interface ParsedHotelData {
@@ -381,67 +381,81 @@ ZAR 3,180ZAR 2,862
           </div>
 
           {/* List of parsed hotels */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {parsedHotels.map((hotel, index) => (
-              <Card key={index} className="border border-border relative group">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveHotel(index)}
-                  className="absolute top-2 right-2 h-8 w-8 p-0 opacity-60 hover:opacity-100 hover:bg-red-100 hover:text-red-600 z-10"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center shrink-0">
-                      <Hotel className="w-6 h-6 text-muted-foreground" />
-                    </div>
+              <Card key={index} className="border-2 border-amber-200 bg-amber-50">
+                <CardContent className="p-4 md:p-5">
+                  <div className="flex justify-between items-start gap-4">
+                    {/* Left side - Hotel details */}
                     <div className="flex-1 min-w-0">
-                      <h6 className="font-semibold text-base text-gray-900 mb-1">
-                        {hotel.hotelName}
-                      </h6>
+                      {/* Room type badge */}
+                      {hotel.roomType && (
+                        <span className="inline-block text-xs font-medium text-white bg-primary px-2 py-1 rounded mb-2">
+                          {hotel.roomType}
+                        </span>
+                      )}
                       
-                      <div className="space-y-1 text-sm">
-                        {hotel.roomType && (
-                          <p className="text-gray-700 font-medium">{hotel.roomType}</p>
-                        )}
-                        {hotel.roomDetails && (
-                          <p className="text-muted-foreground">{hotel.roomDetails}</p>
+                      {/* Hotel name */}
+                      <h4 className="font-semibold text-lg text-amber-900 mb-1">{hotel.hotelName}</h4>
+                      
+                      {/* Availability note / room details */}
+                      <div className="space-y-0.5 text-sm text-muted-foreground mb-2">
+                        {hotel.availabilityNote && (
+                          <p>{hotel.availabilityNote}</p>
                         )}
                         {hotel.bedConfig && (
-                          <p className="flex items-center gap-1 text-muted-foreground">
-                            <Bed className="w-3 h-3" />
-                            <span>{hotel.bedConfig}</span>
-                          </p>
-                        )}
-                        {hotel.mealPlan && (
-                          <p className="flex items-center gap-1 text-green-600">
-                            <Coffee className="w-3 h-3" />
-                            <span>{hotel.mealPlan}</span>
-                          </p>
-                        )}
-                        {hotel.cancellationPolicy && (
-                          <p className="text-green-600 font-medium">{hotel.cancellationPolicy}</p>
-                        )}
-                        {hotel.availabilityNote && (
-                          <p className="text-amber-600 text-xs">{hotel.availabilityNote}</p>
-                        )}
-                        {hotel.stayDetails && (
-                          <p className="text-muted-foreground">{hotel.stayDetails}</p>
+                          <p>{hotel.bedConfig}</p>
                         )}
                       </div>
                       
-                      <div className="mt-2 pt-2 border-t border-border flex items-baseline gap-2">
-                        {hotel.originalPrice && hotel.originalPrice > hotel.totalCost && (
-                          <span className="text-sm text-muted-foreground line-through">
-                            R{hotel.originalPrice.toLocaleString()}
-                          </span>
-                        )}
-                        <span className="text-lg font-bold text-primary">
-                          R{hotel.totalCost.toLocaleString()}
-                        </span>
-                      </div>
+                      {/* Meal plan */}
+                      {hotel.mealPlan && (
+                        <p className="text-green-600 font-medium text-sm mb-2">
+                          <Check className="w-4 h-4 inline mr-1" />
+                          {hotel.mealPlan}
+                        </p>
+                      )}
+                      
+                      {/* Cancellation policy */}
+                      {hotel.cancellationPolicy && (
+                        <p className="text-green-600 text-sm mb-2">
+                          <Check className="w-4 h-4 inline mr-1" />
+                          {hotel.cancellationPolicy}
+                        </p>
+                      )}
+                      
+                      {/* Room details */}
+                      {hotel.roomDetails && (
+                        <p className="text-muted-foreground text-sm mb-2">{hotel.roomDetails}</p>
+                      )}
+                      
+                      {/* Stay details */}
+                      {hotel.stayDetails && (
+                        <p className="text-muted-foreground text-sm">{hotel.stayDetails}</p>
+                      )}
+                    </div>
+                    
+                    {/* Right side - Price and Remove */}
+                    <div className="text-right shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveHotel(index)}
+                        className="h-7 text-red-600 hover:text-red-700 hover:bg-red-100 mb-2"
+                      >
+                        <Trash2 className="w-3 h-3 mr-1" />
+                        Remove
+                      </Button>
+                      
+                      {hotel.originalPrice && hotel.originalPrice > hotel.totalCost && (
+                        <p className="text-sm text-muted-foreground line-through">
+                          R{hotel.originalPrice.toLocaleString()}
+                        </p>
+                      )}
+                      <p className="text-2xl font-bold text-primary">
+                        R{hotel.totalCost.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">total</p>
                     </div>
                   </div>
                 </CardContent>
