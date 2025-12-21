@@ -549,7 +549,26 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Number of Kids</Label>
-                  <Select value={children.toString()} onValueChange={v => setChildren(parseInt(v))}>
+                  <Select 
+                    value={children.toString()} 
+                    onValueChange={v => {
+                      const newCount = parseInt(v);
+                      setChildren(newCount);
+                      // Adjust childrenAges array
+                      const currentAges = childrenAges.split(',').map(a => a.trim()).filter(a => a !== '');
+                      if (newCount > currentAges.length) {
+                        // Add default ages for new children
+                        const newAges = [...currentAges];
+                        while (newAges.length < newCount) {
+                          newAges.push('5');
+                        }
+                        setChildrenAges(newAges.join(','));
+                      } else if (newCount < currentAges.length) {
+                        // Remove extra ages
+                        setChildrenAges(currentAges.slice(0, newCount).join(','));
+                      }
+                    }}
+                  >
                     <SelectTrigger className="h-11 bg-white border-gray-200">
                       <SelectValue />
                     </SelectTrigger>
@@ -560,6 +579,45 @@ export function Hero({ onGetQuote }: HeroProps) {
                     </SelectContent>
                   </Select>
                 </div>
+                
+                {/* Child Age Selection */}
+                {children > 0 && (
+                  <div className="space-y-2 col-span-full">
+                    <Label className="text-sm font-medium text-gray-700">Child Ages (3-17 years)</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {Array.from({ length: children }, (_, i) => {
+                        const ages = childrenAges.split(',').map(a => a.trim());
+                        const currentAge = ages[i] || '5';
+                        return (
+                          <div key={i} className="flex items-center gap-1">
+                            <span className="text-xs text-gray-500">Child {i + 1}:</span>
+                            <Select 
+                              value={currentAge} 
+                              onValueChange={v => {
+                                const newAges = [...ages];
+                                newAges[i] = v;
+                                // Ensure array has correct length
+                                while (newAges.length < children) {
+                                  newAges.push('5');
+                                }
+                                setChildrenAges(newAges.slice(0, children).join(','));
+                              }}
+                            >
+                              <SelectTrigger className="h-9 w-20 bg-white border-gray-200">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[200px]">
+                                {Array.from({ length: 15 }, (_, age) => age + 3).map(age => (
+                                  <SelectItem key={age} value={age.toString()}>{age} yrs</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Rooms *</Label>
                   <Select value={rooms.toString()} onValueChange={v => setRooms(parseInt(v))}>
