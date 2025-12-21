@@ -19,6 +19,7 @@ import { LiveHotelQuotes } from './LiveHotelQuotes';
 import { AccommodationOnlyCard } from './AccommodationOnlyCard';
 import { CustomHotelCard } from './CustomHotelCard';
 import { BulkHotelParser } from './BulkHotelParser';
+import { CustomQuoteActions } from './CustomQuoteActions';
 import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
 
@@ -933,6 +934,19 @@ export function Hero({ onGetQuote }: HeroProps) {
                       <h3 className="text-xl font-display font-semibold text-amber-900 mb-4">
                         🏨 Custom Hotel Quotes ({customHotelQuotes.length})
                       </h3>
+                      
+                      {/* Export/Share Actions */}
+                      <CustomQuoteActions
+                        quotes={customHotelQuotes}
+                        packages={packages}
+                        adults={adults}
+                        children={children}
+                        childrenAges={childrenAges}
+                        checkIn={checkIn}
+                        checkOut={checkOut}
+                        destination={destination}
+                      />
+                      
                       <div className="space-y-4">
                         {customHotelQuotes.map((quote, index) => {
                           const selectedPkg = packages.find(p => p.id === quote.packageId);
