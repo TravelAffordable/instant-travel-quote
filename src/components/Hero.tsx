@@ -1056,7 +1056,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                     <p className="text-2xl font-bold text-primary">
                                       R{perPerson.toLocaleString()}
                                     </p>
-                                    <p className="text-xs text-muted-foreground">per person</p>
+                                    <p className="text-xs text-muted-foreground">{kidsAges.length > 0 ? 'per adult' : 'per person'}</p>
                                     
                                     <p className="text-lg font-semibold text-amber-800 mt-1">
                                       R{grandTotal.toLocaleString()}
