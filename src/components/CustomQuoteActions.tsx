@@ -173,92 +173,164 @@ QUOTE ${index + 1}
     try {
       const pdf = new jsPDF();
       const pageWidth = pdf.internal.pageSize.getWidth();
+      const margin = 15;
+      const contentWidth = pageWidth - margin * 2;
       let yPos = 20;
 
       // Header
-      pdf.setFontSize(24);
-      pdf.setTextColor(79, 70, 229); // Primary color
+      pdf.setFontSize(22);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(79, 70, 229);
       pdf.text('TRAVEL AFFORDABLE', pageWidth / 2, yPos, { align: 'center' });
-      yPos += 10;
+      yPos += 8;
 
-      pdf.setFontSize(14);
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(100, 100, 100);
       pdf.text('Custom Hotel Quotes', pageWidth / 2, yPos, { align: 'center' });
       yPos += 15;
 
-      // Destination and dates
-      pdf.setFontSize(11);
-      pdf.setTextColor(60, 60, 60);
-      pdf.text(`Destination: ${destination.toUpperCase()}`, 20, yPos);
-      yPos += 6;
-      pdf.text(`Travel Dates: ${formatDate(checkIn)} - ${formatDate(checkOut)}`, 20, yPos);
-      yPos += 6;
-      pdf.text(`Guests: ${adults} Adult${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children > 1 ? 'ren' : ''}` : ''}`, 20, yPos);
-      yPos += 12;
-
       // Quotes
       quotesToExport.forEach((quote, index) => {
-        const { selectedPkg, nightsCount, grandTotal, perPerson } = calculateQuoteDetails(quote);
+        const { selectedPkg, nightsCount, grandTotal, perPerson, kidsAges } = calculateQuoteDetails(quote);
+        const totalGuests = adults + kidsAges.length;
 
         // Check if we need a new page
-        if (yPos > 250) {
+        if (yPos > 220) {
           pdf.addPage();
           yPos = 20;
         }
 
-        // Quote header
-        pdf.setFillColor(254, 243, 199); // Amber-100
-        pdf.rect(15, yPos - 5, pageWidth - 30, 10, 'F');
-        pdf.setFontSize(12);
-        pdf.setTextColor(120, 53, 15); // Amber-900
-        pdf.text(`Quote ${index + 1}: ${quote.hotelName}`, 20, yPos);
-        yPos += 12;
+        // Quote card border
+        const cardStartY = yPos - 5;
+        pdf.setDrawColor(194, 120, 3); // Amber border
+        pdf.setLineWidth(0.5);
 
-        pdf.setFontSize(10);
-        pdf.setTextColor(80, 80, 80);
-
+        // Room type badge
         if (quote.roomType) {
-          pdf.text(`Room Type: ${quote.roomType}`, 25, yPos);
-          yPos += 5;
-        }
-        if (quote.bedConfig) {
-          pdf.text(`Beds: ${quote.bedConfig}`, 25, yPos);
-          yPos += 5;
-        }
-        if (quote.mealPlan) {
-          pdf.setTextColor(34, 139, 34);
-          pdf.text(`✓ ${quote.mealPlan}`, 25, yPos);
-          pdf.setTextColor(80, 80, 80);
-          yPos += 5;
+          pdf.setFillColor(34, 139, 34); // Green
+          const badgeWidth = pdf.getTextWidth(quote.roomType) + 10;
+          pdf.roundedRect(margin, yPos - 4, badgeWidth, 7, 1, 1, 'F');
+          pdf.setFontSize(8);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(255, 255, 255);
+          pdf.text(quote.roomType, margin + 5, yPos);
+          yPos += 10;
         }
 
-        pdf.text(`Package: ${quote.packageName}`, 25, yPos);
+        // Hotel name (left) and Price (right)
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(40, 40, 40);
+        pdf.text(quote.hotelName, margin, yPos);
+
+        // Price per person on right
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(194, 120, 3); // Amber/orange
+        pdf.text(`R${perPerson.toLocaleString()}`, pageWidth - margin, yPos, { align: 'right' });
         yPos += 5;
-        pdf.text(`Duration: ${nightsCount} night${nightsCount !== 1 ? 's' : ''}`, 25, yPos);
-        yPos += 7;
 
-        // Inclusions
-        if (selectedPkg && selectedPkg.activitiesIncluded.length > 0) {
-          pdf.setTextColor(60, 60, 60);
-          pdf.text('Inclusions:', 25, yPos);
-          yPos += 5;
+        // "per person" label
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(100, 100, 100);
+        pdf.text('per person', pageWidth - margin, yPos, { align: 'right' });
+        yPos += 6;
+
+        // Bed config
+        if (quote.bedConfig) {
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(80, 80, 80);
+          pdf.text(quote.bedConfig, margin, yPos);
+        }
+
+        // Total price on right
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(194, 120, 3);
+        pdf.text(`R${grandTotal.toLocaleString()}`, pageWidth - margin, yPos, { align: 'right' });
+        yPos += 4;
+
+        // "total" label
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(100, 100, 100);
+        pdf.text('total', pageWidth - margin, yPos, { align: 'right' });
+        yPos += 6;
+
+        // Meal plan in green with checkmark
+        if (quote.mealPlan) {
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(34, 139, 34);
-          pdf.text('• Accommodation', 30, yPos);
+          pdf.text(`✓ ${quote.mealPlan}`, margin, yPos);
+          yPos += 6;
+        }
+
+        // Package description in orange
+        if (quote.packageName) {
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(194, 120, 3);
+          
+          // Word wrap for package name
+          const packageLines = pdf.splitTextToSize(quote.packageName.toUpperCase(), contentWidth - 60);
+          packageLines.forEach((line: string) => {
+            pdf.text(line, margin, yPos);
+            yPos += 4;
+          });
+          yPos += 2;
+        }
+
+        // Check-in/Check-out dates
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(60, 60, 60);
+        const checkInDisplay = quote.checkInDate || checkIn;
+        const checkOutDisplay = quote.checkOutDate || checkOut;
+        pdf.text(`Check-in: ${formatDate(checkInDisplay)} → Check-out: ${formatDate(checkOutDisplay)}`, margin, yPos);
+        yPos += 5;
+
+        // Nights and guests
+        pdf.text(`${nightsCount} night${nightsCount !== 1 ? 's' : ''}, ${totalGuests} adult${totalGuests !== 1 ? 's' : ''}`, margin, yPos);
+        yPos += 8;
+
+        // Package Inclusions
+        if (selectedPkg && selectedPkg.activitiesIncluded.length > 0) {
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(60, 60, 60);
+          pdf.text('Package Inclusions:', margin, yPos);
+          yPos += 5;
+
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(34, 139, 34);
+
+          // Accommodation
+          pdf.text('✓   Accommodation', margin, yPos);
           yPos += 4;
+
+          // Activities
           selectedPkg.activitiesIncluded.forEach(activity => {
-            pdf.text(`• ${activity}`, 30, yPos);
+            if (yPos > 270) {
+              pdf.addPage();
+              yPos = 20;
+            }
+            pdf.text(`✓   ${activity}`, margin, yPos);
             yPos += 4;
           });
           yPos += 3;
         }
 
-        // Pricing
-        pdf.setFontSize(11);
-        pdf.setTextColor(79, 70, 229);
-        pdf.text(`Per Person: R${perPerson.toLocaleString()}`, 25, yPos);
-        yPos += 5;
-        pdf.setTextColor(120, 53, 15);
-        pdf.text(`Total: R${grandTotal.toLocaleString()}`, 25, yPos);
+        // Draw card border
+        const cardHeight = yPos - cardStartY + 5;
+        pdf.setDrawColor(194, 120, 3);
+        pdf.setLineWidth(0.3);
+        pdf.rect(margin - 3, cardStartY, contentWidth + 6, cardHeight);
+        
         yPos += 15;
       });
 
@@ -268,16 +340,19 @@ QUOTE ${index + 1}
         yPos = 20;
       }
 
-      yPos += 10;
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text('Contact Us:', 20, yPos);
       yPos += 5;
-      pdf.text('Email: info@travelaffordable.co.za', 20, yPos);
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(79, 70, 229);
+      pdf.text('Contact Us:', margin, yPos);
+      yPos += 5;
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(80, 80, 80);
+      pdf.text('Email: info@travelaffordable.co.za', margin, yPos);
       yPos += 4;
-      pdf.text('WhatsApp: +27 79 681 3869', 20, yPos);
+      pdf.text('WhatsApp: +27 79 681 3869', margin, yPos);
       yPos += 4;
-      pdf.text('Web: www.travelaffordable.co.za', 20, yPos);
+      pdf.text('Web: www.travelaffordable.co.za', margin, yPos);
 
       // Save the PDF
       const filename = `TravelAffordable_Quotes_${destination}_${new Date().toISOString().split('T')[0]}.pdf`;
