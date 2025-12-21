@@ -231,11 +231,12 @@ QUOTE ${index + 1}
         pdf.text(`R${perPerson.toLocaleString()}`, pageWidth - margin, yPos, { align: 'right' });
         yPos += 5;
 
-        // "per person" label
+        // "per person" or "per adult" label depending on kids
         pdf.setFontSize(8);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(100, 100, 100);
-        pdf.text('per person', pageWidth - margin, yPos, { align: 'right' });
+        const priceLabel = kidsAges.length > 0 ? 'per adult' : 'per person';
+        pdf.text(priceLabel, pageWidth - margin, yPos, { align: 'right' });
         yPos += 6;
 
         // Bed config
