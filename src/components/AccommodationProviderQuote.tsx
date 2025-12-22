@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
-import { Hotel, Users, Calculator, ChevronDown, Check, Search, Plus, Trash2, Building2, DollarSign, Star, Wifi, Car, Coffee, Dumbbell, UtensilsCrossed, Waves, SpadeIcon } from 'lucide-react';
+import { Hotel, Users, Calculator, ChevronDown, Check, Search, Plus, Trash2, Building2, DollarSign, Star, Wifi, Car, Coffee, Dumbbell, UtensilsCrossed, Waves, SpadeIcon, FileText, Calendar, Building } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -29,6 +29,21 @@ interface QuoteResult {
   totalPerPerson: number;
   totalGroupCost: number;
   groupSize: number;
+  activitiesIncluded: string[];
+}
+
+// Accounting-compliant document fields
+interface CompanyDetails {
+  companyName: string;
+  companyAddress: string;
+  companyPhone: string;
+  companyEmail: string;
+  vatNumber: string;
+  quoteValidDays: number;
+  termsAndConditions: string;
+  clientName: string;
+  clientCompany: string;
+  clientEmail: string;
 }
 
 export function AccommodationProviderQuote() {
@@ -48,6 +63,29 @@ export function AccommodationProviderQuote() {
   const [facilities, setFacilities] = useState<string[]>(['', '', '', '', '']);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [quoteResults, setQuoteResults] = useState<QuoteResult[]>([]);
+
+  // Accounting-compliant fields
+  const [companyDetails, setCompanyDetails] = useState<CompanyDetails>({
+    companyName: '',
+    companyAddress: '',
+    companyPhone: '',
+    companyEmail: '',
+    vatNumber: '',
+    quoteValidDays: 14,
+    termsAndConditions: 'Quote valid for specified period. 50% deposit required to confirm booking. Balance due 14 days before travel. Prices subject to availability.',
+    clientName: '',
+    clientCompany: '',
+    clientEmail: '',
+  });
+
+  const [quoteNumber, setQuoteNumber] = useState('');
+
+  // Generate quote number on mount
+  useEffect(() => {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    setQuoteNumber(`QT-${timestamp}-${random}`);
+  }, []);
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
   const selectedPackages = packages.filter(p => packageIds.includes(p.id));
@@ -120,14 +158,17 @@ export function AccommodationProviderQuote() {
     setFacilities(newFacilities);
   };
 
+  const updateCompanyDetails = (field: keyof CompanyDetails, value: string | number) => {
+    setCompanyDetails(prev => ({ ...prev, [field]: value }));
+  };
+
   const totalRooms = roomCategories.reduce((sum, r) => sum + r.count, 0);
   const totalGuests = adults + children;
 
-  // Calculate service fee: R400 per person from the 26th person onwards for groups of 25+
+  // Calculate service fee: R400 per person for every person in groups of 25+
   const calculateServiceFee = (groupSize: number): number => {
     if (groupSize >= 25) {
-      const extraPeople = groupSize - 25;
-      return extraPeople > 0 ? extraPeople * 400 : 0;
+      return groupSize * 400;
     }
     return 0;
   };
@@ -139,12 +180,12 @@ export function AccommodationProviderQuote() {
     }
 
     const hotelAmount = parseFloat(hotelQuoteAmount) || 0;
-    const serviceFee = calculateServiceFee(totalGuests);
+    const totalServiceFee = calculateServiceFee(totalGuests);
     
     const results: QuoteResult[] = selectedPackages.map(pkg => {
       const packagePricePerPerson = pkg.basePrice;
       const hotelCostPerPerson = hotelAmount / totalGuests;
-      const serviceFeePerPerson = serviceFee / totalGuests;
+      const serviceFeePerPerson = totalServiceFee / totalGuests;
       const totalPerPerson = packagePricePerPerson + hotelCostPerPerson + serviceFeePerPerson;
       const totalGroupCost = totalPerPerson * totalGuests;
 
@@ -156,6 +197,7 @@ export function AccommodationProviderQuote() {
         totalPerPerson,
         totalGroupCost,
         groupSize: totalGuests,
+        activitiesIncluded: pkg.activitiesIncluded || [],
       };
     });
 
@@ -170,117 +212,218 @@ export function AccommodationProviderQuote() {
     const nights = checkIn && checkOut 
       ? Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) 
       : 0;
+    const quoteDate = new Date().toLocaleDateString('en-ZA');
+    const validUntil = new Date();
+    validUntil.setDate(validUntil.getDate() + companyDetails.quoteValidDays);
+    const validUntilStr = validUntil.toLocaleDateString('en-ZA');
+    const totalServiceFee = calculateServiceFee(totalGuests);
 
-    // Header
+    // Header with company branding
     doc.setFillColor(16, 185, 129);
-    doc.rect(0, 0, 210, 40, 'F');
+    doc.rect(0, 0, 210, 45, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
+    doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text('Hotel Guest Quote', 20, 25);
+    doc.text('QUOTATION', 20, 20);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Quote #: ${quoteNumber}`, 20, 30);
+    doc.text(`Date: ${quoteDate}`, 20, 37);
+    doc.text(`Valid Until: ${validUntilStr}`, 120, 30);
 
     // Reset text color
     doc.setTextColor(0, 0, 0);
 
-    // Hotel Information
-    doc.setFontSize(14);
+    let yPos = 55;
+
+    // Company Details (From)
+    if (companyDetails.companyName) {
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('FROM:', 20, yPos);
+      doc.setFont('helvetica', 'normal');
+      yPos += 6;
+      doc.text(companyDetails.companyName, 20, yPos);
+      if (companyDetails.companyAddress) { yPos += 5; doc.text(companyDetails.companyAddress, 20, yPos); }
+      if (companyDetails.companyPhone) { yPos += 5; doc.text(`Tel: ${companyDetails.companyPhone}`, 20, yPos); }
+      if (companyDetails.companyEmail) { yPos += 5; doc.text(`Email: ${companyDetails.companyEmail}`, 20, yPos); }
+      if (companyDetails.vatNumber) { yPos += 5; doc.text(`VAT No: ${companyDetails.vatNumber}`, 20, yPos); }
+      yPos += 10;
+    }
+
+    // Client Details (To)
+    if (companyDetails.clientName || companyDetails.clientCompany) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('TO:', 120, 55);
+      doc.setFont('helvetica', 'normal');
+      let clientY = 61;
+      if (companyDetails.clientName) { doc.text(companyDetails.clientName, 120, clientY); clientY += 5; }
+      if (companyDetails.clientCompany) { doc.text(companyDetails.clientCompany, 120, clientY); clientY += 5; }
+      if (companyDetails.clientEmail) { doc.text(companyDetails.clientEmail, 120, clientY); }
+    }
+
+    yPos = Math.max(yPos, 85);
+
+    // Accommodation Details
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, yPos - 5, 180, 8, 'F');
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Accommodation Details', 20, 55);
+    doc.text('ACCOMMODATION DETAILS', 20, yPos);
+    yPos += 10;
+
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    
-    let yPos = 65;
     if (hotelName) {
       doc.text(`Hotel: ${hotelName}`, 20, yPos);
-      yPos += 7;
+      yPos += 6;
     }
     doc.text(`Destination: ${destinationName}`, 20, yPos);
-    yPos += 7;
+    yPos += 6;
     doc.text(`Check-in: ${checkIn}  |  Check-out: ${checkOut}  |  ${nights} Night${nights !== 1 ? 's' : ''}`, 20, yPos);
-    yPos += 7;
-    doc.text(`Group Size: ${adults} Adults${children > 0 ? `, ${children} Children` : ''}`, 20, yPos);
-    yPos += 12;
+    yPos += 6;
+    doc.text(`Group Size: ${adults} Adults${children > 0 ? `, ${children} Children` : ''} (${totalGuests} Total)`, 20, yPos);
+    yPos += 10;
 
     // Room Categories
     const filledRooms = roomCategories.filter(r => r.name.trim());
     if (filledRooms.length > 0) {
-      doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.text('Room Categories', 20, yPos);
-      yPos += 8;
-      doc.setFontSize(10);
+      doc.text('Room Categories:', 20, yPos);
+      yPos += 6;
       doc.setFont('helvetica', 'normal');
       filledRooms.forEach(room => {
         doc.text(`• ${room.name}: ${room.count} room${room.count !== 1 ? 's' : ''}`, 25, yPos);
-        yPos += 6;
+        yPos += 5;
       });
-      yPos += 6;
+      yPos += 5;
     }
 
     // Facilities
     const filledFacilities = facilities.filter(f => f.trim());
     if (filledFacilities.length > 0) {
-      doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.text('Hotel Facilities', 20, yPos);
-      yPos += 8;
-      doc.setFontSize(10);
+      doc.text('Hotel Facilities:', 20, yPos);
+      yPos += 6;
       doc.setFont('helvetica', 'normal');
       filledFacilities.forEach(facility => {
         doc.text(`• ${facility}`, 25, yPos);
-        yPos += 6;
+        yPos += 5;
       });
-      yPos += 6;
+      yPos += 5;
     }
 
-    // Package Details
-    doc.setFontSize(14);
+    // Package Inclusions
+    yPos += 3;
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, yPos - 5, 180, 8, 'F');
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('Activity Package', 20, yPos);
-    yPos += 10;
-    doc.setFontSize(12);
-    doc.text(result.packageName, 20, yPos);
-    yPos += 15;
-
-    // Pricing breakdown
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Pricing Breakdown (Per Person)', 20, yPos);
+    doc.text('PACKAGE INCLUSIONS', 20, yPos);
     yPos += 10;
 
     doc.setFontSize(10);
+    doc.setTextColor(34, 139, 34);
+    doc.text('✓   Accommodation', 25, yPos);
+    yPos += 5;
+    
+    if (result.activitiesIncluded && result.activitiesIncluded.length > 0) {
+      result.activitiesIncluded.forEach(activity => {
+        if (yPos < 230) {
+          doc.text(`✓   ${activity}`, 25, yPos);
+          yPos += 5;
+        }
+      });
+    }
+    doc.setTextColor(0, 0, 0);
+    yPos += 8;
+
+    // Pricing Table
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, yPos - 5, 180, 8, 'F');
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PRICING BREAKDOWN', 20, yPos);
+    yPos += 12;
+
+    // Table header
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Description', 25, yPos);
+    doc.text('Per Person', 120, yPos);
+    doc.text('Total', 160, yPos);
+    yPos += 3;
+    doc.line(20, yPos, 190, yPos);
+    yPos += 6;
+
+    // Table rows
     doc.setFont('helvetica', 'normal');
-    doc.text(`Accommodation: ${formatCurrency(result.hotelCost)}`, 25, yPos);
-    yPos += 7;
-    doc.text(`Activity Package: ${formatCurrency(result.packagePrice)}`, 25, yPos);
-    yPos += 7;
+    doc.text('Accommodation', 25, yPos);
+    doc.text(formatCurrency(result.hotelCost), 120, yPos);
+    doc.text(formatCurrency(result.hotelCost * totalGuests), 160, yPos);
+    yPos += 6;
+
+    doc.text(`Activity Package (${result.packageName})`, 25, yPos);
+    doc.text(formatCurrency(result.packagePrice), 120, yPos);
+    doc.text(formatCurrency(result.packagePrice * totalGuests), 160, yPos);
+    yPos += 6;
+
     if (result.serviceFee > 0) {
-      doc.text(`Service Fee: ${formatCurrency(result.serviceFee)}`, 25, yPos);
-      yPos += 7;
+      doc.text(`Service Fee (${totalGuests} persons × R400)`, 25, yPos);
+      doc.text(formatCurrency(result.serviceFee), 120, yPos);
+      doc.text(formatCurrency(totalServiceFee), 160, yPos);
+      yPos += 6;
     }
 
+    yPos += 2;
+    doc.line(20, yPos, 190, yPos);
+    yPos += 6;
+
+    // Totals
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.text(`Total Per Person: ${formatCurrency(result.totalPerPerson)}`, 25, yPos);
-    yPos += 10;
-    doc.setFontSize(14);
-    doc.text(`Total Group Cost: ${formatCurrency(result.totalGroupCost)}`, 25, yPos);
+    doc.text('TOTAL PER PERSON', 25, yPos);
+    doc.text(formatCurrency(result.totalPerPerson), 160, yPos);
+    yPos += 7;
+    doc.setFontSize(11);
+    doc.text('TOTAL GROUP COST', 25, yPos);
+    doc.text(formatCurrency(result.totalGroupCost), 160, yPos);
+    yPos += 12;
+
+    // VAT Note
+    if (companyDetails.vatNumber) {
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.text('* All prices include VAT where applicable', 20, yPos);
+      yPos += 8;
+    }
 
     // Service fee note
     if (totalGuests >= 25) {
-      yPos += 15;
       doc.setFontSize(8);
       doc.setFont('helvetica', 'italic');
-      doc.text('* Service fee of R400 per person applies from the 26th guest onwards for groups of 25+', 20, yPos);
+      doc.text('* Service fee of R400 per person applies for groups of 25 or more', 20, yPos);
+      yPos += 10;
+    }
+
+    // Terms & Conditions
+    if (companyDetails.termsAndConditions) {
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Terms & Conditions:', 20, yPos);
+      yPos += 5;
+      doc.setFont('helvetica', 'normal');
+      const splitTerms = doc.splitTextToSize(companyDetails.termsAndConditions, 170);
+      doc.text(splitTerms, 20, yPos);
     }
 
     // Footer
     doc.setFontSize(8);
     doc.setTextColor(128, 128, 128);
-    doc.text(`Quote generated on ${new Date().toLocaleDateString()}`, 20, 280);
-    doc.text('Prices are subject to availability and may change', 20, 285);
+    doc.text(`Quote Reference: ${quoteNumber}`, 20, 280);
+    doc.text(`Generated: ${quoteDate}`, 100, 280);
+    doc.text('This is a computer-generated document', 20, 285);
 
-    const fileName = `Hotel_Quote_${result.packageName.replace(/\s+/g, '_')}_${destinationName}_${new Date().toISOString().split('T')[0]}.pdf`;
+    const fileName = `Quote_${quoteNumber}_${result.packageName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
     toast.success('PDF downloaded successfully!');
   };
@@ -575,15 +718,155 @@ export function AccommodationProviderQuote() {
                     <div>
                       <p className="text-sm font-medium text-emerald-800">Service Fee Applies</p>
                       <p className="text-xs text-emerald-600">
-                        For groups of 25+ people, a service fee of R400 per person applies from the 26th guest onwards.
-                        {totalGuests > 25 && (
-                          <span className="font-medium"> Estimated service fee: {formatCurrency((totalGuests - 25) * 400)}</span>
-                        )}
+                        For groups of 25 or more people, a service fee of R400 per person applies to all guests.
+                        <span className="font-medium"> Estimated service fee: {formatCurrency(totalGuests * 400)}</span>
                       </p>
                     </div>
                   </div>
                 </div>
               )}
+
+              {/* Accounting Compliant Fields */}
+              <div className="border-t pt-5 mt-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <FileText className="w-5 h-5 text-emerald-600" />
+                  <Label className="text-base font-semibold text-gray-800">Quotation Document Details</Label>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Complete these fields for an accounting-compliant quotation document
+                </p>
+
+                {/* Company Details */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Building className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm font-medium text-gray-700">Your Company Details (Supplier)</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-600">Company Name</Label>
+                      <Input
+                        type="text"
+                        value={companyDetails.companyName}
+                        onChange={e => updateCompanyDetails('companyName', e.target.value)}
+                        placeholder="Your Hotel / Company Name"
+                        className="h-10 bg-white border-gray-200"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-600">VAT Number</Label>
+                      <Input
+                        type="text"
+                        value={companyDetails.vatNumber}
+                        onChange={e => updateCompanyDetails('vatNumber', e.target.value)}
+                        placeholder="e.g. 4123456789"
+                        className="h-10 bg-white border-gray-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-gray-600">Company Address</Label>
+                    <Input
+                      type="text"
+                      value={companyDetails.companyAddress}
+                      onChange={e => updateCompanyDetails('companyAddress', e.target.value)}
+                      placeholder="Street Address, City, Postal Code"
+                      className="h-10 bg-white border-gray-200"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-600">Phone Number</Label>
+                      <Input
+                        type="tel"
+                        value={companyDetails.companyPhone}
+                        onChange={e => updateCompanyDetails('companyPhone', e.target.value)}
+                        placeholder="e.g. +27 21 123 4567"
+                        className="h-10 bg-white border-gray-200"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-600">Email Address</Label>
+                      <Input
+                        type="email"
+                        value={companyDetails.companyEmail}
+                        onChange={e => updateCompanyDetails('companyEmail', e.target.value)}
+                        placeholder="bookings@yourhotel.com"
+                        className="h-10 bg-white border-gray-200"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Client Details */}
+                <div className="space-y-4 mt-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm font-medium text-gray-700">Client Details (Recipient)</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-600">Client Name</Label>
+                      <Input
+                        type="text"
+                        value={companyDetails.clientName}
+                        onChange={e => updateCompanyDetails('clientName', e.target.value)}
+                        placeholder="Contact Person Name"
+                        className="h-10 bg-white border-gray-200"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-600">Client Company</Label>
+                      <Input
+                        type="text"
+                        value={companyDetails.clientCompany}
+                        onChange={e => updateCompanyDetails('clientCompany', e.target.value)}
+                        placeholder="Client Company Name"
+                        className="h-10 bg-white border-gray-200"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-gray-600">Client Email</Label>
+                    <Input
+                      type="email"
+                      value={companyDetails.clientEmail}
+                      onChange={e => updateCompanyDetails('clientEmail', e.target.value)}
+                      placeholder="client@company.com"
+                      className="h-10 bg-white border-gray-200"
+                    />
+                  </div>
+                </div>
+
+                {/* Quote Validity */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                  <div className="space-y-2">
+                    <Label className="text-sm text-gray-600">Quote Valid For (Days)</Label>
+                    <Select 
+                      value={companyDetails.quoteValidDays.toString()} 
+                      onValueChange={v => updateCompanyDetails('quoteValidDays', parseInt(v))}
+                    >
+                      <SelectTrigger className="h-10 bg-white border-gray-200">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="7">7 Days</SelectItem>
+                        <SelectItem value="14">14 Days</SelectItem>
+                        <SelectItem value="21">21 Days</SelectItem>
+                        <SelectItem value="30">30 Days</SelectItem>
+                        <SelectItem value="60">60 Days</SelectItem>
+                        <SelectItem value="90">90 Days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-gray-600">Quote Reference Number</Label>
+                    <div className="h-10 bg-gray-50 border border-gray-200 rounded-md flex items-center px-3 text-gray-700 font-mono text-sm">
+                      {quoteNumber}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Calculate Button */}
               <Button 
@@ -607,16 +890,23 @@ export function AccommodationProviderQuote() {
               {quoteResults.map((result, index) => (
                 <Card key={index} className="overflow-hidden">
                   <CardContent className="p-6">
+                    {/* Quote Header with Reference */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h4 className="text-xl font-bold text-gray-900">{result.packageName}</h4>
+                        <p className="text-sm text-gray-600">
+                          {destinationName} • {nights} Night{nights !== 1 ? 's' : ''} • {result.groupSize} Guests
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">Quote Ref:</p>
+                        <p className="text-sm font-mono font-medium text-gray-700">{quoteNumber}</p>
+                      </div>
+                    </div>
+
                     <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                       {/* Quote Details */}
                       <div className="flex-1 space-y-4">
-                        <div>
-                          <h4 className="text-xl font-bold text-gray-900">{result.packageName}</h4>
-                          <p className="text-sm text-gray-600">
-                            {destinationName} • {nights} Night{nights !== 1 ? 's' : ''} • {result.groupSize} Guests
-                          </p>
-                        </div>
-
                         {/* Room Categories Summary */}
                         {roomCategories.some(r => r.name.trim()) && (
                           <div className="text-sm text-gray-600">
@@ -636,6 +926,23 @@ export function AccommodationProviderQuote() {
                             ))}
                           </div>
                         )}
+
+                        {/* Package Inclusions - matching custom hotel quote style */}
+                        <div className="bg-emerald-50/50 rounded-lg p-4 border border-emerald-100">
+                          <p className="text-sm font-semibold text-gray-700 mb-3">Package Inclusions:</p>
+                          <div className="space-y-2">
+                            <p className="flex items-center gap-2 text-green-600 text-sm">
+                              <Check className="w-4 h-4 shrink-0" />
+                              <span>Accommodation</span>
+                            </p>
+                            {result.activitiesIncluded && result.activitiesIncluded.map((activity, i) => (
+                              <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
+                                <Check className="w-4 h-4 shrink-0" />
+                                <span>{activity}</span>
+                              </p>
+                            ))}
+                          </div>
+                        </div>
 
                         {/* Pricing Breakdown */}
                         <div className="bg-gray-50 rounded-lg p-4 space-y-2">
@@ -664,6 +971,13 @@ export function AccommodationProviderQuote() {
                             </div>
                           </div>
                         </div>
+
+                        {/* Service Fee Note */}
+                        {result.serviceFee > 0 && (
+                          <p className="text-xs text-gray-500 italic">
+                            * Service fee of R400 per person applies for groups of 25 or more
+                          </p>
+                        )}
                       </div>
 
                       {/* Actions */}
@@ -672,12 +986,16 @@ export function AccommodationProviderQuote() {
                           onClick={() => downloadQuotePDF(result)}
                           className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
                         >
+                          <FileText className="w-4 h-4" />
                           Download PDF Quote
                         </Button>
                         <Button
                           variant="outline"
                           onClick={() => {
-                            const message = `Hotel Quote for ${result.packageName}\n\nDestination: ${destinationName}\nDates: ${checkIn} - ${checkOut}\nGuests: ${result.groupSize}\n\nTotal Per Person: ${formatCurrency(result.totalPerPerson)}\nTotal Group Cost: ${formatCurrency(result.totalGroupCost)}`;
+                            const inclusionsText = result.activitiesIncluded && result.activitiesIncluded.length > 0
+                              ? `\n\n✅ INCLUSIONS:\n• Accommodation\n${result.activitiesIncluded.map(a => `• ${a}`).join('\n')}`
+                              : '';
+                            const message = `*QUOTATION*\nRef: ${quoteNumber}\n\n*${result.packageName}*\n\nDestination: ${destinationName}\nDates: ${checkIn} - ${checkOut}\nGuests: ${result.groupSize}${inclusionsText}\n\n💰 PRICING:\nTotal Per Person: ${formatCurrency(result.totalPerPerson)}\nTotal Group Cost: ${formatCurrency(result.totalGroupCost)}`;
                             window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
                           }}
                           className="gap-2"
@@ -687,8 +1005,11 @@ export function AccommodationProviderQuote() {
                         <Button
                           variant="outline"
                           onClick={() => {
-                            const subject = `Hotel Quote - ${result.packageName} - ${destinationName}`;
-                            const body = `Hotel Quote for ${result.packageName}\n\nDestination: ${destinationName}\nDates: ${checkIn} - ${checkOut}\nGuests: ${result.groupSize}\n\nTotal Per Person: ${formatCurrency(result.totalPerPerson)}\nTotal Group Cost: ${formatCurrency(result.totalGroupCost)}`;
+                            const inclusionsText = result.activitiesIncluded && result.activitiesIncluded.length > 0
+                              ? `\n\nINCLUSIONS:\n• Accommodation\n${result.activitiesIncluded.map(a => `• ${a}`).join('\n')}`
+                              : '';
+                            const subject = `Quotation ${quoteNumber} - ${result.packageName} - ${destinationName}`;
+                            const body = `QUOTATION\nReference: ${quoteNumber}\n\n${result.packageName}\n\nDestination: ${destinationName}\nDates: ${checkIn} - ${checkOut}\nGuests: ${result.groupSize}${inclusionsText}\n\nPRICING:\nTotal Per Person: ${formatCurrency(result.totalPerPerson)}\nTotal Group Cost: ${formatCurrency(result.totalGroupCost)}`;
                             window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
                           }}
                           className="gap-2"
