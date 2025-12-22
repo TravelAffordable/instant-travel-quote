@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X, FileText } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X, FileText, Bus } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -398,6 +398,17 @@ export function Hero({ onGetQuote }: HeroProps) {
               <PartyPopper className="w-5 h-5" />
               <span className="font-medium">I would like accommodation with fun activities included</span>
             </button>
+          </div>
+          
+          {/* Bus Hire Button */}
+          <div className="flex justify-center mt-3">
+            <a
+              href="#bus-hire-section"
+              className="flex items-center gap-3 px-6 py-3 rounded-xl bg-amber-500/90 text-white hover:bg-amber-500 transition-all backdrop-blur-sm hover:scale-105"
+            >
+              <Bus className="w-5 h-5" />
+              <span className="font-medium">Bus Hire Companies - Add transport to your quote</span>
+            </a>
           </div>
           
           {/* Filter Preferences */}

@@ -52,7 +52,9 @@ const Index = () => {
       </section>
 
       {/* Bus Hire Quote Section */}
-      <BusHireQuote />
+      <section id="bus-hire-section">
+        <BusHireQuote />
+      </section>
 
       {/* Group Tours */}
       <GroupTours />
