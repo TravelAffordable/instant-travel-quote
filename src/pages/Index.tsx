@@ -8,6 +8,7 @@ import { WhyChooseUs } from '@/components/WhyChooseUs';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
 import { BusHireQuote } from '@/components/BusHireQuote';
+import { AccommodationProviderQuote } from '@/components/AccommodationProviderQuote';
 import { destinations } from '@/data/travelData';
 const Index = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -54,6 +55,11 @@ const Index = () => {
       {/* Bus Hire Quote Section */}
       <section id="bus-hire-section">
         <BusHireQuote />
+      </section>
+
+      {/* Hotel Provider Quote Section */}
+      <section id="hotel-provider-section">
+        <AccommodationProviderQuote />
       </section>
 
       {/* Group Tours */}
