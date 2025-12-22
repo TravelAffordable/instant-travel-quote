@@ -4,9 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
-import { Bus, Users, PartyPopper, Calculator, ChevronDown, Check, Download, FileText } from 'lucide-react';
+import { Bus, Users, Calculator, ChevronDown, Check, Search, Building2, DollarSign } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -14,7 +13,8 @@ import {
   type Package
 } from '@/data/travelData';
 import { toast } from 'sonner';
-import jsPDF from 'jspdf';
+import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
+import { BusHireHotelCard } from './BusHireHotelCard';
 
 type UserType = 'bus-company' | 'group-organizer' | null;
 
@@ -27,27 +27,22 @@ export function BusHireQuote() {
   const [checkOut, setCheckOut] = useState('');
   const [adults, setAdults] = useState(20);
   const [children, setChildren] = useState(0);
-  const [childrenAges, setChildrenAges] = useState<string>('');
+  const [childrenAges, setChildrenAges] = useState<number[]>([]);
+  const [rooms, setRooms] = useState(10);
   const [busQuoteAmount, setBusQuoteAmount] = useState('');
-  const [calculatedQuotes, setCalculatedQuotes] = useState<Array<{
-    packageName: string;
-    packageId: string;
-    activitiesIncluded: string[];
-    busTransportCost: number;
-    packageCostPerPerson: number;
-    totalPerPerson: number;
-    totalGroupCost: number;
-    adults: number;
-    children: number;
-    nights: number;
-  }>>([]);
+  const [maxBudget, setMaxBudget] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, clearHotels } = useHotelbedsSearch();
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
+  const selectedPackages = packages.filter(p => packageIds.includes(p.id));
 
   // Reset packages when destination changes
   useEffect(() => {
     setPackageIds([]);
-    setCalculatedQuotes([]);
+    clearHotels();
+    setHasSearched(false);
   }, [destination]);
 
   // Auto-set checkout to day after check-in
@@ -61,6 +56,16 @@ export function BusHireQuote() {
       }
     }
   }, [checkIn]);
+
+  // Update children ages array when children count changes
+  useEffect(() => {
+    setChildrenAges(prev => {
+      if (children > prev.length) {
+        return [...prev, ...Array(children - prev.length).fill(5)];
+      }
+      return prev.slice(0, children);
+    });
+  }, [children]);
 
   const togglePackageSelection = (pkgId: string) => {
     setPackageIds(prev => 
@@ -78,121 +83,38 @@ export function BusHireQuote() {
     }).format(amount);
   };
 
-  const calculateQuotes = () => {
+  const handleSearch = async () => {
     if (!destination || packageIds.length === 0 || !checkIn || !checkOut) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    const busAmount = parseFloat(busQuoteAmount) || 0;
-    const totalPeople = adults + children;
-    const nights = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1;
-    
-    const busPerPerson = totalPeople > 0 ? busAmount / totalPeople : 0;
+    setHasSearched(true);
 
-    const quotes = packageIds.map(pkgId => {
-      const pkg = packages.find(p => p.id === pkgId);
-      if (!pkg) return null;
-
-      // Calculate package cost per person (activities only for bus groups - no accommodation)
-      const packageCostPerPerson = pkg.basePrice;
-      const totalPerPerson = packageCostPerPerson + busPerPerson;
-      const totalGroupCost = totalPerPerson * totalPeople;
-
-      return {
-        packageName: pkg.name,
-        packageId: pkgId,
-        activitiesIncluded: pkg.activitiesIncluded,
-        busTransportCost: busAmount,
-        packageCostPerPerson,
-        totalPerPerson,
-        totalGroupCost,
-        adults,
-        children,
-        nights,
-      };
-    }).filter(Boolean) as typeof calculatedQuotes;
-
-    setCalculatedQuotes(quotes);
-    toast.success(`${quotes.length} package quotes calculated!`);
-  };
-
-  const downloadPDF = (quote: typeof calculatedQuotes[0]) => {
-    const pdf = new jsPDF();
-    const destinationName = destinations.find(d => d.id === destination)?.name || destination;
-    
-    // Header
-    pdf.setFontSize(20);
-    pdf.setTextColor(30, 64, 175);
-    pdf.text('Bus Group Travel Quote', 20, 25);
-    
-    pdf.setFontSize(12);
-    pdf.setTextColor(100, 100, 100);
-    pdf.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 35);
-    
-    // Quote Details
-    pdf.setFontSize(14);
-    pdf.setTextColor(0, 0, 0);
-    pdf.text('Trip Details', 20, 50);
-    
-    pdf.setFontSize(11);
-    let y = 60;
-    
-    pdf.text(`Destination: ${destinationName}`, 20, y);
-    y += 8;
-    pdf.text(`Package: ${quote.packageName}`, 20, y);
-    y += 8;
-    pdf.text(`Check-in: ${new Date(checkIn).toLocaleDateString()}`, 20, y);
-    y += 8;
-    pdf.text(`Check-out: ${new Date(checkOut).toLocaleDateString()}`, 20, y);
-    y += 8;
-    pdf.text(`Duration: ${quote.nights} night${quote.nights > 1 ? 's' : ''}`, 20, y);
-    y += 8;
-    pdf.text(`Group Size: ${quote.adults} adults${quote.children > 0 ? ` + ${quote.children} children` : ''}`, 20, y);
-    y += 15;
-    
-    // Activities
-    pdf.setFontSize(14);
-    pdf.text('Activities Included:', 20, y);
-    y += 10;
-    pdf.setFontSize(10);
-    quote.activitiesIncluded.forEach(activity => {
-      pdf.text(`• ${activity}`, 25, y);
-      y += 6;
+    // Search for hotels using Hotelbeds API
+    await searchHotels({
+      destination,
+      checkIn,
+      checkOut,
+      adults,
+      children,
+      childrenAges,
+      rooms,
     });
-    y += 10;
-    
-    // Pricing
-    pdf.setFontSize(14);
-    pdf.text('Pricing Breakdown', 20, y);
-    y += 10;
-    pdf.setFontSize(11);
-    
-    pdf.text(`Activities Package: R${quote.packageCostPerPerson.toLocaleString()} per person`, 20, y);
-    y += 8;
-    if (quote.busTransportCost > 0) {
-      pdf.text(`Bus Transport: R${quote.busTransportCost.toLocaleString()} total (R${Math.round(quote.busTransportCost / (quote.adults + quote.children)).toLocaleString()} per person)`, 20, y);
-      y += 8;
-    }
-    
-    y += 5;
-    pdf.setFontSize(13);
-    pdf.setTextColor(30, 64, 175);
-    pdf.text(`Total Per Person: R${Math.round(quote.totalPerPerson).toLocaleString()}`, 20, y);
-    y += 10;
-    pdf.setFontSize(14);
-    pdf.text(`Grand Total: R${Math.round(quote.totalGroupCost).toLocaleString()}`, 20, y);
-    
-    // Footer
-    pdf.setFontSize(9);
-    pdf.setTextColor(100, 100, 100);
-    pdf.text('This quote is valid for 7 days. Terms and conditions apply.', 20, 280);
-    
-    pdf.save(`bus-group-quote-${quote.packageName.toLowerCase().replace(/\s+/g, '-')}.pdf`);
-    toast.success('Quote PDF downloaded!');
   };
 
   const today = new Date().toISOString().split('T')[0];
+  const nights = checkIn && checkOut 
+    ? Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) 
+    : 0;
+  const busAmount = parseFloat(busQuoteAmount) || 0;
+  const destinationName = destinations.find(d => d.id === destination)?.name || destination;
+
+  // Filter hotels by budget
+  const budgetNumber = maxBudget ? parseInt(maxBudget.replace(/[^\d]/g, '')) : null;
+  const filteredHotels = budgetNumber 
+    ? liveHotels.filter(hotel => hotel.minRate <= budgetNumber)
+    : liveHotels;
 
   if (!userType) {
     return (
@@ -207,7 +129,7 @@ export function BusHireQuote() {
               Add Transport to Your Package Quote
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Are you a bus hire company or a group tour organizer? Select your type below to get started with a customized quote.
+              Are you a bus hire company or a group tour organizer? Select your type below to get started with a customized quote including accommodation and activities.
             </p>
           </div>
 
@@ -225,7 +147,7 @@ export function BusHireQuote() {
                     I represent a Bus Hire Company
                   </h3>
                   <p className="text-gray-600 text-sm">
-                    Add your transport quote to our curated packages and provide complete trip quotes to your clients
+                    Add your transport quote to our curated packages with accommodation and provide complete trip quotes to your clients
                   </p>
                 </div>
               </button>
@@ -242,7 +164,7 @@ export function BusHireQuote() {
                     I am a Group Tour Organizer
                   </h3>
                   <p className="text-gray-600 text-sm">
-                    Looking for fun activities and need to include bus hire in your group quote
+                    Looking for accommodation, fun activities, and need to include bus hire in your group quote
                   </p>
                 </div>
               </button>
@@ -262,7 +184,8 @@ export function BusHireQuote() {
             variant={userType === 'bus-company' ? 'default' : 'outline'}
             onClick={() => {
               setUserType('bus-company');
-              setCalculatedQuotes([]);
+              clearHotels();
+              setHasSearched(false);
             }}
             className="gap-2"
           >
@@ -273,7 +196,8 @@ export function BusHireQuote() {
             variant={userType === 'group-organizer' ? 'default' : 'outline'}
             onClick={() => {
               setUserType('group-organizer');
-              setCalculatedQuotes([]);
+              clearHotels();
+              setHasSearched(false);
             }}
             className="gap-2"
           >
@@ -282,7 +206,11 @@ export function BusHireQuote() {
           </Button>
           <Button
             variant="ghost"
-            onClick={() => setUserType(null)}
+            onClick={() => {
+              setUserType(null);
+              clearHotels();
+              setHasSearched(false);
+            }}
             className="text-gray-500"
           >
             Change Selection
@@ -297,8 +225,8 @@ export function BusHireQuote() {
           </h2>
           <p className="text-gray-600">
             {userType === 'bus-company'
-              ? 'Enter your bus transport quote and select packages to generate complete quotes for your clients'
-              : 'Calculate per-person costs including activities and transport for your group'}
+              ? 'Enter your bus transport quote and search for hotels to generate complete quotes for your clients'
+              : 'Search for accommodation and activities, then add your transport costs for a complete group quote'}
           </p>
         </div>
 
@@ -400,10 +328,10 @@ export function BusHireQuote() {
                 </Popover>
               </div>
 
-              {/* Row 3: Group Size */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {/* Row 3: Group Size & Rooms */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Number of Adults *</Label>
+                  <Label className="text-sm font-medium text-gray-700">Adults *</Label>
                   <Input
                     type="number"
                     value={adults}
@@ -413,7 +341,7 @@ export function BusHireQuote() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Number of Children</Label>
+                  <Label className="text-sm font-medium text-gray-700">Children</Label>
                   <Input
                     type="number"
                     value={children}
@@ -422,22 +350,29 @@ export function BusHireQuote() {
                     className="h-11 bg-white border-gray-200"
                   />
                 </div>
-                <div className="space-y-2 col-span-2 md:col-span-1">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Rooms *</Label>
+                  <Input
+                    type="number"
+                    value={rooms}
+                    onChange={e => setRooms(parseInt(e.target.value) || 1)}
+                    min={1}
+                    className="h-11 bg-white border-gray-200"
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">
                     <Bus className="w-4 h-4 inline mr-1" />
-                    Bus Transport Quote (R) *
+                    Bus Quote (R)
                   </Label>
                   <Input
                     type="number"
                     value={busQuoteAmount}
                     onChange={e => setBusQuoteAmount(e.target.value)}
-                    placeholder="Enter total bus quote amount"
+                    placeholder="e.g. 15000"
                     min={0}
                     className="h-11 bg-white border-gray-200"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Enter the total transport cost for the group
-                  </p>
                 </div>
               </div>
 
@@ -446,132 +381,173 @@ export function BusHireQuote() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Child Ages (3-17 years)</Label>
                   <div className="flex flex-wrap gap-2">
-                    {Array.from({ length: children }, (_, i) => {
-                      const ages = childrenAges.split(',').map(a => a.trim());
-                      const currentAge = ages[i] || '5';
-                      return (
-                        <div key={i} className="flex items-center gap-1">
-                          <span className="text-xs text-gray-500">Child {i + 1}:</span>
-                          <Select 
-                            value={currentAge} 
-                            onValueChange={v => {
-                              const newAges = [...ages];
-                              newAges[i] = v;
-                              while (newAges.length < children) {
-                                newAges.push('5');
-                              }
-                              setChildrenAges(newAges.slice(0, children).join(','));
-                            }}
-                          >
-                            <SelectTrigger className="h-9 w-20 bg-white border-gray-200">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[200px]">
-                              {Array.from({ length: 15 }, (_, age) => age + 3).map(age => (
-                                <SelectItem key={age} value={age.toString()}>{age} yrs</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      );
-                    })}
+                    {Array.from({ length: children }, (_, i) => (
+                      <div key={i} className="flex items-center gap-1">
+                        <span className="text-xs text-gray-500">Child {i + 1}:</span>
+                        <Select 
+                          value={childrenAges[i]?.toString() || '5'} 
+                          onValueChange={v => {
+                            const newAges = [...childrenAges];
+                            newAges[i] = parseInt(v);
+                            setChildrenAges(newAges);
+                          }}
+                        >
+                          <SelectTrigger className="h-9 w-20 bg-white border-gray-200">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-[200px]">
+                            {Array.from({ length: 15 }, (_, age) => age + 3).map(age => (
+                              <SelectItem key={age} value={age.toString()}>{age} yrs</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
 
-              {/* Calculate Button */}
+              {/* Search Button */}
               <Button
-                onClick={calculateQuotes}
+                onClick={handleSearch}
+                disabled={isSearchingHotels}
                 className="w-full h-12 text-lg gap-2"
                 size="lg"
               >
-                <Calculator className="w-5 h-5" />
-                Calculate Group Quote
+                {isSearchingHotels ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                    Searching Hotels...
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-5 h-5" />
+                    Search Hotels & Calculate Quotes
+                  </>
+                )}
               </Button>
             </div>
+          </div>
 
-            {/* Results */}
-            {calculatedQuotes.length > 0 && (
-              <div className="mt-8 space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                  Your Group Quotes ({calculatedQuotes.length})
-                </h3>
-                
-                <div className="space-y-4">
-                  {calculatedQuotes.map((quote, index) => (
-                    <Card key={index} className="border-2 border-blue-100 hover:border-blue-300 transition-colors">
-                      <CardContent className="p-5">
-                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <PartyPopper className="w-5 h-5 text-blue-600" />
-                              <h4 className="font-semibold text-lg">{quote.packageName}</h4>
-                            </div>
-                            
-                            <div className="space-y-2 text-sm text-gray-600">
-                              <p>
-                                <span className="font-medium">Group:</span> {quote.adults} adults
-                                {quote.children > 0 && ` + ${quote.children} children`}
-                              </p>
-                              <p>
-                                <span className="font-medium">Duration:</span> {quote.nights} night{quote.nights > 1 ? 's' : ''}
-                              </p>
-                              
-                              <div className="mt-3">
-                                <p className="font-medium text-gray-700 mb-1">Activities Included:</p>
-                                <ul className="text-xs space-y-0.5">
-                                  {quote.activitiesIncluded.slice(0, 4).map((activity, i) => (
-                                    <li key={i} className="flex items-center gap-1">
-                                      <Check className="w-3 h-3 text-green-500" />
-                                      {activity}
-                                    </li>
-                                  ))}
-                                  {quote.activitiesIncluded.length > 4 && (
-                                    <li className="text-gray-500">+{quote.activitiesIncluded.length - 4} more activities</li>
-                                  )}
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="text-right space-y-2">
-                            <div className="text-xs text-gray-500 space-y-1">
-                              <p>Activities: {formatCurrency(quote.packageCostPerPerson)}/person</p>
-                              {quote.busTransportCost > 0 && (
-                                <p>Transport: {formatCurrency(Math.round(quote.busTransportCost / (quote.adults + quote.children)))}/person</p>
-                              )}
-                            </div>
-                            
-                            <p className="text-2xl font-bold text-blue-600">
-                              {formatCurrency(Math.round(quote.totalPerPerson))}
+          {/* Results Section */}
+          {hasSearched && (
+            <div className="mt-8 bg-white rounded-2xl shadow-xl p-6 md:p-8 animate-fade-in">
+              {liveHotels.length === 0 ? (
+                <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
+                  <CardContent className="py-12 text-center">
+                    <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Hotels Found</h3>
+                    <p className="text-muted-foreground text-sm">
+                      No hotels found for this destination and dates. Please try different dates or contact us directly for assistance.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-6">
+                  {/* Disclaimer */}
+                  <div className="bg-muted/50 border border-border rounded-lg p-4 space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      Please note that the images shown are for illustration purposes only. The price includes 
+                      hotel accommodation, all activities associated with the package, and your bus transport quote.
+                      Select your preferred option and contact us via email or WhatsApp for an accurate quote with confirmed availability.
+                    </p>
+                    <p className="text-sm text-primary font-medium">
+                      Select any package below to download or send for booking confirmation.
+                    </p>
+                  </div>
+
+                  {/* Budget Filter */}
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                    <Label className="flex items-center gap-2 text-sm font-medium mb-2">
+                      <DollarSign className="w-4 h-4 text-primary" />
+                      Filter by accommodation budget (Optional)
+                    </Label>
+                    <Input
+                      type="text"
+                      placeholder="e.g. R5000 - Enter max accommodation amount to filter hotels"
+                      value={maxBudget}
+                      onChange={(e) => setMaxBudget(e.target.value)}
+                      className="h-10 bg-background"
+                    />
+                    {budgetNumber && filteredHotels.length !== liveHotels.length && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Showing {filteredHotels.length} of {liveHotels.length} hotels within your budget
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Summary */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-900 mb-2">Quote Summary</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <p className="text-blue-700">Destination</p>
+                        <p className="font-medium text-blue-900">{destinationName}</p>
+                      </div>
+                      <div>
+                        <p className="text-blue-700">Duration</p>
+                        <p className="font-medium text-blue-900">{nights} night{nights !== 1 ? 's' : ''}</p>
+                      </div>
+                      <div>
+                        <p className="text-blue-700">Group Size</p>
+                        <p className="font-medium text-blue-900">{adults} adults{children > 0 ? ` + ${children} children` : ''}</p>
+                      </div>
+                      <div>
+                        <p className="text-blue-700">Bus Transport</p>
+                        <p className="font-medium text-blue-900">{busAmount > 0 ? formatCurrency(busAmount) : 'Not specified'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Package Sections */}
+                  {selectedPackages.map((pkg) => (
+                    <div key={pkg.id} className="space-y-4">
+                      {/* Package Header */}
+                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                        <h3 className="text-lg font-display font-bold text-primary uppercase">
+                          {pkg.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''} available
+                        </p>
+                      </div>
+
+                      {/* Hotel Cards */}
+                      {filteredHotels.length === 0 ? (
+                        <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
+                          <CardContent className="py-8 text-center">
+                            <p className="text-muted-foreground text-sm">
+                              No hotels match your budget. Try increasing your budget amount or remove the filter to see all options.
                             </p>
-                            <p className="text-xs text-gray-500">per person</p>
-                            
-                            <div className="pt-2 border-t">
-                              <p className="text-lg font-semibold text-gray-900">
-                                {formatCurrency(Math.round(quote.totalGroupCost))}
-                              </p>
-                              <p className="text-xs text-gray-500">total for group</p>
-                            </div>
-                            
-                            <Button
-                              onClick={() => downloadPDF(quote)}
-                              variant="outline"
-                              size="sm"
-                              className="gap-2 mt-3"
-                            >
-                              <Download className="w-4 h-4" />
-                              Download Quote
-                            </Button>
-                          </div>
+                          </CardContent>
+                        </Card>
+                      ) : (
+                        <div className="space-y-4">
+                          {filteredHotels.map((hotel) => (
+                            <BusHireHotelCard
+                              key={`${pkg.id}-${hotel.code}`}
+                              hotel={hotel}
+                              pkg={pkg}
+                              nights={nights}
+                              adults={adults}
+                              children={children}
+                              childrenAges={childrenAges}
+                              rooms={rooms}
+                              busQuoteAmount={busAmount}
+                              destinationName={destinationName}
+                              checkIn={checkIn}
+                              checkOut={checkOut}
+                              userType={userType}
+                            />
+                          ))}
                         </div>
-                      </CardContent>
-                    </Card>
+                      )}
+                    </div>
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </section>
