@@ -218,6 +218,10 @@ export function AccommodationProviderQuote() {
     const validUntilStr = validUntil.toLocaleDateString('en-ZA');
     const totalServiceFee = calculateServiceFee(totalGuests);
 
+    // Determine if we should hide per person pricing
+    // Hide per person price if: group is 10 or less AND there are children
+    const hidePerPersonPrice = totalGuests <= 10 && children > 0;
+
     // Header with company branding
     doc.setFillColor(16, 185, 129);
     doc.rect(0, 0, 210, 45, 'F');
@@ -313,7 +317,7 @@ export function AccommodationProviderQuote() {
       yPos += 5;
     }
 
-    // Package Inclusions
+    // Package Inclusions with descriptions (no pricing breakdown)
     yPos += 3;
     doc.setFillColor(240, 240, 240);
     doc.rect(15, yPos - 5, 180, 8, 'F');
@@ -323,68 +327,74 @@ export function AccommodationProviderQuote() {
     yPos += 10;
 
     doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    // Accommodation line item with nights
     doc.setTextColor(34, 139, 34);
-    doc.text('✓   Accommodation', 25, yPos);
-    yPos += 5;
+    doc.text(`✓   Accommodation - ${nights} Night${nights !== 1 ? 's' : ''} at ${hotelName || destinationName}`, 25, yPos);
+    yPos += 6;
     
+    // Activity Package line item with description
+    doc.text(`✓   ${result.packageName} - ${nights} Night${nights !== 1 ? 's' : ''} Experience`, 25, yPos);
+    yPos += 6;
+    
+    // Show each activity as a line item
     if (result.activitiesIncluded && result.activitiesIncluded.length > 0) {
       result.activitiesIncluded.forEach(activity => {
-        if (yPos < 230) {
-          doc.text(`✓   ${activity}`, 25, yPos);
-          yPos += 5;
+        if (yPos < 220) {
+          // Wrap long activity descriptions to fit the space
+          const maxWidth = 160;
+          const activityText = `     • ${activity}`;
+          const splitActivity = doc.splitTextToSize(activityText, maxWidth);
+          splitActivity.forEach((line: string) => {
+            if (yPos < 220) {
+              doc.text(line, 25, yPos);
+              yPos += 5;
+            }
+          });
         }
       });
     }
+
+    // Service fee line item if applicable
+    if (totalGuests >= 25) {
+      doc.text('✓   Booking & Coordination Service', 25, yPos);
+      yPos += 6;
+    }
+
     doc.setTextColor(0, 0, 0);
     yPos += 8;
 
-    // Pricing Table
+    // Pricing Summary (no breakdown, just totals)
     doc.setFillColor(240, 240, 240);
     doc.rect(15, yPos - 5, 180, 8, 'F');
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text('PRICING BREAKDOWN', 20, yPos);
+    doc.text('PRICING SUMMARY', 20, yPos);
     yPos += 12;
 
-    // Table header
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Description', 25, yPos);
-    doc.text('Per Person', 120, yPos);
-    doc.text('Total', 160, yPos);
-    yPos += 3;
-    doc.line(20, yPos, 190, yPos);
-    yPos += 6;
-
-    // Table rows
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text('Accommodation', 25, yPos);
-    doc.text(formatCurrency(result.hotelCost), 120, yPos);
-    doc.text(formatCurrency(result.hotelCost * totalGuests), 160, yPos);
+    
+    // Group details
+    doc.text(`Group Size: ${adults} Adults${children > 0 ? ` + ${children} Children` : ''} (${totalGuests} guests)`, 25, yPos);
     yPos += 6;
+    doc.text(`Duration: ${nights} Night${nights !== 1 ? 's' : ''}`, 25, yPos);
+    yPos += 10;
 
-    doc.text(`Activity Package (${result.packageName})`, 25, yPos);
-    doc.text(formatCurrency(result.packagePrice), 120, yPos);
-    doc.text(formatCurrency(result.packagePrice * totalGuests), 160, yPos);
-    yPos += 6;
+    doc.line(20, yPos, 190, yPos);
+    yPos += 8;
 
-    if (result.serviceFee > 0) {
-      doc.text(`Service Fee (${totalGuests} persons × R400)`, 25, yPos);
-      doc.text(formatCurrency(result.serviceFee), 120, yPos);
-      doc.text(formatCurrency(totalServiceFee), 160, yPos);
-      yPos += 6;
+    // Show per person price only if group > 10 OR if adults only (no children)
+    if (!hidePerPersonPrice) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('PRICE PER PERSON', 25, yPos);
+      doc.text(formatCurrency(result.totalPerPerson), 160, yPos);
+      yPos += 8;
     }
 
-    yPos += 2;
-    doc.line(20, yPos, 190, yPos);
-    yPos += 6;
-
-    // Totals
+    doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text('TOTAL PER PERSON', 25, yPos);
-    doc.text(formatCurrency(result.totalPerPerson), 160, yPos);
-    yPos += 7;
-    doc.setFontSize(11);
     doc.text('TOTAL GROUP COST', 25, yPos);
     doc.text(formatCurrency(result.totalGroupCost), 160, yPos);
     yPos += 12;
