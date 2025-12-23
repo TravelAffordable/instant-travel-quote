@@ -129,25 +129,34 @@ export function BusHireHotelCard({
     kidsPackageCost = pkg.kidsPrice * children;
   }
 
-  // Service fees
-  const getServiceFeePerAdult = (adultCount: number) => {
-    if (adultCount >= 10) return 750;
-    if (adultCount >= 4) return 800;
-    if (adultCount >= 2) return 850;
-    return 1000;
-  };
-  const serviceFeePerAdult = getServiceFeePerAdult(adults);
-  const totalServiceFees = serviceFeePerAdult * adults;
+  // Service fees: R400 per adult, R100 for kids 3-12, R200 for kids 13-17 (groups of 25+)
+  const calculateServiceFees = () => {
+    const totalPeople = adults + childrenAges.length;
+    
+    if (totalPeople < 25) {
+      return { adultFees: 0, kidsFees: 0, totalFees: 0 };
+    }
 
-  // Kids fees
-  let kidsFees = 0;
-  childrenAges.forEach((age) => {
-    if (age >= 3 && age <= 12) kidsFees += 200;
-    else if (age >= 13 && age <= 17) kidsFees += 300;
-  });
+    const adultFees = adults * 400;
+    
+    let kidsFees = 0;
+    childrenAges.forEach((age) => {
+      if (age >= 3 && age <= 12) kidsFees += 100;
+      else if (age >= 13 && age <= 17) kidsFees += 200;
+    });
+
+    return {
+      adultFees,
+      kidsFees,
+      totalFees: adultFees + kidsFees,
+    };
+  };
+  
+  const serviceFees = calculateServiceFees();
+  const totalServiceFees = serviceFees.totalFees;
 
   // Total without bus
-  const subtotalWithoutBus = accommodationCost + packageTotal + kidsPackageCost + totalServiceFees + kidsFees;
+  const subtotalWithoutBus = accommodationCost + packageTotal + kidsPackageCost + totalServiceFees;
   
   // Total with bus
   const totalWithBus = subtotalWithoutBus + busQuoteAmount;
@@ -229,7 +238,7 @@ export function BusHireHotelCard({
       `Pricing Breakdown:\n` +
       `- Accommodation: ${formatCurrency(accommodationCost)}\n` +
       `- Package Activities: ${formatCurrency(packageTotal + kidsPackageCost)}\n` +
-      `- Service Fees: ${formatCurrency(totalServiceFees + kidsFees)}\n` +
+      `- Service Fees: ${formatCurrency(totalServiceFees)}\n` +
       `- Bus Transport: ${formatCurrency(busQuoteAmount)}\n` +
       `- Total: ${formatCurrency(totalWithBus)}\n` +
       `- Per Person: ${formatCurrency(pricePerPerson)}\n\n` +
@@ -289,7 +298,7 @@ export function BusHireHotelCard({
     
     pdf.text(`Accommodation: ${formatCurrency(accommodationCost)}`, 20, y); y += 8;
     pdf.text(`Activities Package: ${formatCurrency(packageTotal + kidsPackageCost)}`, 20, y); y += 8;
-    pdf.text(`Service Fees: ${formatCurrency(totalServiceFees + kidsFees)}`, 20, y); y += 8;
+    pdf.text(`Service Fees: ${formatCurrency(totalServiceFees)}`, 20, y); y += 8;
     pdf.text(`Bus Transport: ${formatCurrency(busQuoteAmount)}`, 20, y); y += 10;
     
     pdf.setFontSize(13);
@@ -432,7 +441,7 @@ export function BusHireHotelCard({
               </div>
               <div className="flex justify-between">
                 <span>Service Fees:</span>
-                <span>{formatCurrency(totalServiceFees + kidsFees)}</span>
+                <span>{formatCurrency(totalServiceFees)}</span>
               </div>
               {busQuoteAmount > 0 && (
                 <div className="flex justify-between text-blue-600 font-medium">
