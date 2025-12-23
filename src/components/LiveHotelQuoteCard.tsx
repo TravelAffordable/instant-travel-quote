@@ -166,24 +166,34 @@ export function LiveHotelQuoteCard({
     kidsPackageCost = pkg.kidsPrice * children;
   }
 
-  // Service fees
-  const getServiceFeePerAdult = (adultCount: number) => {
-    if (adultCount >= 10) return 750;
-    if (adultCount >= 4) return 800;
-    if (adultCount >= 2) return 850;
-    return 1000;
+  // Service fees: R550 per adult, R100 for kids 3-12, R200 for kids 13-17 (groups of 25+)
+  const calculateServiceFees = () => {
+    const totalPeople = adults + childrenAges.length;
+    
+    if (totalPeople < 25) {
+      return { adultFees: 0, kidsFees: 0, totalFees: 0 };
+    }
+
+    const adultFees = adults * 550;
+    
+    let kidsFees = 0;
+    childrenAges.forEach((age) => {
+      if (age >= 3 && age <= 12) kidsFees += 100;
+      else if (age >= 13 && age <= 17) kidsFees += 200;
+    });
+
+    return {
+      adultFees,
+      kidsFees,
+      totalFees: adultFees + kidsFees,
+    };
   };
-  const serviceFeePerAdult = getServiceFeePerAdult(adults);
-  const totalServiceFees = serviceFeePerAdult * adults;
+  
+  const serviceFees = calculateServiceFees();
+  const totalServiceFees = serviceFees.totalFees;
+  const serviceFeePerAdult = (adults + children) >= 25 ? 550 : 0;
 
-  // Kids fees
-  let kidsFees = 0;
-  childrenAges.forEach((age) => {
-    if (age >= 3 && age <= 12) kidsFees += 200;
-    else if (age >= 13 && age <= 17) kidsFees += 300;
-  });
-
-  const totalCost = accommodationCost + packageTotal + kidsPackageCost + totalServiceFees + kidsFees;
+  const totalCost = accommodationCost + packageTotal + kidsPackageCost + totalServiceFees;
   const pricePerPerson =
     children > 0
       ? totalCost

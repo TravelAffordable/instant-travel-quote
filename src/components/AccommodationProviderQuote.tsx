@@ -165,12 +165,27 @@ export function AccommodationProviderQuote() {
   const totalRooms = roomCategories.reduce((sum, r) => sum + r.count, 0);
   const totalGuests = adults + children;
 
-  // Calculate service fee: R400 per person for every person in groups of 25+
-  const calculateServiceFee = (groupSize: number): number => {
-    if (groupSize >= 25) {
-      return groupSize * 400;
+  // Calculate service fee using standardized utility
+  const calculateServiceFee = (): { adultFees: number; kidsFees: number; totalFees: number } => {
+    const totalPeople = adults + childrenAges.length;
+    
+    if (totalPeople < 25) {
+      return { adultFees: 0, kidsFees: 0, totalFees: 0 };
     }
-    return 0;
+
+    const adultFees = adults * 400;
+    
+    let kidsFees = 0;
+    childrenAges.forEach((age) => {
+      if (age >= 3 && age <= 12) kidsFees += 100;
+      else if (age >= 13 && age <= 17) kidsFees += 200;
+    });
+
+    return {
+      adultFees,
+      kidsFees,
+      totalFees: adultFees + kidsFees,
+    };
   };
 
   const handleCalculate = () => {
@@ -180,12 +195,13 @@ export function AccommodationProviderQuote() {
     }
 
     const hotelAmount = parseFloat(hotelQuoteAmount) || 0;
-    const totalServiceFee = calculateServiceFee(totalGuests);
+    const serviceFeeResult = calculateServiceFee();
+    const totalServiceFee = serviceFeeResult.totalFees;
     
     const results: QuoteResult[] = selectedPackages.map(pkg => {
       const packagePricePerPerson = pkg.basePrice;
       const hotelCostPerPerson = hotelAmount / totalGuests;
-      const serviceFeePerPerson = totalServiceFee / totalGuests;
+      const serviceFeePerPerson = totalGuests > 0 ? totalServiceFee / totalGuests : 0;
       const totalPerPerson = packagePricePerPerson + hotelCostPerPerson + serviceFeePerPerson;
       const totalGroupCost = totalPerPerson * totalGuests;
 
@@ -216,7 +232,7 @@ export function AccommodationProviderQuote() {
     const validUntil = new Date();
     validUntil.setDate(validUntil.getDate() + companyDetails.quoteValidDays);
     const validUntilStr = validUntil.toLocaleDateString('en-ZA');
-    const totalServiceFee = calculateServiceFee(totalGuests);
+    const totalServiceFee = calculateServiceFee().totalFees;
 
     // Determine if we should hide per person pricing
     // Hide per person price if: group is 10 or less AND there are children
