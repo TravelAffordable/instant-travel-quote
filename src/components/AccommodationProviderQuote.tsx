@@ -278,10 +278,13 @@ export function AccommodationProviderQuote() {
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    if (hotelName) {
-      doc.text(`Hotel: ${hotelName}`, 20, yPos);
-      yPos += 6;
-    }
+    
+    // Always show hotel name prominently
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Hotel: ${hotelName || 'Not specified'}`, 20, yPos);
+    doc.setFont('helvetica', 'normal');
+    yPos += 6;
+    
     doc.text(`Destination: ${destinationName}`, 20, yPos);
     yPos += 6;
     doc.text(`Check-in: ${checkIn}  |  Check-out: ${checkOut}  |  ${nights} Night${nights !== 1 ? 's' : ''}`, 20, yPos);
