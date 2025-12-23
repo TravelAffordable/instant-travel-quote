@@ -400,7 +400,7 @@ export function Hero({ onGetQuote }: HeroProps) {
             </button>
           </div>
           
-          {/* Bus Hire & Hotel Provider Buttons */}
+          {/* Bus Hire, Hotel Provider & Travel Agent Buttons */}
           <div className="flex flex-col sm:flex-row justify-center gap-3 mt-3">
             <a
               href="#bus-hire-section"
@@ -415,6 +415,13 @@ export function Hero({ onGetQuote }: HeroProps) {
             >
               <Hotel className="w-5 h-5" />
               <span className="font-medium">For Hotels - Add our curated Activity Packages to your guest quotation</span>
+            </a>
+            <a
+              href="#travel-agent-section"
+              className="flex items-center gap-3 px-6 py-3 rounded-xl bg-purple-600/90 text-white hover:bg-purple-600 transition-all backdrop-blur-sm hover:scale-105"
+            >
+              <FileText className="w-5 h-5" />
+              <span className="font-medium">Travel Agents - Get exclusive packages for your clients</span>
             </a>
           </div>
           
