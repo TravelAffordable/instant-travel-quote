@@ -9,6 +9,7 @@ import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
 import { BusHireQuote } from '@/components/BusHireQuote';
 import { AccommodationProviderQuote } from '@/components/AccommodationProviderQuote';
+import { TravelAgentQuote } from '@/components/TravelAgentQuote';
 import { destinations } from '@/data/travelData';
 const Index = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -60,6 +61,11 @@ const Index = () => {
       {/* Hotel Provider Quote Section */}
       <section id="hotel-provider-section">
         <AccommodationProviderQuote />
+      </section>
+
+      {/* Travel Agent Quote Section */}
+      <section id="travel-agent-section">
+        <TravelAgentQuote />
       </section>
 
       {/* Group Tours */}
