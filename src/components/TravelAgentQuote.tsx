@@ -229,20 +229,35 @@ export function TravelAgentQuote() {
   const filledHotels = hotels.filter(h => h.name.trim() && h.quoteAmount);
   const totalHotelCost = filledHotels.reduce((sum, h) => sum + (parseFloat(h.quoteAmount) || 0), 0);
 
-  // Calculate service fee: R400 per adult, R100 for kids 3-12, R200 for kids 13-17 (groups of 25+)
+  // Calculate service fee using tiered structure
   const calculateServiceFee = (): { adultFees: number; kidsFees: number; totalFees: number } => {
     const totalPeople = adults + childrenAges.length;
     
-    if (totalPeople < 25) {
-      return { adultFees: 0, kidsFees: 0, totalFees: 0 };
+    // Groups of 25+ use flat rate
+    if (totalPeople >= 25) {
+      const adultFees = adults * 400;
+      let kidsFees = 0;
+      childrenAges.forEach((age) => {
+        if (age >= 3 && age <= 12) kidsFees += 100;
+        else if (age >= 13 && age <= 17) kidsFees += 200;
+      });
+      return { adultFees, kidsFees, totalFees: adultFees + kidsFees };
     }
 
-    const adultFees = adults * 400;
+    // Tiered structure for groups 1-24
+    let adultFeePerPerson = 0;
+    if (adults === 1) adultFeePerPerson = 1000;
+    else if (adults >= 2 && adults <= 3) adultFeePerPerson = 850;
+    else if (adults >= 4 && adults <= 9) adultFeePerPerson = 800;
+    else if (adults >= 10) adultFeePerPerson = 750;
+    
+    const adultFees = adults * adultFeePerPerson;
     
     let kidsFees = 0;
     childrenAges.forEach((age) => {
-      if (age >= 3 && age <= 12) kidsFees += 100;
-      else if (age >= 13 && age <= 17) kidsFees += 200;
+      if (age >= 0 && age <= 2) kidsFees += 0; // Free
+      else if (age >= 3 && age <= 12) kidsFees += 200;
+      else if (age >= 13 && age <= 17) kidsFees += 300;
     });
 
     return {

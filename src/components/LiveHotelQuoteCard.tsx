@@ -167,19 +167,35 @@ export function LiveHotelQuoteCard({
   }
 
   // Service fees: R550 per adult, R100 for kids 3-12, R200 for kids 13-17 (groups of 25+)
+  // Service fees using tiered structure
   const calculateServiceFees = () => {
     const totalPeople = adults + childrenAges.length;
     
-    if (totalPeople < 25) {
-      return { adultFees: 0, kidsFees: 0, totalFees: 0 };
+    // Groups of 25+ use flat rate
+    if (totalPeople >= 25) {
+      const adultFees = adults * 550;
+      let kidsFees = 0;
+      childrenAges.forEach((age) => {
+        if (age >= 3 && age <= 12) kidsFees += 100;
+        else if (age >= 13 && age <= 17) kidsFees += 200;
+      });
+      return { adultFees, kidsFees, totalFees: adultFees + kidsFees };
     }
 
-    const adultFees = adults * 550;
+    // Tiered structure for groups 1-24
+    let adultFeePerPerson = 0;
+    if (adults === 1) adultFeePerPerson = 1000;
+    else if (adults >= 2 && adults <= 3) adultFeePerPerson = 850;
+    else if (adults >= 4 && adults <= 9) adultFeePerPerson = 800;
+    else if (adults >= 10) adultFeePerPerson = 750;
+    
+    const adultFees = adults * adultFeePerPerson;
     
     let kidsFees = 0;
     childrenAges.forEach((age) => {
-      if (age >= 3 && age <= 12) kidsFees += 100;
-      else if (age >= 13 && age <= 17) kidsFees += 200;
+      if (age >= 0 && age <= 2) kidsFees += 0; // Free
+      else if (age >= 3 && age <= 12) kidsFees += 200;
+      else if (age >= 13 && age <= 17) kidsFees += 300;
     });
 
     return {
@@ -191,7 +207,8 @@ export function LiveHotelQuoteCard({
   
   const serviceFees = calculateServiceFees();
   const totalServiceFees = serviceFees.totalFees;
-  const serviceFeePerAdult = (adults + children) >= 25 ? 550 : 0;
+  const totalPeopleForFee = adults + children;
+  const serviceFeePerAdult = totalPeopleForFee >= 25 ? 550 : (adults === 1 ? 1000 : adults <= 3 ? 850 : adults <= 9 ? 800 : 750);
 
   const totalCost = accommodationCost + packageTotal + kidsPackageCost + totalServiceFees;
   const pricePerPerson =
