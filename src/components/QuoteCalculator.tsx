@@ -392,7 +392,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
                 onChange={e => setChildrenAges(e.target.value)}
                 className="h-11"
               />
-              <p className="text-xs text-muted-foreground">Ages 3-12: R200 once-off fee | Ages 13-17: R300 service fee</p>
+              
             </div>
           )}
 
