@@ -441,13 +441,6 @@ export function AccommodationProviderQuote() {
       yPos += 8;
     }
 
-    // Service fee note
-    if (totalGuests >= 25) {
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'italic');
-      doc.text('* Service fee of R400 per person applies for groups of 25 or more', 20, yPos);
-      yPos += 10;
-    }
 
     // Terms & Conditions
     if (companyDetails.termsAndConditions) {
@@ -755,20 +748,6 @@ export function AccommodationProviderQuote() {
               )}
 
               {/* Service Fee Info */}
-              {totalGuests >= 25 && (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <DollarSign className="w-5 h-5 text-emerald-600 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-emerald-800">Service Fee Applies</p>
-                      <p className="text-xs text-emerald-600">
-                        For groups of 25 or more people, a service fee of R400 per person applies to all guests.
-                        <span className="font-medium"> Estimated service fee: {formatCurrency(totalGuests * 400)}</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Accounting Compliant Fields */}
               <div className="border-t pt-5 mt-5">
@@ -1016,12 +995,6 @@ export function AccommodationProviderQuote() {
                           </div>
                         </div>
 
-                        {/* Service Fee Note */}
-                        {result.serviceFee > 0 && (
-                          <p className="text-xs text-gray-500 italic">
-                            * Service fee of R400 per person applies for groups of 25 or more
-                          </p>
-                        )}
                       </div>
 
                       {/* Actions */}
