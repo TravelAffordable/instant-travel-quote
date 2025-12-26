@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner';
 import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { BusHireHotelCard } from './BusHireHotelCard';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 type UserType = 'bus-company' | 'group-organizer' | null;
 
@@ -75,13 +76,6 @@ export function BusHireQuote() {
     );
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const handleSearch = async () => {
     if (!destination || packageIds.length === 0 || !checkIn || !checkOut) {

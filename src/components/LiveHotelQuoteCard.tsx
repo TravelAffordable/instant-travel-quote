@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 interface LiveHotelQuoteCardProps {
   hotel: LiveHotel;
@@ -216,13 +217,6 @@ export function LiveHotelQuoteCard({
       ? totalCost
       : accommodationPerAdult + packageCostPerAdult + serviceFeePerAdult;
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const getStarsLabel = (stars: number) => {
     if (stars >= 4.5) return 'Premium';

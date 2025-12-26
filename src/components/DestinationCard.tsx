@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, ArrowRight } from 'lucide-react';
 import type { Destination } from '@/data/travelData';
+import { formatCurrency } from '@/lib/utils';
 
 interface DestinationCardProps {
   destination: Destination;
@@ -9,13 +10,6 @@ interface DestinationCardProps {
 }
 
 export function DestinationCard({ destination, onViewPackages }: DestinationCardProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   return (
     <Card className="destination-card group overflow-hidden border-0 shadow-soft bg-card cursor-pointer">

@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Check, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 export interface ParsedHotelData {
   hotelName: string;
@@ -449,11 +450,11 @@ ZAR 3,180ZAR 2,862
                       
                       {hotel.originalPrice && hotel.originalPrice > hotel.totalCost && (
                         <p className="text-sm text-muted-foreground line-through">
-                          R{hotel.originalPrice.toLocaleString()}
+                          {formatCurrency(hotel.originalPrice)}
                         </p>
                       )}
                       <p className="text-2xl font-bold text-primary">
-                        R{hotel.totalCost.toLocaleString()}
+                        {formatCurrency(hotel.totalCost)}
                       </p>
                       <p className="text-xs text-muted-foreground">total</p>
                     </div>

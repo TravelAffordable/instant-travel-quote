@@ -5,20 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { type QuoteResult } from '@/data/travelData';
 import { toast } from 'sonner';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 interface QuoteListProps {
   quotes: QuoteResult[];
   onQuoteSelected?: (quote: QuoteResult) => void;
   budget?: string;
 }
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-ZA', {
-    style: 'currency',
-    currency: 'ZAR',
-    minimumFractionDigits: 0,
-  }).format(amount);
-};
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-ZA', { 

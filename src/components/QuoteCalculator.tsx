@@ -16,6 +16,7 @@ import { QuoteList } from './QuoteList';
 import { LiveHotelQuotes } from './LiveHotelQuotes';
 import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 interface QuoteCalculatorProps {
   onQuoteGenerated?: (quote: QuoteResult) => void;
@@ -233,13 +234,6 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const today = new Date().toISOString().split('T')[0];
 

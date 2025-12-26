@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, Send, X, Bot, User, Sparkles, Minimize2, Maximize2 } from 'lucide-react';
 import { destinations, packages, calculateQuote, getPackagesByDestination } from '@/data/travelData';
+import { formatCurrency } from '@/lib/utils';
 
 interface Message {
   id: string;
@@ -45,13 +46,6 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     }
   }, [isOpen]);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const generateResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();

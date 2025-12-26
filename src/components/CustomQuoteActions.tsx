@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { FileDown, Mail, MessageCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 interface CustomQuote {
   hotelName: string;
@@ -156,8 +157,8 @@ QUOTE ${index + 1}
 
     text += `
 💰 PRICING
-   Per Person: R${perPerson.toLocaleString()}
-   Total Cost: R${grandTotal.toLocaleString()}
+   Per Person: ${formatCurrency(perPerson)}
+   Total Cost: ${formatCurrency(grandTotal)}
 `;
 
     return text;
@@ -228,7 +229,7 @@ QUOTE ${index + 1}
         pdf.setFontSize(14);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(194, 120, 3); // Amber/orange
-        pdf.text(`R${perPerson.toLocaleString()}`, pageWidth - margin, yPos, { align: 'right' });
+        pdf.text(formatCurrency(perPerson), pageWidth - margin, yPos, { align: 'right' });
         yPos += 5;
 
         // "per person" or "per adult" label depending on kids
@@ -251,7 +252,7 @@ QUOTE ${index + 1}
         pdf.setFontSize(12);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(194, 120, 3);
-        pdf.text(`R${grandTotal.toLocaleString()}`, pageWidth - margin, yPos, { align: 'right' });
+        pdf.text(formatCurrency(grandTotal), pageWidth - margin, yPos, { align: 'right' });
         yPos += 4;
 
         // "total" label
