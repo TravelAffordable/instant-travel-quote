@@ -173,11 +173,18 @@ QUOTE ${index + 1}
       });
     }
 
-    text += `
+    if (kidsAges.length === 0) {
+      text += `
 💰 PRICING
    Per Person: ${formatCurrency(perPerson)}
    Total Cost: ${formatCurrency(grandTotal)}
 `;
+    } else {
+      text += `
+💰 PRICING
+   Grand Total: ${formatCurrency(grandTotal)}
+`;
+    }
 
     return text;
   };
@@ -243,20 +250,22 @@ QUOTE ${index + 1}
         pdf.setTextColor(40, 40, 40);
         pdf.text(quote.hotelName, margin, yPos);
 
-        // Price per person on right
-        pdf.setFontSize(14);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(194, 120, 3); // Amber/orange
-        pdf.text(formatCurrency(perPerson), pageWidth - margin, yPos, { align: 'right' });
-        yPos += 5;
+        // Show per-person price only when no kids
+        if (kidsAges.length === 0) {
+          // Price per person on right
+          pdf.setFontSize(14);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(194, 120, 3); // Amber/orange
+          pdf.text(formatCurrency(perPerson), pageWidth - margin, yPos, { align: 'right' });
+          yPos += 5;
 
-        // "per person" or "per adult" label depending on kids
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(100, 100, 100);
-        const priceLabel = kidsAges.length > 0 ? 'per adult' : 'per person';
-        pdf.text(priceLabel, pageWidth - margin, yPos, { align: 'right' });
-        yPos += 6;
+          // "per person" label
+          pdf.setFontSize(8);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(100, 100, 100);
+          pdf.text('per person', pageWidth - margin, yPos, { align: 'right' });
+          yPos += 6;
+        }
 
         // Bed config
         if (quote.bedConfig) {
@@ -266,18 +275,18 @@ QUOTE ${index + 1}
           pdf.text(quote.bedConfig, margin, yPos);
         }
 
-        // Total price on right
-        pdf.setFontSize(12);
+        // Total price on right (show prominently if kids present)
+        pdf.setFontSize(kidsAges.length > 0 ? 14 : 12);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(194, 120, 3);
         pdf.text(formatCurrency(grandTotal), pageWidth - margin, yPos, { align: 'right' });
         yPos += 4;
 
-        // "total" label
+        // "grand total" or "total" label
         pdf.setFontSize(8);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(100, 100, 100);
-        pdf.text('total', pageWidth - margin, yPos, { align: 'right' });
+        pdf.text(kidsAges.length > 0 ? 'grand total' : 'total', pageWidth - margin, yPos, { align: 'right' });
         yPos += 6;
 
         // Meal plan in green with checkmark
