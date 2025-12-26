@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
 import { type LiveHotel } from '@/hooks/useHotelbedsSearch';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 interface AccommodationOnlyCardProps {
   hotel: LiveHotel;
@@ -150,7 +151,7 @@ export function AccommodationOnlyCard({ hotel, rooms, adults }: AccommodationOnl
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold text-primary">
-              R{totalCost.toLocaleString()}
+              {formatCurrency(totalCost)}
             </p>
             <p className="text-xs text-muted-foreground">total stay</p>
           </div>

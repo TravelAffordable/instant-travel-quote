@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Star, Hotel, Coffee, Baby, Bed } from 'lucide-react';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 export interface CustomHotelDetails {
   hotelName: string;
@@ -159,7 +160,7 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
           {calculated && (
             <div className="text-right">
               <p className="text-2xl font-bold text-primary">
-                R{parseFloat(totalCost).toLocaleString()}
+                {formatCurrency(parseFloat(totalCost))}
               </p>
               <p className="text-xs text-muted-foreground">total stay</p>
             </div>

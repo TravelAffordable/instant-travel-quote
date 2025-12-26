@@ -14,6 +14,7 @@ import {
 } from '@/data/travelData';
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 interface RoomCategory {
   id: string;
@@ -127,13 +128,6 @@ export function AccommodationProviderQuote() {
     );
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const addRoomCategory = () => {
     const newId = (roomCategories.length + 1).toString();

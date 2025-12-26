@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Users, MapPin } from 'lucide-react';
 import sunCityImage from '@/assets/sun-city.jpeg';
+import { formatCurrency } from '@/lib/utils';
 
 const groupTours = [
   {
@@ -43,13 +44,6 @@ const groupTours = [
 ];
 
 export function GroupTours() {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   return (
     <section id="group-tours" className="py-20 bg-gradient-to-br from-primary/5 via-background to-accent/5">

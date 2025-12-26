@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import jsPDF from 'jspdf';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 interface BusHireHotelCardProps {
   hotel: LiveHotel;
@@ -178,13 +179,6 @@ export function BusHireHotelCard({
   
   const pricePerPerson = totalPeople > 0 ? Math.round(totalWithBus / totalPeople) : 0;
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const getStarsLabel = (stars: number) => {
     if (stars >= 4.5) return 'Premium';

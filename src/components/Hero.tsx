@@ -22,6 +22,7 @@ import { BulkHotelParser } from './BulkHotelParser';
 import { CustomQuoteActions } from './CustomQuoteActions';
 import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
 import { toast } from 'sonner';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 // Durban custom hotels
 const DURBAN_CUSTOM_HOTELS = [
@@ -306,13 +307,6 @@ export function Hero({ onGetQuote }: HeroProps) {
     );
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -1137,12 +1131,12 @@ export function Hero({ onGetQuote }: HeroProps) {
                                     </Button>
                                     
                                     <p className="text-2xl font-bold text-primary">
-                                      R{perPerson.toLocaleString()}
+                                      {formatCurrency(perPerson)}
                                     </p>
                                     <p className="text-xs text-muted-foreground">{kidsAges.length > 0 ? 'per adult' : 'per person'}</p>
                                     
                                     <p className="text-lg font-semibold text-amber-800 mt-1">
-                                      R{grandTotal.toLocaleString()}
+                                      {formatCurrency(grandTotal)}
                                     </p>
                                     <p className="text-xs text-muted-foreground">total</p>
                                   </div>
@@ -1226,9 +1220,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                   <div className="flex items-center justify-between bg-primary/5 rounded-lg p-4">
                     <h4 className="text-lg font-semibold text-gray-900">Combined Grand Total (Cheapest Options)</h4>
                     <p className="text-2xl font-bold text-primary">
-                      {new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 0 }).format(
-                        familyQuotes.reduce((sum, fq) => sum + (fq.quotes[0]?.totalForGroup || 0), 0)
-                      )}
+                      {formatCurrency(familyQuotes.reduce((sum, fq) => sum + (fq.quotes[0]?.totalForGroup || 0), 0))}
                     </p>
                   </div>
                 </div>

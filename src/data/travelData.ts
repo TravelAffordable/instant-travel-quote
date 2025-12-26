@@ -377,13 +377,13 @@ export const packages: Package[] = [
   },
   {
     id: 'hg5',
-    name: 'HG5 - HARTIES WATER WAKE SNAKE SLIDER SKI AND 2 HOUR HARTIES SUNSET CRUISE',
-    shortName: 'Wake Snake & Cruise',
-    description: 'Includes accommodation, fun Wake Snake Ski slide, 2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet.',
+    name: 'HG5 - HARTIES UPSIDE DOWN HOUSE GETAWAY WITH ACCOMMODATION LITTLE PARIS THE HARTIES CABLEWAY EXPERIENCE, 1 HOUR QUAD BIKING FUN',
+    shortName: 'Upside Down House',
+    description: 'Includes accommodation, Upside Down House, Little Paris, the Harties Cableway Experience, 1 hour quad biking fun.',
     destination: 'harties',
-    basePrice: 1180,
+    basePrice: 1330,
     kidsPrice: 600,
-    activitiesIncluded: ['Accommodation', 'Fun Wake Snake Ski slide', '2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet'],
+    activitiesIncluded: ['Accommodation', 'Fun at Upside Down House adventure', 'Enjoy Little Paris', 'Harties Cableway Experience', '1 hour quad biking fun adventure'],
     duration: '2 nights'
   },
   {
@@ -443,13 +443,13 @@ export const packages: Package[] = [
   },
   {
     id: 'hg11',
-    name: 'HG11 - HARTIES UPSIDE DOWN HOUSE GETAWAY WITH ACCOMMODATION LITTLE PARIS THE HARTIES CABLEWAY EXPERIENCE, 1 HOUR QUAD BIKING FUN',
-    shortName: 'Upside Down House',
-    description: 'Includes accommodation, Upside Down House, Little Paris, the Harties Cableway Experience, 1 hour quad biking fun.',
+    name: 'HG11 - HARTIES WATER WAKE SNAKE SLIDER SKI AND 2 HOUR HARTIES SUNSET CRUISE',
+    shortName: 'Wake Snake & Cruise',
+    description: 'Includes accommodation, fun Wake Snake Ski slide, 2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet.',
     destination: 'harties',
-    basePrice: 1330,
+    basePrice: 1180,
     kidsPrice: 600,
-    activitiesIncluded: ['Accommodation', 'Fun at Upside Down House adventure', 'Enjoy Little Paris', 'Harties Cableway Experience', '1 hour quad biking fun adventure'],
+    activitiesIncluded: ['Accommodation', 'Fun Wake Snake Ski slide', '2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet'],
     duration: '2 nights'
   },
   {
