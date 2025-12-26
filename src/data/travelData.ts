@@ -14,6 +14,12 @@ export interface Hotel {
   includesBreakfast?: boolean;
 }
 
+export interface KidsPriceTier {
+  minAge: number;
+  maxAge: number;
+  price: number;
+}
+
 export interface Package {
   id: string;
   name: string;
@@ -21,7 +27,8 @@ export interface Package {
   description: string;
   destination: string;
   basePrice: number; // Base price per person
-  kidsPrice?: number; // Kids package cost (optional)
+  kidsPrice?: number; // Kids package cost (optional, single flat rate)
+  kidsPriceTiers?: KidsPriceTier[]; // Age-tiered kids pricing (optional)
   kidsMinAge?: number; // Minimum age for kids pricing (kids below this age are free)
   activitiesIncluded: string[];
   duration: string;
@@ -337,7 +344,11 @@ export const packages: Package[] = [
     description: 'Includes ACCOMMODATION, 2 HOUR SUNSET CHAMPAGNE CRUISE WITH A DELICIOUS GOURMET BUFFET, THE HARTIES CABLEWAY EXPERIENCE.',
     destination: 'harties',
     basePrice: 1010,
-    kidsPrice: 600,
+    kidsPriceTiers: [
+      { minAge: 4, maxAge: 14, price: 690 },
+      { minAge: 15, maxAge: 17, price: 1010 }
+    ],
+    kidsMinAge: 4,
     activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', '2 hour sunset champagne cruise with gourmet buffet', 'Harties Cableway experience'],
     duration: '2 nights'
   },
@@ -347,8 +358,12 @@ export const packages: Package[] = [
     shortName: 'Funtime Getaway',
     description: 'Includes ACCOMMODATION, 1 HOUR HORSE RIDING EXPERIENCE, 1 HOUR QUAD BIKING FUN OR A 60 MINUTE FULL BODY SWEDISH MASSAGE, 2 HOUR SUNSET CHAMPAGNE CRUISE WITH A DELICIOUS GOURMET BUFFET.',
     destination: 'harties',
-    basePrice: 1700,
-    kidsPrice: 600,
+    basePrice: 1650,
+    kidsPriceTiers: [
+      { minAge: 6, maxAge: 12, price: 1220 },
+      { minAge: 13, maxAge: 17, price: 1430 }
+    ],
+    kidsMinAge: 6,
     activitiesIncluded: ['Accommodation', '1 hour horse riding experience', '1 hour quad biking OR 60 minute full body Swedish massage', '2 hour sunset champagne cruise with gourmet buffet'],
     duration: '2 nights'
   },
@@ -382,7 +397,7 @@ export const packages: Package[] = [
     description: 'Includes accommodation, Upside Down House, Little Paris, the Harties Cableway Experience, 1 hour quad biking fun.',
     destination: 'harties',
     basePrice: 1330,
-    kidsPrice: 600,
+    kidsPrice: 940,
     activitiesIncluded: ['Accommodation', 'Fun at Upside Down House adventure', 'Enjoy Little Paris', 'Harties Cableway Experience', '1 hour quad biking fun adventure'],
     duration: '2 nights'
   },
@@ -988,8 +1003,17 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     // Only children 4-16 are charged service fees
     if (age >= 4 && age <= 16) {
       validChildren++;
-      // Add package cost for child (use kidsPrice if available)
-      if (pkg.kidsPrice) {
+      // Add package cost for child using tiered pricing if available
+      if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
+        const tier = pkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+        if (tier) {
+          childrenPackageCost += tier.price;
+        } else if (pkg.kidsPrice) {
+          childrenPackageCost += pkg.kidsPrice;
+        } else {
+          childrenPackageCost += pkg.basePrice * 0.5;
+        }
+      } else if (pkg.kidsPrice) {
         childrenPackageCost += pkg.kidsPrice;
       } else {
         // Fallback if no kidsPrice defined

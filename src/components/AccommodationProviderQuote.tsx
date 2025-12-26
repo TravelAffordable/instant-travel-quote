@@ -211,8 +211,31 @@ export function AccommodationProviderQuote() {
       const packagePricePerPerson = pkg.basePrice;
       const hotelCostPerPerson = hotelAmount / totalGuests;
       const serviceFeePerPerson = totalGuests > 0 ? totalServiceFee / totalGuests : 0;
-      const totalPerPerson = packagePricePerPerson + hotelCostPerPerson + serviceFeePerPerson;
-      const totalGroupCost = totalPerPerson * totalGuests;
+      
+      // Calculate kids package cost with tiered pricing
+      let kidsPackageCost = 0;
+      if (children > 0 && childrenAges.length > 0) {
+        childrenAges.forEach(age => {
+          if (age >= 4 && age <= 16) {
+            if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
+              const tier = pkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+              if (tier) {
+                kidsPackageCost += tier.price;
+              } else if (pkg.kidsPrice) {
+                kidsPackageCost += pkg.kidsPrice;
+              }
+            } else if (pkg.kidsPrice) {
+              kidsPackageCost += pkg.kidsPrice;
+            }
+          }
+        });
+      }
+      
+      // Calculate total: adults pay full package price, kids pay tiered price
+      const adultsPackageCost = packagePricePerPerson * adults;
+      const totalPackageCost = adultsPackageCost + kidsPackageCost;
+      const totalGroupCost = hotelAmount + totalPackageCost + totalServiceFee;
+      const totalPerPerson = totalGroupCost / totalGuests;
 
       return {
         packageName: pkg.name,

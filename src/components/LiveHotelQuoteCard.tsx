@@ -161,9 +161,26 @@ export function LiveHotelQuoteCard({
     }, 0);
   }, [roomAdultOccupancies, selectedRoomTypes, roomOptions, hotel.minRate]);
 
-  // Kids package cost
+  // Kids package cost with tiered pricing support
   let kidsPackageCost = 0;
-  if (children > 0 && pkg.kidsPrice) {
+  if (children > 0 && childrenAges.length > 0) {
+    childrenAges.forEach(age => {
+      if (age >= 4 && age <= 16) {
+        // Check for tiered pricing first
+        if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
+          const tier = pkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+          if (tier) {
+            kidsPackageCost += tier.price;
+          } else if (pkg.kidsPrice) {
+            kidsPackageCost += pkg.kidsPrice;
+          }
+        } else if (pkg.kidsPrice) {
+          kidsPackageCost += pkg.kidsPrice;
+        }
+      }
+    });
+  } else if (children > 0 && pkg.kidsPrice) {
+    // Fallback if no ages provided
     kidsPackageCost = pkg.kidsPrice * children;
   }
 

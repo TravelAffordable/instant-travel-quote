@@ -279,8 +279,31 @@ export function TravelAgentQuote() {
       const packagePricePerPerson = pkg.basePrice;
       const hotelCostPerPerson = totalHotelCost / totalGuests;
       const serviceFeePerPerson = totalGuests > 0 ? totalServiceFee / totalGuests : 0;
-      const totalPerPerson = packagePricePerPerson + hotelCostPerPerson + serviceFeePerPerson;
-      const totalGroupCost = totalPerPerson * totalGuests;
+      
+      // Calculate kids package cost with tiered pricing
+      let kidsPackageCost = 0;
+      if (children > 0 && childrenAges.length > 0) {
+        childrenAges.forEach(age => {
+          if (age >= 4 && age <= 16) {
+            if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
+              const tier = pkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+              if (tier) {
+                kidsPackageCost += tier.price;
+              } else if (pkg.kidsPrice) {
+                kidsPackageCost += pkg.kidsPrice;
+              }
+            } else if (pkg.kidsPrice) {
+              kidsPackageCost += pkg.kidsPrice;
+            }
+          }
+        });
+      }
+      
+      // Calculate total: adults pay full package price, kids pay tiered price
+      const adultsPackageCost = packagePricePerPerson * adults;
+      const totalPackageCost = adultsPackageCost + kidsPackageCost;
+      const totalGroupCost = totalHotelCost + totalPackageCost + totalServiceFee;
+      const totalPerPerson = totalGroupCost / totalGuests;
 
       const hotelBreakdown = filledHotels.map(h => ({
         name: h.name,
@@ -311,7 +334,28 @@ export function TravelAgentQuote() {
         const familyBreakdown: FamilyQuoteResult[] = families.map(family => {
           const familySize = family.adults + family.children;
           const familyHotelCost = (totalHotelCost / totalGuests) * familySize;
-          const familyPackageCost = packagePricePerPerson * familySize;
+          
+          // Calculate kids package cost with tiered pricing for this family
+          let familyKidsPackageCost = 0;
+          if (family.children > 0 && family.childrenAges.length > 0) {
+            family.childrenAges.forEach(age => {
+              if (age >= 4 && age <= 16) {
+                if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
+                  const tier = pkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+                  if (tier) {
+                    familyKidsPackageCost += tier.price;
+                  } else if (pkg.kidsPrice) {
+                    familyKidsPackageCost += pkg.kidsPrice;
+                  }
+                } else if (pkg.kidsPrice) {
+                  familyKidsPackageCost += pkg.kidsPrice;
+                }
+              }
+            });
+          }
+          
+          const familyAdultsPackageCost = packagePricePerPerson * family.adults;
+          const familyPackageCost = familyAdultsPackageCost + familyKidsPackageCost;
           const familyServiceFee = serviceFeePerPerson * familySize;
           const totalCost = familyHotelCost + familyPackageCost + familyServiceFee;
 
