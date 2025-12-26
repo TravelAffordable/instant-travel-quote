@@ -982,9 +982,11 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   let childrenOnceFees = 0;
   let validChildren = 0;
   
+  const kidFeePerChild = request.adults >= 2 ? 150 : 300;
+  
   request.childrenAges.forEach(age => {
-    // Only children 3-17 are charged
-    if (age >= 3 && age <= 17) {
+    // Only children 4-16 are charged service fees
+    if (age >= 4 && age <= 16) {
       validChildren++;
       // Add package cost for child (use kidsPrice if available)
       if (pkg.kidsPrice) {
@@ -994,14 +996,10 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
         childrenPackageCost += pkg.basePrice * 0.5;
       }
       
-      // Once-off fees based on age
-      if (age >= 3 && age <= 12) {
-        childrenOnceFees += 200; // R200 per child 3-12 years
-      } else if (age >= 13 && age <= 17) {
-        childrenOnceFees += 300; // R300 service fee per child 13-17 years
-      }
+      // Once-off fees based on adult count
+      childrenOnceFees += kidFeePerChild;
     }
-    // Children under 3 are free
+    // Children under 4 are free
   });
   
   const childDiscount = 0; // No longer using discount model

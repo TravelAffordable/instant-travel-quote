@@ -138,9 +138,9 @@ export function BusHireHotelCard({
     if (totalPeople >= 25) {
       const adultFees = adults * 400;
       let kidsFees = 0;
+      const kidFeePerChild = adults >= 2 ? 150 : 300;
       childrenAges.forEach((age) => {
-        if (age >= 3 && age <= 12) kidsFees += 100;
-        else if (age >= 13 && age <= 17) kidsFees += 200;
+        if (age >= 4 && age <= 16) kidsFees += kidFeePerChild;
       });
       return { adultFees, kidsFees, totalFees: adultFees + kidsFees };
     }
@@ -155,10 +155,10 @@ export function BusHireHotelCard({
     const adultFees = adults * adultFeePerPerson;
     
     let kidsFees = 0;
+    const kidFeePerChild = adults >= 2 ? 150 : 300;
     childrenAges.forEach((age) => {
-      if (age >= 0 && age <= 2) kidsFees += 0; // Free
-      else if (age >= 3 && age <= 12) kidsFees += 200;
-      else if (age >= 13 && age <= 17) kidsFees += 300;
+      if (age >= 0 && age <= 3) kidsFees += 0; // Free for under 4
+      else if (age >= 4 && age <= 16) kidsFees += kidFeePerChild;
     });
 
     return {
