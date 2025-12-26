@@ -22,11 +22,18 @@ interface CustomQuote {
   checkOutDate?: string;
 }
 
+interface KidsPriceTier {
+  minAge: number;
+  maxAge: number;
+  price: number;
+}
+
 interface PackageInfo {
   id: string;
   name: string;
   basePrice: number;
   kidsPrice?: number;
+  kidsPriceTiers?: KidsPriceTier[];
   activitiesIncluded: string[];
 }
 
@@ -104,8 +111,18 @@ export function CustomQuoteActions({
     let kidsFees = 0;
     const kidFeePerChild = adults >= 2 ? 150 : 300;
     if (selectedPkg && kidsAges.length > 0) {
-      kidsPackageCost = (selectedPkg.kidsPrice || 0) * kidsAges.length;
       kidsAges.forEach(age => {
+        // Check for tiered pricing first
+        if (selectedPkg.kidsPriceTiers && selectedPkg.kidsPriceTiers.length > 0) {
+          const tier = selectedPkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+          if (tier) {
+            kidsPackageCost += tier.price;
+          } else if (selectedPkg.kidsPrice) {
+            kidsPackageCost += selectedPkg.kidsPrice;
+          }
+        } else if (selectedPkg.kidsPrice) {
+          kidsPackageCost += selectedPkg.kidsPrice;
+        }
         kidsFees += kidFeePerChild;
       });
     }
