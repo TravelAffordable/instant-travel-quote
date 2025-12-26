@@ -22,6 +22,7 @@ export interface Package {
   destination: string;
   basePrice: number; // Base price per person
   kidsPrice?: number; // Kids package cost (optional)
+  kidsMinAge?: number; // Minimum age for kids pricing (kids below this age are free)
   activitiesIncluded: string[];
   duration: string;
   image?: string;
@@ -364,40 +365,19 @@ export const packages: Package[] = [
   },
   {
     id: 'hg4',
-    name: 'HG4 - HARTIES MAX JET SKI FUN HARTIES WITH ACCOMMODATION, HARTIES CABLEWAY EXPERIENCE, 60 MIN FULL BODY MASSAGE GETAWAY OR 2 HOUR SUNSET BUFFET CRUISE',
-    shortName: 'Jet Ski Fun',
-    description: 'Includes Jet Ski adventure, Harties Cableway and a 60 minute full body massage or 2 hour sunset champagne cruise with buffet.',
+    name: 'HG4 - HARTIES GETAWAY WITH ACCOMMODATION, ELEPHANT SANCTUARY, 1 HOUR HORSE RIDING OR 1 HOUR QUAD BIKING ADVENTURE HARTIES CABLEWAY EXPERIENCE',
+    shortName: 'Elephant Sanctuary Adventure',
+    description: 'Includes accommodation, Elephant Sanctuary experience, choice of 1 hour horse riding or 1 hour quad biking adventure, and the Harties Cableway Experience.',
     destination: 'harties',
-    basePrice: 1280,
-    kidsPrice: 600,
-    activitiesIncluded: ['Accommodation', 'Jet Ski adventure', 'Harties Cableway experience', 'Choice of 60 minute full body massage OR 2 hour sunset champagne cruise with buffet'],
+    basePrice: 2480,
+    kidsPrice: 1450,
+    kidsMinAge: 4,
+    activitiesIncluded: ['Accommodation', 'Elephant Sanctuary experience', '1 hour horse riding OR 1 hour quad biking adventure', 'Harties Cableway Experience'],
     duration: '2 nights'
   },
   {
     id: 'hg5',
-    name: 'HG5 - HARTIES UPSIDE DOWN HOUSE GETAWAY WITH ACCOMMODATION LITTLE PARIS THE HARTIES CABLEWAY EXPERIENCE, 1 HOUR QUAD BIKING FUN',
-    shortName: 'Upside Down House',
-    description: 'Includes accommodation, Upside Down House, Little Paris, the Harties Cableway Experience, 1 hour quad biking fun.',
-    destination: 'harties',
-    basePrice: 1330,
-    kidsPrice: 600,
-    activitiesIncluded: ['Accommodation', 'Fun at Upside Down House adventure', 'Enjoy Little Paris', 'Harties Cableway Experience', '1 hour quad biking fun adventure'],
-    duration: '2 nights'
-  },
-  {
-    id: 'hg6',
-    name: 'HG6 - HARTIES WATER TUBE RIDE AND 60 MINUTE FULL BODY MASSAGE GETAWAY',
-    shortName: 'Tube Ride & Massage',
-    description: 'Includes accommodation, tube ride ski, 60 minute full body massage.',
-    destination: 'harties',
-    basePrice: 1400,
-    kidsPrice: 600,
-    activitiesIncluded: ['Accommodation', 'Tube ride ski', '60 minute full body massage'],
-    duration: '2 nights'
-  },
-  {
-    id: 'hg8',
-    name: 'HG8 - HARTIES WATER WAKE SNAKE SLIDER SKI AND 2 HOUR HARTIES SUNSET CRUISE',
+    name: 'HG5 - HARTIES WATER WAKE SNAKE SLIDER SKI AND 2 HOUR HARTIES SUNSET CRUISE',
     shortName: 'Wake Snake & Cruise',
     description: 'Includes accommodation, fun Wake Snake Ski slide, 2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet.',
     destination: 'harties',
@@ -407,8 +387,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg9',
-    name: 'HG9 - HARTIES GETAWAY WITH ACCOMMODATION AND FULL DAY HARTIES CABLEWAY EXPERIENCE',
+    id: 'hg6',
+    name: 'HG6 - HARTIES GETAWAY WITH ACCOMMODATION AND FULL DAY HARTIES CABLEWAY EXPERIENCE',
     shortName: 'Cableway Experience',
     description: 'Includes accommodation and full day access to the Harties Cableway Experience.',
     destination: 'harties',
@@ -418,8 +398,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg10',
-    name: 'HG10 - HARTIES COUPLE GETAWAY WITH ACCOMMODATION AND 2 HOUR SUNSET BOAT CRUISE WITH DELICIOUS BUFFET',
+    id: 'hg7',
+    name: 'HG7 - HARTIES COUPLE GETAWAY WITH ACCOMMODATION AND 2 HOUR SUNSET BOAT CRUISE WITH DELICIOUS BUFFET',
     shortName: 'Couple Cruise Getaway',
     description: 'Includes accommodation and a romantic 2 hour sunset boat cruise with delicious buffet.',
     destination: 'harties',
@@ -429,8 +409,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg11',
-    name: 'HG11 - HARTIES COUPLE ADVENTURE WITH ACCOMMODATION AND 1 HOUR QUAD BIKING EXPERIENCE',
+    id: 'hg8',
+    name: 'HG8 - HARTIES COUPLE ADVENTURE WITH ACCOMMODATION AND 1 HOUR QUAD BIKING EXPERIENCE',
     shortName: 'Couple Quad Adventure',
     description: 'Includes accommodation and an exciting 1 hour quad biking experience.',
     destination: 'harties',
@@ -440,14 +420,47 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'hg12',
-    name: 'HG12 - HARTIES ROMANCE IN THE AIR WITH ACCOMMODATION, 1 HOUR HORSE RIDE, FULL DAY HARTIES CABLEWAY',
+    id: 'hg9',
+    name: 'HG9 - HARTIES ROMANCE IN THE AIR WITH ACCOMMODATION, 1 HOUR HORSE RIDE, FULL DAY HARTIES CABLEWAY',
     shortName: 'Romance in the Air',
     description: 'Includes accommodation, a romantic 1 hour horse ride, and full day access to the Harties Cableway.',
     destination: 'harties',
     basePrice: 810,
     kidsPrice: 400,
     activitiesIncluded: ['Accommodation', 'Romantic 1 hour horse ride', 'Full day access to the Harties Cableway'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg10',
+    name: 'HG10 - HARTIES MAX JET SKI FUN HARTIES WITH ACCOMMODATION, HARTIES CABLEWAY EXPERIENCE, 60 MIN FULL BODY MASSAGE GETAWAY OR 2 HOUR SUNSET BUFFET CRUISE',
+    shortName: 'Jet Ski Fun',
+    description: 'Includes Jet Ski adventure, Harties Cableway and a 60 minute full body massage or 2 hour sunset champagne cruise with buffet.',
+    destination: 'harties',
+    basePrice: 1280,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Jet Ski adventure', 'Harties Cableway experience', 'Choice of 60 minute full body massage OR 2 hour sunset champagne cruise with buffet'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg11',
+    name: 'HG11 - HARTIES UPSIDE DOWN HOUSE GETAWAY WITH ACCOMMODATION LITTLE PARIS THE HARTIES CABLEWAY EXPERIENCE, 1 HOUR QUAD BIKING FUN',
+    shortName: 'Upside Down House',
+    description: 'Includes accommodation, Upside Down House, Little Paris, the Harties Cableway Experience, 1 hour quad biking fun.',
+    destination: 'harties',
+    basePrice: 1330,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Fun at Upside Down House adventure', 'Enjoy Little Paris', 'Harties Cableway Experience', '1 hour quad biking fun adventure'],
+    duration: '2 nights'
+  },
+  {
+    id: 'hg12',
+    name: 'HG12 - HARTIES WATER TUBE RIDE AND 60 MINUTE FULL BODY MASSAGE GETAWAY',
+    shortName: 'Tube Ride & Massage',
+    description: 'Includes accommodation, tube ride ski, 60 minute full body massage.',
+    destination: 'harties',
+    basePrice: 1400,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation', 'Tube ride ski', '60 minute full body massage'],
     duration: '2 nights'
   },
 
