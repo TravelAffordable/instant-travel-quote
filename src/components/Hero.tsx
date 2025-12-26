@@ -56,6 +56,14 @@ const MPUMALANGA_CUSTOM_HOTELS = [
   'Sagwadi Hotel',
 ];
 
+// Sun City custom hotels
+const SUN_CITY_CUSTOM_HOTELS = [
+  'Sun Hotel Estate',
+  'Cabanas Hotel',
+  'Sun City Vacation Club',
+  'Sun City Area Guesthouse A',
+];
+
 type BookingType = 'accommodation-only' | 'with-activities';
 
 interface HeroProps {
@@ -878,7 +886,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                       <div className="space-y-3 mb-6">
                         <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
                         <div className="flex flex-wrap gap-2">
-                          {(destination === 'durban' ? DURBAN_CUSTOM_HOTELS : destination === 'harties' ? HARTBEESPOORT_CUSTOM_HOTELS : destination === 'mpumalanga' ? MPUMALANGA_CUSTOM_HOTELS : []).map((hotel) => (
+                          {(destination === 'durban' ? DURBAN_CUSTOM_HOTELS : destination === 'harties' ? HARTBEESPOORT_CUSTOM_HOTELS : destination === 'mpumalanga' ? MPUMALANGA_CUSTOM_HOTELS : destination === 'sun-city' ? SUN_CITY_CUSTOM_HOTELS : []).map((hotel) => (
                             <label
                               key={hotel}
                               className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
