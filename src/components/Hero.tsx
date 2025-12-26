@@ -1041,13 +1041,14 @@ export function Hero({ onGetQuote }: HeroProps) {
                           const totalServiceFees = serviceFeePerAdult * adults;
                           
                           // Kids costs if any
-                          const kidsAges = childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17);
+                          const kidsAges = childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 4 && a <= 16);
                           let kidsPackageCost = 0;
                           let kidsFees = 0;
+                          const kidFeePerChild = adults >= 2 ? 150 : 300;
                           if (selectedPkg && kidsAges.length > 0) {
                             kidsPackageCost = (selectedPkg.kidsPrice || 0) * kidsAges.length;
                             kidsAges.forEach(age => {
-                              kidsFees += age <= 12 ? 200 : 300;
+                              kidsFees += kidFeePerChild;
                             });
                           }
                           
