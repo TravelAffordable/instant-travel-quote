@@ -776,6 +776,26 @@ export const packages: Package[] = [
     activitiesIncluded: ['Accommodation', '2 day Cape Town sightseeing tour', 'Table Mountain Cableway ticket', 'Canal boat cruise', 'Sunset tour with sundowners at Signal Hill'],
     duration: '2 nights'
   },
+  {
+    id: 'cptfw',
+    name: 'CPTFW - CAPE TOWN GETAWAY WITH FRANSCHOEK WINE TRAM, CAPE TOWN TOUR, MASSAGE',
+    shortName: 'Wine Tram Getaway',
+    description: 'Includes 2 nights accommodation, Entrance Franschoek Wine Tram with wine tasting, full day city tour, Full body massage, canal cruise.',
+    destination: 'cape-town',
+    basePrice: 2300,
+    activitiesIncluded: ['Accommodation', 'Franschoek Wine Tram with wine tasting', 'Full day Cape Town city tour', 'Full body massage', 'Canal cruise'],
+    duration: '2 nights'
+  },
+  {
+    id: 'cptwtcm',
+    name: 'CPTWTCM - CAPE TOWN GETAWAY WITH TABLE MOUNTAIN, WINE ROUTE TOUR, CRUISE MASSAGE',
+    shortName: 'Wine & Mountain',
+    description: 'Includes 2 or 3 nights accommodation, the beach, a tour of the wine route with wine tasting, a canal cruise, Table Mountain Cableway, a Full Body Swedish massage.',
+    destination: 'cape-town',
+    basePrice: 2600,
+    activitiesIncluded: ['Accommodation', 'Beach access', 'Wine route tour with wine tasting', 'Canal cruise', 'Table Mountain Cableway', 'Full Body Swedish massage'],
+    duration: '2-3 nights'
+  },
 
   // ============= PRETORIA PACKAGES =============
   {
