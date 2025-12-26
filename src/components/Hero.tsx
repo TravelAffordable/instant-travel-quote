@@ -838,8 +838,8 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
-        {/* Custom Hotels Section - Durban & Hartbeespoort (for with-activities booking type) */}
-        {bookingType === 'with-activities' && (destination === 'durban' || destination === 'harties' || destination === 'mpumalanga') && hasSearched && (
+        {/* Custom Hotels Section - Durban, Hartbeespoort, Mpumalanga & Sun City (for with-activities booking type) */}
+        {bookingType === 'with-activities' && (destination === 'durban' || destination === 'harties' || destination === 'mpumalanga' || destination === 'sun-city') && hasSearched && (
           <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
             <div className="bg-amber-50 border-2 border-amber-200 backdrop-blur-md rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
