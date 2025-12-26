@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Star, Hotel, Coffee, Baby, Bed } from 'lucide-react';
+import { Hotel, Coffee, Baby, Bed } from 'lucide-react';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 export interface CustomHotelDetails {
@@ -149,11 +149,6 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
             <h4 className="font-semibold text-lg">{hotelName}</h4>
             <p className="text-sm text-muted-foreground">Durban, KwaZulu-Natal</p>
             <div className="flex items-center gap-2 mt-1">
-              <div className="flex">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                ))}
-              </div>
               <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Custom Quote</span>
             </div>
           </div>

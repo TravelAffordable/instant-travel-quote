@@ -1149,15 +1149,19 @@ export function Hero({ onGetQuote }: HeroProps) {
                                       Edit
                                     </Button>
                                     
-                                    <p className="text-2xl font-bold text-primary">
-                                      {formatCurrency(perPerson)}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">{kidsAges.length > 0 ? 'per adult' : 'per person'}</p>
+                                    {kidsAges.length === 0 && (
+                                      <>
+                                        <p className="text-2xl font-bold text-primary">
+                                          {formatCurrency(perPerson)}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">per person</p>
+                                      </>
+                                    )}
                                     
-                                    <p className="text-lg font-semibold text-amber-800 mt-1">
+                                    <p className={kidsAges.length > 0 ? "text-2xl font-bold text-primary" : "text-lg font-semibold text-amber-800 mt-1"}>
                                       {formatCurrency(grandTotal)}
                                     </p>
-                                    <p className="text-xs text-muted-foreground">total</p>
+                                    <p className="text-xs text-muted-foreground">{kidsAges.length > 0 ? 'grand total' : 'total'}</p>
                                   </div>
                                 </div>
                               </CardContent>
