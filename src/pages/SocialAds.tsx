@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Phone, MessageCircle, Calendar, MapPin, Check, Star, Clock, Send, Twitter, Loader2, Pencil, X, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import AdShareButtons from "@/components/AdShareButtons";
 import { toast } from "sonner";
 import sundownRanch1 from "@/assets/sundown-ranch-1.jpeg";
 import sundownRanch2 from "@/assets/sundown-ranch-2.jpeg";
@@ -510,10 +511,13 @@ const SocialAds = () => {
                     <span>{heroBookNowLabel} </span>
                   )}
                   {whatsappNumber}
-                </div>
               </div>
             </div>
           </div>
+          <AdShareButtons 
+            adName="Hero Ad" 
+            tweetText={`${heroBadge}\n\n${heroTitle.replace(/\n/g, ' ')}\n${hotelName}\n📅 ${heroDate}\n\n${heroPriceLabel} R${packages[0].pricePerPerson.toLocaleString()}\n${heroPriceSubtext}\n\n📲 WhatsApp: ${whatsappNumber}\n\n#SunCity #Travel #SouthAfrica`}
+          />
         </div>
 
         {/* AD 2: Package Carousel Cards */}
@@ -613,8 +617,13 @@ const SocialAds = () => {
                   </div>
                 </div>
               </div>
+              <AdShareButtons 
+                adName={pkg.name} 
+                tweetText={`${pkg.highlight}\n\n${pkg.name}\n${hotelName}\n\n${pkg.includes.slice(0, 4).map(i => `✅ ${i}`).join('\n')}\n\n💰 R${pkg.pricePerPerson.toLocaleString()} per person\n💰 R${pkg.totalFor2.toLocaleString()} total for 2\n\n📲 WhatsApp: ${whatsappNumber}\n\n#SunCity #Travel`}
+              />
             </div>
           ))}
+        </div>
         </div>
 
         {/* AD 3: Story Format - Vertical */}
@@ -776,6 +785,10 @@ const SocialAds = () => {
                 </div>
               </div>
             </div>
+            <AdShareButtons 
+              adName="Story Ad - New Year" 
+              tweetText={`${storyBadge}\n\n${storyNewYearText}\n${storyTitle.replace(/\n/g, ' ')}\n\n📅 ${heroDate}\n📍 ${hotelName}\n🕐 ${storyDistanceText}\n\n✅ ${storyInclude1}\n✅ ${storyInclude2}\n✅ ${storyInclude3}\n✅ ${storyInclude4}\n\n${storyPriceLabel} R${packages[0].pricePerPerson.toLocaleString()}\n${storyPriceSubtext}\n\n📲 ${whatsappNumber}\n\n#SunCity #NewYear2026`}
+            />
           </div>
 
           {/* Story 2 - Safari Focus */}
@@ -920,6 +933,10 @@ const SocialAds = () => {
                 </div>
               </div>
             </div>
+            <AdShareButtons 
+              adName="Story Ad - Safari" 
+              tweetText={`${safariBadge}\n\n${safariTitle.replace(/\n/g, ' ')}\n${safariSubtitle}\n\n${safariPackageTitle}:\n✅ ${safariInclude1}\n✅ ${safariInclude2}\n✅ ${safariInclude3}\n✅ ${safariInclude4}\n✅ ${safariInclude5}\n✅ ${safariInclude6}\n\n${safariPriceLabel} R${packages[2].pricePerPerson.toLocaleString()}\n${safariPriceSubtext}\n${safariTotalLabel} R${packages[2].totalFor2.toLocaleString()}\n\n📞 ${whatsappNumber}\n\n#Safari #SunCity #Pilanesberg`}
+            />
           </div>
         </div>
 
@@ -1026,6 +1043,10 @@ const SocialAds = () => {
               </div>
             </div>
           </div>
+          <AdShareButtons 
+            adName="Facebook Ad" 
+            tweetText={`${fbBadge}\n\n${fbTitle}\n${hotelName} • ${fbDistanceText}\n\n📅 ${fbDateText}\n🛏️ ${fbNightsText}\n\n${fbPriceLabel}\nR${packages[0].pricePerPerson.toLocaleString()} ${fbPriceSubtext}\n\n📲 ${whatsappNumber}\n\n#SunCity #NewYear2026 #Travel`}
+          />
         </div>
 
         {/* AD 5: Comparison Card */}
@@ -1132,6 +1153,10 @@ const SocialAds = () => {
               <p className="text-white/60 text-sm mt-2">{compareFooter}</p>
             )}
           </div>
+          <AdShareButtons 
+            adName="Comparison Card" 
+            tweetText={`${compareBadge}\n\n${hotelName}\n📅 ${heroDate} • ${compareSubtitle}\n\n${packages.map(p => `${p.name}: R${p.pricePerPerson.toLocaleString()} pp`).join('\n')}\n\n${compareFooter}\n\n📲 WhatsApp: ${whatsappNumber}\n\n#SunCity #Travel #Packages`}
+          />
         </div>
       </div>
 
