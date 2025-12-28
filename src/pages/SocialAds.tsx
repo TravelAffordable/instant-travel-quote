@@ -28,18 +28,60 @@ const SocialAds = () => {
   const [editingAd, setEditingAd] = useState<string | null>(null);
   const [editedFields, setEditedFields] = useState<EditableField>({});
 
-  // Editable content state
+  // Editable content state - Hero Ad
   const [whatsappNumber, setWhatsappNumber] = useState("0796813869");
   const [heroTitle, setHeroTitle] = useState("SUN CITY\nGETAWAY");
   const [heroBadge, setHeroBadge] = useState("🔥 NEW YEAR SPECIAL");
   const [heroDate, setHeroDate] = useState("31 Dec - 02 Jan 2026");
+  const [heroDistanceLabel, setHeroDistanceLabel] = useState("7 MIN FROM");
+  const [heroDistanceLocation, setHeroDistanceLocation] = useState("SUN CITY");
+  const [heroPriceLabel, setHeroPriceLabel] = useState("FROM ONLY");
+  const [heroPriceSubtext, setHeroPriceSubtext] = useState("per person sharing • All-inclusive");
+  const [heroCtaText, setHeroCtaText] = useState("WhatsApp Now");
+  const [heroBookNowLabel, setHeroBookNowLabel] = useState("📞 Book Now:");
+
+  // Story 1 Ad
   const [storyTitle, setStoryTitle] = useState("SUN CITY\nESCAPE");
   const [storyBadge, setStoryBadge] = useState("⏰ LIMITED SPOTS");
+  const [storyNewYearText, setStoryNewYearText] = useState("NEW YEAR");
+  const [storyDistanceText, setStoryDistanceText] = useState("7 min from Sun City");
+  const [storyInclude1, setStoryInclude1] = useState("Valley of the Waves");
+  const [storyInclude2, setStoryInclude2] = useState("Sun City Entrance");
+  const [storyInclude3, setStoryInclude3] = useState("Lunch Included");
+  const [storyInclude4, setStoryInclude4] = useState("Shuttle Transport");
+  const [storyPriceLabel, setStoryPriceLabel] = useState("FROM ONLY");
+  const [storyPriceSubtext, setStoryPriceSubtext] = useState("per person • 2 Nights B&B");
+  const [storyCtaText, setStoryCtaText] = useState("BOOK NOW →");
+
+  // Story 2 (Safari) Ad
   const [safariTitle, setSafariTitle] = useState("GAME DRIVE\n+ SUN CITY");
   const [safariBadge, setSafariBadge] = useState("🦁 SAFARI SPECIAL");
+  const [safariSubtitle, setSafariSubtitle] = useState("PILANESBERG");
+  const [safariPackageTitle, setSafariPackageTitle] = useState("SUN4 PACKAGE");
+  const [safariInclude1, setSafariInclude1] = useState("2 Nights B&B");
+  const [safariInclude2, setSafariInclude2] = useState("Pilanesberg Game Drive");
+  const [safariInclude3, setSafariInclude3] = useState("Valley of the Waves");
+  const [safariInclude4, setSafariInclude4] = useState("Sun City Entrance");
+  const [safariInclude5, setSafariInclude5] = useState("Lunch in Sun City");
+  const [safariInclude6, setSafariInclude6] = useState("All Shuttles");
+  const [safariPriceLabel, setSafariPriceLabel] = useState("ONLY");
+  const [safariPriceSubtext, setSafariPriceSubtext] = useState("per person sharing");
+  const [safariTotalLabel, setSafariTotalLabel] = useState("Total for 2:");
+  const [safariCtaText, setSafariCtaText] = useState("WhatsApp Now →");
+
+  // Facebook Ad
   const [fbTitle, setFbTitle] = useState("SUN CITY ESCAPE");
   const [fbBadge, setFbBadge] = useState("🎉 NEW YEAR 2026");
+  const [fbDistanceText, setFbDistanceText] = useState("7 min from Sun City");
+  const [fbDateText, setFbDateText] = useState("31 Dec - 02 Jan");
+  const [fbNightsText, setFbNightsText] = useState("2 Nights B&B");
+  const [fbPriceLabel, setFbPriceLabel] = useState("PACKAGES FROM");
+  const [fbPriceSubtext, setFbPriceSubtext] = useState("per person sharing");
+
+  // Compare Ad
   const [compareBadge, setCompareBadge] = useState("🎯 COMPARE PACKAGES");
+  const [compareSubtitle, setCompareSubtitle] = useState("2 Nights B&B");
+  const [compareFooter, setCompareFooter] = useState("Weekends available too!");
 
   const [sundownPackages, setSundownPackages] = useState([
     {
@@ -131,9 +173,14 @@ const SocialAds = () => {
     }
   ]);
 
+  // Hotel name state
+  const [sundownHotelName, setSundownHotelName] = useState('Sundown Ranch Hotel');
+  const [guesthouseHotelName, setGuesthouseHotelName] = useState('Sun City Area Guesthouse A');
+
   const packages = activeAd === 'sundown' ? sundownPackages : guesthousePackages;
   const setPackages = activeAd === 'sundown' ? setSundownPackages : setGuesthousePackages;
-  const hotelName = activeAd === 'sundown' ? 'Sundown Ranch Hotel' : 'Sun City Area Guesthouse A';
+  const hotelName = activeAd === 'sundown' ? sundownHotelName : guesthouseHotelName;
+  const setHotelName = activeAd === 'sundown' ? setSundownHotelName : setGuesthouseHotelName;
   const sundownImages = [sundownRanch1, sundownRanch2, sundownRanch3, sundownRanch4, sundownRanch5];
   const guesthouseImages = [guesthouseA1, guesthouseA2, guesthouseA3, guesthouseA4, guesthouseA5, guesthouseA6];
   const hotelImages = activeAd === 'sundown' ? sundownImages : guesthouseImages;
@@ -201,6 +248,14 @@ const SocialAds = () => {
     setPackages(newPackages);
   };
 
+  const updatePackageInclude = (pkgIndex: number, includeIndex: number, value: string) => {
+    const newPackages = [...packages];
+    const newIncludes = [...newPackages[pkgIndex].includes];
+    newIncludes[includeIndex] = value;
+    newPackages[pkgIndex] = { ...newPackages[pkgIndex], includes: newIncludes };
+    setPackages(newPackages);
+  };
+
   const EditButton = ({ adId }: { adId: string }) => (
     <Button
       onClick={() => editingAd === adId ? cancelEditing() : startEditing(adId)}
@@ -222,6 +277,43 @@ const SocialAds = () => {
       </Button>
     ) : null
   );
+
+  // Editable text component
+  const EditableText = ({ 
+    value, 
+    onChange, 
+    isEditing, 
+    className = "", 
+    multiline = false,
+    inputClassName = ""
+  }: { 
+    value: string; 
+    onChange: (val: string) => void; 
+    isEditing: boolean; 
+    className?: string;
+    multiline?: boolean;
+    inputClassName?: string;
+  }) => {
+    if (isEditing) {
+      if (multiline) {
+        return (
+          <Textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className={`bg-black/50 border-amber-400 text-white ${inputClassName}`}
+          />
+        );
+      }
+      return (
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`bg-black/50 border-amber-400 text-white ${inputClassName}`}
+        />
+      );
+    }
+    return <span className={className}>{value}</span>;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-900 via-amber-800 to-yellow-700 p-4">
@@ -249,6 +341,13 @@ const SocialAds = () => {
           onChange={(e) => setWhatsappNumber(e.target.value)}
           className="bg-black/40 border-white/20 text-white"
           placeholder="Enter WhatsApp number"
+        />
+        <h3 className="text-white font-bold mb-2 mt-4">🏨 Hotel Name:</h3>
+        <Input
+          value={hotelName}
+          onChange={(e) => setHotelName(e.target.value)}
+          className="bg-black/40 border-white/20 text-white"
+          placeholder="Enter hotel name"
         />
       </div>
 
@@ -286,8 +385,25 @@ const SocialAds = () => {
                   </div>
                 )}
                 <div className="text-right">
-                  <div className="text-amber-400 font-bold text-xs">7 MIN FROM</div>
-                  <div className="text-white font-black text-lg">SUN CITY</div>
+                  {editingAd === 'hero' ? (
+                    <>
+                      <Input
+                        value={heroDistanceLabel}
+                        onChange={(e) => setHeroDistanceLabel(e.target.value)}
+                        className="bg-transparent border-amber-400 text-amber-400 font-bold text-xs w-24 mb-1"
+                      />
+                      <Input
+                        value={heroDistanceLocation}
+                        onChange={(e) => setHeroDistanceLocation(e.target.value)}
+                        className="bg-transparent border-white text-white font-black text-lg w-24"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-amber-400 font-bold text-xs">{heroDistanceLabel}</div>
+                      <div className="text-white font-black text-lg">{heroDistanceLocation}</div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -304,7 +420,15 @@ const SocialAds = () => {
                     {heroTitle}
                   </h1>
                 )}
-                <p className="text-xl font-bold text-white/90">{hotelName}</p>
+                {editingAd === 'hero' ? (
+                  <Input
+                    value={hotelName}
+                    onChange={(e) => setHotelName(e.target.value)}
+                    className="text-xl font-bold text-white/90 bg-transparent border-white text-center"
+                  />
+                ) : (
+                  <p className="text-xl font-bold text-white/90">{hotelName}</p>
+                )}
                 <div className="flex items-center justify-center gap-2">
                   <Calendar className="w-5 h-5 text-amber-400" />
                   {editingAd === 'hero' ? (
@@ -322,22 +446,64 @@ const SocialAds = () => {
               {/* Bottom - Price & CTA */}
               <div className="space-y-4">
                 <div className="text-center">
-                  <div className="text-amber-400 text-sm font-bold">FROM ONLY</div>
-                  <div className="text-5xl font-black text-white">
-                    R{packages[0].pricePerPerson.toLocaleString()}
-                  </div>
-                  <div className="text-white/80 text-sm">per person sharing • All-inclusive</div>
+                  {editingAd === 'hero' ? (
+                    <Input
+                      value={heroPriceLabel}
+                      onChange={(e) => setHeroPriceLabel(e.target.value)}
+                      className="bg-transparent border-amber-400 text-amber-400 text-sm font-bold w-32 mx-auto mb-1"
+                    />
+                  ) : (
+                    <div className="text-amber-400 text-sm font-bold">{heroPriceLabel}</div>
+                  )}
+                  {editingAd === 'hero' ? (
+                    <Input
+                      type="number"
+                      value={packages[0].pricePerPerson}
+                      onChange={(e) => updatePackageField(0, 'pricePerPerson', e.target.value)}
+                      className="text-5xl font-black text-white bg-transparent border-white w-40 mx-auto"
+                    />
+                  ) : (
+                    <div className="text-5xl font-black text-white">
+                      R{packages[0].pricePerPerson.toLocaleString()}
+                    </div>
+                  )}
+                  {editingAd === 'hero' ? (
+                    <Input
+                      value={heroPriceSubtext}
+                      onChange={(e) => setHeroPriceSubtext(e.target.value)}
+                      className="bg-transparent border-white/50 text-white/80 text-sm w-64 mx-auto"
+                    />
+                  ) : (
+                    <div className="text-white/80 text-sm">{heroPriceSubtext}</div>
+                  )}
                 </div>
                 
                 <div className="flex gap-3 justify-center">
-                  <div className="bg-green-500 text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 text-lg">
-                    <MessageCircle className="w-5 h-5" />
-                    WhatsApp Now
-                  </div>
+                  {editingAd === 'hero' ? (
+                    <Input
+                      value={heroCtaText}
+                      onChange={(e) => setHeroCtaText(e.target.value)}
+                      className="bg-green-500 text-white px-6 py-3 rounded-full font-bold text-lg w-48"
+                    />
+                  ) : (
+                    <div className="bg-green-500 text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 text-lg">
+                      <MessageCircle className="w-5 h-5" />
+                      {heroCtaText}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="text-center text-amber-300 text-sm font-semibold">
-                  📞 Book Now: {whatsappNumber}
+                  {editingAd === 'hero' ? (
+                    <Input
+                      value={heroBookNowLabel}
+                      onChange={(e) => setHeroBookNowLabel(e.target.value)}
+                      className="bg-transparent border-amber-300 text-amber-300 text-sm w-32 inline-block mr-2"
+                    />
+                  ) : (
+                    <span>{heroBookNowLabel} </span>
+                  )}
+                  {whatsappNumber}
                 </div>
               </div>
             </div>
@@ -387,13 +553,29 @@ const SocialAds = () => {
                   ) : (
                     <h3 className="text-lg font-black text-amber-400 leading-tight">{pkg.name}</h3>
                   )}
-                  <p className="text-xs text-white/70 mt-1">{hotelName} • 2 Nights B&B</p>
+                  {editingAd === `package-${index}` ? (
+                    <Input
+                      value={`${hotelName} • 2 Nights B&B`}
+                      onChange={(e) => setHotelName(e.target.value.split(' • ')[0])}
+                      className="text-xs text-white/70 mt-1 bg-transparent border-white/30"
+                    />
+                  ) : (
+                    <p className="text-xs text-white/70 mt-1">{hotelName} • 2 Nights B&B</p>
+                  )}
                   
                   <div className="mt-3 space-y-1">
                     {pkg.includes.slice(0, 5).map((item, i) => (
                       <div key={i} className="flex items-start gap-2 text-xs">
                         <Check className="w-3 h-3 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-white/90">{item}</span>
+                        {editingAd === `package-${index}` ? (
+                          <Input
+                            value={item}
+                            onChange={(e) => updatePackageInclude(index, i, e.target.value)}
+                            className="text-white/90 bg-transparent border-white/30 h-6 text-xs"
+                          />
+                        ) : (
+                          <span className="text-white/90">{item}</span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -461,7 +643,15 @@ const SocialAds = () => {
                       {storyBadge}
                     </div>
                   )}
-                  <h2 className="text-2xl font-black text-amber-300">NEW YEAR</h2>
+                  {editingAd === 'story1' ? (
+                    <Input
+                      value={storyNewYearText}
+                      onChange={(e) => setStoryNewYearText(e.target.value)}
+                      className="text-2xl font-black text-amber-300 bg-transparent border-amber-300 text-center"
+                    />
+                  ) : (
+                    <h2 className="text-2xl font-black text-amber-300">{storyNewYearText}</h2>
+                  )}
                   {editingAd === 'story1' ? (
                     <Textarea
                       value={storyTitle}
@@ -478,37 +668,102 @@ const SocialAds = () => {
                   <div className="bg-black/60 backdrop-blur-sm rounded-xl p-4 space-y-2">
                     <div className="flex items-center gap-2 text-amber-400 font-bold">
                       <Calendar className="w-4 h-4" />
-                      {heroDate}
+                      {editingAd === 'story1' ? (
+                        <Input
+                          value={heroDate}
+                          onChange={(e) => setHeroDate(e.target.value)}
+                          className="bg-transparent border-amber-400 text-amber-400 font-bold"
+                        />
+                      ) : (
+                        heroDate
+                      )}
                     </div>
                     <div className="flex items-center gap-2 text-white/90">
                       <MapPin className="w-4 h-4 text-amber-400" />
-                      {hotelName}
+                      {editingAd === 'story1' ? (
+                        <Input
+                          value={hotelName}
+                          onChange={(e) => setHotelName(e.target.value)}
+                          className="bg-transparent border-white/50 text-white/90"
+                        />
+                      ) : (
+                        hotelName
+                      )}
                     </div>
                     <div className="flex items-center gap-2 text-white/90">
                       <Clock className="w-4 h-4 text-amber-400" />
-                      7 min from Sun City
+                      {editingAd === 'story1' ? (
+                        <Input
+                          value={storyDistanceText}
+                          onChange={(e) => setStoryDistanceText(e.target.value)}
+                          className="bg-transparent border-white/50 text-white/90"
+                        />
+                      ) : (
+                        storyDistanceText
+                      )}
                     </div>
                   </div>
 
                   <div className="bg-black/60 backdrop-blur-sm rounded-xl p-4 space-y-1 text-sm">
-                    <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Valley of the Waves</div>
-                    <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Sun City Entrance</div>
-                    <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Lunch Included</div>
-                    <div className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Shuttle Transport</div>
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-400" />
+                      {editingAd === 'story1' ? (
+                        <Input value={storyInclude1} onChange={(e) => setStoryInclude1(e.target.value)} className="bg-transparent border-white/30 text-white h-6" />
+                      ) : storyInclude1}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-400" />
+                      {editingAd === 'story1' ? (
+                        <Input value={storyInclude2} onChange={(e) => setStoryInclude2(e.target.value)} className="bg-transparent border-white/30 text-white h-6" />
+                      ) : storyInclude2}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-400" />
+                      {editingAd === 'story1' ? (
+                        <Input value={storyInclude3} onChange={(e) => setStoryInclude3(e.target.value)} className="bg-transparent border-white/30 text-white h-6" />
+                      ) : storyInclude3}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-green-400" />
+                      {editingAd === 'story1' ? (
+                        <Input value={storyInclude4} onChange={(e) => setStoryInclude4(e.target.value)} className="bg-transparent border-white/30 text-white h-6" />
+                      ) : storyInclude4}
+                    </div>
                   </div>
                 </div>
 
                 {/* Bottom */}
                 <div className="space-y-3">
                   <div className="text-center">
-                    <div className="text-amber-400 text-sm font-bold">FROM ONLY</div>
-                    <div className="text-5xl font-black">R{packages[0].pricePerPerson.toLocaleString()}</div>
-                    <div className="text-white/70 text-xs">per person • 2 Nights B&B</div>
+                    {editingAd === 'story1' ? (
+                      <Input value={storyPriceLabel} onChange={(e) => setStoryPriceLabel(e.target.value)} className="bg-transparent border-amber-400 text-amber-400 text-sm font-bold w-32 mx-auto" />
+                    ) : (
+                      <div className="text-amber-400 text-sm font-bold">{storyPriceLabel}</div>
+                    )}
+                    {editingAd === 'story1' ? (
+                      <Input
+                        type="number"
+                        value={packages[0].pricePerPerson}
+                        onChange={(e) => updatePackageField(0, 'pricePerPerson', e.target.value)}
+                        className="text-5xl font-black bg-transparent border-white w-40 mx-auto"
+                      />
+                    ) : (
+                      <div className="text-5xl font-black">R{packages[0].pricePerPerson.toLocaleString()}</div>
+                    )}
+                    {editingAd === 'story1' ? (
+                      <Input value={storyPriceSubtext} onChange={(e) => setStoryPriceSubtext(e.target.value)} className="bg-transparent border-white/30 text-white/70 text-xs w-48 mx-auto" />
+                    ) : (
+                      <div className="text-white/70 text-xs">{storyPriceSubtext}</div>
+                    )}
                   </div>
                   
-                  <div className="bg-green-500 text-white text-center py-3 rounded-full font-bold text-lg">
-                    BOOK NOW →
-                  </div>
+                  {editingAd === 'story1' ? (
+                    <Input value={storyCtaText} onChange={(e) => setStoryCtaText(e.target.value)} className="bg-green-500 text-white text-center py-3 rounded-full font-bold text-lg" />
+                  ) : (
+                    <div className="bg-green-500 text-white text-center py-3 rounded-full font-bold text-lg">
+                      {storyCtaText}
+                    </div>
+                  )}
                   <div className="text-center text-amber-300 text-sm">
                     WhatsApp: {whatsappNumber}
                   </div>
@@ -548,7 +803,11 @@ const SocialAds = () => {
                       {safariBadge}
                     </div>
                   )}
-                  <h2 className="text-xl font-black text-green-300">PILANESBERG</h2>
+                  {editingAd === 'story2' ? (
+                    <Input value={safariSubtitle} onChange={(e) => setSafariSubtitle(e.target.value)} className="text-xl font-black text-green-300 bg-transparent border-green-300 text-center" />
+                  ) : (
+                    <h2 className="text-xl font-black text-green-300">{safariSubtitle}</h2>
+                  )}
                   {editingAd === 'story2' ? (
                     <Textarea
                       value={safariTitle}
@@ -563,14 +822,48 @@ const SocialAds = () => {
                 {/* Middle */}
                 <div className="space-y-4">
                   <div className="bg-black/60 backdrop-blur-sm rounded-xl p-4 space-y-2">
-                    <h3 className="text-amber-400 font-bold text-center">SUN4 PACKAGE</h3>
+                    {editingAd === 'story2' ? (
+                      <Input value={safariPackageTitle} onChange={(e) => setSafariPackageTitle(e.target.value)} className="text-amber-400 font-bold text-center bg-transparent border-amber-400" />
+                    ) : (
+                      <h3 className="text-amber-400 font-bold text-center">{safariPackageTitle}</h3>
+                    )}
                     <div className="text-xs space-y-1">
-                      <div className="flex items-center gap-2"><Star className="w-3 h-3 text-amber-400" /> 2 Nights B&B</div>
-                      <div className="flex items-center gap-2"><Star className="w-3 h-3 text-amber-400" /> Pilanesberg Game Drive</div>
-                      <div className="flex items-center gap-2"><Star className="w-3 h-3 text-amber-400" /> Valley of the Waves</div>
-                      <div className="flex items-center gap-2"><Star className="w-3 h-3 text-amber-400" /> Sun City Entrance</div>
-                      <div className="flex items-center gap-2"><Star className="w-3 h-3 text-amber-400" /> Lunch in Sun City</div>
-                      <div className="flex items-center gap-2"><Star className="w-3 h-3 text-amber-400" /> All Shuttles</div>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-3 h-3 text-amber-400" />
+                        {editingAd === 'story2' ? (
+                          <Input value={safariInclude1} onChange={(e) => setSafariInclude1(e.target.value)} className="bg-transparent border-white/30 text-white h-5 text-xs" />
+                        ) : safariInclude1}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-3 h-3 text-amber-400" />
+                        {editingAd === 'story2' ? (
+                          <Input value={safariInclude2} onChange={(e) => setSafariInclude2(e.target.value)} className="bg-transparent border-white/30 text-white h-5 text-xs" />
+                        ) : safariInclude2}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-3 h-3 text-amber-400" />
+                        {editingAd === 'story2' ? (
+                          <Input value={safariInclude3} onChange={(e) => setSafariInclude3(e.target.value)} className="bg-transparent border-white/30 text-white h-5 text-xs" />
+                        ) : safariInclude3}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-3 h-3 text-amber-400" />
+                        {editingAd === 'story2' ? (
+                          <Input value={safariInclude4} onChange={(e) => setSafariInclude4(e.target.value)} className="bg-transparent border-white/30 text-white h-5 text-xs" />
+                        ) : safariInclude4}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-3 h-3 text-amber-400" />
+                        {editingAd === 'story2' ? (
+                          <Input value={safariInclude5} onChange={(e) => setSafariInclude5(e.target.value)} className="bg-transparent border-white/30 text-white h-5 text-xs" />
+                        ) : safariInclude5}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-3 h-3 text-amber-400" />
+                        {editingAd === 'story2' ? (
+                          <Input value={safariInclude6} onChange={(e) => setSafariInclude6(e.target.value)} className="bg-transparent border-white/30 text-white h-5 text-xs" />
+                        ) : safariInclude6}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -578,15 +871,43 @@ const SocialAds = () => {
                 {/* Bottom */}
                 <div className="space-y-3">
                   <div className="text-center">
-                    <div className="text-green-300 text-sm font-bold">ONLY</div>
-                    <div className="text-5xl font-black">R{packages[2].pricePerPerson.toLocaleString()}</div>
-                    <div className="text-white/70 text-xs">per person sharing</div>
-                    <div className="text-amber-300 text-sm mt-1">Total for 2: R{packages[2].totalFor2.toLocaleString()}</div>
+                    {editingAd === 'story2' ? (
+                      <Input value={safariPriceLabel} onChange={(e) => setSafariPriceLabel(e.target.value)} className="bg-transparent border-green-300 text-green-300 text-sm font-bold w-24 mx-auto" />
+                    ) : (
+                      <div className="text-green-300 text-sm font-bold">{safariPriceLabel}</div>
+                    )}
+                    {editingAd === 'story2' ? (
+                      <Input
+                        type="number"
+                        value={packages[2].pricePerPerson}
+                        onChange={(e) => updatePackageField(2, 'pricePerPerson', e.target.value)}
+                        className="text-5xl font-black bg-transparent border-white w-40 mx-auto"
+                      />
+                    ) : (
+                      <div className="text-5xl font-black">R{packages[2].pricePerPerson.toLocaleString()}</div>
+                    )}
+                    {editingAd === 'story2' ? (
+                      <Input value={safariPriceSubtext} onChange={(e) => setSafariPriceSubtext(e.target.value)} className="bg-transparent border-white/30 text-white/70 text-xs w-40 mx-auto" />
+                    ) : (
+                      <div className="text-white/70 text-xs">{safariPriceSubtext}</div>
+                    )}
+                    <div className="text-amber-300 text-sm mt-1">
+                      {editingAd === 'story2' ? (
+                        <Input value={safariTotalLabel} onChange={(e) => setSafariTotalLabel(e.target.value)} className="bg-transparent border-amber-300 text-amber-300 text-sm w-24 inline-block" />
+                      ) : (
+                        <span>{safariTotalLabel} </span>
+                      )}
+                      R{packages[2].totalFor2.toLocaleString()}
+                    </div>
                   </div>
                   
-                  <div className="bg-green-500 text-white text-center py-3 rounded-full font-bold text-lg">
-                    WhatsApp Now →
-                  </div>
+                  {editingAd === 'story2' ? (
+                    <Input value={safariCtaText} onChange={(e) => setSafariCtaText(e.target.value)} className="bg-green-500 text-white text-center py-3 rounded-full font-bold text-lg" />
+                  ) : (
+                    <div className="bg-green-500 text-white text-center py-3 rounded-full font-bold text-lg">
+                      {safariCtaText}
+                    </div>
+                  )}
                   <div className="text-center text-green-300 text-sm">
                     📞 {whatsappNumber}
                   </div>
@@ -636,15 +957,34 @@ const SocialAds = () => {
                     {fbTitle}
                   </h1>
                 )}
-                <p className="text-lg text-white/90">{hotelName} • 7 min from Sun City</p>
+                {editingAd === 'facebook' ? (
+                  <div className="flex gap-2">
+                    <Input
+                      value={hotelName}
+                      onChange={(e) => setHotelName(e.target.value)}
+                      className="text-lg text-white/90 bg-transparent border-white/50"
+                    />
+                    <Input
+                      value={fbDistanceText}
+                      onChange={(e) => setFbDistanceText(e.target.value)}
+                      className="text-lg text-white/90 bg-transparent border-white/50"
+                    />
+                  </div>
+                ) : (
+                  <p className="text-lg text-white/90">{hotelName} • {fbDistanceText}</p>
+                )}
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4 text-amber-400" />
-                    31 Dec - 02 Jan
+                    {editingAd === 'facebook' ? (
+                      <Input value={fbDateText} onChange={(e) => setFbDateText(e.target.value)} className="bg-transparent border-white/30 text-white w-32" />
+                    ) : fbDateText}
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4 text-amber-400" />
-                    2 Nights B&B
+                    {editingAd === 'facebook' ? (
+                      <Input value={fbNightsText} onChange={(e) => setFbNightsText(e.target.value)} className="bg-transparent border-white/30 text-white w-32" />
+                    ) : fbNightsText}
                   </div>
                 </div>
               </div>
@@ -652,9 +992,26 @@ const SocialAds = () => {
               {/* Right */}
               <div className="text-center space-y-3">
                 <div className="bg-black/70 backdrop-blur-sm rounded-xl p-6">
-                  <div className="text-amber-400 text-sm font-bold">PACKAGES FROM</div>
-                  <div className="text-5xl font-black text-white">R{packages[0].pricePerPerson.toLocaleString()}</div>
-                  <div className="text-white/70 text-sm">per person sharing</div>
+                  {editingAd === 'facebook' ? (
+                    <Input value={fbPriceLabel} onChange={(e) => setFbPriceLabel(e.target.value)} className="bg-transparent border-amber-400 text-amber-400 text-sm font-bold w-40 mx-auto" />
+                  ) : (
+                    <div className="text-amber-400 text-sm font-bold">{fbPriceLabel}</div>
+                  )}
+                  {editingAd === 'facebook' ? (
+                    <Input
+                      type="number"
+                      value={packages[0].pricePerPerson}
+                      onChange={(e) => updatePackageField(0, 'pricePerPerson', e.target.value)}
+                      className="text-5xl font-black text-white bg-transparent border-white w-40 mx-auto"
+                    />
+                  ) : (
+                    <div className="text-5xl font-black text-white">R{packages[0].pricePerPerson.toLocaleString()}</div>
+                  )}
+                  {editingAd === 'facebook' ? (
+                    <Input value={fbPriceSubtext} onChange={(e) => setFbPriceSubtext(e.target.value)} className="bg-transparent border-white/30 text-white/70 text-sm w-40 mx-auto" />
+                  ) : (
+                    <div className="text-white/70 text-sm">{fbPriceSubtext}</div>
+                  )}
                 </div>
                 <div className="bg-green-500 text-white px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">
                   <MessageCircle className="w-5 h-5" />
@@ -681,19 +1038,74 @@ const SocialAds = () => {
                 {compareBadge}
               </div>
             )}
-            <h2 className="text-2xl font-black text-white">{hotelName}</h2>
-            <p className="text-amber-400">{heroDate} • 2 Nights B&B</p>
+            {editingAd === 'compare' ? (
+              <Input
+                value={hotelName}
+                onChange={(e) => setHotelName(e.target.value)}
+                className="text-2xl font-black text-white bg-transparent border-white text-center"
+              />
+            ) : (
+              <h2 className="text-2xl font-black text-white">{hotelName}</h2>
+            )}
+            <p className="text-amber-400">
+              {editingAd === 'compare' ? (
+                <>
+                  <Input
+                    value={heroDate}
+                    onChange={(e) => setHeroDate(e.target.value)}
+                    className="bg-transparent border-amber-400 text-amber-400 w-40 inline-block mr-2"
+                  />
+                  <Input
+                    value={compareSubtitle}
+                    onChange={(e) => setCompareSubtitle(e.target.value)}
+                    className="bg-transparent border-amber-400 text-amber-400 w-32 inline-block"
+                  />
+                </>
+              ) : (
+                `${heroDate} • ${compareSubtitle}`
+              )}
+            </p>
           </div>
 
           <div className="space-y-3">
-            {packages.map((pkg) => (
+            {packages.map((pkg, index) => (
               <div key={pkg.name} className="bg-black/40 rounded-xl p-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-amber-400 font-bold">{pkg.name}</h3>
-                  <p className="text-white/70 text-sm">{pkg.includes.slice(2, 5).join(' • ')}</p>
+                  {editingAd === 'compare' ? (
+                    <Input
+                      value={pkg.name}
+                      onChange={(e) => updatePackageField(index, 'name', e.target.value)}
+                      className="text-amber-400 font-bold bg-transparent border-amber-400"
+                    />
+                  ) : (
+                    <h3 className="text-amber-400 font-bold">{pkg.name}</h3>
+                  )}
+                  {editingAd === 'compare' ? (
+                    <div className="flex gap-1 flex-wrap">
+                      {pkg.includes.slice(2, 5).map((item, i) => (
+                        <Input
+                          key={i}
+                          value={item}
+                          onChange={(e) => updatePackageInclude(index, i + 2, e.target.value)}
+                          className="text-white/70 text-sm bg-transparent border-white/30 w-32"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-white/70 text-sm">{pkg.includes.slice(2, 5).join(' • ')}</p>
+                  )}
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-black text-white">R{pkg.pricePerPerson.toLocaleString()}</div>
+                  {editingAd === 'compare' ? (
+                    <Input
+                      type="number"
+                      value={pkg.pricePerPerson}
+                      onChange={(e) => updatePackageField(index, 'pricePerPerson', e.target.value)}
+                      className="text-2xl font-black text-white bg-transparent border-white w-28"
+                    />
+                  ) : (
+                    <div className="text-2xl font-black text-white">R{pkg.pricePerPerson.toLocaleString()}</div>
+                  )}
                   <div className="text-amber-400 text-xs">per person</div>
                 </div>
               </div>
@@ -704,7 +1116,15 @@ const SocialAds = () => {
             <div className="bg-green-500 text-white py-3 rounded-full font-bold text-lg">
               📲 WhatsApp: {whatsappNumber}
             </div>
-            <p className="text-white/60 text-sm mt-2">Weekends available too!</p>
+            {editingAd === 'compare' ? (
+              <Input
+                value={compareFooter}
+                onChange={(e) => setCompareFooter(e.target.value)}
+                className="text-white/60 text-sm mt-2 bg-transparent border-white/30 text-center"
+              />
+            ) : (
+              <p className="text-white/60 text-sm mt-2">{compareFooter}</p>
+            )}
           </div>
         </div>
       </div>
@@ -713,7 +1133,7 @@ const SocialAds = () => {
       <div className="max-w-4xl mx-auto mt-8 p-6 bg-white/10 backdrop-blur rounded-xl text-white">
         <h3 className="text-xl font-bold text-amber-400 mb-4">📱 How to Use These Ads:</h3>
         <ol className="space-y-2 text-sm">
-          <li>1. <strong>Click the pencil icon</strong> on any ad to edit text, prices, and badges</li>
+          <li>1. <strong>Click the pencil icon</strong> on any ad to edit ALL text, prices, badges, and inclusions</li>
           <li>2. <strong>Screenshot</strong> the ad you want to use</li>
           <li>3. <strong>Square ads (1:1)</strong> - Perfect for Instagram Feed & Facebook Posts</li>
           <li>4. <strong>Story ads (9:16)</strong> - Perfect for Instagram & Facebook Stories</li>
