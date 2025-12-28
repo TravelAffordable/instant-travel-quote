@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, MessageCircle, Calendar, MapPin, Check, Star, Clock, Send, Twitter, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Phone, MessageCircle, Calendar, MapPin, Check, Star, Clock, Send, Twitter, Loader2, Pencil, X, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import sundownRanch1 from "@/assets/sundown-ranch-1.jpeg";
@@ -16,12 +17,31 @@ import guesthouseA4 from "@/assets/guesthouse-a-4.jpeg";
 import guesthouseA5 from "@/assets/guesthouse-a-5.jpg";
 import guesthouseA6 from "@/assets/guesthouse-a-6.jpg";
 
+interface EditableField {
+  [key: string]: string;
+}
+
 const SocialAds = () => {
   const [activeAd, setActiveAd] = useState<'sundown' | 'guesthouse'>('sundown');
   const [customTweet, setCustomTweet] = useState("");
   const [isPosting, setIsPosting] = useState(false);
+  const [editingAd, setEditingAd] = useState<string | null>(null);
+  const [editedFields, setEditedFields] = useState<EditableField>({});
 
-  const sundownPackages = [
+  // Editable content state
+  const [whatsappNumber, setWhatsappNumber] = useState("0796813869");
+  const [heroTitle, setHeroTitle] = useState("SUN CITY\nGETAWAY");
+  const [heroBadge, setHeroBadge] = useState("🔥 NEW YEAR SPECIAL");
+  const [heroDate, setHeroDate] = useState("31 Dec - 02 Jan 2026");
+  const [storyTitle, setStoryTitle] = useState("SUN CITY\nESCAPE");
+  const [storyBadge, setStoryBadge] = useState("⏰ LIMITED SPOTS");
+  const [safariTitle, setSafariTitle] = useState("GAME DRIVE\n+ SUN CITY");
+  const [safariBadge, setSafariBadge] = useState("🦁 SAFARI SPECIAL");
+  const [fbTitle, setFbTitle] = useState("SUN CITY ESCAPE");
+  const [fbBadge, setFbBadge] = useState("🎉 NEW YEAR 2026");
+  const [compareBadge, setCompareBadge] = useState("🎯 COMPARE PACKAGES");
+
+  const [sundownPackages, setSundownPackages] = useState([
     {
       name: "SUN3 - Valley Getaway",
       pricePerPerson: 2830,
@@ -64,9 +84,9 @@ const SocialAds = () => {
       ],
       highlight: "ADVENTURE PICK"
     }
-  ];
+  ]);
 
-  const guesthousePackages = [
+  const [guesthousePackages, setGuesthousePackages] = useState([
     {
       name: "SUN3 - Valley Getaway",
       pricePerPerson: 2150,
@@ -109,18 +129,19 @@ const SocialAds = () => {
       ],
       highlight: "SAFARI SPECIAL"
     }
-  ];
+  ]);
 
   const packages = activeAd === 'sundown' ? sundownPackages : guesthousePackages;
+  const setPackages = activeAd === 'sundown' ? setSundownPackages : setGuesthousePackages;
   const hotelName = activeAd === 'sundown' ? 'Sundown Ranch Hotel' : 'Sun City Area Guesthouse A';
   const sundownImages = [sundownRanch1, sundownRanch2, sundownRanch3, sundownRanch4, sundownRanch5];
   const guesthouseImages = [guesthouseA1, guesthouseA2, guesthouseA3, guesthouseA4, guesthouseA5, guesthouseA6];
   const hotelImages = activeAd === 'sundown' ? sundownImages : guesthouseImages;
 
   const tweetTemplates = [
-    `🎉 NEW YEAR at SUN CITY! 🌴\n\n${hotelName} - 7 min from Sun City\n📅 31 Dec - 02 Jan 2026\n\n✅ Valley of the Waves\n✅ Sun City Entrance\n✅ 2 Nights B&B\n\nFrom R${packages[0].pricePerPerson.toLocaleString()} pp\n\n📲 WhatsApp: 066 157 6757\n\n#SunCity #NewYear2026 #Travel`,
-    `🦁 SAFARI + SUN CITY COMBO! 🌅\n\nPilanesberg Game Drive included!\n📍 ${hotelName}\n\nOnly R${packages[2].pricePerPerson.toLocaleString()} per person\n\n📞 Book: 066 157 6757\n\n#Safari #SunCity #Pilanesberg`,
-    `⏰ LIMITED SPOTS for New Year!\n\n${hotelName}\n🗓️ 31 Dec - 02 Jan 2026\n\n💰 From R${packages[0].pricePerPerson.toLocaleString()} pp\n\nIncludes transport, entrance & more!\n\n📲 066 157 6757\n\n#SunCity #NYE2026`,
+    `🎉 NEW YEAR at SUN CITY! 🌴\n\n${hotelName} - 7 min from Sun City\n📅 31 Dec - 02 Jan 2026\n\n✅ Valley of the Waves\n✅ Sun City Entrance\n✅ 2 Nights B&B\n\nFrom R${packages[0].pricePerPerson.toLocaleString()} pp\n\n📲 WhatsApp: ${whatsappNumber}\n\n#SunCity #NewYear2026 #Travel`,
+    `🦁 SAFARI + SUN CITY COMBO! 🌅\n\nPilanesberg Game Drive included!\n📍 ${hotelName}\n\nOnly R${packages[2].pricePerPerson.toLocaleString()} per person\n\n📞 Book: ${whatsappNumber}\n\n#Safari #SunCity #Pilanesberg`,
+    `⏰ LIMITED SPOTS for New Year!\n\n${hotelName}\n🗓️ 31 Dec - 02 Jan 2026\n\n💰 From R${packages[0].pricePerPerson.toLocaleString()} pp\n\nIncludes transport, entrance & more!\n\n📲 ${whatsappNumber}\n\n#SunCity #NYE2026`,
   ];
 
   const postTweet = async (tweetText: string) => {
@@ -155,6 +176,53 @@ const SocialAds = () => {
     }
   };
 
+  const startEditing = (adId: string) => {
+    setEditingAd(adId);
+    setEditedFields({});
+  };
+
+  const cancelEditing = () => {
+    setEditingAd(null);
+    setEditedFields({});
+  };
+
+  const saveEditing = () => {
+    setEditingAd(null);
+    toast.success("Changes saved!");
+  };
+
+  const updatePackageField = (index: number, field: string, value: string | number) => {
+    const newPackages = [...packages];
+    if (field === 'pricePerPerson') {
+      newPackages[index] = { ...newPackages[index], pricePerPerson: Number(value), totalFor2: Number(value) * 2 };
+    } else {
+      newPackages[index] = { ...newPackages[index], [field]: value };
+    }
+    setPackages(newPackages);
+  };
+
+  const EditButton = ({ adId }: { adId: string }) => (
+    <Button
+      onClick={() => editingAd === adId ? cancelEditing() : startEditing(adId)}
+      className={`absolute top-2 right-2 z-20 ${editingAd === adId ? 'bg-red-500 hover:bg-red-600' : 'bg-amber-500 hover:bg-amber-600'} text-black`}
+      size="sm"
+    >
+      {editingAd === adId ? <X className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
+    </Button>
+  );
+
+  const SaveButton = ({ adId }: { adId: string }) => (
+    editingAd === adId ? (
+      <Button
+        onClick={saveEditing}
+        className="absolute top-2 right-12 z-20 bg-green-500 hover:bg-green-600 text-white"
+        size="sm"
+      >
+        <Save className="w-4 h-4" />
+      </Button>
+    ) : null
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-900 via-amber-800 to-yellow-700 p-4">
       {/* Toggle between hotels */}
@@ -173,11 +241,24 @@ const SocialAds = () => {
         </Button>
       </div>
 
+      {/* Global Settings */}
+      <div className="max-w-md mx-auto mb-6 p-4 bg-black/30 backdrop-blur rounded-xl">
+        <h3 className="text-white font-bold mb-2">📱 WhatsApp Number (used in all ads):</h3>
+        <Input
+          value={whatsappNumber}
+          onChange={(e) => setWhatsappNumber(e.target.value)}
+          className="bg-black/40 border-white/20 text-white"
+          placeholder="Enter WhatsApp number"
+        />
+      </div>
+
       {/* Individual Ads - Square format for Instagram */}
       <div className="grid gap-8 max-w-6xl mx-auto">
         
         {/* AD 1: Hero Ad - Square Format */}
-        <div className="bg-gradient-to-br from-black via-amber-950 to-black rounded-3xl overflow-hidden shadow-2xl" style={{ aspectRatio: '1/1', maxWidth: '600px', margin: '0 auto' }}>
+        <div className="relative bg-gradient-to-br from-black via-amber-950 to-black rounded-3xl overflow-hidden shadow-2xl" style={{ aspectRatio: '1/1', maxWidth: '600px', margin: '0 auto' }}>
+          <EditButton adId="hero" />
+          <SaveButton adId="hero" />
           <div className="relative h-full">
             {/* Background Image */}
             <div className="absolute inset-0">
@@ -193,9 +274,17 @@ const SocialAds = () => {
             <div className="relative h-full flex flex-col justify-between p-6 text-white">
               {/* Top Badge */}
               <div className="flex justify-between items-start">
-                <div className="bg-red-600 text-white px-4 py-2 rounded-full font-black text-sm animate-pulse">
-                  🔥 NEW YEAR SPECIAL
-                </div>
+                {editingAd === 'hero' ? (
+                  <Input
+                    value={heroBadge}
+                    onChange={(e) => setHeroBadge(e.target.value)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-full font-black text-sm w-48"
+                  />
+                ) : (
+                  <div className="bg-red-600 text-white px-4 py-2 rounded-full font-black text-sm animate-pulse">
+                    {heroBadge}
+                  </div>
+                )}
                 <div className="text-right">
                   <div className="text-amber-400 font-bold text-xs">7 MIN FROM</div>
                   <div className="text-white font-black text-lg">SUN CITY</div>
@@ -204,13 +293,29 @@ const SocialAds = () => {
 
               {/* Middle - Main Message */}
               <div className="text-center space-y-3">
-                <h1 className="text-4xl md:text-5xl font-black text-amber-400 drop-shadow-lg leading-tight">
-                  SUN CITY<br/>GETAWAY
-                </h1>
+                {editingAd === 'hero' ? (
+                  <Textarea
+                    value={heroTitle}
+                    onChange={(e) => setHeroTitle(e.target.value)}
+                    className="text-4xl md:text-5xl font-black text-amber-400 bg-transparent border-amber-400 text-center"
+                  />
+                ) : (
+                  <h1 className="text-4xl md:text-5xl font-black text-amber-400 drop-shadow-lg leading-tight whitespace-pre-line">
+                    {heroTitle}
+                  </h1>
+                )}
                 <p className="text-xl font-bold text-white/90">{hotelName}</p>
                 <div className="flex items-center justify-center gap-2">
                   <Calendar className="w-5 h-5 text-amber-400" />
-                  <span className="text-lg font-semibold">31 Dec - 02 Jan 2026</span>
+                  {editingAd === 'hero' ? (
+                    <Input
+                      value={heroDate}
+                      onChange={(e) => setHeroDate(e.target.value)}
+                      className="bg-transparent border-amber-400 text-white text-lg font-semibold w-48"
+                    />
+                  ) : (
+                    <span className="text-lg font-semibold">{heroDate}</span>
+                  )}
                 </div>
               </div>
 
@@ -232,7 +337,7 @@ const SocialAds = () => {
                 </div>
                 
                 <div className="text-center text-amber-300 text-sm font-semibold">
-                  📞 Book Now: 066 157 6757
+                  📞 Book Now: {whatsappNumber}
                 </div>
               </div>
             </div>
@@ -244,9 +349,11 @@ const SocialAds = () => {
           {packages.map((pkg, index) => (
             <div 
               key={pkg.name}
-              className="bg-gradient-to-br from-black to-amber-950 rounded-2xl overflow-hidden shadow-xl"
+              className="relative bg-gradient-to-br from-black to-amber-950 rounded-2xl overflow-hidden shadow-xl"
               style={{ aspectRatio: '4/5' }}
             >
+              <EditButton adId={`package-${index}`} />
+              <SaveButton adId={`package-${index}`} />
               {/* Image Header */}
               <div className="h-1/3 relative">
                 <img 
@@ -254,16 +361,32 @@ const SocialAds = () => {
                   alt={pkg.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-3 left-3 bg-amber-500 text-black px-3 py-1 rounded-full text-xs font-black">
-                  {pkg.highlight}
-                </div>
+                {editingAd === `package-${index}` ? (
+                  <Input
+                    value={pkg.highlight}
+                    onChange={(e) => updatePackageField(index, 'highlight', e.target.value)}
+                    className="absolute top-3 left-3 bg-amber-500 text-black px-3 py-1 rounded-full text-xs font-black w-32"
+                  />
+                ) : (
+                  <div className="absolute top-3 left-3 bg-amber-500 text-black px-3 py-1 rounded-full text-xs font-black">
+                    {pkg.highlight}
+                  </div>
+                )}
                 <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black to-transparent" />
               </div>
 
               {/* Content */}
               <div className="p-4 text-white space-y-3 h-2/3 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-lg font-black text-amber-400 leading-tight">{pkg.name}</h3>
+                  {editingAd === `package-${index}` ? (
+                    <Input
+                      value={pkg.name}
+                      onChange={(e) => updatePackageField(index, 'name', e.target.value)}
+                      className="text-lg font-black text-amber-400 bg-transparent border-amber-400"
+                    />
+                  ) : (
+                    <h3 className="text-lg font-black text-amber-400 leading-tight">{pkg.name}</h3>
+                  )}
                   <p className="text-xs text-white/70 mt-1">{hotelName} • 2 Nights B&B</p>
                   
                   <div className="mt-3 space-y-1">
@@ -280,7 +403,16 @@ const SocialAds = () => {
                   <div className="flex items-end justify-between">
                     <div>
                       <div className="text-amber-400 text-xs font-bold">PER PERSON</div>
-                      <div className="text-3xl font-black text-white">R{pkg.pricePerPerson.toLocaleString()}</div>
+                      {editingAd === `package-${index}` ? (
+                        <Input
+                          type="number"
+                          value={pkg.pricePerPerson}
+                          onChange={(e) => updatePackageField(index, 'pricePerPerson', e.target.value)}
+                          className="text-2xl font-black text-white bg-transparent border-amber-400 w-28"
+                        />
+                      ) : (
+                        <div className="text-3xl font-black text-white">R{pkg.pricePerPerson.toLocaleString()}</div>
+                      )}
                     </div>
                     <div className="text-right">
                       <div className="text-white/60 text-xs">Total for 2</div>
@@ -289,7 +421,7 @@ const SocialAds = () => {
                   </div>
                   
                   <div className="bg-green-500 text-white text-center py-2 rounded-full text-sm font-bold">
-                    📲 WhatsApp: 066 157 6757
+                    📲 WhatsApp: {whatsappNumber}
                   </div>
                 </div>
               </div>
@@ -300,9 +432,11 @@ const SocialAds = () => {
         {/* AD 3: Story Format - Vertical */}
         <div className="flex justify-center gap-4 flex-wrap">
           <div 
-            className="bg-gradient-to-b from-amber-600 via-orange-700 to-black rounded-3xl overflow-hidden shadow-2xl"
+            className="relative bg-gradient-to-b from-amber-600 via-orange-700 to-black rounded-3xl overflow-hidden shadow-2xl"
             style={{ aspectRatio: '9/16', width: '320px' }}
           >
+            <EditButton adId="story1" />
+            <SaveButton adId="story1" />
             <div className="relative h-full">
               <div className="absolute inset-0">
                 <img 
@@ -316,11 +450,27 @@ const SocialAds = () => {
               <div className="relative h-full flex flex-col justify-between p-5 text-white">
                 {/* Top */}
                 <div className="text-center space-y-2">
-                  <div className="bg-red-600 text-white px-4 py-1 rounded-full text-xs font-black inline-block animate-pulse">
-                    ⏰ LIMITED SPOTS
-                  </div>
+                  {editingAd === 'story1' ? (
+                    <Input
+                      value={storyBadge}
+                      onChange={(e) => setStoryBadge(e.target.value)}
+                      className="bg-red-600 text-white px-4 py-1 rounded-full text-xs font-black"
+                    />
+                  ) : (
+                    <div className="bg-red-600 text-white px-4 py-1 rounded-full text-xs font-black inline-block animate-pulse">
+                      {storyBadge}
+                    </div>
+                  )}
                   <h2 className="text-2xl font-black text-amber-300">NEW YEAR</h2>
-                  <h1 className="text-4xl font-black leading-none">SUN CITY<br/>ESCAPE</h1>
+                  {editingAd === 'story1' ? (
+                    <Textarea
+                      value={storyTitle}
+                      onChange={(e) => setStoryTitle(e.target.value)}
+                      className="text-4xl font-black bg-transparent border-white text-center"
+                    />
+                  ) : (
+                    <h1 className="text-4xl font-black leading-none whitespace-pre-line">{storyTitle}</h1>
+                  )}
                 </div>
 
                 {/* Middle */}
@@ -328,7 +478,7 @@ const SocialAds = () => {
                   <div className="bg-black/60 backdrop-blur-sm rounded-xl p-4 space-y-2">
                     <div className="flex items-center gap-2 text-amber-400 font-bold">
                       <Calendar className="w-4 h-4" />
-                      31 Dec - 02 Jan 2026
+                      {heroDate}
                     </div>
                     <div className="flex items-center gap-2 text-white/90">
                       <MapPin className="w-4 h-4 text-amber-400" />
@@ -360,7 +510,7 @@ const SocialAds = () => {
                     BOOK NOW →
                   </div>
                   <div className="text-center text-amber-300 text-sm">
-                    WhatsApp: 066 157 6757
+                    WhatsApp: {whatsappNumber}
                   </div>
                 </div>
               </div>
@@ -369,9 +519,11 @@ const SocialAds = () => {
 
           {/* Story 2 - Safari Focus */}
           <div 
-            className="bg-gradient-to-b from-green-800 via-emerald-900 to-black rounded-3xl overflow-hidden shadow-2xl"
+            className="relative bg-gradient-to-b from-green-800 via-emerald-900 to-black rounded-3xl overflow-hidden shadow-2xl"
             style={{ aspectRatio: '9/16', width: '320px' }}
           >
+            <EditButton adId="story2" />
+            <SaveButton adId="story2" />
             <div className="relative h-full">
               <div className="absolute inset-0">
                 <img 
@@ -385,11 +537,27 @@ const SocialAds = () => {
               <div className="relative h-full flex flex-col justify-between p-5 text-white">
                 {/* Top */}
                 <div className="text-center space-y-2">
-                  <div className="bg-amber-500 text-black px-4 py-1 rounded-full text-xs font-black inline-block">
-                    🦁 SAFARI SPECIAL
-                  </div>
+                  {editingAd === 'story2' ? (
+                    <Input
+                      value={safariBadge}
+                      onChange={(e) => setSafariBadge(e.target.value)}
+                      className="bg-amber-500 text-black px-4 py-1 rounded-full text-xs font-black"
+                    />
+                  ) : (
+                    <div className="bg-amber-500 text-black px-4 py-1 rounded-full text-xs font-black inline-block">
+                      {safariBadge}
+                    </div>
+                  )}
                   <h2 className="text-xl font-black text-green-300">PILANESBERG</h2>
-                  <h1 className="text-3xl font-black leading-none">GAME DRIVE<br/>+ SUN CITY</h1>
+                  {editingAd === 'story2' ? (
+                    <Textarea
+                      value={safariTitle}
+                      onChange={(e) => setSafariTitle(e.target.value)}
+                      className="text-3xl font-black bg-transparent border-white text-center"
+                    />
+                  ) : (
+                    <h1 className="text-3xl font-black leading-none whitespace-pre-line">{safariTitle}</h1>
+                  )}
                 </div>
 
                 {/* Middle */}
@@ -420,7 +588,7 @@ const SocialAds = () => {
                     WhatsApp Now →
                   </div>
                   <div className="text-center text-green-300 text-sm">
-                    📞 066 157 6757
+                    📞 {whatsappNumber}
                   </div>
                 </div>
               </div>
@@ -430,9 +598,11 @@ const SocialAds = () => {
 
         {/* AD 4: Facebook Wide Format */}
         <div 
-          className="bg-gradient-to-r from-black via-amber-950 to-black rounded-2xl overflow-hidden shadow-2xl"
+          className="relative bg-gradient-to-r from-black via-amber-950 to-black rounded-2xl overflow-hidden shadow-2xl"
           style={{ aspectRatio: '16/9', maxWidth: '800px', margin: '0 auto' }}
         >
+          <EditButton adId="facebook" />
+          <SaveButton adId="facebook" />
           <div className="relative h-full">
             <div className="absolute inset-0 grid grid-cols-3 gap-1">
               <img src={hotelImages[0]} alt="" className="w-full h-full object-cover opacity-60" />
@@ -444,12 +614,28 @@ const SocialAds = () => {
             <div className="relative h-full flex items-center justify-between p-8 text-white">
               {/* Left */}
               <div className="space-y-3 max-w-md">
-                <div className="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-black inline-block">
-                  🎉 NEW YEAR 2026
-                </div>
-                <h1 className="text-4xl md:text-5xl font-black text-amber-400 leading-tight">
-                  SUN CITY ESCAPE
-                </h1>
+                {editingAd === 'facebook' ? (
+                  <Input
+                    value={fbBadge}
+                    onChange={(e) => setFbBadge(e.target.value)}
+                    className="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-black w-48"
+                  />
+                ) : (
+                  <div className="bg-red-600 text-white px-4 py-1 rounded-full text-sm font-black inline-block">
+                    {fbBadge}
+                  </div>
+                )}
+                {editingAd === 'facebook' ? (
+                  <Input
+                    value={fbTitle}
+                    onChange={(e) => setFbTitle(e.target.value)}
+                    className="text-4xl md:text-5xl font-black text-amber-400 bg-transparent border-amber-400"
+                  />
+                ) : (
+                  <h1 className="text-4xl md:text-5xl font-black text-amber-400 leading-tight">
+                    {fbTitle}
+                  </h1>
+                )}
                 <p className="text-lg text-white/90">{hotelName} • 7 min from Sun City</p>
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-1">
@@ -472,7 +658,7 @@ const SocialAds = () => {
                 </div>
                 <div className="bg-green-500 text-white px-6 py-3 rounded-full font-bold flex items-center justify-center gap-2">
                   <MessageCircle className="w-5 h-5" />
-                  066 157 6757
+                  {whatsappNumber}
                 </div>
               </div>
             </div>
@@ -480,13 +666,23 @@ const SocialAds = () => {
         </div>
 
         {/* AD 5: Comparison Card */}
-        <div className="bg-gradient-to-br from-black to-amber-950 rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto">
+        <div className="relative bg-gradient-to-br from-black to-amber-950 rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto">
+          <EditButton adId="compare" />
+          <SaveButton adId="compare" />
           <div className="text-center mb-6">
-            <div className="bg-amber-500 text-black px-4 py-1 rounded-full text-sm font-black inline-block mb-3">
-              🎯 COMPARE PACKAGES
-            </div>
+            {editingAd === 'compare' ? (
+              <Input
+                value={compareBadge}
+                onChange={(e) => setCompareBadge(e.target.value)}
+                className="bg-amber-500 text-black px-4 py-1 rounded-full text-sm font-black mb-3"
+              />
+            ) : (
+              <div className="bg-amber-500 text-black px-4 py-1 rounded-full text-sm font-black inline-block mb-3">
+                {compareBadge}
+              </div>
+            )}
             <h2 className="text-2xl font-black text-white">{hotelName}</h2>
-            <p className="text-amber-400">31 Dec - 02 Jan 2026 • 2 Nights B&B</p>
+            <p className="text-amber-400">{heroDate} • 2 Nights B&B</p>
           </div>
 
           <div className="space-y-3">
@@ -506,7 +702,7 @@ const SocialAds = () => {
 
           <div className="mt-6 text-center">
             <div className="bg-green-500 text-white py-3 rounded-full font-bold text-lg">
-              📲 WhatsApp: 066 157 6757
+              📲 WhatsApp: {whatsappNumber}
             </div>
             <p className="text-white/60 text-sm mt-2">Weekends available too!</p>
           </div>
@@ -517,11 +713,12 @@ const SocialAds = () => {
       <div className="max-w-4xl mx-auto mt-8 p-6 bg-white/10 backdrop-blur rounded-xl text-white">
         <h3 className="text-xl font-bold text-amber-400 mb-4">📱 How to Use These Ads:</h3>
         <ol className="space-y-2 text-sm">
-          <li>1. <strong>Screenshot</strong> the ad you want to use</li>
-          <li>2. <strong>Square ads (1:1)</strong> - Perfect for Instagram Feed & Facebook Posts</li>
-          <li>3. <strong>Story ads (9:16)</strong> - Perfect for Instagram & Facebook Stories</li>
-          <li>4. <strong>Wide ads (16:9)</strong> - Perfect for Facebook Cover & Carousel</li>
-          <li>5. Post with captions like: "🎉 Ring in 2026 at Sun City! Limited spots - DM or WhatsApp now! 📲"</li>
+          <li>1. <strong>Click the pencil icon</strong> on any ad to edit text, prices, and badges</li>
+          <li>2. <strong>Screenshot</strong> the ad you want to use</li>
+          <li>3. <strong>Square ads (1:1)</strong> - Perfect for Instagram Feed & Facebook Posts</li>
+          <li>4. <strong>Story ads (9:16)</strong> - Perfect for Instagram & Facebook Stories</li>
+          <li>5. <strong>Wide ads (16:9)</strong> - Perfect for Facebook Cover & Carousel</li>
+          <li>6. Post with captions like: "🎉 Ring in 2026 at Sun City! Limited spots - DM or WhatsApp now! 📲"</li>
         </ol>
       </div>
 
