@@ -6,6 +6,12 @@ import sundownRanch2 from "@/assets/sundown-ranch-2.jpeg";
 import sundownRanch3 from "@/assets/sundown-ranch-3.jpeg";
 import sundownRanch4 from "@/assets/sundown-ranch-4.jpeg";
 import sundownRanch5 from "@/assets/sundown-ranch-5.jpeg";
+import guesthouseA1 from "@/assets/guesthouse-a-1.png";
+import guesthouseA2 from "@/assets/guesthouse-a-2.jpeg";
+import guesthouseA3 from "@/assets/guesthouse-a-3.jpg";
+import guesthouseA4 from "@/assets/guesthouse-a-4.jpeg";
+import guesthouseA5 from "@/assets/guesthouse-a-5.jpg";
+import guesthouseA6 from "@/assets/guesthouse-a-6.jpg";
 
 const SocialAds = () => {
   const [activeAd, setActiveAd] = useState<'sundown' | 'guesthouse'>('sundown');
@@ -102,7 +108,9 @@ const SocialAds = () => {
 
   const packages = activeAd === 'sundown' ? sundownPackages : guesthousePackages;
   const hotelName = activeAd === 'sundown' ? 'Sundown Ranch Hotel' : 'Sun City Area Guesthouse A';
-  const hotelImages = [sundownRanch1, sundownRanch2, sundownRanch3, sundownRanch4, sundownRanch5];
+  const sundownImages = [sundownRanch1, sundownRanch2, sundownRanch3, sundownRanch4, sundownRanch5];
+  const guesthouseImages = [guesthouseA1, guesthouseA2, guesthouseA3, guesthouseA4, guesthouseA5, guesthouseA6];
+  const hotelImages = activeAd === 'sundown' ? sundownImages : guesthouseImages;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-900 via-amber-800 to-yellow-700 p-4">
