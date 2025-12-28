@@ -83,6 +83,12 @@ const SocialAds = () => {
   const [compareSubtitle, setCompareSubtitle] = useState("2 Nights B&B");
   const [compareFooter, setCompareFooter] = useState("Weekends available too!");
 
+  // Editable Tweet Templates
+  const [tweetTemplate1, setTweetTemplate1] = useState(`🎉 NEW YEAR at SUN CITY! 🌴\n\n7 min from Sun City\n📅 31 Dec - 02 Jan 2026\n\n✅ Valley of the Waves\n✅ Sun City Entrance\n✅ 2 Nights B&B\n\nFrom R2,830 pp\n\n📲 WhatsApp: 0796813869\n\n#SunCity #NewYear2026 #Travel`);
+  const [tweetTemplate2, setTweetTemplate2] = useState(`🦁 SAFARI + SUN CITY COMBO! 🌅\n\nPilanesberg Game Drive included!\n📍 Sundown Ranch\n\nOnly R3,450 per person\n\n📞 Book: 0796813869\n\n#Safari #SunCity #Pilanesberg`);
+  const [tweetTemplate3, setTweetTemplate3] = useState(`⏰ LIMITED SPOTS for New Year!\n\nSundown Ranch\n🗓️ 31 Dec - 02 Jan 2026\n\n💰 From R2,830 pp\n\nIncludes transport, entrance & more!\n\n📲 0796813869\n\n#SunCity #NYE2026`);
+  const [editingTweet, setEditingTweet] = useState<number | null>(null);
+
   const [sundownPackages, setSundownPackages] = useState([
     {
       name: "SUN3 - Valley Getaway",
@@ -186,9 +192,9 @@ const SocialAds = () => {
   const hotelImages = activeAd === 'sundown' ? sundownImages : guesthouseImages;
 
   const tweetTemplates = [
-    `🎉 NEW YEAR at SUN CITY! 🌴\n\n${hotelName} - 7 min from Sun City\n📅 31 Dec - 02 Jan 2026\n\n✅ Valley of the Waves\n✅ Sun City Entrance\n✅ 2 Nights B&B\n\nFrom R${packages[0].pricePerPerson.toLocaleString()} pp\n\n📲 WhatsApp: ${whatsappNumber}\n\n#SunCity #NewYear2026 #Travel`,
-    `🦁 SAFARI + SUN CITY COMBO! 🌅\n\nPilanesberg Game Drive included!\n📍 ${hotelName}\n\nOnly R${packages[2].pricePerPerson.toLocaleString()} per person\n\n📞 Book: ${whatsappNumber}\n\n#Safari #SunCity #Pilanesberg`,
-    `⏰ LIMITED SPOTS for New Year!\n\n${hotelName}\n🗓️ 31 Dec - 02 Jan 2026\n\n💰 From R${packages[0].pricePerPerson.toLocaleString()} pp\n\nIncludes transport, entrance & more!\n\n📲 ${whatsappNumber}\n\n#SunCity #NYE2026`,
+    { value: tweetTemplate1, setter: setTweetTemplate1 },
+    { value: tweetTemplate2, setter: setTweetTemplate2 },
+    { value: tweetTemplate3, setter: setTweetTemplate3 },
   ];
 
   const postTweet = async (tweetText: string) => {
@@ -1160,22 +1166,65 @@ const SocialAds = () => {
           <div className="grid gap-3">
             {tweetTemplates.map((template, index) => (
               <div key={index} className="bg-black/40 rounded-lg p-4 border border-white/10">
-                <p className="text-sm text-white/90 whitespace-pre-line mb-3">{template}</p>
+                {editingTweet === index ? (
+                  <Textarea
+                    value={template.value}
+                    onChange={(e) => template.setter(e.target.value)}
+                    className="bg-black/60 border-blue-500/50 text-white placeholder:text-white/40 min-h-[120px] mb-3"
+                    maxLength={280}
+                  />
+                ) : (
+                  <p className="text-sm text-white/90 whitespace-pre-line mb-3">{template.value}</p>
+                )}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-white/50">{template.length}/280 characters</span>
-                  <Button
-                    onClick={() => postTweet(template)}
-                    disabled={isPosting}
-                    className="bg-blue-500 hover:bg-blue-600 text-white text-sm"
-                    size="sm"
-                  >
-                    {isPosting ? (
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <span className={`text-xs ${template.value.length > 260 ? 'text-red-400' : 'text-white/50'}`}>
+                    {template.value.length}/280 characters
+                  </span>
+                  <div className="flex gap-2">
+                    {editingTweet === index ? (
+                      <>
+                        <Button
+                          onClick={() => setEditingTweet(null)}
+                          className="bg-green-600 hover:bg-green-700 text-white text-sm"
+                          size="sm"
+                        >
+                          <Save className="w-4 h-4 mr-1" />
+                          Save
+                        </Button>
+                        <Button
+                          onClick={() => setEditingTweet(null)}
+                          variant="outline"
+                          className="border-white/20 text-white hover:bg-white/10 text-sm"
+                          size="sm"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </>
                     ) : (
-                      <Send className="w-4 h-4 mr-2" />
+                      <Button
+                        onClick={() => setEditingTweet(index)}
+                        variant="outline"
+                        className="border-white/20 text-white hover:bg-white/10 text-sm"
+                        size="sm"
+                      >
+                        <Pencil className="w-4 h-4 mr-1" />
+                        Edit
+                      </Button>
                     )}
-                    Post This
-                  </Button>
+                    <Button
+                      onClick={() => postTweet(template.value)}
+                      disabled={isPosting || template.value.length > 280}
+                      className="bg-blue-500 hover:bg-blue-600 text-white text-sm"
+                      size="sm"
+                    >
+                      {isPosting ? (
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      ) : (
+                        <Send className="w-4 h-4 mr-2" />
+                      )}
+                      Post This
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
