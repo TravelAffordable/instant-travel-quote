@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.amadeus-search]
 verify_jwt = false
+
+[functions.post-tweet]
+verify_jwt = false
+
+[functions.send-ad-email]
+verify_jwt = false
