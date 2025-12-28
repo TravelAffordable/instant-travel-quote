@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Phone, MessageCircle, Calendar, MapPin, Check, Star, Clock } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Phone, MessageCircle, Calendar, MapPin, Check, Star, Clock, Send, Twitter, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import sundownRanch1 from "@/assets/sundown-ranch-1.jpeg";
 import sundownRanch2 from "@/assets/sundown-ranch-2.jpeg";
 import sundownRanch3 from "@/assets/sundown-ranch-3.jpeg";
@@ -15,6 +18,8 @@ import guesthouseA6 from "@/assets/guesthouse-a-6.jpg";
 
 const SocialAds = () => {
   const [activeAd, setActiveAd] = useState<'sundown' | 'guesthouse'>('sundown');
+  const [customTweet, setCustomTweet] = useState("");
+  const [isPosting, setIsPosting] = useState(false);
 
   const sundownPackages = [
     {
@@ -111,6 +116,44 @@ const SocialAds = () => {
   const sundownImages = [sundownRanch1, sundownRanch2, sundownRanch3, sundownRanch4, sundownRanch5];
   const guesthouseImages = [guesthouseA1, guesthouseA2, guesthouseA3, guesthouseA4, guesthouseA5, guesthouseA6];
   const hotelImages = activeAd === 'sundown' ? sundownImages : guesthouseImages;
+
+  const tweetTemplates = [
+    `🎉 NEW YEAR at SUN CITY! 🌴\n\n${hotelName} - 7 min from Sun City\n📅 31 Dec - 02 Jan 2026\n\n✅ Valley of the Waves\n✅ Sun City Entrance\n✅ 2 Nights B&B\n\nFrom R${packages[0].pricePerPerson.toLocaleString()} pp\n\n📲 WhatsApp: 066 157 6757\n\n#SunCity #NewYear2026 #Travel`,
+    `🦁 SAFARI + SUN CITY COMBO! 🌅\n\nPilanesberg Game Drive included!\n📍 ${hotelName}\n\nOnly R${packages[2].pricePerPerson.toLocaleString()} per person\n\n📞 Book: 066 157 6757\n\n#Safari #SunCity #Pilanesberg`,
+    `⏰ LIMITED SPOTS for New Year!\n\n${hotelName}\n🗓️ 31 Dec - 02 Jan 2026\n\n💰 From R${packages[0].pricePerPerson.toLocaleString()} pp\n\nIncludes transport, entrance & more!\n\n📲 066 157 6757\n\n#SunCity #NYE2026`,
+  ];
+
+  const postTweet = async (tweetText: string) => {
+    if (!tweetText.trim()) {
+      toast.error("Please enter a tweet");
+      return;
+    }
+    if (tweetText.length > 280) {
+      toast.error("Tweet exceeds 280 characters");
+      return;
+    }
+
+    setIsPosting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('post-tweet', {
+        body: { tweet: tweetText }
+      });
+
+      if (error) throw error;
+      
+      if (data.success) {
+        toast.success("Tweet posted successfully!");
+        setCustomTweet("");
+      } else {
+        throw new Error(data.error || "Failed to post tweet");
+      }
+    } catch (error: any) {
+      console.error("Tweet error:", error);
+      toast.error(error.message || "Failed to post tweet");
+    } finally {
+      setIsPosting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-900 via-amber-800 to-yellow-700 p-4">
@@ -480,6 +523,76 @@ const SocialAds = () => {
           <li>4. <strong>Wide ads (16:9)</strong> - Perfect for Facebook Cover & Carousel</li>
           <li>5. Post with captions like: "🎉 Ring in 2026 at Sun City! Limited spots - DM or WhatsApp now! 📲"</li>
         </ol>
+      </div>
+
+      {/* Twitter Posting Section */}
+      <div className="max-w-4xl mx-auto mt-8 p-6 bg-gradient-to-br from-blue-900/50 to-black/50 backdrop-blur rounded-xl text-white border border-blue-500/30">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-blue-500 p-2 rounded-full">
+            <Twitter className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-blue-400">Post to Twitter/X</h3>
+            <p className="text-white/60 text-sm">Post directly to your account</p>
+          </div>
+        </div>
+
+        {/* Quick Tweet Templates */}
+        <div className="space-y-3 mb-6">
+          <p className="text-sm text-white/80 font-semibold">Quick Templates:</p>
+          <div className="grid gap-3">
+            {tweetTemplates.map((template, index) => (
+              <div key={index} className="bg-black/40 rounded-lg p-4 border border-white/10">
+                <p className="text-sm text-white/90 whitespace-pre-line mb-3">{template}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-white/50">{template.length}/280 characters</span>
+                  <Button
+                    onClick={() => postTweet(template)}
+                    disabled={isPosting}
+                    className="bg-blue-500 hover:bg-blue-600 text-white text-sm"
+                    size="sm"
+                  >
+                    {isPosting ? (
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    ) : (
+                      <Send className="w-4 h-4 mr-2" />
+                    )}
+                    Post This
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Custom Tweet */}
+        <div className="space-y-3">
+          <p className="text-sm text-white/80 font-semibold">Or write your own:</p>
+          <Textarea
+            value={customTweet}
+            onChange={(e) => setCustomTweet(e.target.value)}
+            placeholder="Write your custom tweet..."
+            className="bg-black/40 border-white/20 text-white placeholder:text-white/40 min-h-[100px]"
+            maxLength={280}
+          />
+          <div className="flex items-center justify-between">
+            <span className={`text-sm ${customTweet.length > 260 ? 'text-red-400' : 'text-white/50'}`}>
+              {customTweet.length}/280 characters
+            </span>
+            <Button
+              onClick={() => postTweet(customTweet)}
+              disabled={isPosting || !customTweet.trim()}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              {isPosting ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Send className="w-4 h-4 mr-2" />
+              )}
+              Post Tweet
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
