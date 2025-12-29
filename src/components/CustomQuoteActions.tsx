@@ -382,6 +382,48 @@ QUOTE ${index + 1}
       pdf.text('WhatsApp: +27 79 681 3869', margin, yPos);
       yPos += 4;
       pdf.text('Web: www.travelaffordable.co.za', margin, yPos);
+      yPos += 15;
+
+      // Booking disclaimer
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(40, 40, 40);
+      pdf.text('BOOKING PROCESS:', margin, yPos);
+      yPos += 6;
+      
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
+      
+      const disclaimerLines = [
+        'To start with your booking please request the invoice. Please request on the day you',
+        'would be making payment as the invoice and availability confirmation are valid for only 1 day.',
+        '',
+        'A 50% deposit secures the booking.',
+        '',
+        'As soon as we receive your deposit we proceed with bookings then send you a confirmation',
+        'letter which will have your hotel confirmation number and all the important information',
+        'on your Getaway Package.',
+        '',
+        'Thank you,',
+        'Accounts,',
+        'Travel Affordable Pty Ltd',
+        'The Atrium Building',
+        '5th Street, Sandown',
+        'Sandton',
+        'Tel: 0796813869',
+        'e: info@travelaffordable.co.za',
+        'https://instant-travel-quote.lovable.app'
+      ];
+      
+      disclaimerLines.forEach(line => {
+        if (yPos > 280) {
+          pdf.addPage();
+          yPos = 20;
+        }
+        pdf.text(line, margin, yPos);
+        yPos += 4;
+      });
 
       // Save the PDF
       const filename = `TravelAffordable_Quotes_${destination}_${new Date().toISOString().split('T')[0]}.pdf`;
