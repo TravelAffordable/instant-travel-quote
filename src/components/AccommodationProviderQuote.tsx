@@ -67,6 +67,9 @@ export function AccommodationProviderQuote() {
   const [hasCalculated, setHasCalculated] = useState(false);
   const [quoteResults, setQuoteResults] = useState<QuoteResult[]>([]);
 
+  // Flag to prevent useEffect from clearing data during PDF load
+  const [isLoadingFromPDF, setIsLoadingFromPDF] = useState(false);
+
   // Accounting-compliant fields
   const [companyDetails, setCompanyDetails] = useState<CompanyDetails>({
     companyName: '',
@@ -93,12 +96,16 @@ export function AccommodationProviderQuote() {
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
   const selectedPackages = packages.filter(p => packageIds.includes(p.id));
 
-  // Reset packages when destination changes
+  // Reset packages when destination changes (but not during PDF load)
   useEffect(() => {
+    if (isLoadingFromPDF) {
+      setIsLoadingFromPDF(false);
+      return;
+    }
     setPackageIds([]);
     setHasCalculated(false);
     setQuoteResults([]);
-  }, [destination]);
+  }, [destination, isLoadingFromPDF]);
 
   // Auto-set checkout to day after check-in
   useEffect(() => {
@@ -502,6 +509,9 @@ export function AccommodationProviderQuote() {
 
   // Handle loading quote data from uploaded PDF
   const handleQuoteLoaded = (data: QuoteFormData) => {
+    // Set flag to prevent useEffect from clearing packageIds
+    setIsLoadingFromPDF(true);
+    
     if (data.destination) setDestination(data.destination);
     if (data.checkIn) setCheckIn(data.checkIn);
     if (data.checkOut) setCheckOut(data.checkOut);
