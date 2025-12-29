@@ -150,14 +150,14 @@ export function addBookingDisclaimerToPDF(doc: jsPDF, startY?: number): number {
   return yPos;
 }
 
-// Extract quote data from a PDF file using dynamic import for pdfjs-dist
+// Extract quote data from a PDF file using the legacy build to avoid top-level await
 export async function extractQuoteDataFromPDF(file: File): Promise<QuoteFormData | null> {
   try {
-    // Dynamically import pdfjs-dist to avoid top-level await issues
-    const pdfjsLib = await import('pdfjs-dist');
+    // Use the legacy build which doesn't have top-level await issues
+    const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
     
-    // Configure worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    // Configure worker using legacy worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs`;
     
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
