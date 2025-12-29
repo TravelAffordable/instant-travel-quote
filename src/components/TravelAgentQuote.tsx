@@ -86,6 +86,9 @@ export function TravelAgentQuote() {
   const [hasCalculated, setHasCalculated] = useState(false);
   const [quoteResults, setQuoteResults] = useState<QuoteResult[]>([]);
   
+  // Flag to prevent useEffect from clearing data during PDF load
+  const [isLoadingFromPDF, setIsLoadingFromPDF] = useState(false);
+  
   // Multiple hotels support (up to 8)
   const [hotels, setHotels] = useState<HotelEntry[]>([
     { id: '1', name: '', quoteAmount: '' }
@@ -122,13 +125,17 @@ export function TravelAgentQuote() {
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
   const selectedPackages = packages.filter(p => packageIds.includes(p.id));
 
-  // Reset packages when destination changes
+  // Reset packages when destination changes (but not during PDF load)
   useEffect(() => {
+    if (isLoadingFromPDF) {
+      setIsLoadingFromPDF(false);
+      return;
+    }
     setPackageIds([]);
     setHasCalculated(false);
     setQuoteResults([]);
     setFamilyQuoteResults([]);
-  }, [destination]);
+  }, [destination, isLoadingFromPDF]);
 
   // Auto-set checkout to day after check-in
   useEffect(() => {
@@ -624,6 +631,9 @@ export function TravelAgentQuote() {
 
   // Handle loading quote data from uploaded PDF
   const handleQuoteLoaded = (data: QuoteFormData) => {
+    // Set flag to prevent useEffect from clearing packageIds
+    setIsLoadingFromPDF(true);
+    
     if (data.destination) setDestination(data.destination);
     if (data.checkIn) setCheckIn(data.checkIn);
     if (data.checkOut) setCheckOut(data.checkOut);
