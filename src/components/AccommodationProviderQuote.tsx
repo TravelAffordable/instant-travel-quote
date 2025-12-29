@@ -15,6 +15,8 @@ import {
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { addBookingDisclaimerToPDF, addQuoteDataToPDF, QuoteFormData } from '@/lib/pdfQuoteUtils';
+import { PDFQuoteUploader } from './PDFQuoteUploader';
 
 interface RoomCategory {
   id: string;
@@ -468,18 +470,54 @@ export function AccommodationProviderQuote() {
       doc.setFont('helvetica', 'normal');
       const splitTerms = doc.splitTextToSize(companyDetails.termsAndConditions, 170);
       doc.text(splitTerms, 20, yPos);
+      yPos += splitTerms.length * 4 + 5;
     }
 
-    // Footer
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
-    doc.text(`Quote Reference: ${quoteNumber}`, 20, 280);
-    doc.text(`Generated: ${quoteDate}`, 100, 280);
-    doc.text('This is a computer-generated document', 20, 285);
+    // Add booking disclaimer
+    addBookingDisclaimerToPDF(doc, yPos);
+
+    // Embed quote data for future editing
+    const quoteData: QuoteFormData = {
+      quoteType: 'accommodation-provider',
+      destination,
+      checkIn,
+      checkOut,
+      adults,
+      children,
+      childrenAges,
+      packageIds,
+      hotelName,
+      hotelQuoteAmount,
+      roomCategories,
+      facilities,
+      companyDetails,
+      quoteNumber,
+    };
+    addQuoteDataToPDF(doc, quoteData);
 
     const fileName = `Quote_${quoteNumber}_${result.packageName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
     toast.success('PDF downloaded successfully!');
+  };
+
+  // Handle loading quote data from uploaded PDF
+  const handleQuoteLoaded = (data: QuoteFormData) => {
+    if (data.destination) setDestination(data.destination);
+    if (data.checkIn) setCheckIn(data.checkIn);
+    if (data.checkOut) setCheckOut(data.checkOut);
+    if (data.adults) setAdults(data.adults);
+    if (data.children !== undefined) setChildren(data.children);
+    if (data.childrenAges) setChildrenAges(data.childrenAges);
+    if (data.packageIds) setPackageIds(data.packageIds);
+    if (data.hotelName) setHotelName(data.hotelName);
+    if (data.hotelQuoteAmount) setHotelQuoteAmount(data.hotelQuoteAmount);
+    if (data.roomCategories) setRoomCategories(data.roomCategories);
+    if (data.facilities) setFacilities(data.facilities);
+    if (data.companyDetails) setCompanyDetails(data.companyDetails);
+    if (data.quoteNumber) setQuoteNumber(data.quoteNumber + '-EDIT');
+    
+    setHasCalculated(false);
+    setQuoteResults([]);
   };
 
   const today = new Date().toISOString().split('T')[0];
@@ -506,6 +544,12 @@ export function AccommodationProviderQuote() {
 
         {/* Quote Form */}
         <div className="max-w-4xl mx-auto">
+          {/* PDF Upload Section */}
+          <PDFQuoteUploader 
+            onQuoteLoaded={handleQuoteLoaded} 
+            expectedQuoteType="accommodation-provider" 
+          />
+          
           <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
             <div className="space-y-5">
               {/* Row 1: Destination, Check In, Check Out */}
