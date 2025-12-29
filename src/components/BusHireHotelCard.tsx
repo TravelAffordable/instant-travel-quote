@@ -340,7 +340,6 @@ export function BusHireHotelCard({
     
     pdf.save(`group-quote-${hotel.name.toLowerCase().replace(/\s+/g, '-')}-${pkg.shortName.toLowerCase().replace(/\s+/g, '-')}.pdf`);
   };
-  };
 
   return (
     <Card className="overflow-hidden border shadow-soft hover:shadow-lg transition-all duration-300">
