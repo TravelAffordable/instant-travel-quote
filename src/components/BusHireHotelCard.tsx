@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import jsPDF from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { addBookingDisclaimerToPDF } from '@/lib/pdfQuoteUtils';
 
 interface BusHireHotelCardProps {
   hotel: LiveHotel;
@@ -332,13 +333,13 @@ export function BusHireHotelCard({
     pdf.text(`Total Per Person: ${formatCurrency(pricePerPerson)}`, 20, y); y += 10;
     pdf.setFontSize(14);
     pdf.text(`Grand Total: ${formatCurrency(totalWithBus)}`, 20, y);
+    y += 15;
     
-    // Footer
-    pdf.setFontSize(9);
-    pdf.setTextColor(100, 100, 100);
-    pdf.text('This quote is valid for 7 days. Terms and conditions apply.', 20, 280);
+    // Add booking disclaimer
+    addBookingDisclaimerToPDF(pdf, y);
     
     pdf.save(`group-quote-${hotel.name.toLowerCase().replace(/\s+/g, '-')}-${pkg.shortName.toLowerCase().replace(/\s+/g, '-')}.pdf`);
+  };
   };
 
   return (

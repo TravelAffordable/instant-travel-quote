@@ -16,6 +16,8 @@ import {
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { addBookingDisclaimerToPDF, addQuoteDataToPDF, QuoteFormData } from '@/lib/pdfQuoteUtils';
+import { PDFQuoteUploader } from './PDFQuoteUploader';
 
 interface HotelEntry {
   id: string;
@@ -585,14 +587,29 @@ export function TravelAgentQuote() {
       doc.setFont('helvetica', 'normal');
       const splitTerms = doc.splitTextToSize(companyDetails.termsAndConditions, 170);
       doc.text(splitTerms, 20, yPos);
+      yPos += splitTerms.length * 4 + 5;
     }
 
-    // Footer
-    doc.setFontSize(8);
-    doc.setTextColor(128, 128, 128);
-    doc.text(`Quote Reference: ${quoteNumber}`, 20, 280);
-    doc.text(`Generated: ${quoteDate}`, 100, 280);
-    doc.text('This is a computer-generated document', 20, 285);
+    // Add booking disclaimer
+    addBookingDisclaimerToPDF(doc, yPos);
+
+    // Embed quote data for future editing
+    const quoteData: QuoteFormData = {
+      quoteType: 'travel-agent',
+      destination,
+      checkIn,
+      checkOut,
+      adults,
+      children,
+      childrenAges,
+      packageIds,
+      hotels,
+      companyDetails,
+      enableFamilySplit,
+      families,
+      quoteNumber,
+    };
+    addQuoteDataToPDF(doc, quoteData);
   };
 
   const downloadQuotePDF = (result: QuoteResult) => {
@@ -603,6 +620,26 @@ export function TravelAgentQuote() {
     const fileName = `TravelAgent_Quote_${quoteNumber}_${result.packageName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
     toast.success('PDF downloaded successfully!');
+  };
+
+  // Handle loading quote data from uploaded PDF
+  const handleQuoteLoaded = (data: QuoteFormData) => {
+    if (data.destination) setDestination(data.destination);
+    if (data.checkIn) setCheckIn(data.checkIn);
+    if (data.checkOut) setCheckOut(data.checkOut);
+    if (data.adults) setAdults(data.adults);
+    if (data.children !== undefined) setChildren(data.children);
+    if (data.childrenAges) setChildrenAges(data.childrenAges);
+    if (data.packageIds) setPackageIds(data.packageIds);
+    if (data.hotels) setHotels(data.hotels);
+    if (data.companyDetails) setCompanyDetails(data.companyDetails);
+    if (data.enableFamilySplit !== undefined) setEnableFamilySplit(data.enableFamilySplit);
+    if (data.families) setFamilies(data.families);
+    if (data.quoteNumber) setQuoteNumber(data.quoteNumber + '-EDIT');
+    
+    setHasCalculated(false);
+    setQuoteResults([]);
+    setFamilyQuoteResults([]);
   };
 
   const generateShareContent = (result: QuoteResult) => {
@@ -652,6 +689,10 @@ export function TravelAgentQuote() {
     <section id="travel-agent" className="py-16 bg-gradient-to-br from-purple-50 to-violet-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
+          <PDFQuoteUploader 
+            onQuoteLoaded={handleQuoteLoaded} 
+            expectedQuoteType="travel-agent" 
+          />
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-800 mb-4">
             <Briefcase className="w-4 h-4" />
             <span className="text-sm font-semibold">For Travel Agents</span>
