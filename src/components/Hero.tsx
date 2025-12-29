@@ -64,6 +64,97 @@ const SUN_CITY_CUSTOM_HOTELS = [
   'Sun City Area Guesthouse A',
 ];
 
+// Magaliesburg custom hotels (editable placeholders)
+const MAGALIES_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Umhlanga custom hotels (editable placeholders)
+const UMHLANGA_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Cape Town custom hotels (editable placeholders)
+const CAPE_TOWN_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Knysna custom hotels (editable placeholders)
+const KNYSNA_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Vaal River custom hotels (editable placeholders)
+const VAAL_RIVER_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Bela Bela custom hotels (editable placeholders)
+const BELA_BELA_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Bali custom hotels (editable placeholders)
+const BALI_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Dubai custom hotels (editable placeholders)
+const DUBAI_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Thailand custom hotels (editable placeholders)
+const THAILAND_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Pretoria custom hotels (editable placeholders)
+const PRETORIA_CUSTOM_HOTELS = [
+  'Hotel Name 1 (edit when quoting)',
+  'Hotel Name 2 (edit when quoting)',
+  'Hotel Name 3 (edit when quoting)',
+];
+
+// Helper to get custom hotels for any destination
+const getCustomHotelsForDestination = (dest: string): string[] => {
+  switch (dest) {
+    case 'durban': return DURBAN_CUSTOM_HOTELS;
+    case 'harties': return HARTBEESPOORT_CUSTOM_HOTELS;
+    case 'mpumalanga': return MPUMALANGA_CUSTOM_HOTELS;
+    case 'sun-city': return SUN_CITY_CUSTOM_HOTELS;
+    case 'magalies': return MAGALIES_CUSTOM_HOTELS;
+    case 'umhlanga': return UMHLANGA_CUSTOM_HOTELS;
+    case 'cape-town': return CAPE_TOWN_CUSTOM_HOTELS;
+    case 'knysna': return KNYSNA_CUSTOM_HOTELS;
+    case 'vaal-river': return VAAL_RIVER_CUSTOM_HOTELS;
+    case 'bela-bela': return BELA_BELA_CUSTOM_HOTELS;
+    case 'bali': return BALI_CUSTOM_HOTELS;
+    case 'dubai': return DUBAI_CUSTOM_HOTELS;
+    case 'thailand': return THAILAND_CUSTOM_HOTELS;
+    case 'pretoria': return PRETORIA_CUSTOM_HOTELS;
+    default: return [];
+  }
+};
+
 type BookingType = 'accommodation-only' | 'with-activities';
 
 interface HeroProps {
@@ -839,7 +930,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Custom Hotels Section - Durban, Hartbeespoort, Mpumalanga & Sun City (for with-activities booking type) */}
-        {bookingType === 'with-activities' && (destination === 'durban' || destination === 'harties' || destination === 'mpumalanga' || destination === 'sun-city') && hasSearched && (
+        {bookingType === 'with-activities' && destination && getCustomHotelsForDestination(destination).length > 0 && hasSearched && (
           <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
             <div className="bg-amber-50 border-2 border-amber-200 backdrop-blur-md rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
@@ -886,7 +977,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                       <div className="space-y-3 mb-6">
                         <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
                         <div className="flex flex-wrap gap-2">
-                          {(destination === 'durban' ? DURBAN_CUSTOM_HOTELS : destination === 'harties' ? HARTBEESPOORT_CUSTOM_HOTELS : destination === 'mpumalanga' ? MPUMALANGA_CUSTOM_HOTELS : destination === 'sun-city' ? SUN_CITY_CUSTOM_HOTELS : []).map((hotel) => (
+                          {getCustomHotelsForDestination(destination).map((hotel) => (
                             <label
                               key={hotel}
                               className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
@@ -969,7 +1060,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         )}
 
         {/* Quote Results */}
-        {(liveHotels.length > 0 || (hasSearched && customHotelQuotes.length > 0) || (hasSearched && bookingType === 'with-activities' && (destination === 'durban' || destination === 'harties' || destination === 'mpumalanga'))) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
+        {(liveHotels.length > 0 || (hasSearched && customHotelQuotes.length > 0) || (hasSearched && bookingType === 'with-activities' && destination && getCustomHotelsForDestination(destination).length > 0)) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
               {bookingType === 'accommodation-only' ? (
