@@ -33,12 +33,20 @@ interface FamilySplit {
 
 interface QuoteResult {
   packageName: string;
+  /** Base package price per adult (display/reference) */
   packagePrice: number;
+  /** Total package cost for the whole group (adults + eligible kids tiers) */
+  packageTotalCost: number;
+  /** Total booking/service fees for the whole group */
+  serviceFeeTotal: number;
+  /** Convenience value used only for display when we show per-person pricing */
   totalPerPerson: number;
+  /** Total group cost for the whole group (hotel + package + fees) */
   totalGroupCost: number;
   groupSize: number;
   activitiesIncluded: string[];
   hotelBreakdown: { name: string; cost: number; costPerPerson: number }[];
+  /** Convenience value used only for display when we show per-person pricing */
   serviceFee: number;
 }
 
@@ -279,7 +287,7 @@ export function TravelAgentQuote() {
       const packagePricePerPerson = pkg.basePrice;
       const hotelCostPerPerson = totalHotelCost / totalGuests;
       const serviceFeePerPerson = totalGuests > 0 ? totalServiceFee / totalGuests : 0;
-      
+
       // Calculate kids package cost with tiered pricing
       let kidsPackageCost = 0;
       if (children > 0 && childrenAges.length > 0) {
@@ -298,22 +306,26 @@ export function TravelAgentQuote() {
           }
         });
       }
-      
-      // Calculate total: adults pay full package price, kids pay tiered price
+
+      // Adults pay full package price; kids only pay if age-tiered pricing applies
       const adultsPackageCost = packagePricePerPerson * adults;
       const totalPackageCost = adultsPackageCost + kidsPackageCost;
+
+      // IMPORTANT: totalGroupCost must reflect the same logic everywhere
       const totalGroupCost = totalHotelCost + totalPackageCost + totalServiceFee;
-      const totalPerPerson = totalGroupCost / totalGuests;
+      const totalPerPerson = totalGuests > 0 ? totalGroupCost / totalGuests : 0;
 
       const hotelBreakdown = filledHotels.map(h => ({
         name: h.name,
         cost: parseFloat(h.quoteAmount) || 0,
-        costPerPerson: (parseFloat(h.quoteAmount) || 0) / totalGuests
+        costPerPerson: (parseFloat(h.quoteAmount) || 0) / totalGuests,
       }));
 
       return {
         packageName: pkg.name,
         packagePrice: packagePricePerPerson,
+        packageTotalCost: totalPackageCost,
+        serviceFeeTotal: totalServiceFee,
         totalPerPerson,
         totalGroupCost,
         groupSize: totalGuests,
@@ -517,11 +529,10 @@ export function TravelAgentQuote() {
 
     filledHotels.forEach((hotel, index) => {
       const hotelCost = parseFloat(hotel.quoteAmount) || 0;
-      const hotelCostPerPerson = hotelCost / totalGuests;
-      const packageCostPerPerson = result.packagePrice;
-      const serviceFeePerPerson = result.serviceFee;
-      const totalPerPersonForHotel = hotelCostPerPerson + packageCostPerPerson + serviceFeePerPerson;
-      const totalGroupForHotel = totalPerPersonForHotel * totalGuests;
+
+      // Total for this hotel option must match the main calculation logic
+      const totalGroupForHotel = hotelCost + result.packageTotalCost + result.serviceFeeTotal;
+      const totalPerPersonForHotel = totalGuests > 0 ? totalGroupForHotel / totalGuests : 0;
 
       doc.setFont('helvetica', 'bold');
       doc.text(`${hotel.name}`, 20, yPos);
@@ -603,9 +614,11 @@ export function TravelAgentQuote() {
 
     const hotelsText = filledHotels.map((hotel, idx) => {
       const hotelCost = parseFloat(hotel.quoteAmount) || 0;
-      const hotelCostPerPerson = hotelCost / totalGuests;
-      const totalPerPersonForHotel = hotelCostPerPerson + result.packagePrice + result.serviceFee;
-      const totalGroupForHotel = totalPerPersonForHotel * totalGuests;
+
+      // Keep share totals aligned with the main pricing logic
+      const totalGroupForHotel = hotelCost + result.packageTotalCost + result.serviceFeeTotal;
+      const totalPerPersonForHotel = totalGuests > 0 ? totalGroupForHotel / totalGuests : 0;
+
       return `\n📍 ${hotel.name}\n${!hidePerPersonPrice ? `   Per Person: ${formatCurrency(totalPerPersonForHotel)}\n` : ''}   Total: ${formatCurrency(totalGroupForHotel)}`;
     }).join('\n');
 
@@ -1174,9 +1187,11 @@ export function TravelAgentQuote() {
                             <div className="space-y-3">
                               {filledHotels.map((hotel, hotelIdx) => {
                                 const hotelCost = parseFloat(hotel.quoteAmount) || 0;
-                                const hotelCostPerPerson = hotelCost / totalGuests;
-                                const totalPerPersonForHotel = hotelCostPerPerson + result.packagePrice + result.serviceFee;
-                                const totalGroupForHotel = totalPerPersonForHotel * totalGuests;
+
+                                // Show TOTAL GROUP COST for each hotel option using the SAME pricing logic
+                                // as the main calculation (hotel + packageTotalCost + serviceFeeTotal).
+                                const totalGroupForHotel = hotelCost + result.packageTotalCost + result.serviceFeeTotal;
+                                const totalPerPersonForHotel = totalGuests > 0 ? totalGroupForHotel / totalGuests : 0;
 
                                 return (
                                   <div key={hotelIdx} className="flex items-center justify-between bg-white rounded-lg p-3 border">
