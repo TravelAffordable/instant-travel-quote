@@ -40,6 +40,22 @@ interface QuoteResult {
   activitiesIncluded: string[];
   hotelBreakdown: { name: string; cost: number; costPerPerson: number }[];
   serviceFee: number;
+  // Calculation breakdown details
+  calculationBreakdown: {
+    totalHotelCost: number;
+    adultsPackageCost: number;
+    kidsPackageCost: number;
+    totalPackageCost: number;
+    adultServiceFees: number;
+    kidsServiceFees: number;
+    totalServiceFees: number;
+    adultFeePerPerson: number;
+    kidFeePerChild: number;
+    adults: number;
+    children: number;
+    childrenAges: number[];
+    kidsPackageDetails: { age: number; price: number }[];
+  };
 }
 
 interface FamilyQuoteResult {
@@ -274,27 +290,49 @@ export function TravelAgentQuote() {
 
     const serviceFeeResult = calculateServiceFee();
     const totalServiceFee = serviceFeeResult.totalFees;
+
+    // Calculate adult fee per person for breakdown display
+    const totalPeople = adults + childrenAges.length;
+    let adultFeePerPerson = 0;
+    if (totalPeople >= 25) {
+      adultFeePerPerson = 400;
+    } else if (adults === 1) {
+      adultFeePerPerson = 1000;
+    } else if (adults >= 2 && adults <= 3) {
+      adultFeePerPerson = 850;
+    } else if (adults >= 4 && adults <= 9) {
+      adultFeePerPerson = 800;
+    } else if (adults >= 10) {
+      adultFeePerPerson = 750;
+    }
+    const kidFeePerChild = adults >= 2 ? 150 : 300;
     
     const results: QuoteResult[] = selectedPackages.map(pkg => {
       const packagePricePerPerson = pkg.basePrice;
       const hotelCostPerPerson = totalHotelCost / totalGuests;
       const serviceFeePerPerson = totalGuests > 0 ? totalServiceFee / totalGuests : 0;
       
-      // Calculate kids package cost with tiered pricing
+      // Calculate kids package cost with tiered pricing and track details
       let kidsPackageCost = 0;
+      const kidsPackageDetails: { age: number; price: number }[] = [];
       if (children > 0 && childrenAges.length > 0) {
         childrenAges.forEach(age => {
           if (age >= 4 && age <= 16) {
+            let kidPrice = 0;
             if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
               const tier = pkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
               if (tier) {
-                kidsPackageCost += tier.price;
+                kidPrice = tier.price;
               } else if (pkg.kidsPrice) {
-                kidsPackageCost += pkg.kidsPrice;
+                kidPrice = pkg.kidsPrice;
               }
             } else if (pkg.kidsPrice) {
-              kidsPackageCost += pkg.kidsPrice;
+              kidPrice = pkg.kidsPrice;
             }
+            kidsPackageCost += kidPrice;
+            kidsPackageDetails.push({ age, price: kidPrice });
+          } else if (age >= 0 && age <= 3) {
+            kidsPackageDetails.push({ age, price: 0 });
           }
         });
       }
@@ -320,6 +358,21 @@ export function TravelAgentQuote() {
         activitiesIncluded: pkg.activitiesIncluded || [],
         hotelBreakdown,
         serviceFee: serviceFeePerPerson,
+        calculationBreakdown: {
+          totalHotelCost,
+          adultsPackageCost,
+          kidsPackageCost,
+          totalPackageCost,
+          adultServiceFees: serviceFeeResult.adultFees,
+          kidsServiceFees: serviceFeeResult.kidsFees,
+          totalServiceFees: totalServiceFee,
+          adultFeePerPerson,
+          kidFeePerChild,
+          adults,
+          children,
+          childrenAges: [...childrenAges],
+          kidsPackageDetails,
+        },
       };
     });
 
@@ -1234,6 +1287,120 @@ export function TravelAgentQuote() {
                               </div>
                             </div>
                           )}
+
+                          {/* Calculation Breakdown */}
+                          <div className="bg-blue-50/50 rounded-lg p-4 border border-blue-100">
+                            <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                              <Calculator className="w-4 h-4 text-blue-600" />
+                              How We Calculated This Quote:
+                            </p>
+                            <div className="space-y-3 text-sm">
+                              {/* Accommodation */}
+                              <div className="bg-white rounded-lg p-3 border">
+                                <p className="font-medium text-gray-700 mb-2">1. Accommodation</p>
+                                <div className="space-y-1 text-gray-600">
+                                  {result.hotelBreakdown.map((hotel, i) => (
+                                    <p key={i} className="flex justify-between">
+                                      <span>{hotel.name}</span>
+                                      <span className="font-medium">{formatCurrency(hotel.cost)}</span>
+                                    </p>
+                                  ))}
+                                  <div className="border-t pt-1 mt-1">
+                                    <p className="flex justify-between font-medium text-blue-700">
+                                      <span>Total Accommodation</span>
+                                      <span>{formatCurrency(result.calculationBreakdown.totalHotelCost)}</span>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Package Costs */}
+                              <div className="bg-white rounded-lg p-3 border">
+                                <p className="font-medium text-gray-700 mb-2">2. Package/Activity Costs</p>
+                                <div className="space-y-1 text-gray-600">
+                                  <p className="flex justify-between">
+                                    <span>{result.calculationBreakdown.adults} Adults × {formatCurrency(result.packagePrice)}</span>
+                                    <span className="font-medium">{formatCurrency(result.calculationBreakdown.adultsPackageCost)}</span>
+                                  </p>
+                                  {result.calculationBreakdown.children > 0 && (
+                                    <>
+                                      <p className="text-xs text-gray-500 mt-1">Children (ages 0-3 free, 4-16 tiered pricing):</p>
+                                      {result.calculationBreakdown.kidsPackageDetails.map((kid, i) => (
+                                        <p key={i} className="flex justify-between pl-2">
+                                          <span>Child age {kid.age}</span>
+                                          <span className="font-medium">{kid.price === 0 ? 'FREE' : formatCurrency(kid.price)}</span>
+                                        </p>
+                                      ))}
+                                      <p className="flex justify-between">
+                                        <span>Kids Package Total</span>
+                                        <span className="font-medium">{formatCurrency(result.calculationBreakdown.kidsPackageCost)}</span>
+                                      </p>
+                                    </>
+                                  )}
+                                  <div className="border-t pt-1 mt-1">
+                                    <p className="flex justify-between font-medium text-blue-700">
+                                      <span>Total Package Costs</span>
+                                      <span>{formatCurrency(result.calculationBreakdown.totalPackageCost)}</span>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Service Fees */}
+                              <div className="bg-white rounded-lg p-3 border">
+                                <p className="font-medium text-gray-700 mb-2">3. Service Fees</p>
+                                <div className="space-y-1 text-gray-600">
+                                  <p className="flex justify-between">
+                                    <span>{result.calculationBreakdown.adults} Adults × {formatCurrency(result.calculationBreakdown.adultFeePerPerson)}/person</span>
+                                    <span className="font-medium">{formatCurrency(result.calculationBreakdown.adultServiceFees)}</span>
+                                  </p>
+                                  {result.calculationBreakdown.children > 0 && (
+                                    <p className="flex justify-between">
+                                      <span>Children (ages 4-16 × {formatCurrency(result.calculationBreakdown.kidFeePerChild)}, 0-3 free)</span>
+                                      <span className="font-medium">{formatCurrency(result.calculationBreakdown.kidsServiceFees)}</span>
+                                    </p>
+                                  )}
+                                  <div className="border-t pt-1 mt-1">
+                                    <p className="flex justify-between font-medium text-blue-700">
+                                      <span>Total Service Fees</span>
+                                      <span>{formatCurrency(result.calculationBreakdown.totalServiceFees)}</span>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Grand Total */}
+                              <div className="bg-purple-100 rounded-lg p-3 border border-purple-200">
+                                <p className="font-medium text-gray-700 mb-2">Grand Total Calculation</p>
+                                <div className="space-y-1 text-gray-700">
+                                  <p className="flex justify-between">
+                                    <span>Accommodation</span>
+                                    <span>{formatCurrency(result.calculationBreakdown.totalHotelCost)}</span>
+                                  </p>
+                                  <p className="flex justify-between">
+                                    <span>Package Costs</span>
+                                    <span>{formatCurrency(result.calculationBreakdown.totalPackageCost)}</span>
+                                  </p>
+                                  <p className="flex justify-between">
+                                    <span>Service Fees</span>
+                                    <span>{formatCurrency(result.calculationBreakdown.totalServiceFees)}</span>
+                                  </p>
+                                  <div className="border-t border-purple-300 pt-2 mt-2">
+                                    <p className="flex justify-between font-bold text-purple-700 text-base">
+                                      <span>TOTAL FOR GROUP ({result.groupSize} guests)</span>
+                                      <span>{formatCurrency(result.totalGroupCost)}</span>
+                                    </p>
+                                    {!hidePerPersonPrice && (
+                                      <p className="flex justify-between text-purple-600 text-sm mt-1">
+                                        <span>Per Person Average</span>
+                                        <span>{formatCurrency(result.totalPerPerson)}</span>
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
 
                         </div>
 
