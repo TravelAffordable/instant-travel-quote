@@ -1,8 +1,4 @@
 import { jsPDF } from 'jspdf';
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Configure pdf.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 // Booking disclaimer text to appear at bottom of every quote
 export const BOOKING_DISCLAIMER = `BOOKING PROCESS
@@ -154,9 +150,15 @@ export function addBookingDisclaimerToPDF(doc: jsPDF, startY?: number): number {
   return yPos;
 }
 
-// Extract quote data from a PDF file
+// Extract quote data from a PDF file using dynamic import for pdfjs-dist
 export async function extractQuoteDataFromPDF(file: File): Promise<QuoteFormData | null> {
   try {
+    // Dynamically import pdfjs-dist to avoid top-level await issues
+    const pdfjsLib = await import('pdfjs-dist');
+    
+    // Configure worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     
@@ -179,7 +181,7 @@ export async function extractQuoteDataFromPDF(file: File): Promise<QuoteFormData
 }
 
 // Fallback: Try to parse quote data from PDF text content
-async function parseQuoteFromText(pdf: pdfjsLib.PDFDocumentProxy): Promise<QuoteFormData | null> {
+async function parseQuoteFromText(pdf: any): Promise<QuoteFormData | null> {
   try {
     let fullText = '';
     
