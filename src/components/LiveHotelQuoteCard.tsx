@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -69,7 +69,7 @@ interface RoomOption {
   rates: RoomRate[];
 }
 
-export function LiveHotelQuoteCard({
+function LiveHotelQuoteCardComponent({
   hotel,
   pkg,
   nights,
@@ -101,11 +101,15 @@ export function LiveHotelQuoteCard({
   }, [hotel.rooms, hotel.minRate]);
 
   // State for selected room types (one selection per room)
-  const [selectedRoomTypes, setSelectedRoomTypes] = useState<string[]>(() => {
-    // Default to cheapest room for all rooms
-    const defaultRoom = roomOptions.length > 0 ? roomOptions[0].code : '';
-    return Array(rooms).fill(defaultRoom);
-  });
+  const [selectedRoomTypes, setSelectedRoomTypes] = useState<string[]>([]);
+  
+  // Initialize selected room types when roomOptions or rooms change
+  useEffect(() => {
+    if (roomOptions.length > 0) {
+      const defaultRoom = roomOptions[0].code;
+      setSelectedRoomTypes(Array(rooms).fill(defaultRoom));
+    }
+  }, [roomOptions.length, rooms]);
 
   // Get the rate for a specific room code
   const getRoomRate = (roomCode: string): number => {
@@ -443,3 +447,6 @@ export function LiveHotelQuoteCard({
     </Card>
   );
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export const LiveHotelQuoteCard = memo(LiveHotelQuoteCardComponent);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +13,7 @@ interface LiveHotelQuotesProps {
   nights: number;
   adults: number;
   children: number;
-  childrenAges: number[];
+  childrenAgesString: string;
   rooms: number;
   budget: string;
 }
@@ -24,11 +24,19 @@ export function LiveHotelQuotes({
   nights,
   adults,
   children,
-  childrenAges,
+  childrenAgesString,
   rooms,
   budget,
 }: LiveHotelQuotesProps) {
   const [maxBudget, setMaxBudget] = useState<string>('');
+
+  // Memoize parsed children ages to prevent re-renders
+  const childrenAges = useMemo(() => {
+    return childrenAgesString
+      .split(',')
+      .map(a => parseInt(a.trim()))
+      .filter(a => !isNaN(a) && a >= 3 && a <= 17);
+  }, [childrenAgesString]);
 
   // Parse the optional budget filter
   const budgetNumber = maxBudget ? parseInt(maxBudget.replace(/[^\d]/g, '')) : null;

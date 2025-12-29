@@ -565,7 +565,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
             nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
             adults={adults}
             children={children}
-            childrenAges={childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 3 && a <= 17)}
+            childrenAgesString={childrenAges}
             rooms={rooms}
             budget={budget}
           />
