@@ -328,8 +328,8 @@ export function BusHireQuote() {
                   <Label className="text-sm font-medium text-gray-700">Adults *</Label>
                   <Input
                     type="number"
-                    value={adults}
-                    onChange={e => setAdults(parseInt(e.target.value) || 0)}
+                    value={adults === 0 ? '' : adults}
+                    onChange={e => setAdults(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
                     min={1}
                     className="h-11 bg-white border-gray-200"
                   />
@@ -338,8 +338,8 @@ export function BusHireQuote() {
                   <Label className="text-sm font-medium text-gray-700">Children</Label>
                   <Input
                     type="number"
-                    value={children}
-                    onChange={e => setChildren(parseInt(e.target.value) || 0)}
+                    value={children === 0 ? '' : children}
+                    onChange={e => setChildren(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
                     min={0}
                     className="h-11 bg-white border-gray-200"
                   />
@@ -373,7 +373,7 @@ export function BusHireQuote() {
               {/* Child Age Selection */}
               {children > 0 && (
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Child Ages (3-17 years)</Label>
+                  <Label className="text-sm font-medium text-gray-700">Child Ages (0-17 years)</Label>
                   <div className="flex flex-wrap gap-2">
                     {Array.from({ length: children }, (_, i) => (
                       <div key={i} className="flex items-center gap-1">
@@ -390,7 +390,7 @@ export function BusHireQuote() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="max-h-[200px]">
-                            {Array.from({ length: 15 }, (_, age) => age + 3).map(age => (
+                            {Array.from({ length: 18 }, (_, age) => age).map(age => (
                               <SelectItem key={age} value={age.toString()}>{age} yrs</SelectItem>
                             ))}
                           </SelectContent>
