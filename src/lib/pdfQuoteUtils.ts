@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf';
+import { destinations, packages } from '@/data/travelData';
 
 // Booking disclaimer text to appear at bottom of every quote
 export const BOOKING_DISCLAIMER = `BOOKING PROCESS
@@ -184,72 +185,128 @@ export async function extractQuoteDataFromPDF(file: File): Promise<QuoteFormData
 async function parseQuoteFromText(pdf: any): Promise<QuoteFormData | null> {
   try {
     let fullText = '';
-    
+
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
-      const pageText = textContent.items
-        .map((item: any) => item.str)
-        .join(' ');
+      const pageText = textContent.items.map((item: any) => item.str).join(' ');
       fullText += pageText + '\n';
     }
-    
-    // Parse basic fields from text
+
+    const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
+
     const data: Partial<QuoteFormData> = {
-      quoteType: 'accommodation-provider',
+      quoteType: 'custom',
       packageIds: [],
       childrenAges: [],
     };
-    
-    // Extract destination
+
+    // Quote type detection (Travel Agent PDFs typically start with TA-...)
+    const quoteMatch = fullText.match(/Quote\s*#:\s*([A-Z]{2}-[A-Z0-9-]+)/i);
+    if (quoteMatch?.[1]) {
+      data.quoteNumber = quoteMatch[1].trim();
+      if (data.quoteNumber.toUpperCase().startsWith('TA-')) {
+        data.quoteType = 'travel-agent';
+      }
+    }
+
+    // Destination (map displayed name back to destination id used by the form)
     const destMatch = fullText.match(/Destination:\s*([^\n\r]+)/i);
-    if (destMatch) {
-      data.destination = destMatch[1].trim();
+    if (destMatch?.[1]) {
+      const destName = destMatch[1].trim();
+      const normalizedDestName = normalize(destName);
+      const matchedDestination = destinations.find(
+        (d) => normalize(d.name) === normalizedDestName || normalize(d.shortName) === normalizedDestName
+      );
+      data.destination = matchedDestination?.id || destName;
     }
-    
-    // Extract check-in date
+
+    // Dates
     const checkinMatch = fullText.match(/Check-in:\s*(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})/i);
-    if (checkinMatch) {
-      data.checkIn = checkinMatch[1];
-    }
-    
-    // Extract check-out date
+    if (checkinMatch?.[1]) data.checkIn = checkinMatch[1];
+
     const checkoutMatch = fullText.match(/Check-out:\s*(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})/i);
-    if (checkoutMatch) {
-      data.checkOut = checkoutMatch[1];
-    }
-    
-    // Extract adults
+    if (checkoutMatch?.[1]) data.checkOut = checkoutMatch[1];
+
+    // Adults / Children
     const adultsMatch = fullText.match(/(\d+)\s*Adults?/i);
-    if (adultsMatch) {
-      data.adults = parseInt(adultsMatch[1]);
-    }
-    
-    // Extract children
+    if (adultsMatch?.[1]) data.adults = parseInt(adultsMatch[1], 10);
+
     const childrenMatch = fullText.match(/(\d+)\s*Children?/i);
-    if (childrenMatch) {
-      data.children = parseInt(childrenMatch[1]);
+    if (childrenMatch?.[1]) data.children = parseInt(childrenMatch[1], 10);
+
+    // Business + client info
+    // Try to parse FROM block for company name, phone, email; TO block for client name.
+    const fromBlockMatch = fullText.match(/FROM:\s*(.*?)\s*TO:/i);
+    const fromBlock = fromBlockMatch?.[1] ? fromBlockMatch[1] : '';
+    const toBlockMatch = fullText.match(/TO:\s*(.*?)(ACCOMMODATION OPTIONS|DESTINATION:|CHECK-IN:)/i);
+    const toBlock = toBlockMatch?.[1] ? toBlockMatch[1] : '';
+
+    const companyName = fromBlock ? fromBlock.split(/\s{2,}|\n/)[0]?.trim() : '';
+    const phoneMatch = fullText.match(/Tel:\s*([^\n\r]+)/i);
+    const emailMatch = fullText.match(/Email:\s*([^\n\r]+)/i);
+
+    const clientName = toBlock ? toBlock.split(/\s{2,}|\n/)[0]?.trim() : '';
+
+    if (companyName || phoneMatch?.[1] || emailMatch?.[1] || clientName) {
+      data.companyDetails = {
+        companyName: companyName || '',
+        companyAddress: '',
+        companyPhone: phoneMatch?.[1]?.trim() || '',
+        companyEmail: emailMatch?.[1]?.trim() || '',
+        vatNumber: '',
+        quoteValidDays: 14,
+        termsAndConditions: '',
+        clientName: clientName || '',
+        clientCompany: '',
+        clientEmail: '',
+      };
     }
-    
-    // Extract hotel name
-    const hotelMatch = fullText.match(/Hotel:\s*([^\n\r|]+)/i);
-    if (hotelMatch) {
-      data.hotelName = hotelMatch[1].trim();
+
+    // Hotels + rates (Travel Agent PDFs show multiple accommodation options)
+    // Prefer parsing from the "PRICING BY ACCOMMODATION" section if available.
+    const hotels: { id: string; name: string; quoteAmount: string }[] = [];
+
+    const pricingSectionMatch = fullText.match(/PRICING BY ACCOMMODATION([\s\S]*?)(Quote Reference:|This is a computer-generated)/i);
+    const pricingSection = pricingSectionMatch?.[1] || '';
+
+    const pricingRegex = /([^\n\r|]{10,}?)\s*R\s?(\d{3,})/gi;
+    let pm: RegExpExecArray | null;
+    while ((pm = pricingRegex.exec(pricingSection)) !== null) {
+      const name = pm[1].replace(/\s+/g, ' ').trim();
+      const amount = pm[2].trim();
+      if (name && amount) {
+        hotels.push({ id: String(hotels.length + 1), name, quoteAmount: amount });
+      }
     }
-    
-    // Extract rooms
-    const roomsMatch = fullText.match(/(\d+)\s*room/i);
-    if (roomsMatch) {
-      data.rooms = parseInt(roomsMatch[1]);
+
+    // If pricing table parsing failed, fall back to parsing "Option X:" lines (without amounts)
+    if (hotels.length === 0) {
+      const optionRegex = /Option\s*(\d+)\s*:\s*([^\n\r]+)/gi;
+      let om: RegExpExecArray | null;
+      while ((om = optionRegex.exec(fullText)) !== null) {
+        const name = om[2].replace(/\s+/g, ' ').trim();
+        if (name) hotels.push({ id: String(hotels.length + 1), name, quoteAmount: '' });
+      }
     }
-    
-    // Determine quote type from content
-    if (fullText.includes('Travel Agent') || fullText.includes('TRAVEL AGENT')) {
-      data.quoteType = 'travel-agent';
-    } else if (fullText.includes('Bus Company') || fullText.includes('Group Tour Quote')) {
-      data.quoteType = 'bus-hire';
+
+    if (hotels.length > 0) data.hotels = hotels;
+
+    // Packages (try to recover packageIds by matching package codes like CPT1, HG2, etc.)
+    const codeMatches = Array.from(fullText.matchAll(/\b([A-Z]{2,6}\d{1,3})\b/g)).map((m) => m[1]);
+    const uniqueCodes = Array.from(new Set(codeMatches.map((c) => c.toUpperCase())));
+
+    if (uniqueCodes.length > 0) {
+      const destId = typeof data.destination === 'string' ? data.destination : '';
+      const matched = packages.filter((p) => {
+        const pName = p.name.toUpperCase();
+        const matchesCode = uniqueCodes.some((code) => pName.includes(`${code} -`) || pName.startsWith(`${code} `) || pName.startsWith(`${code}-`) || pName.includes(`${code} `));
+        const matchesDest = destId ? p.destination === destId : true;
+        return matchesCode && matchesDest;
+      });
+      if (matched.length > 0) data.packageIds = matched.map((p) => p.id);
     }
-    
+
     return data as QuoteFormData;
   } catch (error) {
     console.error('Error parsing text from PDF:', error);
