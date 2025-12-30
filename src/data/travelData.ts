@@ -838,6 +838,67 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
 
+  // ============= BELA BELA PACKAGES =============
+  {
+    id: 'bb1',
+    name: 'BB1 - BELA BELA HOT SPRINGS GETAWAY WITH FOREVER RESORT & GAME DRIVE',
+    shortName: 'Hot Springs & Game Drive',
+    description: 'Includes accommodation at Warmbaths Forever Resort, access to natural hot springs, a thrilling game drive experience, and breakfast.',
+    destination: 'bela-bela',
+    basePrice: 1800,
+    kidsPrice: 900,
+    kidsMinAge: 4,
+    activitiesIncluded: ['Accommodation', 'Access to natural hot springs', 'Game drive experience', 'Breakfast daily'],
+    duration: '2 nights'
+  },
+  {
+    id: 'bb2',
+    name: 'BB2 - BELA BELA MABALINGWE BUSH EXPERIENCE WITH GAME DRIVES & BUSH BRAAI',
+    shortName: 'Mabalingwe Bush Experience',
+    description: 'Includes accommodation at Mabalingwe Nature Reserve, morning and evening game drives, bush braai experience, and full breakfast.',
+    destination: 'bela-bela',
+    basePrice: 2400,
+    kidsPrice: 1200,
+    kidsMinAge: 6,
+    activitiesIncluded: ['Accommodation at Mabalingwe Nature Reserve', 'Morning game drive', 'Evening game drive', 'Bush braai experience', 'Full breakfast daily'],
+    duration: '2 nights'
+  },
+  {
+    id: 'bb3',
+    name: 'BB3 - BELA BELA MABULA GAME LODGE SAFARI GETAWAY',
+    shortName: 'Mabula Safari',
+    description: 'Includes accommodation at Mabula Game Lodge, Big 5 game drives, bush walks, and all meals.',
+    destination: 'bela-bela',
+    basePrice: 3200,
+    kidsPrice: 1600,
+    kidsMinAge: 8,
+    activitiesIncluded: ['Accommodation at Mabula Game Lodge', 'Big 5 game drives', 'Bush walks', 'All meals included'],
+    duration: '2 nights'
+  },
+  {
+    id: 'bb4',
+    name: 'BB4 - BELA BELA ZEBRA LODGE RELAXATION WITH SPA & NATURE WALKS',
+    shortName: 'Zebra Lodge Spa Retreat',
+    description: 'Includes accommodation at Zebra Country Lodge, spa treatment, guided nature walks, and gourmet meals.',
+    destination: 'bela-bela',
+    basePrice: 2600,
+    kidsPrice: 1300,
+    activitiesIncluded: ['Accommodation at Zebra Country Lodge', 'Spa treatment', 'Guided nature walks', 'Gourmet meals'],
+    duration: '2 nights'
+  },
+  {
+    id: 'bb5',
+    name: 'BB5 - BELA BELA ADVENTURE PACKAGE WITH QUAD BIKING & HOT SPRINGS',
+    shortName: 'Adventure & Hot Springs',
+    description: 'Includes accommodation, quad biking adventure, access to natural hot springs, and breakfast.',
+    destination: 'bela-bela',
+    basePrice: 1600,
+    kidsPrice: 800,
+    kidsMinAge: 12,
+    activitiesIncluded: ['Accommodation', 'Quad biking adventure', 'Hot springs access', 'Breakfast daily'],
+    duration: '2 nights'
+  },
+
   // ============= INTERNATIONAL - BALI =============
   {
     id: 'bali-ubud-6day-explorer',
