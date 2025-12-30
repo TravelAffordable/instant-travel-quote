@@ -852,15 +852,15 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'bb2',
-    name: 'BB2 - BELA BELA MABALINGWE BUSH EXPERIENCE WITH GAME DRIVES & BUSH BRAAI',
-    shortName: 'Mabalingwe Bush Experience',
-    description: 'Includes accommodation at Mabalingwe Nature Reserve, morning and evening game drives, bush braai experience, and full breakfast.',
+    id: 'so22',
+    name: 'SO22 - BELA BELA MABALINGWE ADVENTURE WITH HORSEBACK SAFARI & WATERPARK',
+    shortName: 'Mabalingwe Adventure',
+    description: 'Includes accommodation at Mabalingwe Nature Reserve (R1350/night for 2 adults), horseback safari or guided game drive in safari truck (R350 per adult), and Bela Bela Resort Waterpark entrance (R400 per adult).',
     destination: 'bela-bela',
-    basePrice: 2400,
-    kidsPrice: 1200,
-    kidsMinAge: 6,
-    activitiesIncluded: ['Accommodation at Mabalingwe Nature Reserve', 'Morning game drive', 'Evening game drive', 'Bush braai experience', 'Full breakfast daily'],
+    basePrice: 850,
+    kidsPrice: 700,
+    kidsMinAge: 4,
+    activitiesIncluded: ['Accommodation at Mabalingwe Nature Reserve', 'Horseback safari or guided game drive in safari truck', 'Bela Bela Resort Waterpark entrance'],
     duration: '2 nights'
   },
   {
