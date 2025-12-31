@@ -840,32 +840,32 @@ export const packages: Package[] = [
 
   // ============= BELA BELA PACKAGES =============
   {
-    id: 'bb1',
-    name: 'BB1 - BELA BELA HOT SPRINGS GETAWAY WITH FOREVER RESORT & GAME DRIVE',
-    shortName: 'Hot Springs & Game Drive',
-    description: 'Includes accommodation at Warmbaths Forever Resort, access to natural hot springs, a thrilling game drive experience, and breakfast.',
+    id: 'bela1',
+    name: 'BELA1 - BELA BELA RESORT WATERPARK & GAME DRIVE GETAWAY',
+    shortName: 'Waterpark & Game Drive',
+    description: 'Includes entrance into Bela Bela Resort Waterpark with water slides, water sports and warm pools, guided game drive in safari truck, and accommodation inside or just outside the resort.',
     destination: 'bela-bela',
-    basePrice: 1800,
-    kidsPrice: 900,
+    basePrice: 800,
+    kidsPrice: 600,
     kidsMinAge: 4,
-    activitiesIncluded: ['Accommodation', 'Access to natural hot springs', 'Game drive experience', 'Breakfast daily'],
+    activitiesIncluded: ['Entrance into Bela Bela Resort Waterpark with water slides, water sports and warm pools', 'Guided game drive in safari truck', 'Accommodation inside or just outside the resort'],
     duration: '2 nights'
   },
   {
-    id: 'so22',
-    name: 'SO22 - BELA BELA MABALINGWE ADVENTURE WITH HORSEBACK SAFARI & WATERPARK',
-    shortName: 'Mabalingwe Adventure',
-    description: 'Includes accommodation at Mabalingwe Nature Reserve (R1350/night for 2 adults), horseback safari or guided game drive in safari truck (R350 per adult), and Bela Bela Resort Waterpark entrance (R400 per adult).',
+    id: 'bela2',
+    name: 'BELA2 - BELA BELA MABALINGWE ADVENTURE WITH WATERPARK',
+    shortName: 'Mabalingwe & Waterpark',
+    description: 'Includes accommodation at Mabalingwe Nature Reserve (R1350/night for 2 adults), entrance fees to Bela Bela Resort Waterpark, and choice between Mabalingwe Nature Reserve horseback safari or guided game drive in safari truck (R350 per adult).',
     destination: 'bela-bela',
     basePrice: 850,
     kidsPrice: 700,
     kidsMinAge: 4,
-    activitiesIncluded: ['Accommodation at Mabalingwe Nature Reserve', 'Horseback safari or guided game drive in safari truck', 'Bela Bela Resort Waterpark entrance'],
+    activitiesIncluded: ['Accommodation at Mabalingwe Nature Reserve', 'Entrance fees to Bela Bela Resort Waterpark', 'Choice between Mabalingwe Nature Reserve horseback safari or guided game drive in safari truck'],
     duration: '2 nights'
   },
   {
-    id: 'bb3',
-    name: 'BB3 - BELA BELA MABULA GAME LODGE SAFARI GETAWAY',
+    id: 'bela3',
+    name: 'BELA3 - BELA BELA MABULA GAME LODGE SAFARI GETAWAY',
     shortName: 'Mabula Safari',
     description: 'Includes accommodation at Mabula Game Lodge, Big 5 game drives, bush walks, and all meals.',
     destination: 'bela-bela',
@@ -876,8 +876,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'bb4',
-    name: 'BB4 - BELA BELA ZEBRA LODGE RELAXATION WITH SPA & NATURE WALKS',
+    id: 'bela4',
+    name: 'BELA4 - BELA BELA ZEBRA LODGE RELAXATION WITH SPA & NATURE WALKS',
     shortName: 'Zebra Lodge Spa Retreat',
     description: 'Includes accommodation at Zebra Country Lodge, spa treatment, guided nature walks, and gourmet meals.',
     destination: 'bela-bela',
@@ -887,8 +887,8 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
-    id: 'bb5',
-    name: 'BB5 - BELA BELA ADVENTURE PACKAGE WITH QUAD BIKING & HOT SPRINGS',
+    id: 'bela5',
+    name: 'BELA5 - BELA BELA ADVENTURE PACKAGE WITH QUAD BIKING & HOT SPRINGS',
     shortName: 'Adventure & Hot Springs',
     description: 'Includes accommodation, quad biking adventure, access to natural hot springs, and breakfast.',
     destination: 'bela-bela',
