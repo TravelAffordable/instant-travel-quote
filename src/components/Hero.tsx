@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X, FileText, Bus } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X, FileText, Bus, Puzzle } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -176,6 +177,7 @@ interface FamilyQuotes {
 }
 
 export function Hero({ onGetQuote }: HeroProps) {
+  const navigate = useNavigate();
   const [destination, setDestination] = useState('');
   const [packageIds, setPackageIds] = useState<string[]>([]);
   const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(false);
@@ -490,6 +492,13 @@ export function Hero({ onGetQuote }: HeroProps) {
             >
               <PartyPopper className="w-5 h-5" />
               <span className="font-medium">I would like accommodation with fun activities included</span>
+            </button>
+            <button
+              onClick={() => navigate('/build-package')}
+              className="flex items-center gap-3 px-6 py-4 rounded-xl transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-lg hover:scale-105"
+            >
+              <Puzzle className="w-5 h-5" />
+              <span className="font-medium">I'd like to build my own package according to my budget</span>
             </button>
           </div>
           
