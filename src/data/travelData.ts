@@ -721,7 +721,7 @@ export const packages: Package[] = [
     description: 'Includes accommodation, entrance to Sun City and Valley of The Waves, lunch inside Sun City, and shuttle transport to and from Sun City (if staying outside).',
     destination: 'sun-city',
     basePrice: 850,
-    kidsPrice: 800,
+    kidsPrice: 550,
     activitiesIncluded: ['Accommodation', 'Entrance to Sun City', 'Valley of The Waves access', 'Lunch inside Sun City', 'Shuttle service (if booked just outside Sun City)'],
     duration: '2 nights'
   },
