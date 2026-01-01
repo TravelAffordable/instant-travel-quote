@@ -234,7 +234,7 @@ const activitiesByDestination: Record<string, Activity[]> = {
     { name: 'Sunday Lunch Buffet in Harties', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=100', rates: { adult: 350, child: 200, freeAge: 3 } },
     { name: '1 Hour Pleasure Cruise and Sunday Buffet Lunch in Harties', image: 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=100', rates: { adult: 650, child: 400, freeAge: 6 } },
     { name: 'Harties Cableway', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=100', rates: { adult: 360, child: 220, freeAge: 3 } },
-    { name: 'Breakfast Sun City Area Guesthouse A', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=100', rates: { adult: 150, child: 75, freeAge: 5 } },
+    { name: 'Breakfast Sun City Area Guesthouse A', image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=100', rates: { adult: 150, child: 75, freeAge: 0, childAgeRange: { min: 0, max: 5 } } },
   ],
   'Bela Bela Getaways': [
     { name: 'Forever Resorts Waterpark Entry', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=100', rates: { adult: 280, child: 200, freeAge: 3 } },
