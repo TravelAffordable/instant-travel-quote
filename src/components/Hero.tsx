@@ -62,7 +62,11 @@ const SUN_CITY_CUSTOM_HOTELS = [
   'Sun Hotel Estate',
   'Cabanas Hotel',
   'Sun City Vacation Club',
-  'Sun City Area Guesthouse A',
+  'Sun City Area Guesthouse A - 2 Sleeper - R1100/night',
+  'Sun City Area Guesthouse A - 3 Sleeper Family Room - R1460/night',
+  'Sun City Area Guesthouse A - 4 Sleeper Family Room - R1760/night',
+  'Sun City Area Guesthouse A - 5 Sleeper Family Room - R1960/night',
+  'Sun City Area Guesthouse A - 6 Sleeper Family Room - R2100/night',
 ];
 
 // Magaliesburg custom hotels (editable placeholders)
