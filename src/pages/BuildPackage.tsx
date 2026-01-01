@@ -37,6 +37,9 @@ interface Activity {
     freeAge: number;
     childAgeRange?: { min: number; max: number };
   };
+  isComboEntry?: boolean;
+  isShuttle?: boolean;
+  shuttleBaseCost?: number;
 }
 
 // Hotels data organized by destination
@@ -219,11 +222,10 @@ const activitiesByDestination: Record<string, Activity[]> = {
     { name: 'Private Romantic Picnic', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=100', rates: { adult: 650, child: 0, freeAge: 0 } },
   ],
   'Sun City Getaways': [
-    { name: 'Sun City Entry', image: sunCityImage, rates: { adult: 150, child: 100, freeAge: 3 } },
-    { name: 'Valley of the Waves Entry', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=100', rates: { adult: 350, child: 250, freeAge: 3 } },
+    { name: 'Sun City and Valley of the Waves Entrance', image: sunCityImage, rates: { adult: 550, child: 400, freeAge: 2, childAgeRange: { min: 2, max: 12 } }, isComboEntry: true },
     { name: 'Pilanesberg Game Drive in Safari Truck', image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=100', rates: { adult: 650, child: 450, freeAge: 6 } },
     { name: 'Lunch Inside Sun City', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=100', rates: { adult: 350, child: 250, freeAge: 0 } },
-    { name: 'Shuttle to Sun City from Guesthouse', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=100', rates: { adult: 200, child: 150, freeAge: 0 } },
+    { name: 'Shuttle to Sun City from Guesthouse', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=100', rates: { adult: 0, child: 0, freeAge: 0 }, isShuttle: true, shuttleBaseCost: 800 },
     { name: 'Sun City Golf Course', image: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=100', rates: { adult: 1200, child: 0, freeAge: 0 } },
     { name: 'Zip Slide Adventure', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100', rates: { adult: 450, child: 350, freeAge: 8 } },
     { name: 'Segway Tour', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100', rates: { adult: 380, child: 380, freeAge: 0 } },
@@ -387,14 +389,38 @@ const BuildPackage = () => {
     setKidAges(newKidAges);
   };
 
+  // Calculate shuttle cost per adult based on number of adults
+  const calculateShuttleCostPerAdult = (numAdults: number) => {
+    if (numAdults <= 1) return 800;
+    if (numAdults === 2) return 400;
+    if (numAdults === 3) return 270;
+    if (numAdults === 4) return 200;
+    return 150; // 5+ adults
+  };
+
   // Calculate activity cost
   const calculateActivityCost = (activity: Activity) => {
     if (!activity || !activity.rates) return 0;
+    
+    // Special handling for shuttle - divide R800 among adults
+    if (activity.isShuttle && activity.shuttleBaseCost) {
+      const shuttleCostPerAdult = calculateShuttleCostPerAdult(adults);
+      return shuttleCostPerAdult * adults;
+    }
+    
     const rates = activity.rates;
     let adultCost = 0;
     let childCost = 0;
 
-    if (rates.childAgeRange) {
+    // Special handling for combo entry (Sun City + Valley of the Waves)
+    if (activity.isComboEntry && rates.childAgeRange) {
+      // Adults (13+) pay adult rate
+      const adultsCount = adults + kidAges.filter(age => age > rates.childAgeRange!.max).length;
+      adultCost = rates.adult * adultsCount;
+      // Kids 2-12 pay child rate
+      childCost = rates.child * kidAges.filter(age => age >= rates.childAgeRange!.min && age <= rates.childAgeRange!.max).length;
+      // Kids under 2 are free (not counted)
+    } else if (rates.childAgeRange) {
       adultCost = rates.adult * (adults + kidAges.filter(age => age >= rates.childAgeRange!.max).length);
       childCost = rates.child * kidAges.filter(age => age >= rates.childAgeRange!.min && age <= rates.childAgeRange!.max).length;
     } else {
