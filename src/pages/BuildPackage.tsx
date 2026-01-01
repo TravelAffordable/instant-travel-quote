@@ -618,8 +618,8 @@ const BuildPackage = () => {
                                   <Check className="w-8 h-8 text-primary bg-white rounded-full p-1" />
                                 </div>
                               )}
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] p-1 leading-tight">
-                                {activity.name.length > 30 ? activity.name.substring(0, 30) + '...' : activity.name}
+                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-sm font-medium py-2 px-1 leading-tight text-center">
+                                {activity.name.length > 40 ? activity.name.substring(0, 40) + '...' : activity.name}
                               </div>
                             </div>
                             <p className="text-xs mt-1 text-muted-foreground">
