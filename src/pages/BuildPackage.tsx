@@ -222,7 +222,7 @@ const activitiesByDestination: Record<string, Activity[]> = {
     { name: 'Private Romantic Picnic', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=100', rates: { adult: 650, child: 0, freeAge: 0 } },
   ],
   'Sun City Getaways': [
-    { name: 'Sun City and Valley of the Waves Entrance', image: sunCityImage, rates: { adult: 550, child: 400, freeAge: 2, childAgeRange: { min: 2, max: 12 } }, isComboEntry: true },
+    { name: 'Sun City and Valley of the Waves Entrance', image: sunCityImage, rates: { adult: 550, child: 400, freeAge: 2, childAgeRange: { min: 2, max: 16 } }, isComboEntry: true },
     { name: 'Pilanesberg Game Drive in Safari Truck', image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=100', rates: { adult: 650, child: 450, freeAge: 6 } },
     { name: 'Lunch Inside Sun City', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=100', rates: { adult: 350, child: 250, freeAge: 0 } },
     { name: 'Shuttle to Sun City from Guesthouse', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=100', rates: { adult: 0, child: 0, freeAge: 0 }, isShuttle: true, shuttleBaseCost: 800 },
@@ -398,37 +398,35 @@ const BuildPackage = () => {
     return 150; // 5+ adults
   };
 
-  // Calculate activity cost
-  const calculateActivityCost = (activity: Activity) => {
+  // Calculate activity cost for ADULTS only (kids handled separately to avoid double counting)
+  const calculateAdultActivityCost = (activity: Activity) => {
     if (!activity || !activity.rates) return 0;
-    
+
     // Special handling for shuttle - divide R800 among adults
     if (activity.isShuttle && activity.shuttleBaseCost) {
       const shuttleCostPerAdult = calculateShuttleCostPerAdult(adults);
       return shuttleCostPerAdult * adults;
     }
-    
-    const rates = activity.rates;
-    let adultCost = 0;
-    let childCost = 0;
 
-    // Special handling for combo entry (Sun City + Valley of the Waves)
-    if (activity.isComboEntry && rates.childAgeRange) {
-      // Adults (13+) pay adult rate
-      const adultsCount = adults + kidAges.filter(age => age > rates.childAgeRange!.max).length;
-      adultCost = rates.adult * adultsCount;
-      // Kids 2-12 pay child rate
-      childCost = rates.child * kidAges.filter(age => age >= rates.childAgeRange!.min && age <= rates.childAgeRange!.max).length;
-      // Kids under 2 are free (not counted)
-    } else if (rates.childAgeRange) {
-      adultCost = rates.adult * (adults + kidAges.filter(age => age >= rates.childAgeRange!.max).length);
-      childCost = rates.child * kidAges.filter(age => age >= rates.childAgeRange!.min && age <= rates.childAgeRange!.max).length;
-    } else {
-      adultCost = rates.adult * adults;
-      childCost = rates.child * kidAges.filter(age => age > rates.freeAge).length;
+    return activity.rates.adult * adults;
+  };
+
+  const calculateChildActivityCost = (activity: Activity, age: number) => {
+    if (!activity || !activity.rates) return 0;
+
+    const rates = activity.rates;
+
+    // Free age rule
+    if (age <= rates.freeAge) return 0;
+
+    // If an activity defines a child age range, use it to decide adult vs child price
+    if (rates.childAgeRange) {
+      if (age >= rates.childAgeRange.min && age <= rates.childAgeRange.max) return rates.child;
+      return rates.adult;
     }
 
-    return adultCost + childCost;
+    // Default: treat all paying kids as child rate
+    return rates.child;
   };
 
   // Calculate additional service fee per adult (matching travelData.ts)
@@ -455,31 +453,31 @@ const BuildPackage = () => {
     const additionalFeePerAdult = calculateAdditionalFee(adults);
 
     const activities = activitiesByDestination[destination] || [];
-    const totalActivityCost = selectedActivities.reduce((acc, activityName) => {
+
+    // IMPORTANT: adults-only activity costs here; kids are calculated below.
+    const totalAdultActivityCost = selectedActivities.reduce((acc, activityName) => {
       const activity = activities.find(a => a.name === activityName);
-      return acc + (activity ? calculateActivityCost(activity) : 0);
+      return acc + (activity ? calculateAdultActivityCost(activity) : 0);
     }, 0);
 
-    const totalPackageCostPerAdult = costPerAdult + additionalFeePerAdult + totalActivityCost / adults;
+    const totalPackageCostPerAdult =
+      adults > 0 ? costPerAdult + additionalFeePerAdult + totalAdultActivityCost / adults : 0;
+
     const feePerChild = calculateChildFee(adults);
 
     const totalPackageCostsPerChild = kidAges.reduce((acc, age) => {
       // Only children ages 4-16 are charged fees (matching travelData.ts)
       if (age < 4 || age > 16) return acc;
-      
+
       const childActivityCost = selectedActivities.reduce((actAcc, activityName) => {
         const activity = activities.find(a => a.name === activityName);
-        if (!activity) return actAcc;
-        if (age >= 12) {
-          return actAcc + activity.rates.adult;
-        } else {
-          return actAcc + activity.rates.child;
-        }
+        return actAcc + (activity ? calculateChildActivityCost(activity, age) : 0);
       }, 0);
+
       return acc + childActivityCost + feePerChild;
     }, 0);
 
-    return (totalPackageCostPerAdult * adults) + totalPackageCostsPerChild;
+    return totalPackageCostPerAdult * adults + totalPackageCostsPerChild;
   };
 
   // Handle image carousel
@@ -736,7 +734,7 @@ const BuildPackage = () => {
                           <p><span className="font-medium">Check-in:</span> {checkIn}</p>
                           <p><span className="font-medium">Check-out:</span> {checkOut}</p>
                           <p><span className="font-medium">Room Type:</span> {hotel.roomType}</p>
-                          <p><span className="font-medium">Guests:</span> {hotel.guests}</p>
+                          <p><span className="font-medium">Guests:</span> {adults} adult{adults > 1 ? 's' : ''}{kids > 0 ? ` and ${kids} child${kids > 1 ? 'ren' : ''} (${kidAges.join(', ')})` : ''}</p>
                           <p><span className="font-medium">Amenities:</span> {hotel.amenities}</p>
                           <p><span className="font-medium">Nightly Rate:</span> {formatCurrency(hotel.nightlyRate)}</p>
                           <p><span className="font-medium">Nights:</span> {calculateTotalNights(checkIn, checkOut)}</p>
