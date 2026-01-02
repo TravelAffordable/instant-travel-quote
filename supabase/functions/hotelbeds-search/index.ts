@@ -69,6 +69,24 @@ const destinationConfig: Record<string, { latitude: number; longitude: number; r
 };
 
 function normalizeDestinationKey(input: string): string {
+  // First check if it's an uppercase airport/destination code
+  const upperInput = (input || '').toUpperCase().trim();
+  const codeAliases: Record<string, string> = {
+    'DUR': 'durban',
+    'CPT': 'cape-town',
+    'JNB': 'johannesburg',
+    'SUN': 'sun-city',
+    'PRY': 'pretoria',
+    'GRJ': 'knysna',
+    'MQP': 'mpumalanga',
+    'PMB': 'drakensberg',
+    'HLA': 'harties',
+  };
+
+  if (codeAliases[upperInput]) {
+    return codeAliases[upperInput];
+  }
+
   const key = (input || '')
     .toLowerCase()
     .trim()
@@ -78,6 +96,8 @@ function normalizeDestinationKey(input: string): string {
   const aliases: Record<string, string> = {
     // Durban area
     'durban-central': 'durban',
+    'durban-beachfront': 'durban',
+    'umhlanga': 'umhlanga',
 
     // Hartbeespoort variants
     'hartbeespoort': 'harties',
@@ -88,6 +108,26 @@ function normalizeDestinationKey(input: string): string {
     'magaliesburg': 'magalies',
     'magaliesberg': 'magalies',
     'magalies': 'magalies',
+
+    // Sun City
+    'sun-city': 'sun-city',
+    'suncity': 'sun-city',
+
+    // Bela Bela
+    'bela-bela': 'bela-bela',
+    'belabela': 'bela-bela',
+
+    // Vaal
+    'vaal-river': 'vaal-river',
+    'vaal': 'vaal-river',
+
+    // Cape Town
+    'cape-town': 'cape-town',
+    'capetown': 'cape-town',
+
+    // Knysna
+    'knysna': 'knysna',
+    'garden-route': 'garden-route',
   };
 
   return aliases[key] || key;
