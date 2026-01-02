@@ -33,7 +33,7 @@ const SocialAds = () => {
   const [whatsappNumber, setWhatsappNumber] = useState("0796813869");
   const [heroTitle, setHeroTitle] = useState("SUN CITY\nGETAWAY");
   const [heroBadge, setHeroBadge] = useState("🔥 NEW YEAR SPECIAL");
-  const [heroDate, setHeroDate] = useState("31 Dec - 02 Jan 2026");
+  const [heroDate, setHeroDate] = useState("Weekends & Midweek");
   const [heroDistanceLabel, setHeroDistanceLabel] = useState("7 MIN FROM");
   const [heroDistanceLocation, setHeroDistanceLocation] = useState("SUN CITY");
   const [heroPriceLabel, setHeroPriceLabel] = useState("FROM ONLY");
@@ -74,7 +74,7 @@ const SocialAds = () => {
   const [fbTitle, setFbTitle] = useState("SUN CITY ESCAPE");
   const [fbBadge, setFbBadge] = useState("🎉 NEW YEAR 2026");
   const [fbDistanceText, setFbDistanceText] = useState("7 min from Sun City");
-  const [fbDateText, setFbDateText] = useState("31 Dec - 02 Jan");
+  const [fbDateText, setFbDateText] = useState("Weekends & Midweek");
   const [fbNightsText, setFbNightsText] = useState("2 Nights B&B");
   const [fbPriceLabel, setFbPriceLabel] = useState("PACKAGES FROM");
   const [fbPriceSubtext, setFbPriceSubtext] = useState("per person sharing");
@@ -85,9 +85,9 @@ const SocialAds = () => {
   const [compareFooter, setCompareFooter] = useState("Weekends available too!");
 
   // Editable Tweet Templates
-  const [tweetTemplate1, setTweetTemplate1] = useState(`🎉 NEW YEAR at SUN CITY! 🌴\n\n7 min from Sun City\n📅 31 Dec - 02 Jan 2026\n\n✅ Valley of the Waves\n✅ Sun City Entrance\n✅ 2 Nights B&B\n\nFrom R2,830 pp\n\n📲 WhatsApp: 0796813869\n\n#SunCity #NewYear2026 #Travel`);
+  const [tweetTemplate1, setTweetTemplate1] = useState(`🎉 SUN CITY GETAWAY! 🌴\n\n7 min from Sun City\n📅 Weekends & Midweek\n\n✅ Valley of the Waves\n✅ Sun City Entrance\n✅ 2 Nights B&B\n\nFrom R2,830 pp\n\n📲 WhatsApp: 0796813869\n\n#SunCity #Travel`);
   const [tweetTemplate2, setTweetTemplate2] = useState(`🦁 SAFARI + SUN CITY COMBO! 🌅\n\nPilanesberg Game Drive included!\n📍 Sundown Ranch\n\nOnly R3,450 per person\n\n📞 Book: 0796813869\n\n#Safari #SunCity #Pilanesberg`);
-  const [tweetTemplate3, setTweetTemplate3] = useState(`⏰ LIMITED SPOTS for New Year!\n\nSundown Ranch\n🗓️ 31 Dec - 02 Jan 2026\n\n💰 From R2,830 pp\n\nIncludes transport, entrance & more!\n\n📲 0796813869\n\n#SunCity #NYE2026`);
+  const [tweetTemplate3, setTweetTemplate3] = useState(`⏰ LIMITED SPOTS!\n\nSundown Ranch\n🗓️ Weekends & Midweek\n\n💰 From R2,830 pp\n\nIncludes transport, entrance & more!\n\n📲 0796813869\n\n#SunCity #Travel`);
   const [editingTweet, setEditingTweet] = useState<number | null>(null);
 
   const [sundownPackages, setSundownPackages] = useState([
