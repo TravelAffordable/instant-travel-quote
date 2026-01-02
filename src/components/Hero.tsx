@@ -1239,6 +1239,37 @@ export function Hero({ onGetQuote }: HeroProps) {
                                         </div>
                                       </div>
                                     )}
+                                    
+                                    {/* Cost Breakdown */}
+                                    <div className="mt-3 pt-3 border-t border-amber-200">
+                                      <p className="text-muted-foreground text-sm font-medium mb-2">Cost Breakdown:</p>
+                                      <div className="space-y-1 text-sm">
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Total Accommodation Cost:</span>
+                                          <span className="font-medium">{formatCurrency(quote.totalCost)}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Package Activity Cost ({adults} adult{adults !== 1 ? 's' : ''}):</span>
+                                          <span className="font-medium">{formatCurrency(totalPackageCost)}</span>
+                                        </div>
+                                        {kidsAges.length > 0 && (
+                                          <div className="flex justify-between">
+                                            <span className="text-muted-foreground">Package Activity Cost ({kidsAges.length} child{kidsAges.length !== 1 ? 'ren' : ''}):</span>
+                                            <span className="font-medium">{formatCurrency(kidsPackageCost)}</span>
+                                          </div>
+                                        )}
+                                        <div className="flex justify-between">
+                                          <span className="text-muted-foreground">Service Fee ({adults} adult{adults !== 1 ? 's' : ''} × {formatCurrency(serviceFeePerAdult)}):</span>
+                                          <span className="font-medium">{formatCurrency(totalServiceFees)}</span>
+                                        </div>
+                                        {kidsAges.length > 0 && (
+                                          <div className="flex justify-between">
+                                            <span className="text-muted-foreground">Service Fee ({kidsAges.length} child{kidsAges.length !== 1 ? 'ren' : ''} × {formatCurrency(kidFeePerChild)}):</span>
+                                            <span className="font-medium">{formatCurrency(kidsFees)}</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
                                   
                                   {/* Right side - Price and Edit */}
@@ -1258,14 +1289,14 @@ export function Hero({ onGetQuote }: HeroProps) {
                                         <p className="text-2xl font-bold text-primary">
                                           {formatCurrency(perPerson)}
                                         </p>
-                                        <p className="text-xs text-muted-foreground">per person</p>
+                                        <p className="text-xs text-muted-foreground">Total Package Price Per Person</p>
                                       </>
                                     )}
                                     
                                     <p className={kidsAges.length > 0 ? "text-2xl font-bold text-primary" : "text-lg font-semibold text-amber-800 mt-1"}>
                                       {formatCurrency(grandTotal)}
                                     </p>
-                                    <p className="text-xs text-muted-foreground">{kidsAges.length > 0 ? 'grand total' : 'total'}</p>
+                                    <p className="text-xs text-muted-foreground">{kidsAges.length > 0 ? 'Grand Total' : 'Grand Total'}</p>
                                   </div>
                                 </div>
                               </CardContent>
