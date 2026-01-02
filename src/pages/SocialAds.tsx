@@ -181,7 +181,7 @@ const SocialAds = () => {
   ]);
 
   // Hotel name state
-  const [sundownHotelName, setSundownHotelName] = useState('Sundown Ranch Hotel');
+  const [sundownHotelName, setSundownHotelName] = useState('At various hotels and guesthouses 7 minutes from Sun City');
   const [guesthouseHotelName, setGuesthouseHotelName] = useState('Sun City Area Guesthouse A');
 
   const packages = activeAd === 'sundown' ? sundownPackages : guesthousePackages;
