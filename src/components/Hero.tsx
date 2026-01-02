@@ -34,6 +34,9 @@ const DURBAN_CUSTOM_HOTELS = [
   'Garden Court Marine Parade',
   'Garden Court South Beach',
   'Tropicana Hotel',
+  'Southern Sun Marine Parade',
+  'The Balmoral Hotel',
+  'Onomo Hotel Durban',
 ];
 
 // Hartbeespoort custom hotels
