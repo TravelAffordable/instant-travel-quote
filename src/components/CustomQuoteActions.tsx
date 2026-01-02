@@ -176,8 +176,8 @@ QUOTE ${index + 1}
     if (kidsAges.length === 0) {
       text += `
 💰 PRICING
-   Per Person: ${formatCurrency(perPerson)}
-   Total Cost: ${formatCurrency(grandTotal)}
+   Total Package Price Per Person: ${formatCurrency(perPerson)}
+   Grand Total: ${formatCurrency(grandTotal)}
 `;
     } else {
       text += `
@@ -259,11 +259,11 @@ QUOTE ${index + 1}
           pdf.text(formatCurrency(perPerson), pageWidth - margin, yPos, { align: 'right' });
           yPos += 5;
 
-          // "per person" label
+          // "Total Package Price Per Person" label
           pdf.setFontSize(8);
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(100, 100, 100);
-          pdf.text('per person', pageWidth - margin, yPos, { align: 'right' });
+          pdf.text('Total Package Price Per Person', pageWidth - margin, yPos, { align: 'right' });
           yPos += 6;
         }
 
@@ -282,11 +282,11 @@ QUOTE ${index + 1}
         pdf.text(formatCurrency(grandTotal), pageWidth - margin, yPos, { align: 'right' });
         yPos += 4;
 
-        // "grand total" or "total" label
+        // "Grand Total" label
         pdf.setFontSize(8);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(100, 100, 100);
-        pdf.text(kidsAges.length > 0 ? 'grand total' : 'total', pageWidth - margin, yPos, { align: 'right' });
+        pdf.text('Grand Total', pageWidth - margin, yPos, { align: 'right' });
         yPos += 6;
 
         // Meal plan in green with checkmark

@@ -79,9 +79,9 @@ R${budget}
 
     quoteText += `
 PRICING
-${quote.children === 0 ? `Per Person: ${formatCurrency(quote.totalPerPerson)}\n` : ''}Total Cost: ${formatCurrency(quote.totalForGroup)}
+${quote.children === 0 ? `Total Package Price Per Person: ${formatCurrency(quote.totalPerPerson)}\n` : ''}Grand Total: ${formatCurrency(quote.totalForGroup)}
 
-This quote includes hotel accommodation and all activities associated with the package.
+This quote includes Total Accommodation Cost and Package Activity Costs.
 
 Contact Us
 Email: info@travelaffordable.co.za
@@ -279,15 +279,18 @@ Web: www.travelaffordable.co.za`;
                     <p className="text-2xl font-bold text-primary font-display">
                       {formatCurrency(quote.totalPerPerson)}
                     </p>
-                    <p className="text-xs text-muted-foreground">per person</p>
+                    <p className="text-xs text-muted-foreground">Total Package Price Per Person</p>
                     <p className="text-sm font-semibold text-foreground mt-1">
-                      {formatCurrency(quote.totalForGroup)} total
+                      {formatCurrency(quote.totalForGroup)} Grand Total
                     </p>
                   </>
                 ) : (
-                  <p className="text-2xl font-bold text-primary font-display">
-                    {formatCurrency(quote.totalForGroup)}
-                  </p>
+                  <>
+                    <p className="text-2xl font-bold text-primary font-display">
+                      {formatCurrency(quote.totalForGroup)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Grand Total</p>
+                  </>
                 )}
               </div>
             </div>
