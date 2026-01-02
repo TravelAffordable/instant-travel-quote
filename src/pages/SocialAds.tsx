@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,14 @@ const SocialAds = () => {
   const [isPosting, setIsPosting] = useState(false);
   const [editingAd, setEditingAd] = useState<string | null>(null);
   const [editedFields, setEditedFields] = useState<EditableField>({});
+
+  // Refs for capturing ad images
+  const heroAdRef = useRef<HTMLDivElement>(null);
+  const story1AdRef = useRef<HTMLDivElement>(null);
+  const story2AdRef = useRef<HTMLDivElement>(null);
+  const facebookAdRef = useRef<HTMLDivElement>(null);
+  const compareAdRef = useRef<HTMLDivElement>(null);
+  const packageAdRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
 
   // Editable content state - Hero Ad
   const [whatsappNumber, setWhatsappNumber] = useState("0796813869");
@@ -362,7 +370,7 @@ const SocialAds = () => {
       <div className="grid gap-8 max-w-6xl mx-auto">
         
         {/* AD 1: Hero Ad - Square Format */}
-        <div className="relative bg-gradient-to-br from-black via-amber-950 to-black rounded-3xl overflow-hidden shadow-2xl" style={{ aspectRatio: '1/1', maxWidth: '600px', margin: '0 auto' }}>
+        <div ref={heroAdRef} className="relative bg-gradient-to-br from-black via-amber-950 to-black rounded-3xl overflow-hidden shadow-2xl" style={{ aspectRatio: '1/1', maxWidth: '600px', margin: '0 auto' }}>
           <EditButton adId="hero" />
           <SaveButton adId="hero" />
           <div className="relative h-full">
@@ -517,6 +525,7 @@ const SocialAds = () => {
           <AdShareButtons 
             adName="Hero Ad" 
             tweetText={`${heroBadge}\n\n${heroTitle.replace(/\n/g, ' ')}\n${hotelName}\n📅 ${heroDate}\n\n${heroPriceLabel} R${packages[0].pricePerPerson.toLocaleString()}\n${heroPriceSubtext}\n\n📲 WhatsApp: ${whatsappNumber}\n\n#SunCity #Travel #SouthAfrica`}
+            adContainerRef={heroAdRef}
           />
         </div>
 
@@ -524,6 +533,7 @@ const SocialAds = () => {
         <div className="grid md:grid-cols-3 gap-4">
           {packages.map((pkg, index) => (
             <div 
+              ref={packageAdRefs[index]}
               key={pkg.name}
               className="relative bg-gradient-to-br from-black to-amber-950 rounded-2xl overflow-hidden shadow-xl"
               style={{ aspectRatio: '4/5' }}
@@ -620,6 +630,7 @@ const SocialAds = () => {
               <AdShareButtons 
                 adName={pkg.name} 
                 tweetText={`${pkg.highlight}\n\n${pkg.name}\n${hotelName}\n\n${pkg.includes.slice(0, 4).map(i => `✅ ${i}`).join('\n')}\n\n💰 R${pkg.pricePerPerson.toLocaleString()} per person\n💰 R${pkg.totalFor2.toLocaleString()} total for 2\n\n📲 WhatsApp: ${whatsappNumber}\n\n#SunCity #Travel`}
+                adContainerRef={packageAdRefs[index]}
               />
             </div>
           ))}
@@ -629,6 +640,7 @@ const SocialAds = () => {
         {/* AD 3: Story Format - Vertical */}
         <div className="flex justify-center gap-4 flex-wrap">
           <div 
+            ref={story1AdRef}
             className="relative bg-gradient-to-b from-amber-600 via-orange-700 to-black rounded-3xl overflow-hidden shadow-2xl"
             style={{ aspectRatio: '9/16', width: '320px' }}
           >
@@ -788,11 +800,13 @@ const SocialAds = () => {
             <AdShareButtons 
               adName="Story Ad - New Year" 
               tweetText={`${storyBadge}\n\n${storyNewYearText}\n${storyTitle.replace(/\n/g, ' ')}\n\n📅 ${heroDate}\n📍 ${hotelName}\n🕐 ${storyDistanceText}\n\n✅ ${storyInclude1}\n✅ ${storyInclude2}\n✅ ${storyInclude3}\n✅ ${storyInclude4}\n\n${storyPriceLabel} R${packages[0].pricePerPerson.toLocaleString()}\n${storyPriceSubtext}\n\n📲 ${whatsappNumber}\n\n#SunCity #NewYear2026`}
+              adContainerRef={story1AdRef}
             />
           </div>
 
           {/* Story 2 - Safari Focus */}
           <div 
+            ref={story2AdRef}
             className="relative bg-gradient-to-b from-green-800 via-emerald-900 to-black rounded-3xl overflow-hidden shadow-2xl"
             style={{ aspectRatio: '9/16', width: '320px' }}
           >
@@ -936,12 +950,14 @@ const SocialAds = () => {
             <AdShareButtons 
               adName="Story Ad - Safari" 
               tweetText={`${safariBadge}\n\n${safariTitle.replace(/\n/g, ' ')}\n${safariSubtitle}\n\n${safariPackageTitle}:\n✅ ${safariInclude1}\n✅ ${safariInclude2}\n✅ ${safariInclude3}\n✅ ${safariInclude4}\n✅ ${safariInclude5}\n✅ ${safariInclude6}\n\n${safariPriceLabel} R${packages[2].pricePerPerson.toLocaleString()}\n${safariPriceSubtext}\n${safariTotalLabel} R${packages[2].totalFor2.toLocaleString()}\n\n📞 ${whatsappNumber}\n\n#Safari #SunCity #Pilanesberg`}
+              adContainerRef={story2AdRef}
             />
           </div>
         </div>
 
         {/* AD 4: Facebook Wide Format */}
         <div 
+          ref={facebookAdRef}
           className="relative bg-gradient-to-r from-black via-amber-950 to-black rounded-2xl overflow-hidden shadow-2xl"
           style={{ aspectRatio: '16/9', maxWidth: '800px', margin: '0 auto' }}
         >
@@ -1046,11 +1062,12 @@ const SocialAds = () => {
           <AdShareButtons 
             adName="Facebook Ad" 
             tweetText={`${fbBadge}\n\n${fbTitle}\n${hotelName} • ${fbDistanceText}\n\n📅 ${fbDateText}\n🛏️ ${fbNightsText}\n\n${fbPriceLabel}\nR${packages[0].pricePerPerson.toLocaleString()} ${fbPriceSubtext}\n\n📲 ${whatsappNumber}\n\n#SunCity #NewYear2026 #Travel`}
+            adContainerRef={facebookAdRef}
           />
         </div>
 
         {/* AD 5: Comparison Card */}
-        <div className="relative bg-gradient-to-br from-black to-amber-950 rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto">
+        <div ref={compareAdRef} className="relative bg-gradient-to-br from-black to-amber-950 rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto">
           <EditButton adId="compare" />
           <SaveButton adId="compare" />
           <div className="text-center mb-6">
@@ -1156,6 +1173,7 @@ const SocialAds = () => {
           <AdShareButtons 
             adName="Comparison Card" 
             tweetText={`${compareBadge}\n\n${hotelName}\n📅 ${heroDate} • ${compareSubtitle}\n\n${packages.map(p => `${p.name}: R${p.pricePerPerson.toLocaleString()} pp`).join('\n')}\n\n${compareFooter}\n\n📲 WhatsApp: ${whatsappNumber}\n\n#SunCity #Travel #Packages`}
+            adContainerRef={compareAdRef}
           />
         </div>
       </div>

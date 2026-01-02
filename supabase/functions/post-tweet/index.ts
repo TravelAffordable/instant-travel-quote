@@ -37,7 +37,7 @@ function generateOAuthSignature(
   )}&${encodeURIComponent(
     Object.entries(params)
       .sort()
-      .map(([k, v]) => `${k}=${v}`)
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
       .join("&")
   )}`;
   const signingKey = `${encodeURIComponent(
@@ -49,20 +49,23 @@ function generateOAuthSignature(
   return signature;
 }
 
-function generateOAuthHeader(method: string, url: string): string {
-  const oauthParams = {
+function generateOAuthHeader(method: string, url: string, additionalParams: Record<string, string> = {}): string {
+  const oauthParams: Record<string, string> = {
     oauth_consumer_key: API_KEY!,
-    oauth_nonce: Math.random().toString(36).substring(2),
+    oauth_nonce: Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2),
     oauth_signature_method: "HMAC-SHA1",
     oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
     oauth_token: ACCESS_TOKEN!,
     oauth_version: "1.0",
   };
 
+  // Combine oauth params with additional params for signature
+  const allParams = { ...oauthParams, ...additionalParams };
+
   const signature = generateOAuthSignature(
     method,
     url,
-    oauthParams,
+    allParams,
     API_SECRET!,
     ACCESS_TOKEN_SECRET!
   );
@@ -84,30 +87,78 @@ function generateOAuthHeader(method: string, url: string): string {
   );
 }
 
-const BASE_URL = "https://api.x.com/2";
+const TWEET_URL = "https://api.x.com/2/tweets";
+const MEDIA_UPLOAD_URL = "https://upload.twitter.com/1.1/media/upload.json";
 
-async function sendTweet(tweetText: string): Promise<any> {
-  const url = `${BASE_URL}/tweets`;
+async function uploadMedia(mediaData: string): Promise<string> {
+  console.log("Starting media upload...");
+  
+  // Remove data URL prefix if present
+  const base64Data = mediaData.replace(/^data:image\/\w+;base64,/, '');
+  
+  const params = {
+    media_data: base64Data,
+  };
+
+  const oauthHeader = generateOAuthHeader("POST", MEDIA_UPLOAD_URL, params);
+  
+  const formData = new URLSearchParams();
+  formData.append("media_data", base64Data);
+
+  console.log("Uploading media to Twitter...");
+  
+  const response = await fetch(MEDIA_UPLOAD_URL, {
+    method: "POST",
+    headers: {
+      Authorization: oauthHeader,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: formData.toString(),
+  });
+
+  const responseText = await response.text();
+  console.log("Media upload response status:", response.status);
+
+  if (!response.ok) {
+    console.error("Media upload failed:", responseText);
+    throw new Error(`Media upload failed: ${response.status} - ${responseText}`);
+  }
+
+  const result = JSON.parse(responseText);
+  console.log("Media uploaded successfully, media_id:", result.media_id_string);
+  
+  return result.media_id_string;
+}
+
+async function sendTweet(tweetText: string, mediaIds?: string[]): Promise<any> {
   const method = "POST";
-  const params = { text: tweetText };
+  
+  const tweetBody: any = { text: tweetText };
+  
+  if (mediaIds && mediaIds.length > 0) {
+    tweetBody.media = { media_ids: mediaIds };
+  }
 
-  const oauthHeader = generateOAuthHeader(method, url);
+  // For v2 API, we don't include body params in OAuth signature
+  const oauthHeader = generateOAuthHeader(method, TWEET_URL);
 
-  const response = await fetch(url, {
+  console.log("Posting tweet...", { hasMedia: !!mediaIds });
+
+  const response = await fetch(TWEET_URL, {
     method: method,
     headers: {
       Authorization: oauthHeader,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(params),
+    body: JSON.stringify(tweetBody),
   });
 
   const responseText = await response.text();
+  console.log("Tweet response status:", response.status);
 
   if (!response.ok) {
-    throw new Error(
-      `Twitter API error: ${response.status} - ${responseText}`
-    );
+    console.error("Tweet failed:", responseText);
+    throw new Error(`Twitter API error: ${response.status} - ${responseText}`);
   }
 
   return JSON.parse(responseText);
@@ -126,11 +177,27 @@ Deno.serve(async (req) => {
       throw new Error("Tweet text is required");
     }
 
-    if (body.tweet.length > 280) {
+    // Truncate tweet if too long (especially when image is attached, character limit is more flexible)
+    let tweetText = body.tweet;
+    if (!body.imageBase64 && tweetText.length > 280) {
       throw new Error("Tweet exceeds 280 character limit");
     }
+    
+    // For tweets with images, Twitter allows up to 280 chars for text
+    if (tweetText.length > 280) {
+      tweetText = tweetText.substring(0, 277) + "...";
+    }
 
-    const result = await sendTweet(body.tweet);
+    let mediaIds: string[] | undefined;
+    
+    // If image is provided, upload it first
+    if (body.imageBase64) {
+      console.log("Image data received, uploading media...");
+      const mediaId = await uploadMedia(body.imageBase64);
+      mediaIds = [mediaId];
+    }
+
+    const result = await sendTweet(tweetText, mediaIds);
     
     return new Response(JSON.stringify({ success: true, data: result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
