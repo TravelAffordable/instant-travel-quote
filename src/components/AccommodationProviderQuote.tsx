@@ -66,6 +66,7 @@ export function AccommodationProviderQuote() {
   const [facilities, setFacilities] = useState<string[]>(['', '', '', '', '']);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [quoteResults, setQuoteResults] = useState<QuoteResult[]>([]);
+  const [mealPlan, setMealPlan] = useState('');
 
   // Flag to prevent useEffect from clearing data during PDF load
   const [isLoadingFromPDF, setIsLoadingFromPDF] = useState(false);
@@ -709,6 +710,24 @@ export function AccommodationProviderQuote() {
                 </div>
               </div>
 
+              {/* Meal Plan Selection */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Meal Plan</Label>
+                <Select value={mealPlan} onValueChange={setMealPlan}>
+                  <SelectTrigger className="h-11 bg-white border-gray-200">
+                    <SelectValue placeholder="Select meal plan (optional)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="none">No meals included</SelectItem>
+                    <SelectItem value="breakfast">Breakfast only</SelectItem>
+                    <SelectItem value="lunch">Lunch only</SelectItem>
+                    <SelectItem value="dinner">Dinner only</SelectItem>
+                    <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
+                    <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Package Selection */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">Select Activity Package/s *</Label>
@@ -1027,42 +1046,42 @@ export function AccommodationProviderQuote() {
                           <div className="space-y-2">
                             <p className="flex items-center gap-2 text-green-600 text-sm">
                               <Check className="w-4 h-4 shrink-0" />
-                              <span>Accommodation</span>
+                              <span>{nights} nights accommodation</span>
                             </p>
-                            {result.activitiesIncluded && result.activitiesIncluded.map((activity, i) => (
-                              <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
+                            {mealPlan && mealPlan !== 'none' && (
+                              <p className="flex items-center gap-2 text-green-600 text-sm">
                                 <Check className="w-4 h-4 shrink-0" />
-                                <span>{activity}</span>
+                                <span>
+                                  {mealPlan === 'breakfast' && 'Breakfast included'}
+                                  {mealPlan === 'lunch' && 'Lunch included'}
+                                  {mealPlan === 'dinner' && 'Dinner included'}
+                                  {mealPlan === 'half-board' && 'Half Board (Breakfast & Dinner)'}
+                                  {mealPlan === 'full-board' && 'Full Board (All Meals)'}
+                                </span>
                               </p>
-                            ))}
+                            )}
+                            {result.activitiesIncluded && result.activitiesIncluded
+                              .filter(activity => {
+                                const lower = activity.toLowerCase();
+                                return !lower.includes('accommodation') && 
+                                       !lower.includes('breakfast at selected') &&
+                                       !lower.includes('buffet breakfast at selected') &&
+                                       !lower.includes('room only');
+                              })
+                              .map((activity, i) => (
+                                <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
+                                  <Check className="w-4 h-4 shrink-0" />
+                                  <span>{activity}</span>
+                                </p>
+                              ))}
                           </div>
                         </div>
 
-                        {/* Pricing Breakdown */}
+                        {/* Total Price */}
                         <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Accommodation (per person)</span>
-                            <span className="font-medium">{formatCurrency(result.hotelCost)}</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">Activity Package (per person)</span>
-                            <span className="font-medium">{formatCurrency(result.packagePrice)}</span>
-                          </div>
-                          {result.serviceFee > 0 && (
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">Service Fee (per person)</span>
-                              <span className="font-medium">{formatCurrency(result.serviceFee)}</span>
-                            </div>
-                          )}
-                          <div className="border-t pt-2 mt-2">
-                            <div className="flex justify-between text-base font-bold">
-                              <span>Total Per Person</span>
-                              <span className="text-emerald-600">{formatCurrency(result.totalPerPerson)}</span>
-                            </div>
-                            <div className="flex justify-between text-lg font-bold mt-1">
-                              <span>Total Group Cost</span>
-                              <span className="text-emerald-600">{formatCurrency(result.totalGroupCost)}</span>
-                            </div>
+                          <div className="flex justify-between text-lg font-bold">
+                            <span>Grand Total</span>
+                            <span className="text-emerald-600">{formatCurrency(result.totalGroupCost)}</span>
                           </div>
                         </div>
 

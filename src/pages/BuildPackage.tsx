@@ -829,10 +829,7 @@ const BuildPackage = () => {
                     {/* Pricing Summary */}
                     <div className="mt-6 p-4 bg-muted/50 rounded-lg">
                       <div className="flex flex-col items-end">
-                        <p className="text-lg font-semibold">
-                          Total Package Price Per Adult: {formatCurrency(calculateTotalCost(hotel) / adults)}
-                        </p>
-                        <div className="mt-2 text-right">
+                        <div className="text-right">
                           <p className="text-xl font-bold text-primary">
                             Grand total for {adults} adult{adults > 1 ? 's' : ''}{kids > 0 ? ` and ${kids} kid${kids > 1 ? 's' : ''}` : ''}:
                           </p>

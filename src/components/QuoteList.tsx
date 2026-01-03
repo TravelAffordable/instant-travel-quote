@@ -40,48 +40,63 @@ export function QuoteList({ quotes, onQuoteSelected, budget }: QuoteListProps) {
     return quotes.filter(q => selectedQuotes.has(q.hotelId));
   };
 
-  const generateQuoteText = (quote: QuoteResult) => {
+  const generateQuoteText = (quote: QuoteResult, guestName?: string) => {
+    const nightsCount = quote.nights || Math.ceil(
+      (new Date(quote.checkOut).getTime() - new Date(quote.checkIn).getTime()) / (1000 * 60 * 60 * 24)
+    );
+    
+    // Filter out breakfast mentions from activities unless explicitly included
+    const filteredActivities = quote.activitiesIncluded?.filter(activity => {
+      const lower = activity.toLowerCase();
+      return !lower.includes('breakfast at selected') && 
+             !lower.includes('buffet breakfast at selected') &&
+             !lower.includes('room only');
+    }) || [];
+
     let quoteText = `TRAVEL AFFORDABLE
 QUOTE REQUEST
 
+Greetings${guestName ? ` ${guestName}` : ''}
+
+The discounted package price for your getaway includes:
+• ${nightsCount} nights accommodation
+`;
+    
+    filteredActivities.forEach(activity => {
+      if (!activity.toLowerCase().includes('accommodation')) {
+        quoteText += `• ${activity}\n`;
+      }
+    });
+    
+    // Add breakfast only if explicitly included
+    if (quote.includesBreakfast) {
+      quoteText += `• Breakfast included\n`;
+    }
+
+    quoteText += `
+Our getaways are stylish and trendy with a bit of affordable sophistication.
+
 DESTINATION: ${quote.destination.toUpperCase()}
-
-HOTEL
-${quote.hotelName}
-
-PACKAGE
-${quote.packageName}
+HOTEL: ${quote.hotelName}
+PACKAGE: ${quote.packageName}
 
 TRAVEL DETAILS
 Check-in: ${formatDate(quote.checkIn)}
 Check-out: ${formatDate(quote.checkOut)}
-Duration: ${quote.nights} nights
+Duration: ${nightsCount} nights
 Guests: ${quote.adults} Adult${quote.adults > 1 ? 's' : ''}${quote.children > 0 ? `, ${quote.children} Child${quote.children > 1 ? 'ren' : ''}` : ''}
 Rooms: ${quote.rooms} ${quote.is4SleeperRoom ? '4-Sleeper' : '2-Sleeper'} Room${quote.rooms > 1 ? 's' : ''}
-Room Type: ${quote.roomType}${quote.includesBreakfast ? '\nBreakfast: Included' : ''}
-`;
 
-    if (quote.activitiesIncluded && quote.activitiesIncluded.length > 0) {
-      quoteText += `
-PACKAGE INCLUSIONS
-`;
-      quote.activitiesIncluded.forEach(activity => {
-        quoteText += `• ${activity}\n`;
-      });
-    }
-
-    if (budget) {
-      quoteText += `
-CLIENT BUDGET
-R${budget}
-`;
-    }
-
-    quoteText += `
 PRICING
-${quote.children === 0 ? `Total Package Price Per Person: ${formatCurrency(quote.totalPerPerson)}\n` : ''}Grand Total: ${formatCurrency(quote.totalForGroup)}
+Grand Total: ${formatCurrency(quote.totalForGroup)}
 
-This quote includes Total Accommodation Cost and Package Activity Costs.
+To start with your booking process, please click on request to book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.
+
+Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.
+
+Thank you,
+Bookings,
+Travel Affordable Pty Ltd
 
 Contact Us
 Email: info@travelaffordable.co.za
@@ -274,24 +289,10 @@ Web: www.travelaffordable.co.za`;
                 </div>
               </div>
               <div className="text-right shrink-0">
-                {quote.children === 0 ? (
-                  <>
-                    <p className="text-2xl font-bold text-primary font-display">
-                      {formatCurrency(quote.totalPerPerson)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Total Package Price Per Person</p>
-                    <p className="text-sm font-semibold text-foreground mt-1">
-                      {formatCurrency(quote.totalForGroup)} Grand Total
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-2xl font-bold text-primary font-display">
-                      {formatCurrency(quote.totalForGroup)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Grand Total</p>
-                  </>
-                )}
+                <p className="text-2xl font-bold text-primary font-display">
+                  {formatCurrency(quote.totalForGroup)}
+                </p>
+                <p className="text-xs text-muted-foreground">Grand Total</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -311,30 +312,42 @@ Web: www.travelaffordable.co.za`;
                   <p className="font-semibold text-sm text-primary mb-2">Package: {quote.packageName}</p>
                   {quote.activitiesIncluded && quote.activitiesIncluded.length > 0 && (
                     <ul className="space-y-1.5">
-                      {quote.activitiesIncluded.map((activity, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                      <li className="flex items-start gap-2 text-sm text-foreground">
+                        <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                        <span>{quote.nights} nights accommodation</span>
+                      </li>
+                      {quote.activitiesIncluded
+                        .filter(activity => {
+                          const lower = activity.toLowerCase();
+                          return !lower.includes('accommodation') && 
+                                 !lower.includes('breakfast at selected') &&
+                                 !lower.includes('buffet breakfast at selected') &&
+                                 !lower.includes('room only');
+                        })
+                        .map((activity, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                            <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                            <span>{activity}</span>
+                          </li>
+                        ))}
+                      {quote.includesBreakfast && (
+                        <li className="flex items-start gap-2 text-sm text-foreground">
                           <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                          <span>{activity}</span>
+                          <span>Breakfast included</span>
                         </li>
-                      ))}
+                      )}
                     </ul>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Room & Additional Info */}
+            {/* Room Info */}
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Home className="w-4 h-4" />
                 <span>{quote.roomType}</span>
               </div>
-              {quote.includesBreakfast && (
-                <div className="flex items-center gap-2 text-accent">
-                  <Check className="w-4 h-4" />
-                  <span>Breakfast included</span>
-                </div>
-              )}
               {quote.is4SleeperRoom && (
                 <div className="flex items-center gap-2 text-muted-foreground col-span-2">
                   <BedDouble className="w-4 h-4" />
