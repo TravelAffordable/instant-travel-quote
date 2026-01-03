@@ -1280,39 +1280,40 @@ export function Hero({ onGetQuote }: HeroProps) {
                                       {nightsCount} night{nightsCount !== 1 ? 's' : ''}, {adults} adult{adults !== 1 ? 's' : ''}{children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}
                                     </p>
                                     
-                                    {/* Package Inclusions */}
-                                    {selectedPkg && selectedPkg.activitiesIncluded.length > 0 && (
-                                      <div className="mt-3 pt-3 border-t border-amber-200">
-                                        <p className="text-muted-foreground text-sm font-medium mb-2">Package Inclusions:</p>
-                                        <div className="space-y-1">
-                                          <p className="flex items-center gap-2 text-green-600 text-sm">
-                                            <Check className="w-4 h-4 shrink-0" />
-                                            <span>{nightsCount} nights accommodation</span>
+                                    {/* Package Inclusions (Personalized format) */}
+                                    {selectedPkg && selectedPkg.activitiesIncluded.length > 0 && (() => {
+                                      const filteredActivities = selectedPkg.activitiesIncluded.filter((activity) => {
+                                        const lower = activity.toLowerCase();
+                                        return (
+                                          !lower.includes('accommodation') &&
+                                          !lower.includes('breakfast at selected') &&
+                                          !lower.includes('buffet breakfast at selected') &&
+                                          !lower.includes('room only')
+                                        );
+                                      });
+
+                                      const inclusionsList = [
+                                        `${nightsCount} nights accommodation`,
+                                        ...(quote.mealPlan ? [quote.mealPlan] : []),
+                                        ...filteredActivities,
+                                      ].join(', ');
+
+                                      return (
+                                        <div className="mt-3 pt-3 border-t border-amber-200 space-y-2">
+                                          <p className="text-sm text-foreground leading-relaxed">
+                                            <span className="font-medium">Greetings{guestName ? ` ${guestName}` : ''}</span>{' '}
+                                            The discounted package price for your getaway includes {inclusionsList}. Our getaways are stylish and trendy with a bit of affordable sophistication.
                                           </p>
-                                          {quote.mealPlan && (
-                                            <p className="flex items-center gap-2 text-green-600 text-sm">
-                                              <Check className="w-4 h-4 shrink-0" />
-                                              <span>{quote.mealPlan}</span>
-                                            </p>
-                                          )}
-                                          {selectedPkg.activitiesIncluded
-                                            .filter(activity => {
-                                              const lower = activity.toLowerCase();
-                                              return !lower.includes('accommodation') && 
-                                                     !lower.includes('breakfast at selected') &&
-                                                     !lower.includes('buffet breakfast at selected') &&
-                                                     !lower.includes('room only');
-                                            })
-                                            .map((activity, i) => (
-                                              <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
-                                                <Check className="w-4 h-4 shrink-0" />
-                                                <span>{activity}</span>
-                                              </p>
-                                            ))}
+                                          <p className="text-sm text-foreground leading-relaxed">
+                                            To start with your booking process, please click on request to book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.
+                                          </p>
+                                          <p className="text-sm text-foreground leading-relaxed">
+                                            Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.
+                                          </p>
                                         </div>
-                                      </div>
-                                    )}
-                                    
+                                      );
+                                    })()}
+
                                   </div>
                                   
                                   {/* Right side - Price and Edit */}
