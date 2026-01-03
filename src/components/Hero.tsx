@@ -1187,6 +1187,9 @@ export function Hero({ onGetQuote }: HeroProps) {
                         checkIn={checkIn}
                         checkOut={checkOut}
                         destination={destination}
+                        guestName={guestName}
+                        guestTel={guestTel}
+                        guestEmail={guestEmail}
                       />
                       
                       <div className="space-y-4">

@@ -46,7 +46,20 @@ interface CustomQuoteActionsProps {
   checkIn: string;
   checkOut: string;
   destination: string;
+  guestName?: string;
+  guestTel?: string;
+  guestEmail?: string;
 }
+
+const formatDate = (dateString: string): string => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-ZA', { 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  });
+};
 
 export function CustomQuoteActions({
   quotes,
@@ -57,6 +70,9 @@ export function CustomQuoteActions({
   checkIn,
   checkOut,
   destination,
+  guestName = '',
+  guestTel = '',
+  guestEmail = '',
 }: CustomQuoteActionsProps) {
   const [selectedQuotes, setSelectedQuotes] = useState<Set<number>>(new Set());
 
@@ -81,10 +97,8 @@ export function CustomQuoteActions({
   };
 
   const getQuotesToExport = () => {
-    if (selectedQuotes.size === 0) {
-      return quotes;
-    }
-    return quotes.filter((_, i) => selectedQuotes.has(i));
+    if (selectedQuotes.size === 0) return quotes;
+    return quotes.filter((_, index) => selectedQuotes.has(index));
   };
 
   const calculateQuoteDetails = (quote: CustomQuote) => {
@@ -112,7 +126,6 @@ export function CustomQuoteActions({
     const kidFeePerChild = adults >= 2 ? 150 : 300;
     if (selectedPkg && kidsAges.length > 0) {
       kidsAges.forEach(age => {
-        // Check for tiered pricing first
         if (selectedPkg.kidsPriceTiers && selectedPkg.kidsPriceTiers.length > 0) {
           const tier = selectedPkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
           if (tier) {
@@ -133,14 +146,6 @@ export function CustomQuoteActions({
     return { selectedPkg, nightsCount, grandTotal, perPerson, kidsAges };
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
-  };
-
   const generateQuoteText = (quote: CustomQuote, index: number) => {
     const { selectedPkg, nightsCount, grandTotal, perPerson, kidsAges } = calculateQuoteDetails(quote);
 
@@ -148,26 +153,19 @@ export function CustomQuoteActions({
 QUOTE ${index + 1}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🏨 HOTEL: ${quote.hotelName}
+Greetings${guestName ? ` ${guestName}` : ''}
+
+The discounted package price for your getaway includes:
+• ${nightsCount} nights accommodation
 `;
 
-    if (quote.roomType) text += `📋 Room Type: ${quote.roomType}\n`;
-    if (quote.bedConfig) text += `🛏️ Beds: ${quote.bedConfig}\n`;
-    if (quote.mealPlan) text += `🍳 Meal Plan: ${quote.mealPlan}\n`;
+    // Add meal plan if present
+    if (quote.mealPlan) {
+      text += `• ${quote.mealPlan}\n`;
+    }
 
-    text += `
-📍 DESTINATION: ${destination.toUpperCase()}
-📅 Check-in: ${formatDate(checkIn)}
-📅 Check-out: ${formatDate(checkOut)}
-🌙 Duration: ${nightsCount} night${nightsCount !== 1 ? 's' : ''}
-👥 Guests: ${adults} Adult${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children > 1 ? 'ren' : ''}` : ''}
-
-📦 PACKAGE: ${quote.packageName}
-`;
-
+    // Add package activities (filtered)
     if (selectedPkg && selectedPkg.activitiesIncluded.length > 0) {
-      text += `\n✅ INCLUSIONS:\n`;
-      text += `   • ${nightsCount} nights accommodation\n`;
       selectedPkg.activitiesIncluded
         .filter(activity => {
           const lower = activity.toLowerCase();
@@ -177,15 +175,32 @@ QUOTE ${index + 1}
                  !lower.includes('room only');
         })
         .forEach(activity => {
-          text += `   • ${activity}\n`;
+          text += `• ${activity}\n`;
         });
     }
 
     text += `
+Our getaways are stylish and trendy with a bit of affordable sophistication.
+
+🏨 HOTEL: ${quote.hotelName}
+`;
+
+    if (quote.roomType) text += `📋 Room Type: ${quote.roomType}\n`;
+    if (quote.bedConfig) text += `🛏️ Beds: ${quote.bedConfig}\n`;
+
+    text += `
+📍 DESTINATION: ${destination.toUpperCase()}
+📅 Check-in: ${formatDate(checkIn)}
+📅 Check-out: ${formatDate(checkOut)}
+🌙 Duration: ${nightsCount} night${nightsCount !== 1 ? 's' : ''}
+👥 Guests: ${adults} Adult${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children > 1 ? 'ren' : ''}` : ''}
+
+📦 PACKAGE: ${quote.packageName}
+
 💰 PRICING
    Grand Total: ${formatCurrency(grandTotal)}
 
-To start with your booking process, please click on request to book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you.
+To start with your booking process, please click on request to book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.
 
 Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.
 
@@ -224,6 +239,17 @@ Travel Affordable Pty Ltd
       pdf.text('Custom Hotel Quotes', pageWidth / 2, yPos, { align: 'center' });
       yPos += 15;
 
+      // Personalized greeting
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(40, 40, 40);
+      pdf.text(`Greetings${guestName ? ` ${guestName}` : ''}`, margin, yPos);
+      yPos += 8;
+
+      pdf.setFontSize(10);
+      pdf.text('The discounted package price for your getaway includes:', margin, yPos);
+      yPos += 10;
+
       // Quotes
       quotesToExport.forEach((quote, index) => {
         const { selectedPkg, nightsCount, grandTotal, perPerson, kidsAges } = calculateQuoteDetails(quote);
@@ -237,37 +263,45 @@ Travel Affordable Pty Ltd
 
         // Quote card border
         const cardStartY = yPos - 5;
-        pdf.setDrawColor(194, 120, 3); // Amber border
+        pdf.setDrawColor(194, 120, 3);
         pdf.setLineWidth(0.5);
 
         // Room type badge
         if (quote.roomType) {
-          pdf.setFillColor(34, 139, 34); // Green
+          pdf.setFillColor(34, 139, 34);
           const badgeWidth = pdf.getTextWidth(quote.roomType) + 10;
           pdf.roundedRect(margin, yPos - 4, badgeWidth, 7, 1, 1, 'F');
           pdf.setFontSize(8);
           pdf.setFont('helvetica', 'bold');
           pdf.setTextColor(255, 255, 255);
           pdf.text(quote.roomType, margin + 5, yPos);
-          yPos += 10;
+          yPos += 6;
         }
 
-        // Hotel name (left) and Price (right)
+        // Hotel name
         pdf.setFontSize(14);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(40, 40, 40);
-        pdf.text(quote.hotelName, margin, yPos);
+        pdf.text(`${index + 1}. ${quote.hotelName}`, margin, yPos);
+        yPos += 6;
 
-        // Show per-person price only when no kids
+        // Tier and recommendation
+        if (quote.hotelTier) {
+          pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(79, 70, 229);
+          pdf.text(quote.hotelTier, margin, yPos);
+          yPos += 4;
+        }
+
+        // Price per person (only if no kids)
         if (kidsAges.length === 0) {
-          // Price per person on right
           pdf.setFontSize(14);
           pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(194, 120, 3); // Amber/orange
+          pdf.setTextColor(194, 120, 3);
           pdf.text(formatCurrency(perPerson), pageWidth - margin, yPos, { align: 'right' });
           yPos += 5;
 
-          // "Total Package Price Per Person" label
           pdf.setFontSize(8);
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(100, 100, 100);
@@ -275,44 +309,33 @@ Travel Affordable Pty Ltd
           yPos += 6;
         }
 
-        // Bed config
-        if (quote.bedConfig) {
-          pdf.setFontSize(10);
-          pdf.setFont('helvetica', 'normal');
-          pdf.setTextColor(80, 80, 80);
-          pdf.text(quote.bedConfig, margin, yPos);
-        }
-
-        // Total price on right (show prominently if kids present)
+        // Grand total
         pdf.setFontSize(kidsAges.length > 0 ? 14 : 12);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(194, 120, 3);
         pdf.text(formatCurrency(grandTotal), pageWidth - margin, yPos, { align: 'right' });
         yPos += 4;
 
-        // "Grand Total" label
         pdf.setFontSize(8);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(100, 100, 100);
         pdf.text('Grand Total', pageWidth - margin, yPos, { align: 'right' });
         yPos += 6;
 
-        // Meal plan in green with checkmark
+        // Meal plan
         if (quote.mealPlan) {
-          pdf.setFontSize(10);
+          pdf.setFontSize(9);
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(34, 139, 34);
           pdf.text(`✓ ${quote.mealPlan}`, margin, yPos);
-          yPos += 6;
+          yPos += 5;
         }
 
-        // Package description in orange
+        // Package name
         if (quote.packageName) {
-          pdf.setFontSize(9);
-          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'bold');
           pdf.setTextColor(194, 120, 3);
-          
-          // Word wrap for package name
           const packageLines = pdf.splitTextToSize(quote.packageName.toUpperCase(), contentWidth - 60);
           packageLines.forEach((line: string) => {
             pdf.text(line, margin, yPos);
@@ -321,34 +344,35 @@ Travel Affordable Pty Ltd
           yPos += 2;
         }
 
-        // Check-in/Check-out dates
+        // Travel details
         pdf.setFontSize(9);
         pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(60, 60, 60);
-        const checkInDisplay = quote.checkInDate || checkIn;
-        const checkOutDisplay = quote.checkOutDate || checkOut;
-        pdf.text(`Check-in: ${formatDate(checkInDisplay)} → Check-out: ${formatDate(checkOutDisplay)}`, margin, yPos);
-        yPos += 5;
+        pdf.setTextColor(80, 80, 80);
+        pdf.text(`📍 ${destination.toUpperCase()} | 📅 ${formatDate(checkIn)} - ${formatDate(checkOut)}`, margin, yPos);
+        yPos += 4;
+        pdf.text(`🌙 ${nightsCount} night${nightsCount !== 1 ? 's' : ''} | 👥 ${adults} Adult${adults !== 1 ? 's' : ''}${kidsAges.length > 0 ? `, ${kidsAges.length} Child${kidsAges.length > 1 ? 'ren' : ''}` : ''}`, margin, yPos);
+        yPos += 6;
 
-        // Nights and guests
-        pdf.text(`${nightsCount} night${nightsCount !== 1 ? 's' : ''}, ${totalGuests} adult${totalGuests !== 1 ? 's' : ''}`, margin, yPos);
-        yPos += 8;
-
-        // Package Inclusions
+        // Package inclusions
         if (selectedPkg && selectedPkg.activitiesIncluded.length > 0) {
-          pdf.setFontSize(10);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(60, 60, 60);
-          pdf.text('Package Inclusions:', margin, yPos);
-          yPos += 5;
-
           pdf.setFontSize(9);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(40, 40, 40);
+          pdf.text('Package Inclusions:', margin, yPos);
+          yPos += 4;
+
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(34, 139, 34);
 
           // Nights accommodation
           pdf.text(`✓   ${nightsCount} nights accommodation`, margin, yPos);
           yPos += 4;
+
+          // Meal plan in inclusions
+          if (quote.mealPlan) {
+            pdf.text(`✓   ${quote.mealPlan}`, margin, yPos);
+            yPos += 4;
+          }
 
           // Activities (filtered)
           selectedPkg.activitiesIncluded
@@ -370,22 +394,26 @@ Travel Affordable Pty Ltd
           yPos += 3;
         }
 
-        // Draw card border
-        const cardHeight = yPos - cardStartY + 5;
+        // Card border
+        const cardEndY = yPos;
         pdf.setDrawColor(194, 120, 3);
-        pdf.setLineWidth(0.3);
-        pdf.rect(margin - 3, cardStartY, contentWidth + 6, cardHeight);
-        
-        yPos += 15;
+        pdf.rect(margin - 3, cardStartY, contentWidth + 6, cardEndY - cardStartY + 5);
+        yPos += 12;
       });
 
-      // Footer
-      if (yPos > 250) {
+      // Stylish closing text
+      if (yPos > 240) {
         pdf.addPage();
         yPos = 20;
       }
 
-      yPos += 5;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'italic');
+      pdf.setTextColor(80, 80, 80);
+      pdf.text('Our getaways are stylish and trendy with a bit of affordable sophistication.', margin, yPos);
+      yPos += 10;
+
+      // Contact info
       pdf.setFontSize(10);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(79, 70, 229);
@@ -398,9 +426,9 @@ Travel Affordable Pty Ltd
       pdf.text('WhatsApp: +27 79 681 3869', margin, yPos);
       yPos += 4;
       pdf.text('Web: www.travelaffordable.co.za', margin, yPos);
-      yPos += 15;
+      yPos += 10;
 
-      // Booking disclaimer
+      // Booking process
       pdf.setFontSize(11);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(40, 40, 40);
@@ -412,26 +440,21 @@ Travel Affordable Pty Ltd
       pdf.setTextColor(60, 60, 60);
       
       const disclaimerLines = [
-        'To start with your booking please request the invoice. Please request on the day you',
-        'would be making payment as the invoice and availability confirmation are valid for only 1 day.',
+        'To start with your booking process, please click on request to book button below.',
+        'An email message with your booking details will open. Send the email.',
+        'Our agents will then be in communication with you, then if you request we will',
+        'send you the invoice for you to secure your booking.',
         '',
-        'A 50% deposit secures the booking.',
-        '',
-        'As soon as we receive your deposit we proceed with bookings then send you a confirmation',
-        'letter which will have your hotel confirmation number and all the important information',
-        'on your Getaway Package.',
+        'Once payment is received we will proceed with bookings then send you a confirmation',
+        'letter with all the important information including ticket information, hotel',
+        'confirmation numbers, transport schedules where applicable and itineraries',
+        'for your getaway.',
         '',
         'Thank you,',
-        'Accounts,',
+        'Bookings,',
         'Travel Affordable Pty Ltd',
-        'The Atrium Building',
-        '5th Street, Sandown',
-        'Sandton',
-        'Tel: 0796813869',
-        'e: info@travelaffordable.co.za',
-        'https://instant-travel-quote.lovable.app'
       ];
-      
+
       disclaimerLines.forEach(line => {
         if (yPos > 280) {
           pdf.addPage();
@@ -461,6 +484,8 @@ Travel Affordable Pty Ltd
     let body = `TRAVEL AFFORDABLE
 CUSTOM HOTEL QUOTES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Greetings${guestName ? ` ${guestName}` : ''}
 
 Destination: ${destination.toUpperCase()}
 Travel Dates: ${formatDate(checkIn)} - ${formatDate(checkOut)}
@@ -496,6 +521,8 @@ Web: www.travelaffordable.co.za
 
     let text = `🌴 *TRAVEL AFFORDABLE*
 *Custom Hotel Quotes*
+
+Greetings${guestName ? ` ${guestName}` : ''}
 
 📍 *Destination:* ${destination.toUpperCase()}
 📅 *Travel Dates:* ${formatDate(checkIn)} - ${formatDate(checkOut)}
@@ -537,6 +564,7 @@ _Contact Us:_
                     : 'Select specific quotes or export all'}
                 </p>
               </div>
+
               <div className="flex flex-wrap gap-2">
                 <Button
                   size="sm"

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Hotel, Coffee, Baby, Bed } from 'lucide-react';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
@@ -35,6 +36,7 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
   const [totalCost, setTotalCost] = useState<string>('');
   const [calculated, setCalculated] = useState(false);
   const [parsedDetails, setParsedDetails] = useState<Partial<CustomHotelDetails>>({});
+  const [selectedMealPlan, setSelectedMealPlan] = useState<string>('none');
 
   // Populate with initial data when editing
   useEffect(() => {
@@ -44,12 +46,28 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
         initialData.recommendation,
         initialData.roomType,
         initialData.bedConfig,
-        initialData.mealPlan,
         initialData.stayDetails,
       ].filter(Boolean).join('\n');
       setHotelDetails(details);
       setTotalCost(initialData.totalCost?.toString() || '');
       setParsedDetails(initialData);
+      // Set meal plan from initial data
+      if (initialData.mealPlan) {
+        const mealLower = initialData.mealPlan.toLowerCase();
+        if (mealLower.includes('full board') || mealLower.includes('all meals')) {
+          setSelectedMealPlan('full-board');
+        } else if (mealLower.includes('half board')) {
+          setSelectedMealPlan('half-board');
+        } else if (mealLower.includes('dinner')) {
+          setSelectedMealPlan('dinner');
+        } else if (mealLower.includes('lunch')) {
+          setSelectedMealPlan('lunch');
+        } else if (mealLower.includes('breakfast')) {
+          setSelectedMealPlan('breakfast');
+        } else {
+          setSelectedMealPlan('none');
+        }
+      }
       setCalculated(false);
     }
   }, [initialData, isEditing]);
@@ -75,11 +93,7 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
         continue;
       }
       
-      // Check for breakfast/meal plan
-      if (line.toLowerCase().includes('breakfast') || line.toLowerCase().includes('meal') || line.toLowerCase().includes('dinner')) {
-        details.mealPlan = line;
-        continue;
-      }
+      // Skip meal plan detection from text - we now use dropdown
       
       // Check for bed configuration
       if (line.toLowerCase().includes('bed') || line.toLowerCase().includes('crib') || line.toLowerCase().includes('cot')) {
@@ -121,18 +135,34 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
     setParsedDetails(parsed);
   };
 
+  const getMealPlanLabel = (value: string): string | undefined => {
+    const labels: Record<string, string> = {
+      'none': undefined as unknown as string,
+      'breakfast': 'Breakfast included',
+      'lunch': 'Lunch included',
+      'dinner': 'Dinner included',
+      'half-board': 'Half Board (Breakfast & Dinner)',
+      'full-board': 'Full Board (All Meals)'
+    };
+    return labels[value];
+  };
+
   const handleCalculate = () => {
     const cost = parseFloat(totalCost);
     if (isNaN(cost) || cost <= 0) return;
     
     setCalculated(true);
+    
+    // Get meal plan label if selected
+    const mealPlanLabel = getMealPlanLabel(selectedMealPlan);
+    
     onCalculate({
       hotelName,
       hotelTier: parsedDetails.hotelTier,
       recommendation: parsedDetails.recommendation,
       roomType: parsedDetails.roomType,
       bedConfig: parsedDetails.bedConfig,
-      mealPlan: parsedDetails.mealPlan,
+      mealPlan: mealPlanLabel,
       stayDetails: parsedDetails.stayDetails || `${nights} night${nights > 1 ? 's' : ''}, ${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}`,
       totalCost: cost,
     });
@@ -166,11 +196,11 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
         <div className="mt-4 pt-4 border-t border-border space-y-3">
           <div>
             <Label htmlFor={`details-${hotelName}`} className="text-sm text-muted-foreground">
-              Paste hotel details (room type, meal plan, price, etc.)
+              Paste hotel details (room type, bed config, price, etc.)
             </Label>
             <Textarea
               id={`details-${hotelName}`}
-              placeholder={`Example:\nBeachfront\nRecommended for your group\nDeluxe Quadruple Room 2 Bedroom Apartment\nMultiple bed types • Free crib available\nBreakfast included\n3 nights, 3 adults, 2 children\nZAR 12,370`}
+              placeholder={`Example:\nBeachfront\nRecommended for your group\nDeluxe Quadruple Room 2 Bedroom Apartment\nMultiple bed types • Free crib available\n3 nights, 3 adults, 2 children\nZAR 12,370`}
               value={hotelDetails}
               onChange={(e) => handleDetailsChange(e.target.value)}
               className="mt-1 min-h-[120px] text-sm"
@@ -178,7 +208,7 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
           </div>
 
           {/* Parsed Preview */}
-          {(parsedDetails.hotelTier || parsedDetails.roomType || parsedDetails.mealPlan) && (
+          {(parsedDetails.hotelTier || parsedDetails.roomType || parsedDetails.bedConfig) && (
             <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
               <p className="font-medium text-xs text-muted-foreground mb-2">Parsed Details:</p>
               {parsedDetails.hotelTier && (
@@ -195,54 +225,63 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
                   <Bed className="w-3 h-3" /> {parsedDetails.bedConfig}
                 </p>
               )}
-              {parsedDetails.mealPlan && (
-                <p className="flex items-center gap-1 text-green-600 text-xs">
-                  <Coffee className="w-3 h-3" /> {parsedDetails.mealPlan}
-                </p>
-              )}
               {parsedDetails.stayDetails && (
                 <p className="text-muted-foreground text-xs">{parsedDetails.stayDetails}</p>
               )}
             </div>
           )}
 
-          <div className="flex items-end gap-3">
-            <div className="flex-1">
-              <Label htmlFor={`cost-${hotelName}`} className="text-sm text-muted-foreground">
-                Total Cost (R)
-              </Label>
-              <Input
-                id={`cost-${hotelName}`}
-                type="number"
-                placeholder="e.g. 12370"
-                value={totalCost}
-                onChange={(e) => {
-                  setTotalCost(e.target.value);
-                  setCalculated(false);
-                }}
-                className="mt-1"
-              />
-            </div>
+          {/* Meal Plan Dropdown */}
+          <div>
+            <Label className="text-sm text-muted-foreground">Meal Plan</Label>
+            <Select value={selectedMealPlan} onValueChange={setSelectedMealPlan}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select meal plan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No meals included</SelectItem>
+                <SelectItem value="breakfast">Breakfast</SelectItem>
+                <SelectItem value="lunch">Lunch</SelectItem>
+                <SelectItem value="dinner">Dinner</SelectItem>
+                <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
+                <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Total Cost Input */}
+          <div>
+            <Label htmlFor={`cost-${hotelName}`} className="text-sm text-muted-foreground">
+              Total Stay Cost (ZAR)
+            </Label>
+            <Input
+              id={`cost-${hotelName}`}
+              type="number"
+              placeholder="Enter total accommodation cost"
+              value={totalCost}
+              onChange={(e) => {
+                setTotalCost(e.target.value);
+                setCalculated(false);
+              }}
+              className="mt-1"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleCalculate} 
+              disabled={!totalCost || parseFloat(totalCost) <= 0}
+              className="flex-1"
+            >
+              {isEditing ? 'Update Quote' : 'Calculate'}
+            </Button>
             {isEditing && onCancelEdit && (
-              <Button 
-                variant="outline"
-                onClick={onCancelEdit}
-                className="h-10"
-              >
+              <Button variant="outline" onClick={onCancelEdit}>
                 Cancel
               </Button>
             )}
-            <Button 
-              onClick={handleCalculate}
-              disabled={!totalCost || parseFloat(totalCost) <= 0}
-              className="h-10"
-            >
-              {isEditing ? 'Update' : 'Calculate'}
-            </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            {rooms} room{rooms > 1 ? 's' : ''} for {adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` and ${children} child${children > 1 ? 'ren' : ''}` : ''}
-          </p>
         </div>
       </CardContent>
     </Card>
