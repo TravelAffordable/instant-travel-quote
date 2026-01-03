@@ -167,24 +167,32 @@ QUOTE ${index + 1}
 
     if (selectedPkg && selectedPkg.activitiesIncluded.length > 0) {
       text += `\n✅ INCLUSIONS:\n`;
-      text += `   • Accommodation\n`;
-      selectedPkg.activitiesIncluded.forEach(activity => {
-        text += `   • ${activity}\n`;
-      });
+      text += `   • ${nightsCount} nights accommodation\n`;
+      selectedPkg.activitiesIncluded
+        .filter(activity => {
+          const lower = activity.toLowerCase();
+          return !lower.includes('accommodation') && 
+                 !lower.includes('breakfast at selected') &&
+                 !lower.includes('buffet breakfast at selected') &&
+                 !lower.includes('room only');
+        })
+        .forEach(activity => {
+          text += `   • ${activity}\n`;
+        });
     }
 
-    if (kidsAges.length === 0) {
-      text += `
-💰 PRICING
-   Total Package Price Per Person: ${formatCurrency(perPerson)}
-   Grand Total: ${formatCurrency(grandTotal)}
-`;
-    } else {
-      text += `
+    text += `
 💰 PRICING
    Grand Total: ${formatCurrency(grandTotal)}
+
+To start with your booking process, please click on request to book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you.
+
+Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.
+
+Thank you,
+Bookings,
+Travel Affordable Pty Ltd
 `;
-    }
 
     return text;
   };
@@ -338,19 +346,27 @@ QUOTE ${index + 1}
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(34, 139, 34);
 
-          // Accommodation
-          pdf.text('✓   Accommodation', margin, yPos);
+          // Nights accommodation
+          pdf.text(`✓   ${nightsCount} nights accommodation`, margin, yPos);
           yPos += 4;
 
-          // Activities
-          selectedPkg.activitiesIncluded.forEach(activity => {
-            if (yPos > 270) {
-              pdf.addPage();
-              yPos = 20;
-            }
-            pdf.text(`✓   ${activity}`, margin, yPos);
-            yPos += 4;
-          });
+          // Activities (filtered)
+          selectedPkg.activitiesIncluded
+            .filter(activity => {
+              const lower = activity.toLowerCase();
+              return !lower.includes('accommodation') && 
+                     !lower.includes('breakfast at selected') &&
+                     !lower.includes('buffet breakfast at selected') &&
+                     !lower.includes('room only');
+            })
+            .forEach(activity => {
+              if (yPos > 270) {
+                pdf.addPage();
+                yPos = 20;
+              }
+              pdf.text(`✓   ${activity}`, margin, yPos);
+              yPos += 4;
+            });
           yPos += 3;
         }
 

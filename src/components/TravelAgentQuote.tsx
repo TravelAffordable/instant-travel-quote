@@ -85,6 +85,7 @@ export function TravelAgentQuote() {
   const [childrenAges, setChildrenAges] = useState<number[]>([]);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [quoteResults, setQuoteResults] = useState<QuoteResult[]>([]);
+  const [mealPlan, setMealPlan] = useState('');
   
   // Flag to prevent useEffect from clearing data during PDF load
   const [isLoadingFromPDF, setIsLoadingFromPDF] = useState(false);
@@ -830,6 +831,24 @@ export function TravelAgentQuote() {
                 )}
               </div>
 
+              {/* Meal Plan Selection */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Meal Plan</Label>
+                <Select value={mealPlan} onValueChange={setMealPlan}>
+                  <SelectTrigger className="h-11 bg-white border-gray-200">
+                    <SelectValue placeholder="Select meal plan (optional)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="none">No meals included</SelectItem>
+                    <SelectItem value="breakfast">Breakfast only</SelectItem>
+                    <SelectItem value="lunch">Lunch only</SelectItem>
+                    <SelectItem value="dinner">Dinner only</SelectItem>
+                    <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
+                    <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Package Selection */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">Select Activity Package/s *</Label>
@@ -1270,14 +1289,34 @@ export function TravelAgentQuote() {
                             <div className="space-y-2">
                               <p className="flex items-center gap-2 text-green-600 text-sm">
                                 <Check className="w-4 h-4 shrink-0" />
-                                <span>Accommodation ({nights} nights)</span>
+                                <span>{nights} nights accommodation</span>
                               </p>
-                              {result.activitiesIncluded && result.activitiesIncluded.map((activity, i) => (
-                                <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
+                              {mealPlan && mealPlan !== 'none' && (
+                                <p className="flex items-center gap-2 text-green-600 text-sm">
                                   <Check className="w-4 h-4 shrink-0" />
-                                  <span>{activity}</span>
+                                  <span>
+                                    {mealPlan === 'breakfast' && 'Breakfast included'}
+                                    {mealPlan === 'lunch' && 'Lunch included'}
+                                    {mealPlan === 'dinner' && 'Dinner included'}
+                                    {mealPlan === 'half-board' && 'Half Board (Breakfast & Dinner)'}
+                                    {mealPlan === 'full-board' && 'Full Board (All Meals)'}
+                                  </span>
                                 </p>
-                              ))}
+                              )}
+                              {result.activitiesIncluded && result.activitiesIncluded
+                                .filter(activity => {
+                                  const lower = activity.toLowerCase();
+                                  return !lower.includes('accommodation') && 
+                                         !lower.includes('breakfast at selected') &&
+                                         !lower.includes('buffet breakfast at selected') &&
+                                         !lower.includes('room only');
+                                })
+                                .map((activity, i) => (
+                                  <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
+                                    <Check className="w-4 h-4 shrink-0" />
+                                    <span>{activity}</span>
+                                  </p>
+                                ))}
                             </div>
                           </div>
 

@@ -197,6 +197,11 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   
+  // Contact details (required)
+  const [guestName, setGuestName] = useState('');
+  const [guestTel, setGuestTel] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+  
   // Booking type and filters
   const [bookingType, setBookingType] = useState<BookingType>('with-activities');
   const [filterCheapest, setFilterCheapest] = useState(true);
@@ -304,6 +309,11 @@ export function Hero({ onGetQuote }: HeroProps) {
     
     if (!destination || !checkIn || !checkOut || !budget) {
       toast.error('Please fill in all required fields including your budget');
+      return;
+    }
+
+    if (!guestName || !guestTel || !guestEmail) {
+      toast.error('Please fill in your name, telephone number and email address');
       return;
     }
 
@@ -913,6 +923,46 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <p className="text-xs text-muted-foreground">This helps us understand your preferences</p>
               </div>
 
+              {/* Contact Details (Required) */}
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                <p className="text-sm font-semibold text-gray-700 mb-3">Your Contact Details *</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Full Name *</Label>
+                    <Input
+                      type="text"
+                      placeholder="Your full name"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      className="h-11 bg-white border-gray-200"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Telephone Number *</Label>
+                    <Input
+                      type="tel"
+                      placeholder="e.g. 072 123 4567"
+                      value={guestTel}
+                      onChange={(e) => setGuestTel(e.target.value)}
+                      className="h-11 bg-white border-gray-200"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Email Address *</Label>
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      className="h-11 bg-white border-gray-200"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Search Button */}
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Button
@@ -1231,48 +1281,32 @@ export function Hero({ onGetQuote }: HeroProps) {
                                         <div className="space-y-1">
                                           <p className="flex items-center gap-2 text-green-600 text-sm">
                                             <Check className="w-4 h-4 shrink-0" />
-                                            <span>Accommodation</span>
+                                            <span>{nightsCount} nights accommodation</span>
                                           </p>
-                                          {selectedPkg.activitiesIncluded.map((activity, i) => (
-                                            <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
+                                          {quote.mealPlan && (
+                                            <p className="flex items-center gap-2 text-green-600 text-sm">
                                               <Check className="w-4 h-4 shrink-0" />
-                                              <span>{activity}</span>
+                                              <span>{quote.mealPlan}</span>
                                             </p>
-                                          ))}
+                                          )}
+                                          {selectedPkg.activitiesIncluded
+                                            .filter(activity => {
+                                              const lower = activity.toLowerCase();
+                                              return !lower.includes('accommodation') && 
+                                                     !lower.includes('breakfast at selected') &&
+                                                     !lower.includes('buffet breakfast at selected') &&
+                                                     !lower.includes('room only');
+                                            })
+                                            .map((activity, i) => (
+                                              <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
+                                                <Check className="w-4 h-4 shrink-0" />
+                                                <span>{activity}</span>
+                                              </p>
+                                            ))}
                                         </div>
                                       </div>
                                     )}
                                     
-                                    {/* Cost Breakdown */}
-                                    <div className="mt-3 pt-3 border-t border-amber-200">
-                                      <p className="text-muted-foreground text-sm font-medium mb-2">Cost Breakdown:</p>
-                                      <div className="space-y-1 text-sm">
-                                        <div className="flex justify-between">
-                                          <span className="text-muted-foreground">Total Accommodation Cost:</span>
-                                          <span className="font-medium">{formatCurrency(quote.totalCost)}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-muted-foreground">Package Activity Cost ({adults} adult{adults !== 1 ? 's' : ''}):</span>
-                                          <span className="font-medium">{formatCurrency(totalPackageCost)}</span>
-                                        </div>
-                                        {kidsAges.length > 0 && (
-                                          <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Package Activity Cost ({kidsAges.length} child{kidsAges.length !== 1 ? 'ren' : ''}):</span>
-                                            <span className="font-medium">{formatCurrency(kidsPackageCost)}</span>
-                                          </div>
-                                        )}
-                                        <div className="flex justify-between">
-                                          <span className="text-muted-foreground">Service Fee ({adults} adult{adults !== 1 ? 's' : ''} × {formatCurrency(serviceFeePerAdult)}):</span>
-                                          <span className="font-medium">{formatCurrency(totalServiceFees)}</span>
-                                        </div>
-                                        {kidsAges.length > 0 && (
-                                          <div className="flex justify-between">
-                                            <span className="text-muted-foreground">Service Fee ({kidsAges.length} child{kidsAges.length !== 1 ? 'ren' : ''} × {formatCurrency(kidFeePerChild)}):</span>
-                                            <span className="font-medium">{formatCurrency(kidsFees)}</span>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
                                   </div>
                                   
                                   {/* Right side - Price and Edit */}

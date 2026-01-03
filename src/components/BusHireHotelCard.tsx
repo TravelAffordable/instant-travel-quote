@@ -320,13 +320,7 @@ export function BusHireHotelCard({
     
     // Pricing
     pdf.setFontSize(14);
-    pdf.text('Pricing Breakdown', 20, y); y += 10;
-    pdf.setFontSize(11);
-    
-    pdf.text(`Accommodation: ${formatCurrency(accommodationCost)}`, 20, y); y += 8;
-    pdf.text(`Activities Package: ${formatCurrency(packageTotal + kidsPackageCost)}`, 20, y); y += 8;
-    pdf.text(`Service Fees: ${formatCurrency(totalServiceFees)}`, 20, y); y += 8;
-    pdf.text(`Bus Transport: ${formatCurrency(busQuoteAmount)}`, 20, y); y += 10;
+    pdf.text('Package Price', 20, y); y += 10;
     
     pdf.setFontSize(13);
     pdf.setTextColor(30, 64, 175);
@@ -453,30 +447,6 @@ export function BusHireHotelCard({
             </div>
           )}
 
-          {/* Pricing Breakdown */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <p className="text-sm font-semibold text-blue-900 mb-2">Pricing Breakdown</p>
-            <div className="space-y-1 text-xs text-blue-800">
-              <div className="flex justify-between">
-                <span>Accommodation:</span>
-                <span>{formatCurrency(accommodationCost)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Activities Package:</span>
-                <span>{formatCurrency(packageTotal + kidsPackageCost)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Service Fees:</span>
-                <span>{formatCurrency(totalServiceFees)}</span>
-              </div>
-              {busQuoteAmount > 0 && (
-                <div className="flex justify-between text-blue-600 font-medium">
-                  <span>🚌 Bus Transport:</span>
-                  <span>{formatCurrency(busQuoteAmount)}</span>
-                </div>
-              )}
-            </div>
-          </div>
 
           {/* Total Price */}
           <div className="flex items-end justify-between mb-4">
