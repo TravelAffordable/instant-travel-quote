@@ -23,6 +23,9 @@ interface LiveHotelQuoteCardProps {
   childrenAges: number[];
   rooms: number;
   budget: string;
+  guestName?: string;
+  guestTel?: string;
+  guestEmail?: string;
 }
 
 // Room capacity mapping based on common Hotelbeds room type codes
@@ -78,6 +81,9 @@ function LiveHotelQuoteCardComponent({
   childrenAges,
   rooms,
   budget,
+  guestName = '',
+  guestTel = '',
+  guestEmail = '',
 }: LiveHotelQuoteCardProps) {
   // Process available room options with capacity and pricing
   const roomOptions: RoomOption[] = useMemo(() => {
@@ -271,14 +277,26 @@ function LiveHotelQuoteCardComponent({
       ? `\n🛏️ Room Types:\n${getSelectedRoomNames().map((name, i) => `   Room ${i + 1}: ${name}`).join('\n')}`
       : `\n🛏️ Rooms: ${rooms} room${rooms > 1 ? 's' : ''}`;
 
-    const text = `Hi! I'm interested in booking:\n\n` +
+    const filteredActivities = pkg.activitiesIncluded
+      .filter(activity => {
+        const lower = activity.toLowerCase();
+        return !lower.includes('accommodation') && 
+               !lower.includes('breakfast at selected') &&
+               !lower.includes('buffet breakfast at selected') &&
+               !lower.includes('room only');
+      });
+
+    const inclusionsList = [`${nights} nights accommodation`, ...filteredActivities].join(', ');
+
+    const text = `Greetings ${guestName || '(Guest)'}\n\n` +
+      `The discounted package price for your getaway includes ${inclusionsList}. Our getaways are stylish and trendy with a bit of affordable sophistication.\n\n` +
       `🏨 Hotel: ${hotel.name}\n` +
       `📦 Package: ${pkg.name}\n` +
       `📅 Duration: ${nights} nights${roomDetails}\n` +
       `👥 Guests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\n` +
-      `💰 Total: ${formatCurrency(totalCost)}\n` +
-      `💵 My Budget: ${budget}\n\n` +
-      `Please send me more details and availability.`;
+      `💰 Total: ${formatCurrency(totalCost)}\n\n` +
+      `To start with your booking process, please reply to this message. Our agents will then be in communication with you.\n\n` +
+      `Thank you,\nBookings,\nTravel Affordable Pty Ltd`;
     
     window.open(`https://wa.me/27796813869?text=${encodeURIComponent(text)}`, '_blank');
   };
@@ -288,19 +306,29 @@ function LiveHotelQuoteCardComponent({
       ? `Room Types:\n${getSelectedRoomNames().map((name, i) => `- Room ${i + 1}: ${name}`).join('\n')}`
       : `Rooms: ${rooms} room${rooms > 1 ? 's' : ''}`;
 
+    const filteredActivities = pkg.activitiesIncluded
+      .filter(activity => {
+        const lower = activity.toLowerCase();
+        return !lower.includes('accommodation') && 
+               !lower.includes('breakfast at selected') &&
+               !lower.includes('buffet breakfast at selected') &&
+               !lower.includes('room only');
+      });
+
+    const inclusionsList = [`${nights} nights accommodation`, ...filteredActivities].join(', ');
+
     const subject = `Booking Enquiry: ${hotel.name} - ${pkg.shortName}`;
-    const body = `Hi Travel Affordable,\n\n` +
-      `I would like to enquire about the following booking:\n\n` +
+    const body = `Greetings ${guestName || '(Guest)'}\n\n` +
+      `The discounted package price for your getaway includes ${inclusionsList}. Our getaways are stylish and trendy with a bit of affordable sophistication.\n\n` +
       `Hotel: ${hotel.name}\n` +
       `Package: ${pkg.name}\n` +
       `Duration: ${nights} nights\n` +
       `${roomDetails}\n` +
       `Guests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\n` +
-      `Total Price: ${formatCurrency(totalCost)}\n` +
-      `My Budget: ${budget}\n\n` +
-      `Package Inclusions:\n${pkg.activitiesIncluded.map(a => `- ${a}`).join('\n')}\n\n` +
-      `Please confirm availability and send me booking details.\n\n` +
-      `Thank you`;
+      `Total Price: ${formatCurrency(totalCost)}\n\n` +
+      `To start with your booking process, please send this email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.\n\n` +
+      `Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.\n\n` +
+      `Thank you,\nBookings,\nTravel Affordable Pty Ltd`;
     
     window.open(`mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
@@ -381,9 +409,12 @@ function LiveHotelQuoteCardComponent({
             )}
           </div>
 
-          {/* Package Description */}
+          {/* Package Description - Personalized */}
           <div className="bg-muted/30 rounded-lg p-3 mb-4">
-            <p className="text-sm text-foreground leading-relaxed">
+            <p className="text-sm text-foreground leading-relaxed font-medium mb-2">
+              Greetings {guestName || '(Guest)'}
+            </p>
+            <p className="text-sm text-foreground leading-relaxed mb-3">
               The discounted package price for your getaway includes {nights} night{nights > 1 ? 's' : ''} accommodation, {pkg.activitiesIncluded
                 .filter(activity => {
                   const lower = activity.toLowerCase();
@@ -393,6 +424,17 @@ function LiveHotelQuoteCardComponent({
                          !lower.includes('room only');
                 })
                 .join(', ')}. Our getaways are stylish and trendy with a bit of affordable sophistication.
+            </p>
+            <p className="text-sm text-foreground leading-relaxed mb-2">
+              To start with your booking process, please click on the Request to Book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.
+            </p>
+            <p className="text-sm text-foreground leading-relaxed mb-3">
+              Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.
+            </p>
+            <p className="text-sm text-muted-foreground italic">
+              Thank you,<br />
+              Bookings,<br />
+              Travel Affordable Pty Ltd
             </p>
           </div>
 
