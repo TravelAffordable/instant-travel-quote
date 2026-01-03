@@ -16,6 +16,9 @@ interface LiveHotelQuotesProps {
   childrenAgesString: string;
   rooms: number;
   budget: string;
+  guestName?: string;
+  guestTel?: string;
+  guestEmail?: string;
 }
 
 export function LiveHotelQuotes({
@@ -27,6 +30,9 @@ export function LiveHotelQuotes({
   childrenAgesString,
   rooms,
   budget,
+  guestName = '',
+  guestTel = '',
+  guestEmail = '',
 }: LiveHotelQuotesProps) {
   const [maxBudget, setMaxBudget] = useState<string>('');
 
@@ -129,6 +135,9 @@ export function LiveHotelQuotes({
                   childrenAges={childrenAges}
                   rooms={rooms}
                   budget={budget}
+                  guestName={guestName}
+                  guestTel={guestTel}
+                  guestEmail={guestEmail}
                 />
               ))}
             </div>

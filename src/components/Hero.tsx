@@ -1162,6 +1162,9 @@ export function Hero({ onGetQuote }: HeroProps) {
                       childrenAgesString={childrenAges}
                       rooms={rooms}
                       budget={budget}
+                      guestName={guestName}
+                      guestTel={guestTel}
+                      guestEmail={guestEmail}
                     />
                   ) : (
                     <div className="text-center py-6 mb-6 bg-amber-50 rounded-xl border border-amber-200">
