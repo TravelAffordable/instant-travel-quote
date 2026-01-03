@@ -345,22 +345,54 @@ function LiveHotelQuoteCardComponent({
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4">
             <p className="text-sm font-semibold text-primary mb-2">{pkg.shortName}</p>
             <div className="grid grid-cols-2 gap-2">
-              {pkg.activitiesIncluded.slice(0, 4).map((activity, idx) => (
+              <div className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                <Check className="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+                <span className="line-clamp-1">{nights} nights accommodation</span>
+              </div>
+              {pkg.activitiesIncluded
+                .filter(activity => {
+                  const lower = activity.toLowerCase();
+                  return !lower.includes('accommodation') && 
+                         !lower.includes('breakfast at selected') &&
+                         !lower.includes('buffet breakfast at selected') &&
+                         !lower.includes('room only');
+                })
+                .slice(0, 3).map((activity, idx) => (
                 <div key={idx} className="flex items-start gap-1.5 text-xs text-muted-foreground">
                   <Check className="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
                   <span className="line-clamp-1">{activity}</span>
                 </div>
               ))}
             </div>
-            {pkg.activitiesIncluded.length > 4 && (
-              <p className="text-xs text-primary mt-2">+{pkg.activitiesIncluded.length - 4} more inclusions</p>
+            {pkg.activitiesIncluded.filter(a => {
+              const lower = a.toLowerCase();
+              return !lower.includes('accommodation') && 
+                     !lower.includes('breakfast at selected') &&
+                     !lower.includes('buffet breakfast at selected') &&
+                     !lower.includes('room only');
+            }).length > 3 && (
+              <p className="text-xs text-primary mt-2">+{pkg.activitiesIncluded.filter(a => {
+                const lower = a.toLowerCase();
+                return !lower.includes('accommodation') && 
+                       !lower.includes('breakfast at selected') &&
+                       !lower.includes('buffet breakfast at selected') &&
+                       !lower.includes('room only');
+              }).length - 3} more inclusions</p>
             )}
           </div>
 
           {/* Package Description */}
           <div className="bg-muted/30 rounded-lg p-3 mb-4">
             <p className="text-sm text-foreground leading-relaxed">
-              The discounted price below includes {nights} night{nights > 1 ? 's' : ''} accommodation, {pkg.activitiesIncluded.join(', ')}. Our getaways are stylish and trendy with a bit of affordable sophistication.
+              The discounted package price for your getaway includes {nights} night{nights > 1 ? 's' : ''} accommodation, {pkg.activitiesIncluded
+                .filter(activity => {
+                  const lower = activity.toLowerCase();
+                  return !lower.includes('accommodation') && 
+                         !lower.includes('breakfast at selected') &&
+                         !lower.includes('buffet breakfast at selected') &&
+                         !lower.includes('room only');
+                })
+                .join(', ')}. Our getaways are stylish and trendy with a bit of affordable sophistication.
             </p>
           </div>
 
