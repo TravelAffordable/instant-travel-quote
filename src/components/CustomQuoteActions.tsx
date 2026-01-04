@@ -572,7 +572,7 @@ _Contact Us:_
                   className="bg-red-600 hover:bg-red-700 text-white"
                 >
                   <FileDown className="w-4 h-4 mr-1" />
-                  Export PDF
+                  Save Quote as PDF
                 </Button>
                 <Button
                   size="sm"
