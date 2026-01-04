@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X, FileText, Bus, Puzzle } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, BedDouble, ChevronDown, Hotel, PartyPopper, Check, Pencil, X, FileText, Bus, Puzzle, Mail, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   destinations, 
   packages, 
@@ -228,6 +229,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [hasSearched, setHasSearched] = useState(false);
   const [editingQuoteIndex, setEditingQuoteIndex] = useState<number | null>(null);
   const [customHotelMode, setCustomHotelMode] = useState<'preset' | 'bulk'>('preset');
+  const [bookingInProgress, setBookingInProgress] = useState<number | null>(null);
   const [customHotelQuotes, setCustomHotelQuotes] = useState<Array<{
     hotelName: string;
     hotelTier?: string;
@@ -425,6 +427,102 @@ export function Hero({ onGetQuote }: HeroProps) {
     );
   };
 
+  // Generate a unique quote reference
+  const generateQuoteRef = (hotelName: string): string => {
+    const prefix = hotelName.substring(0, 2).toUpperCase();
+    const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `QT-${prefix}${timestamp}-${random}`;
+  };
+
+  // Handle Request to Book button click
+  const handleRequestBooking = async (quote: typeof customHotelQuotes[0], index: number) => {
+    if (!guestName || !guestEmail) {
+      toast.error('Please fill in your name and email address');
+      return;
+    }
+
+    setBookingInProgress(index);
+
+    const selectedPkg = packages.find(p => p.id === quote.packageId);
+    const nightsCount = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Calculate pricing
+    const packageCostPerAdult = selectedPkg?.basePrice || 0;
+    const totalPackageCost = packageCostPerAdult * adults;
+    
+    let serviceFeePerAdult = 1000;
+    if (adults >= 10) serviceFeePerAdult = 750;
+    else if (adults >= 4) serviceFeePerAdult = 800;
+    else if (adults >= 2) serviceFeePerAdult = 850;
+    const totalServiceFees = serviceFeePerAdult * adults;
+    
+    const kidsAges = childrenAges.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a) && a >= 4 && a <= 16);
+    let kidsPackageCost = 0;
+    let kidsFees = 0;
+    const kidFeePerChild = adults >= 2 ? 150 : 300;
+    if (selectedPkg && kidsAges.length > 0) {
+      kidsAges.forEach(age => {
+        if (selectedPkg.kidsPriceTiers && selectedPkg.kidsPriceTiers.length > 0) {
+          const tier = selectedPkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+          if (tier) {
+            kidsPackageCost += tier.price;
+          } else if (selectedPkg.kidsPrice) {
+            kidsPackageCost += selectedPkg.kidsPrice;
+          }
+        } else if (selectedPkg.kidsPrice) {
+          kidsPackageCost += selectedPkg.kidsPrice;
+        }
+        kidsFees += kidFeePerChild;
+      });
+    }
+    
+    const grandTotal = quote.totalCost + totalPackageCost + totalServiceFees + kidsPackageCost + kidsFees;
+    const perPerson = Math.round(grandTotal / (adults + kidsAges.length));
+
+    const quoteRef = generateQuoteRef(quote.hotelName);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('send-booking-invoice', {
+        body: {
+          guestName,
+          guestTel,
+          guestEmail,
+          hotelName: quote.hotelName,
+          roomType: quote.roomType,
+          bedConfig: quote.bedConfig,
+          mealPlan: quote.mealPlan,
+          packageName: quote.packageName,
+          destination: destination.charAt(0).toUpperCase() + destination.slice(1).replace(/-/g, ' '),
+          checkIn,
+          checkOut,
+          nights: nightsCount,
+          adults,
+          children,
+          childrenAges: kidsAges,
+          accommodationCost: quote.totalCost,
+          packageCostTotal: totalPackageCost,
+          kidsPackageCost: kidsPackageCost + kidsFees,
+          serviceFees: totalServiceFees,
+          grandTotal,
+          pricePerPerson: perPerson,
+          quoteRef,
+        },
+      });
+
+      if (error) throw error;
+
+      toast.success(`Booking request sent! Reference: ${quoteRef}`, {
+        description: 'Our team will review and contact you shortly.',
+        duration: 6000,
+      });
+    } catch (error: any) {
+      console.error('Booking request error:', error);
+      toast.error('Failed to send booking request. Please try again or contact us directly.');
+    } finally {
+      setBookingInProgress(null);
+    }
+  };
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -1342,6 +1440,27 @@ export function Hero({ onGetQuote }: HeroProps) {
                                     </p>
                                     <p className="text-xs text-muted-foreground">{kidsAges.length > 0 ? 'Grand Total' : 'Grand Total'}</p>
                                   </div>
+                                </div>
+                                
+                                {/* Request to Book Button */}
+                                <div className="mt-4 pt-4 border-t border-amber-200">
+                                  <Button
+                                    onClick={() => handleRequestBooking(quote, index)}
+                                    disabled={bookingInProgress === index}
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
+                                  >
+                                    {bookingInProgress === index ? (
+                                      <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Sending Request...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Mail className="w-4 h-4 mr-2" />
+                                        Request to Book This Offer Today
+                                      </>
+                                    )}
+                                  </Button>
                                 </div>
                               </CardContent>
                             </Card>
