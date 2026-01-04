@@ -439,7 +439,9 @@ const handler = async (req: Request): Promise<Response> => {
 </html>
     `;
 
-    // Send email to info@travelaffordable.co.za using Resend API
+    // Send email using Resend API
+    // Note: Using travelaffordable2017@gmail.com until domain is verified at resend.com/domains
+    // Once verified, change 'to' to info@travelaffordable.co.za and 'from' to your verified domain email
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -448,7 +450,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Travel Affordable Bookings <onboarding@resend.dev>",
-        to: ["info@travelaffordable.co.za"],
+        to: ["travelaffordable2017@gmail.com"],
         reply_to: data.guestEmail,
         subject: `🎫 New Booking Request: ${data.guestName} - ${data.hotelName} (${data.quoteRef})`,
         html: htmlContent,
