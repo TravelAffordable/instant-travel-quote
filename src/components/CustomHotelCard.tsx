@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Hotel, Bed, Send } from 'lucide-react';
+import { Hotel, Send, Plus, Trash2 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 
@@ -20,8 +19,18 @@ export interface CustomHotelDetails {
   totalCost: number;
 }
 
-interface CustomHotelCardProps {
+interface CustomHotelEntry {
+  id: string;
   hotelName: string;
+  roomType: string;
+  numberOfPeople: string;
+  rate: string;
+  mealPlan: string;
+  calculated: boolean;
+}
+
+interface CustomHotelCardProps {
+  hotelName?: string;
   rooms: number;
   adults: number;
   children?: number;
@@ -32,109 +41,18 @@ interface CustomHotelCardProps {
   onCancelEdit?: () => void;
 }
 
-export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights = 1, onCalculate, initialData, isEditing, onCancelEdit }: CustomHotelCardProps) {
-  const [hotelDetails, setHotelDetails] = useState<string>('');
-  const [totalCost, setTotalCost] = useState<string>('');
-  const [calculated, setCalculated] = useState(false);
-  const [parsedDetails, setParsedDetails] = useState<Partial<CustomHotelDetails>>({});
-  const [selectedMealPlan, setSelectedMealPlan] = useState<string>('none');
-
-  // Populate with initial data when editing
-  useEffect(() => {
-    if (initialData && isEditing) {
-      const details = [
-        initialData.hotelTier,
-        initialData.recommendation,
-        initialData.roomType,
-        initialData.bedConfig,
-        initialData.stayDetails,
-      ].filter(Boolean).join('\n');
-      setHotelDetails(details);
-      setTotalCost(initialData.totalCost?.toString() || '');
-      setParsedDetails(initialData);
-      // Set meal plan from initial data
-      if (initialData.mealPlan) {
-        const mealLower = initialData.mealPlan.toLowerCase();
-        if (mealLower.includes('full board') || mealLower.includes('all meals')) {
-          setSelectedMealPlan('full-board');
-        } else if (mealLower.includes('half board')) {
-          setSelectedMealPlan('half-board');
-        } else if (mealLower.includes('dinner')) {
-          setSelectedMealPlan('dinner');
-        } else if (mealLower.includes('lunch')) {
-          setSelectedMealPlan('lunch');
-        } else if (mealLower.includes('breakfast')) {
-          setSelectedMealPlan('breakfast');
-        } else {
-          setSelectedMealPlan('none');
-        }
-      }
-      setCalculated(false);
+export function CustomHotelCard({ rooms, adults, children = 0, nights = 1, onCalculate, initialData, isEditing, onCancelEdit }: CustomHotelCardProps) {
+  const [entries, setEntries] = useState<CustomHotelEntry[]>([
+    {
+      id: crypto.randomUUID(),
+      hotelName: initialData?.hotelName || '',
+      roomType: initialData?.roomType || '',
+      numberOfPeople: initialData?.stayDetails || `${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}`,
+      rate: initialData?.totalCost?.toString() || '',
+      mealPlan: 'none',
+      calculated: false,
     }
-  }, [initialData, isEditing]);
-
-  const parseHotelDetails = (text: string) => {
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-    const details: Partial<CustomHotelDetails> = {};
-    
-    for (const line of lines) {
-      // Check for price line (ZAR or R followed by number)
-      const priceMatch = line.match(/(?:ZAR|R)\s*([\d,]+(?:\.\d{2})?)/i);
-      if (priceMatch) {
-        const price = parseFloat(priceMatch[1].replace(/,/g, ''));
-        if (!isNaN(price)) {
-          setTotalCost(price.toString());
-        }
-        continue;
-      }
-      
-      // Check for stay details (nights, adults, children pattern)
-      if (line.match(/\d+\s*night/i) || line.match(/\d+\s*adult/i)) {
-        details.stayDetails = line;
-        continue;
-      }
-      
-      // Skip meal plan detection from text - we now use dropdown
-      
-      // Check for bed configuration
-      if (line.toLowerCase().includes('bed') || line.toLowerCase().includes('crib') || line.toLowerCase().includes('cot')) {
-        details.bedConfig = line;
-        continue;
-      }
-      
-      // Check for recommendation
-      if (line.toLowerCase().includes('recommended')) {
-        details.recommendation = line;
-        continue;
-      }
-      
-      // Check for tier keywords
-      if (['beachfront', 'oceanview', 'poolside', 'garden', 'city view', 'sea facing', 'mountain view'].some(t => line.toLowerCase().includes(t)) && line.length < 30) {
-        details.hotelTier = line;
-        continue;
-      }
-      
-      // If it contains "room" or "suite" or "apartment", it's likely the room type
-      if (line.toLowerCase().includes('room') || line.toLowerCase().includes('suite') || line.toLowerCase().includes('apartment')) {
-        details.roomType = line;
-        continue;
-      }
-      
-      // First unmatched line could be tier
-      if (!details.hotelTier && lines.indexOf(line) === 0) {
-        details.hotelTier = line;
-      }
-    }
-    
-    return details;
-  };
-
-  const handleDetailsChange = (text: string) => {
-    setHotelDetails(text);
-    setCalculated(false);
-    const parsed = parseHotelDetails(text);
-    setParsedDetails(parsed);
-  };
+  ]);
 
   const getMealPlanLabel = (value: string): string | undefined => {
     const labels: Record<string, string> = {
@@ -148,49 +66,87 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
     return labels[value];
   };
 
-  const handleCalculate = () => {
-    const cost = parseFloat(totalCost);
-    if (isNaN(cost) || cost <= 0) return;
+  const updateEntry = (id: string, field: keyof CustomHotelEntry, value: string) => {
+    setEntries(prev => prev.map(entry => 
+      entry.id === id 
+        ? { ...entry, [field]: value, calculated: false }
+        : entry
+    ));
+  };
+
+  const addNewEntry = () => {
+    setEntries(prev => [...prev, {
+      id: crypto.randomUUID(),
+      hotelName: '',
+      roomType: '',
+      numberOfPeople: `${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}`,
+      rate: '',
+      mealPlan: 'none',
+      calculated: false,
+    }]);
+  };
+
+  const removeEntry = (id: string) => {
+    if (entries.length > 1) {
+      setEntries(prev => prev.filter(entry => entry.id !== id));
+    }
+  };
+
+  const handleCalculate = (entryId: string) => {
+    const entry = entries.find(e => e.id === entryId);
+    if (!entry) return;
     
-    setCalculated(true);
+    const cost = parseFloat(entry.rate);
+    if (isNaN(cost) || cost <= 0 || !entry.hotelName.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please enter a hotel name and rate.",
+        variant: "destructive"
+      });
+      return;
+    }
     
-    // Get meal plan label if selected
-    const mealPlanLabel = getMealPlanLabel(selectedMealPlan);
+    setEntries(prev => prev.map(e => 
+      e.id === entryId ? { ...e, calculated: true } : e
+    ));
+    
+    const mealPlanLabel = getMealPlanLabel(entry.mealPlan);
     
     onCalculate({
-      hotelName,
-      hotelTier: parsedDetails.hotelTier,
-      recommendation: parsedDetails.recommendation,
-      roomType: parsedDetails.roomType,
-      bedConfig: parsedDetails.bedConfig,
+      hotelName: entry.hotelName,
+      roomType: entry.roomType,
       mealPlan: mealPlanLabel,
-      stayDetails: parsedDetails.stayDetails || `${nights} night${nights > 1 ? 's' : ''}, ${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}`,
+      stayDetails: `${nights} night${nights > 1 ? 's' : ''}, ${entry.numberOfPeople}`,
       totalCost: cost,
     });
   };
 
-  const handleBeatPrice = () => {
-    const cost = parseFloat(totalCost);
+  const handleBeatPrice = (entryId: string) => {
+    const entry = entries.find(e => e.id === entryId);
+    if (!entry) return;
+
+    const cost = parseFloat(entry.rate);
     if (isNaN(cost) || cost <= 0) {
       toast({
         title: "Please enter a price first",
-        description: "Enter the total cost and calculate your quote before requesting a price beat.",
+        description: "Enter the rate and calculate your quote before requesting a price beat.",
         variant: "destructive"
       });
       return;
     }
 
-    const mealPlanLabel = getMealPlanLabel(selectedMealPlan) || 'No meals included';
-    const stayDetails = parsedDetails.stayDetails || `${nights} night${nights > 1 ? 's' : ''}, ${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}`;
+    const mealPlanLabel = getMealPlanLabel(entry.mealPlan) || 'No meals included';
+    const stayDetails = `${nights} night${nights > 1 ? 's' : ''}, ${entry.numberOfPeople}`;
     
-    const subject = encodeURIComponent(`Beat My Quote Request - ${hotelName}`);
+    const subject = encodeURIComponent(`Beat My Quote Request - ${entry.hotelName}`);
     const body = encodeURIComponent(
 `Hi Travel Affordable,
 
 I would like you to beat the following quote:
 
-Hotel: ${hotelName}
-${parsedDetails.hotelTier ? `Tier: ${parsedDetails.hotelTier}\n` : ''}${parsedDetails.roomType ? `Room Type: ${parsedDetails.roomType}\n` : ''}${parsedDetails.bedConfig ? `Bed Config: ${parsedDetails.bedConfig}\n` : ''}Stay Details: ${stayDetails}
+Hotel: ${entry.hotelName}
+Room Type: ${entry.roomType || 'Not specified'}
+Stay Details: ${stayDetails}
 Meal Plan: ${mealPlanLabel}
 Current Quote: R${cost.toLocaleString()}
 
@@ -217,130 +173,145 @@ Thank you!`
           </p>
         </div>
 
-        <div className="flex gap-4">
-          <div className="w-32 h-24 bg-muted rounded-lg flex items-center justify-center">
-            <Hotel className="w-12 h-12 text-muted-foreground" />
-          </div>
-          <div className="flex-1">
-            <h4 className="font-semibold text-lg">{hotelName}</h4>
-            <p className="text-sm text-muted-foreground">Durban, KwaZulu-Natal</p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Custom Quote</span>
+        {/* Hotel Entries */}
+        <div className="space-y-6">
+          {entries.map((entry, index) => (
+            <div key={entry.id} className="border border-border rounded-lg p-4 relative">
+              {entries.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 h-8 w-8 text-muted-foreground hover:text-destructive"
+                  onClick={() => removeEntry(entry.id)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+
+              <div className="flex gap-4 mb-4">
+                <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                  <Hotel className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                    Custom Hotel {entries.length > 1 ? `#${index + 1}` : ''}
+                  </span>
+                  {entry.calculated && entry.rate && (
+                    <p className="text-xl font-bold text-primary mt-1">
+                      {formatCurrency(parseFloat(entry.rate))}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {/* Hotel Name */}
+                <div>
+                  <Label className="text-sm text-muted-foreground">Hotel Name</Label>
+                  <Input
+                    placeholder="Enter hotel name"
+                    value={entry.hotelName}
+                    onChange={(e) => updateEntry(entry.id, 'hotelName', e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+
+                {/* Room Type */}
+                <div>
+                  <Label className="text-sm text-muted-foreground">Type of room</Label>
+                  <Input
+                    placeholder="e.g., Deluxe Double Room, Family Suite"
+                    value={entry.roomType}
+                    onChange={(e) => updateEntry(entry.id, 'roomType', e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+
+                {/* Number of People */}
+                <div>
+                  <Label className="text-sm text-muted-foreground">For how many people:</Label>
+                  <Input
+                    placeholder="e.g., 2 adults, 1 child"
+                    value={entry.numberOfPeople}
+                    onChange={(e) => updateEntry(entry.id, 'numberOfPeople', e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+
+                {/* Rate */}
+                <div>
+                  <Label className="text-sm text-muted-foreground">How much: (ZAR)</Label>
+                  <Input
+                    type="number"
+                    placeholder="Enter the total rate quoted to you"
+                    value={entry.rate}
+                    onChange={(e) => updateEntry(entry.id, 'rate', e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+
+                {/* Meal Plan Dropdown */}
+                <div>
+                  <Label className="text-sm text-muted-foreground">Meal Plan</Label>
+                  <Select 
+                    value={entry.mealPlan} 
+                    onValueChange={(value) => updateEntry(entry.id, 'mealPlan', value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select meal plan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No meals included</SelectItem>
+                      <SelectItem value="breakfast">Breakfast</SelectItem>
+                      <SelectItem value="lunch">Lunch</SelectItem>
+                      <SelectItem value="dinner">Dinner</SelectItem>
+                      <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
+                      <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 pt-2">
+                  <Button 
+                    onClick={() => handleCalculate(entry.id)} 
+                    disabled={!entry.rate || parseFloat(entry.rate) <= 0 || !entry.hotelName.trim()}
+                    className="flex-1"
+                  >
+                    {isEditing ? 'Update Quote' : 'Calculate'}
+                  </Button>
+                  {isEditing && onCancelEdit && index === 0 && (
+                    <Button variant="outline" onClick={onCancelEdit}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+
+                {/* Beat This Price Button */}
+                {entry.calculated && (
+                  <Button 
+                    onClick={() => handleBeatPrice(entry.id)}
+                    variant="outline"
+                    className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Let's see if you can beat this price
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-          {calculated && (
-            <div className="text-right">
-              <p className="text-2xl font-bold text-primary">
-                {formatCurrency(parseFloat(totalCost))}
-              </p>
-              <p className="text-xs text-muted-foreground">total stay</p>
-            </div>
-          )}
+          ))}
         </div>
 
-        {/* Details Input */}
-        <div className="mt-4 pt-4 border-t border-border space-y-3">
-          <div>
-            <Label htmlFor={`details-${hotelName}`} className="text-sm text-muted-foreground">
-              Paste hotel details (room type, bed config, price, etc.)
-            </Label>
-            <Textarea
-              id={`details-${hotelName}`}
-              placeholder={`Example:\nBeachfront\nRecommended for your group\nDeluxe Quadruple Room 2 Bedroom Apartment\nMultiple bed types • Free crib available\n3 nights, 3 adults, 2 children\nZAR 12,370`}
-              value={hotelDetails}
-              onChange={(e) => handleDetailsChange(e.target.value)}
-              className="mt-1 min-h-[120px] text-sm"
-            />
-          </div>
-
-          {/* Parsed Preview */}
-          {(parsedDetails.hotelTier || parsedDetails.roomType || parsedDetails.bedConfig) && (
-            <div className="bg-muted/50 rounded-lg p-3 text-sm space-y-1">
-              <p className="font-medium text-xs text-muted-foreground mb-2">Parsed Details:</p>
-              {parsedDetails.hotelTier && (
-                <p className="text-primary font-medium">{parsedDetails.hotelTier}</p>
-              )}
-              {parsedDetails.recommendation && (
-                <p className="text-green-600 text-xs">{parsedDetails.recommendation}</p>
-              )}
-              {parsedDetails.roomType && (
-                <p className="font-medium">{parsedDetails.roomType}</p>
-              )}
-              {parsedDetails.bedConfig && (
-                <p className="flex items-center gap-1 text-muted-foreground text-xs">
-                  <Bed className="w-3 h-3" /> {parsedDetails.bedConfig}
-                </p>
-              )}
-              {parsedDetails.stayDetails && (
-                <p className="text-muted-foreground text-xs">{parsedDetails.stayDetails}</p>
-              )}
-            </div>
-          )}
-
-          {/* Meal Plan Dropdown */}
-          <div>
-            <Label className="text-sm text-muted-foreground">Meal Plan</Label>
-            <Select value={selectedMealPlan} onValueChange={setSelectedMealPlan}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select meal plan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No meals included</SelectItem>
-                <SelectItem value="breakfast">Breakfast</SelectItem>
-                <SelectItem value="lunch">Lunch</SelectItem>
-                <SelectItem value="dinner">Dinner</SelectItem>
-                <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
-                <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Total Cost Input */}
-          <div>
-            <Label htmlFor={`cost-${hotelName}`} className="text-sm text-muted-foreground">
-              Total Stay Cost (ZAR)
-            </Label>
-            <Input
-              id={`cost-${hotelName}`}
-              type="number"
-              placeholder="Enter total accommodation cost"
-              value={totalCost}
-              onChange={(e) => {
-                setTotalCost(e.target.value);
-                setCalculated(false);
-              }}
-              className="mt-1"
-            />
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            <Button 
-              onClick={handleCalculate} 
-              disabled={!totalCost || parseFloat(totalCost) <= 0}
-              className="flex-1"
-            >
-              {isEditing ? 'Update Quote' : 'Calculate'}
-            </Button>
-            {isEditing && onCancelEdit && (
-              <Button variant="outline" onClick={onCancelEdit}>
-                Cancel
-              </Button>
-            )}
-          </div>
-
-          {/* Beat This Price Button */}
-          {calculated && (
-            <Button 
-              onClick={handleBeatPrice}
-              variant="outline"
-              className="w-full mt-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <Send className="w-4 h-4 mr-2" />
-              Let's see if you can beat this price
-            </Button>
-          )}
-        </div>
+        {/* Add Another Hotel Button */}
+        <Button
+          variant="outline"
+          onClick={addNewEntry}
+          className="w-full mt-4"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Add another custom hotel
+        </Button>
       </CardContent>
     </Card>
   );
