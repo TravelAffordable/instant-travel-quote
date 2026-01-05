@@ -1108,9 +1108,11 @@ export function Hero({ onGetQuote }: HeroProps) {
                   {showCustomHotels ? 'Hide Custom Hotels' : 'Select Custom Hotels'}
                 </Button>
               </div>
-              <p className="text-sm text-amber-700 mb-4">
-                We have special rates for these hotels. Select any hotel and enter the total accommodation cost quoted to you.
-              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-blue-800">
+                  <strong>💡 Tip:</strong> If you have a hotel that you like that is not on our system or on Hotelbeds, please put the hotel name (if it's not listed under custom hotels), put the room type and number of people and kids, then put the rate, choose the meal plan if your rate includes breakfast or other meal plan. Calculate the package cost by clicking on the Calculate button. Once you have the quote, click on "Let's see if you can beat this price" button — we will beat the price and send you the total discounted amount on your getaway including accommodation and fun activities.
+                </p>
+              </div>
               
               {showCustomHotels && (
                 <>
