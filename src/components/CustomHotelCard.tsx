@@ -5,8 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Hotel, Coffee, Baby, Bed } from 'lucide-react';
-import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { Hotel, Bed, Send } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
 
 export interface CustomHotelDetails {
   hotelName: string;
@@ -168,9 +169,54 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
     });
   };
 
+  const handleBeatPrice = () => {
+    const cost = parseFloat(totalCost);
+    if (isNaN(cost) || cost <= 0) {
+      toast({
+        title: "Please enter a price first",
+        description: "Enter the total cost and calculate your quote before requesting a price beat.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const mealPlanLabel = getMealPlanLabel(selectedMealPlan) || 'No meals included';
+    const stayDetails = parsedDetails.stayDetails || `${nights} night${nights > 1 ? 's' : ''}, ${adults} adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} child${children > 1 ? 'ren' : ''}` : ''}`;
+    
+    const subject = encodeURIComponent(`Beat My Quote Request - ${hotelName}`);
+    const body = encodeURIComponent(
+`Hi Travel Affordable,
+
+I would like you to beat the following quote:
+
+Hotel: ${hotelName}
+${parsedDetails.hotelTier ? `Tier: ${parsedDetails.hotelTier}\n` : ''}${parsedDetails.roomType ? `Room Type: ${parsedDetails.roomType}\n` : ''}${parsedDetails.bedConfig ? `Bed Config: ${parsedDetails.bedConfig}\n` : ''}Stay Details: ${stayDetails}
+Meal Plan: ${mealPlanLabel}
+Current Quote: R${cost.toLocaleString()}
+
+Please let me know the discounted amount for accommodation and fun activities.
+
+Thank you!`
+    );
+
+    window.open(`mailto:info@travelaffordable.co.za?subject=${subject}&body=${body}`, '_blank');
+    
+    toast({
+      title: "Request sent!",
+      description: "Your email client should open with your beat-the-price request.",
+    });
+  };
+
   return (
     <Card className="border border-border hover:shadow-md transition-shadow">
       <CardContent className="p-4">
+        {/* Instructional Text */}
+        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
+          <p className="text-sm text-blue-800 dark:text-blue-200">
+            <strong>💡 Tip:</strong> If you have a hotel that you like that is not on our system or on Hotelbeds, please put the hotel name (if it's not listed under custom hotels), put the room type and number of people and kids, then put the rate, choose the meal plan if your rate includes breakfast or other meal plan. Calculate the package cost by clicking on the Calculate button. Once you have the quote, click on "Let's see if you can beat this price" button — we will beat the price and send you the total discounted amount on your getaway including accommodation and fun activities.
+          </p>
+        </div>
+
         <div className="flex gap-4">
           <div className="w-32 h-24 bg-muted rounded-lg flex items-center justify-center">
             <Hotel className="w-12 h-12 text-muted-foreground" />
@@ -282,6 +328,18 @@ export function CustomHotelCard({ hotelName, rooms, adults, children = 0, nights
               </Button>
             )}
           </div>
+
+          {/* Beat This Price Button */}
+          {calculated && (
+            <Button 
+              onClick={handleBeatPrice}
+              variant="outline"
+              className="w-full mt-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              Let's see if you can beat this price
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
