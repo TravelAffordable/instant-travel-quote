@@ -166,12 +166,6 @@ Thank you!`
   return (
     <Card className="border border-border hover:shadow-md transition-shadow">
       <CardContent className="p-4">
-        {/* Instructional Text */}
-        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            <strong>💡 Tip:</strong> If you have a hotel that you like that is not on our system or on Hotelbeds, please put the hotel name (if it's not listed under custom hotels), put the room type and number of people and kids, then put the rate, choose the meal plan if your rate includes breakfast or other meal plan. Calculate the package cost by clicking on the Calculate button. Once you have the quote, click on "Let's see if you can beat this price" button — we will beat the price and send you the total discounted amount on your getaway including accommodation and fun activities.
-          </p>
-        </div>
 
         {/* Hotel Entries */}
         <div className="space-y-6">
