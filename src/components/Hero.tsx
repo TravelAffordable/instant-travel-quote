@@ -1125,7 +1125,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                       className={customHotelMode === 'preset' ? 'bg-amber-600 hover:bg-amber-700' : ''}
                     >
                       <Hotel className="w-4 h-4 mr-1" />
-                      Preset Hotels
+                      Enter Custom Hotel
                     </Button>
                     <Button
                       variant={customHotelMode === 'bulk' ? 'default' : 'outline'}
@@ -1139,71 +1139,32 @@ export function Hero({ onGetQuote }: HeroProps) {
                   </div>
 
                   {customHotelMode === 'preset' ? (
-                    <>
-                      <div className="space-y-3 mb-6">
-                        <p className="text-sm font-medium text-gray-700">Select hotels to get custom quotes:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {getCustomHotelsForDestination(destination).map((hotel) => (
-                            <label
-                              key={hotel}
-                              className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${
-                                selectedCustomHotels.includes(hotel)
-                                  ? 'bg-primary/10 border-primary text-primary'
-                                  : 'bg-white border-gray-200 hover:border-gray-300'
-                              }`}
-                            >
-                              <Checkbox
-                                checked={selectedCustomHotels.includes(hotel)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setSelectedCustomHotels([...selectedCustomHotels, hotel]);
-                                  } else {
-                                    setSelectedCustomHotels(selectedCustomHotels.filter(h => h !== hotel));
-                                  }
-                                }}
-                              />
-                              <span className="text-sm">{hotel}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-
-                      {selectedCustomHotels.length > 0 && (
-                        <div className="space-y-4">
-                          <h5 className="text-sm font-medium text-gray-700">Enter accommodation costs:</h5>
-                          {selectedCustomHotels.map((hotelName) => (
-                            <CustomHotelCard
-                              key={hotelName}
-                              hotelName={hotelName}
-                              rooms={rooms}
-                              adults={adults}
-                              children={children}
-                              nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
-                              onCalculate={(details) => {
-                                const selectedPackages = packages.filter(p => packageIds.includes(p.id));
-                                if (selectedPackages.length > 0) {
-                                  setCustomHotelQuotes(prev => {
-                                    // Remove existing quotes for this hotel, then add new ones for ALL selected packages
-                                    const filtered = prev.filter(q => q.hotelName !== details.hotelName);
-                                    const newQuotes = selectedPackages.map(pkg => ({
-                                      ...details,
-                                      packageId: pkg.id,
-                                      packageName: pkg.name,
-                                      checkInDate: checkIn,
-                                      checkOutDate: checkOut,
-                                    }));
-                                    return [...filtered, ...newQuotes];
-                                  });
-                                  toast.success(`Quote added for ${details.hotelName} (${selectedPackages.length} package${selectedPackages.length > 1 ? 's' : ''})`);
-                                } else {
-                                  toast.error('Please select a package first');
-                                }
-                              }}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </>
+                    <div className="space-y-4">
+                      <CustomHotelCard
+                        rooms={rooms}
+                        adults={adults}
+                        children={children}
+                        nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
+                        onCalculate={(details) => {
+                          const selectedPackages = packages.filter(p => packageIds.includes(p.id));
+                          if (selectedPackages.length > 0) {
+                            setCustomHotelQuotes(prev => {
+                              const newQuotes = selectedPackages.map(pkg => ({
+                                ...details,
+                                packageId: pkg.id,
+                                packageName: pkg.name,
+                                checkInDate: checkIn,
+                                checkOutDate: checkOut,
+                              }));
+                              return [...prev, ...newQuotes];
+                            });
+                            toast.success(`Quote added for ${details.hotelName} (${selectedPackages.length} package${selectedPackages.length > 1 ? 's' : ''})`);
+                          } else {
+                            toast.error('Please select a package first');
+                          }
+                        }}
+                      />
+                    </div>
                   ) : (
                     <BulkHotelParser
                       nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1}
