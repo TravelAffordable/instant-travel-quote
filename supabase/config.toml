@@ -3,6 +3,9 @@ project_id = "jvmkyqrwhbcdkdsccezg"
 [functions.hotelbeds-search]
 verify_jwt = false
 
+[functions.hotelbeds-booking]
+verify_jwt = false
+
 [functions.amadeus-search]
 verify_jwt = false
 
@@ -10,4 +13,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.send-ad-email]
+verify_jwt = false
+
+[functions.send-booking-invoice]
 verify_jwt = false
