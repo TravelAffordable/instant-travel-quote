@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SocialAds from "./pages/SocialAds";
 import BuildPackage from "./pages/BuildPackage";
+import HotelbedsTest from "./pages/HotelbedsTest";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/ads" element={<SocialAds />} />
           <Route path="/build-package" element={<BuildPackage />} />
+          <Route path="/hotelbeds-test" element={<HotelbedsTest />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
