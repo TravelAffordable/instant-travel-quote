@@ -23,6 +23,7 @@ interface HotelEntry {
   id: string;
   name: string;
   quoteAmount: string;
+  mealPlan: string;
 }
 
 interface FamilySplit {
@@ -85,14 +86,13 @@ export function TravelAgentQuote() {
   const [childrenAges, setChildrenAges] = useState<number[]>([]);
   const [hasCalculated, setHasCalculated] = useState(false);
   const [quoteResults, setQuoteResults] = useState<QuoteResult[]>([]);
-  const [mealPlan, setMealPlan] = useState('');
   
   // Flag to prevent useEffect from clearing data during PDF load
   const [isLoadingFromPDF, setIsLoadingFromPDF] = useState(false);
   
   // Multiple hotels support (up to 8)
   const [hotels, setHotels] = useState<HotelEntry[]>([
-    { id: '1', name: '', quoteAmount: '' }
+    { id: '1', name: '', quoteAmount: '', mealPlan: '' }
   ]);
   
   // Family split support
@@ -180,7 +180,7 @@ export function TravelAgentQuote() {
   const addHotel = () => {
     if (hotels.length < 8) {
       const newId = (hotels.length + 1).toString();
-      setHotels([...hotels, { id: newId, name: '', quoteAmount: '' }]);
+      setHotels([...hotels, { id: newId, name: '', quoteAmount: '', mealPlan: '' }]);
     }
   };
 
@@ -190,7 +190,7 @@ export function TravelAgentQuote() {
     }
   };
 
-  const updateHotel = (id: string, field: 'name' | 'quoteAmount', value: string) => {
+  const updateHotel = (id: string, field: 'name' | 'quoteAmount' | 'mealPlan', value: string) => {
     setHotels(hotels.map(h => h.id === id ? { ...h, [field]: value } : h));
   };
 
@@ -472,12 +472,26 @@ export function TravelAgentQuote() {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     
-    // List all hotels
+    // List all hotels with meal plans
     filledHotels.forEach((hotel, index) => {
       doc.setFont('helvetica', 'bold');
       doc.text(`Option ${index + 1}: ${hotel.name}`, 20, yPos);
       doc.setFont('helvetica', 'normal');
-      yPos += 6;
+      yPos += 5;
+      if (hotel.mealPlan && hotel.mealPlan !== 'none') {
+        const mealPlanText = hotel.mealPlan === 'breakfast' ? 'Breakfast included' :
+                            hotel.mealPlan === 'lunch' ? 'Lunch included' :
+                            hotel.mealPlan === 'dinner' ? 'Dinner included' :
+                            hotel.mealPlan === 'half-board' ? 'Half Board (Breakfast & Dinner)' :
+                            hotel.mealPlan === 'full-board' ? 'Full Board (All Meals)' : '';
+        if (mealPlanText) {
+          doc.setTextColor(34, 139, 34);
+          doc.text(`   • ${mealPlanText}`, 20, yPos);
+          doc.setTextColor(0, 0, 0);
+          yPos += 5;
+        }
+      }
+      yPos += 2;
     });
 
     yPos += 4;
@@ -642,7 +656,7 @@ export function TravelAgentQuote() {
     if (data.children !== undefined) setChildren(data.children);
     if (data.childrenAges) setChildrenAges(data.childrenAges);
     if (data.packageIds) setPackageIds(data.packageIds);
-    if (data.hotels) setHotels(data.hotels);
+    if (data.hotels) setHotels(data.hotels.map((h: any) => ({ ...h, mealPlan: h.mealPlan || '' })));
     if (data.companyDetails) setCompanyDetails(data.companyDetails);
     if (data.enableFamilySplit !== undefined) setEnableFamilySplit(data.enableFamilySplit);
     if (data.families) setFamilies(data.families);
@@ -780,40 +794,57 @@ export function TravelAgentQuote() {
                 
                 <div className="space-y-3">
                   {hotels.map((hotel, index) => (
-                    <div key={hotel.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
-                      <div className="flex items-center justify-center w-8 h-8 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                        {index + 1}
-                      </div>
-                      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <Input
-                          type="text"
-                          value={hotel.name}
-                          onChange={e => updateHotel(hotel.id, 'name', e.target.value)}
-                          placeholder="Hotel name"
-                          className="h-10 bg-white border-gray-200"
-                        />
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">R</span>
+                    <div key={hotel.id} className="p-3 bg-gray-50 rounded-lg border space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                           <Input
-                            type="number"
-                            value={hotel.quoteAmount}
-                            onChange={e => updateHotel(hotel.id, 'quoteAmount', e.target.value)}
-                            placeholder="Quote amount"
-                            min={0}
+                            type="text"
+                            value={hotel.name}
+                            onChange={e => updateHotel(hotel.id, 'name', e.target.value)}
+                            placeholder="Hotel name"
                             className="h-10 bg-white border-gray-200"
                           />
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-500">R</span>
+                            <Input
+                              type="number"
+                              value={hotel.quoteAmount}
+                              onChange={e => updateHotel(hotel.id, 'quoteAmount', e.target.value)}
+                              placeholder="Quote amount"
+                              min={0}
+                              className="h-10 bg-white border-gray-200"
+                            />
+                          </div>
                         </div>
+                        {hotels.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeHotel(hotel.id)}
+                            className="h-10 w-10 text-red-500 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
-                      {hotels.length > 1 && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeHotel(hotel.id)}
-                          className="h-10 w-10 text-red-500 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
+                      <div className="ml-11">
+                        <Select value={hotel.mealPlan} onValueChange={(value) => updateHotel(hotel.id, 'mealPlan', value)}>
+                          <SelectTrigger className="h-10 bg-white border-gray-200 w-full md:w-64">
+                            <SelectValue placeholder="Select meal plan (optional)" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white">
+                            <SelectItem value="none">No meals included</SelectItem>
+                            <SelectItem value="breakfast">Breakfast only</SelectItem>
+                            <SelectItem value="lunch">Lunch only</SelectItem>
+                            <SelectItem value="dinner">Dinner only</SelectItem>
+                            <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
+                            <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -831,23 +862,6 @@ export function TravelAgentQuote() {
                 )}
               </div>
 
-              {/* Meal Plan Selection */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Meal Plan</Label>
-                <Select value={mealPlan} onValueChange={setMealPlan}>
-                  <SelectTrigger className="h-11 bg-white border-gray-200">
-                    <SelectValue placeholder="Select meal plan (optional)" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="none">No meals included</SelectItem>
-                    <SelectItem value="breakfast">Breakfast only</SelectItem>
-                    <SelectItem value="lunch">Lunch only</SelectItem>
-                    <SelectItem value="dinner">Dinner only</SelectItem>
-                    <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
-                    <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               {/* Package Selection */}
               <div className="space-y-2">
@@ -1265,9 +1279,20 @@ export function TravelAgentQuote() {
 
                                 return (
                                   <div key={hotelIdx} className="flex items-center justify-between bg-white rounded-lg p-3 border">
-                                    <div className="flex items-center gap-2">
-                                      <Hotel className="w-4 h-4 text-purple-600" />
-                                      <span className="font-medium text-gray-800">{hotel.name}</span>
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <Hotel className="w-4 h-4 text-purple-600" />
+                                        <span className="font-medium text-gray-800">{hotel.name}</span>
+                                      </div>
+                                      {hotel.mealPlan && hotel.mealPlan !== 'none' && (
+                                        <p className="text-xs text-green-600 ml-6 mt-1">
+                                          {hotel.mealPlan === 'breakfast' && 'Breakfast included'}
+                                          {hotel.mealPlan === 'lunch' && 'Lunch included'}
+                                          {hotel.mealPlan === 'dinner' && 'Dinner included'}
+                                          {hotel.mealPlan === 'half-board' && 'Half Board (Breakfast & Dinner)'}
+                                          {hotel.mealPlan === 'full-board' && 'Full Board (All Meals)'}
+                                        </p>
+                                      )}
                                     </div>
                                     <div className="text-right">
                                       {!hidePerPersonPrice && (
@@ -1291,18 +1316,6 @@ export function TravelAgentQuote() {
                                 <Check className="w-4 h-4 shrink-0" />
                                 <span>{nights} nights accommodation</span>
                               </p>
-                              {mealPlan && mealPlan !== 'none' && (
-                                <p className="flex items-center gap-2 text-green-600 text-sm">
-                                  <Check className="w-4 h-4 shrink-0" />
-                                  <span>
-                                    {mealPlan === 'breakfast' && 'Breakfast included'}
-                                    {mealPlan === 'lunch' && 'Lunch included'}
-                                    {mealPlan === 'dinner' && 'Dinner included'}
-                                    {mealPlan === 'half-board' && 'Half Board (Breakfast & Dinner)'}
-                                    {mealPlan === 'full-board' && 'Full Board (All Meals)'}
-                                  </span>
-                                </p>
-                              )}
                               {result.activitiesIncluded && result.activitiesIncluded
                                 .filter(activity => {
                                   const lower = activity.toLowerCase();
