@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { format, addDays } from 'date-fns';
+import { Copy, Check, Search, Hotel, ChevronDown, ChevronUp } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface LogEntry {
   step: string;
@@ -14,7 +17,36 @@ interface LogEntry {
   response: any;
 }
 
+interface HotelRoom {
+  code: string;
+  name: string;
+  rates: Array<{
+    rateKey: string;
+    net: string;
+    boardCode: string;
+    boardName: string;
+  }>;
+}
+
+interface HotelResult {
+  code: string;
+  name: string;
+  categoryName: string;
+  destinationName: string;
+  rooms: HotelRoom[];
+}
+
 export default function HotelbedsTest() {
+  // Search state
+  const [searchDestination, setSearchDestination] = useState('PMI'); // Palma de Mallorca test destination
+  const [searchCheckIn, setSearchCheckIn] = useState(format(addDays(new Date(), 30), 'yyyy-MM-dd'));
+  const [searchCheckOut, setSearchCheckOut] = useState(format(addDays(new Date(), 32), 'yyyy-MM-dd'));
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [hotels, setHotels] = useState<HotelResult[]>([]);
+  const [expandedHotel, setExpandedHotel] = useState<string | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  // Booking state
   const [rateKey, setRateKey] = useState('');
   const [bookingReference, setBookingReference] = useState('');
   const [holderName, setHolderName] = useState('Test');
@@ -34,6 +66,50 @@ export default function HotelbedsTest() {
       request,
       response
     }]);
+  };
+
+  // Search for hotels
+  const handleSearch = async () => {
+    setSearchLoading(true);
+    setHotels([]);
+    try {
+      const requestBody = {
+        destination: searchDestination,
+        checkIn: searchCheckIn,
+        checkOut: searchCheckOut,
+        adults: 2,
+        children: 0,
+        childrenAges: [],
+        rooms: 1,
+      };
+
+      const { data, error } = await supabase.functions.invoke('hotelbeds-search', {
+        body: requestBody
+      });
+
+      if (error) throw error;
+
+      addLog('Availability Search', requestBody, data);
+
+      if (data.hotels && data.hotels.length > 0) {
+        setHotels(data.hotels.slice(0, 5)); // Show first 5 hotels
+        toast.success(`Found ${data.hotels.length} hotels. Click on a hotel to see rate keys.`);
+      } else {
+        toast.error('No hotels found. Try different dates or destination.');
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const copyRateKey = (key: string) => {
+    navigator.clipboard.writeText(key);
+    setRateKey(key);
+    setCopiedKey(key);
+    toast.success('Rate key copied and added to Step 1!');
+    setTimeout(() => setCopiedKey(null), 2000);
   };
 
   // Step 1: Check Rate
@@ -187,26 +263,132 @@ export default function HotelbedsTest() {
         <div className="grid gap-6 md:grid-cols-2">
           {/* Left Column - Actions */}
           <div className="space-y-4">
-            {/* Step 0: Get Rate Key */}
+            {/* Step 0: Search Hotels */}
+            <Card className="border-2 border-primary/30 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Search className="w-5 h-5" />
+                  Step 0: Search Hotels (Get Rate Key)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Search for hotels to get a rate key. Use TEST environment destinations like PMI (Palma de Mallorca).
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Label>Destination Code</Label>
+                    <Input 
+                      value={searchDestination} 
+                      onChange={(e) => setSearchDestination(e.target.value)}
+                      placeholder="PMI"
+                    />
+                  </div>
+                  <div>
+                    <Label>Check-in</Label>
+                    <Input 
+                      type="date" 
+                      value={searchCheckIn} 
+                      onChange={(e) => setSearchCheckIn(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Check-out</Label>
+                    <Input 
+                      type="date" 
+                      value={searchCheckOut} 
+                      onChange={(e) => setSearchCheckOut(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <Button 
+                  onClick={handleSearch} 
+                  disabled={searchLoading}
+                  className="w-full"
+                >
+                  {searchLoading ? 'Searching...' : 'Search Hotels'}
+                </Button>
+
+                {/* Hotel Results */}
+                {hotels.length > 0 && (
+                  <div className="space-y-2 mt-4">
+                    <Label>Select a hotel to see rate keys:</Label>
+                    {hotels.map((hotel) => (
+                      <div key={hotel.code} className="border rounded-lg overflow-hidden">
+                        <button
+                          onClick={() => setExpandedHotel(expandedHotel === hotel.code ? null : hotel.code)}
+                          className="w-full p-3 flex items-center justify-between hover:bg-muted/50 transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Hotel className="w-4 h-4 text-primary" />
+                            <span className="font-medium">{hotel.name}</span>
+                            <Badge variant="outline" className="text-xs">{hotel.categoryName}</Badge>
+                          </div>
+                          {expandedHotel === hotel.code ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
+                          )}
+                        </button>
+                        
+                        {expandedHotel === hotel.code && (
+                          <div className="border-t p-3 bg-muted/30 space-y-2">
+                            {hotel.rooms?.map((room, roomIdx) => (
+                              <div key={roomIdx} className="space-y-1">
+                                <p className="text-sm font-medium">{room.name}</p>
+                                {room.rates?.map((rate, rateIdx) => (
+                                  <div 
+                                    key={rateIdx} 
+                                    className="flex items-center justify-between p-2 bg-background rounded border text-xs"
+                                  >
+                                    <div>
+                                      <span className="font-mono">{rate.boardName}</span>
+                                      <span className="text-muted-foreground ml-2">€{rate.net}</span>
+                                    </div>
+                                    <Button
+                                      size="sm"
+                                      variant={copiedKey === rate.rateKey ? "default" : "outline"}
+                                      onClick={() => copyRateKey(rate.rateKey)}
+                                      className="h-7"
+                                    >
+                                      {copiedKey === rate.rateKey ? (
+                                        <>
+                                          <Check className="w-3 h-3 mr-1" />
+                                          Copied!
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Copy className="w-3 h-3 mr-1" />
+                                          Use This Rate
+                                        </>
+                                      )}
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Rate Key Display */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Step 0: Get a Rate Key</CardTitle>
+                <CardTitle className="text-lg">Selected Rate Key</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  First, do a hotel search on the main page, expand a hotel card to see rooms, 
-                  and copy a <code className="bg-muted px-1 rounded">rateKey</code> from the results.
-                </p>
-                <div>
-                  <Label>Rate Key</Label>
-                  <Textarea 
-                    value={rateKey} 
-                    onChange={(e) => setRateKey(e.target.value)}
-                    placeholder="Paste rate key here..."
-                    className="font-mono text-xs"
-                    rows={3}
-                  />
-                </div>
+              <CardContent>
+                <Textarea 
+                  value={rateKey} 
+                  onChange={(e) => setRateKey(e.target.value)}
+                  placeholder="Search above and click 'Use This Rate' to select a rate key, or paste one manually..."
+                  className="font-mono text-xs"
+                  rows={3}
+                />
               </CardContent>
             </Card>
 
