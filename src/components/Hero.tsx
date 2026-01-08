@@ -1207,6 +1207,12 @@ export function Hero({ onGetQuote }: HeroProps) {
                         hotel={hotel}
                         rooms={rooms}
                         adults={adults}
+                        nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
+                        checkIn={checkIn}
+                        checkOut={checkOut}
+                        guestName={guestName}
+                        guestTel={guestTel}
+                        guestEmail={guestEmail}
                       />
                     ))}
                   </div>
