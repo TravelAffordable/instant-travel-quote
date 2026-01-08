@@ -6,6 +6,7 @@ import { Phone, MessageCircle, Calendar, MapPin, Check, Star, Clock, Send, Twitt
 import { supabase } from "@/integrations/supabase/client";
 import AdShareButtons from "@/components/AdShareButtons";
 import { toast } from "sonner";
+import CapeTownSocialAds from "@/components/CapeTownSocialAds";
 import sundownRanch1 from "@/assets/sundown-ranch-1.jpeg";
 import sundownRanch2 from "@/assets/sundown-ranch-2.jpeg";
 import sundownRanch3 from "@/assets/sundown-ranch-3.jpeg";
@@ -23,7 +24,7 @@ interface EditableField {
 }
 
 const SocialAds = () => {
-  const [activeAd, setActiveAd] = useState<'sundown' | 'guesthouse'>('sundown');
+  const [activeAd, setActiveAd] = useState<'sundown' | 'guesthouse' | 'capetown'>('sundown');
   const [customTweet, setCustomTweet] = useState("");
   const [isPosting, setIsPosting] = useState(false);
   const [editingAd, setEditingAd] = useState<string | null>(null);
@@ -333,7 +334,7 @@ const SocialAds = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-900 via-amber-800 to-yellow-700 p-4">
       {/* Toggle between hotels */}
-      <div className="flex justify-center gap-4 mb-6">
+      <div className="flex justify-center gap-4 mb-6 flex-wrap">
         <Button 
           onClick={() => setActiveAd('sundown')}
           className={`${activeAd === 'sundown' ? 'bg-amber-500 text-black' : 'bg-black/30 text-white'}`}
@@ -346,7 +347,18 @@ const SocialAds = () => {
         >
           Guesthouse A Ads
         </Button>
+        <Button 
+          onClick={() => setActiveAd('capetown')}
+          className={`${activeAd === 'capetown' ? 'bg-amber-500 text-black' : 'bg-black/30 text-white'}`}
+        >
+          Cape Town Ads
+        </Button>
       </div>
+
+      {activeAd === 'capetown' ? (
+        <CapeTownSocialAds />
+      ) : (
+        <>
 
       {/* Global Settings */}
       <div className="max-w-md mx-auto mb-6 p-4 bg-black/30 backdrop-blur rounded-xl">
@@ -1303,6 +1315,8 @@ const SocialAds = () => {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 };
