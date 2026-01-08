@@ -10,6 +10,7 @@ import { ChatBot } from '@/components/ChatBot';
 import { BusHireQuote } from '@/components/BusHireQuote';
 import { AccommodationProviderQuote } from '@/components/AccommodationProviderQuote';
 import { TravelAgentQuote } from '@/components/TravelAgentQuote';
+import CapeTownSocialAds from '@/components/CapeTownSocialAds';
 import { destinations } from '@/data/travelData';
 const Index = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -66,6 +67,11 @@ const Index = () => {
       {/* Travel Agent Quote Section */}
       <section id="travel-agent-section">
         <TravelAgentQuote />
+      </section>
+
+      {/* Cape Town Social Ads */}
+      <section id="cape-town-ads" className="bg-muted/30">
+        <CapeTownSocialAds />
       </section>
 
       {/* Group Tours */}
