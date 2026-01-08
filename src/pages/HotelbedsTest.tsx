@@ -39,7 +39,7 @@ interface HotelResult {
 
 export default function HotelbedsTest() {
   // Search state
-  const [searchDestination, setSearchDestination] = useState('PMI'); // Palma de Mallorca test destination
+  const [searchDestination, setSearchDestination] = useState('johannesburg'); // South African destination
   const [searchCheckIn, setSearchCheckIn] = useState(format(addDays(new Date(), 30), 'yyyy-MM-dd'));
   const [searchCheckOut, setSearchCheckOut] = useState(format(addDays(new Date(), 32), 'yyyy-MM-dd'));
   const [searchLoading, setSearchLoading] = useState(false);
