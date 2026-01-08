@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,8 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format, addDays } from 'date-fns';
-import { Copy, Check, Search, Hotel, ChevronDown, ChevronUp } from 'lucide-react';
+import { Copy, Check, Search, Hotel, ChevronDown, ChevronUp, Camera } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import html2canvas from 'html2canvas';
 
 interface LogEntry {
   step: string;
@@ -58,6 +59,29 @@ export default function HotelbedsTest() {
   const [loading, setLoading] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [lastResult, setLastResult] = useState<any>(null);
+  const responseRef = useRef<HTMLDivElement>(null);
+
+  const captureScreenshot = async (stepName: string) => {
+    if (!responseRef.current) {
+      toast.error('No response to capture');
+      return;
+    }
+    
+    try {
+      const canvas = await html2canvas(responseRef.current, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+      });
+      
+      const link = document.createElement('a');
+      link.download = `hotelbeds-${stepName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      toast.success(`Screenshot saved: ${stepName}`);
+    } catch (err) {
+      toast.error('Failed to capture screenshot');
+    }
+  };
 
   const addLog = (step: string, request: any, response: any) => {
     setLogs(prev => [...prev, {
@@ -497,13 +521,24 @@ export default function HotelbedsTest() {
           {/* Right Column - Results */}
           <div className="space-y-4">
             <Card className="sticky top-4">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-lg">Last Response</CardTitle>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => captureScreenshot(logs.length > 0 ? logs[logs.length - 1].step : 'response')}
+                  disabled={!lastResult}
+                >
+                  <Camera className="w-4 h-4 mr-1" />
+                  Screenshot
+                </Button>
               </CardHeader>
               <CardContent>
-                <pre className="bg-muted p-4 rounded-lg text-xs overflow-auto max-h-[600px] whitespace-pre-wrap">
-                  {lastResult ? JSON.stringify(lastResult, null, 2) : 'No response yet. Complete a step to see results.'}
-                </pre>
+                <div ref={responseRef} className="bg-white p-4 rounded-lg">
+                  <pre className="bg-muted p-4 rounded-lg text-xs overflow-auto max-h-[600px] whitespace-pre-wrap text-foreground">
+                    {lastResult ? JSON.stringify(lastResult, null, 2) : 'No response yet. Complete a step to see results.'}
+                  </pre>
+                </div>
               </CardContent>
             </Card>
           </div>
