@@ -13,6 +13,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { 
+  getActivitiesForDestination, 
+  findActivityByName,
+  calculateTotalActivityCost,
+  type Activity 
+} from '@/data/activitiesData';
 
 interface LiveHotelQuoteCardProps {
   hotel: LiveHotel;
@@ -85,6 +92,44 @@ function LiveHotelQuoteCardComponent({
   guestTel = '',
   guestEmail = '',
 }: LiveHotelQuoteCardProps) {
+  // Get available activities for this destination
+  const availableActivities = useMemo(() => {
+    return getActivitiesForDestination(pkg.destination);
+  }, [pkg.destination]);
+
+  // Filter package activities to exclude accommodation/breakfast items
+  const filterActivityName = (activity: string): boolean => {
+    const lower = activity.toLowerCase();
+    return !lower.includes('accommodation') && 
+           !lower.includes('breakfast at selected') &&
+           !lower.includes('buffet breakfast at selected') &&
+           !lower.includes('room only') &&
+           !lower.includes('shuttle service');
+  };
+
+  // Initialize selected activities from package inclusions
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  
+  // Initialize selected activities when package changes
+  useEffect(() => {
+    const initialActivities = pkg.activitiesIncluded
+      .filter(filterActivityName)
+      .filter(activityName => {
+        // Only include if we have this activity in our available activities
+        return findActivityByName(activityName, availableActivities) !== undefined;
+      });
+    setSelectedActivities(initialActivities);
+  }, [pkg.id, availableActivities]);
+
+  // Handle activity selection toggle
+  const handleActivityToggle = (activityName: string) => {
+    setSelectedActivities(prev => 
+      prev.includes(activityName)
+        ? prev.filter(a => a !== activityName)
+        : [...prev, activityName]
+    );
+  };
+
   // Process available room options with capacity and pricing
   const roomOptions: RoomOption[] = useMemo(() => {
     if (!hotel.rooms || hotel.rooms.length === 0) return [];
@@ -117,13 +162,30 @@ function LiveHotelQuoteCardComponent({
     }
   }, [roomOptions.length, rooms]);
 
-  // Get the rate for a specific room code
-  const getRoomRate = (roomCode: string): number => {
-    const roomOption = roomOptions.find(r => r.code === roomCode);
-    return roomOption?.lowestRate || hotel.minRate;
+  // Handle room type change
+  const handleRoomTypeChange = (roomIndex: number, roomCode: string) => {
+    setSelectedRoomTypes(prev => {
+      const updated = [...prev];
+      updated[roomIndex] = roomCode;
+      return updated;
+    });
   };
 
-  // Calculate total accommodation based on selected rooms
+  // Get room rate by code
+  const getRoomRate = (roomCode: string): number => {
+    const room = roomOptions.find(r => r.code === roomCode);
+    return room ? room.lowestRate : (hotel.minRate || 0);
+  };
+
+  // Get selected room names for display
+  const getSelectedRoomNames = () => {
+    return selectedRoomTypes.map(code => {
+      const room = roomOptions.find(r => r.code === code);
+      return room ? room.name : 'Standard Room';
+    });
+  };
+
+  // Calculate accommodation cost based on selected rooms
   const accommodationCost = useMemo(() => {
     if (roomOptions.length === 0) {
       // Fallback if no room options available
@@ -238,38 +300,30 @@ function LiveHotelQuoteCardComponent({
   const totalPeopleForFee = adults + children;
   const serviceFeePerAdult = totalPeopleForFee >= 25 ? 550 : (adults === 1 ? 1000 : adults <= 3 ? 850 : adults <= 9 ? 800 : 750);
 
-  const totalCost = accommodationCost + packageTotal + kidsPackageCost + totalServiceFees;
+  // Calculate activity costs based on selected activities
+  const activityCost = useMemo(() => {
+    return calculateTotalActivityCost(selectedActivities, availableActivities, adults, childrenAges);
+  }, [selectedActivities, availableActivities, adults, childrenAges]);
+
+  const totalCost = accommodationCost + packageTotal + kidsPackageCost + totalServiceFees + activityCost;
   const pricePerPerson =
     children > 0
       ? totalCost
-      : accommodationPerAdult + packageCostPerAdult + serviceFeePerAdult;
+      : accommodationPerAdult + packageCostPerAdult + serviceFeePerAdult + (activityCost / adults);
 
 
   const getStarsLabel = (stars: number) => {
-    if (stars >= 4.5) return 'Premium';
-    if (stars >= 3.5) return 'Comfortable';
-    return 'Budget Friendly';
+    if (stars >= 5) return '5 Star Luxury';
+    if (stars >= 4) return '4 Star Premium';
+    if (stars >= 3) return '3 Star Comfort';
+    return `${stars} Star`;
   };
 
   const getStarsColor = (stars: number) => {
-    if (stars >= 4.5) return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
-    if (stars >= 3.5) return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
-    return 'bg-green-500/10 text-green-600 border-green-500/20';
-  };
-
-  const handleRoomTypeChange = (roomIndex: number, roomCode: string) => {
-    setSelectedRoomTypes(prev => {
-      const updated = [...prev];
-      updated[roomIndex] = roomCode;
-      return updated;
-    });
-  };
-
-  const getSelectedRoomNames = () => {
-    return selectedRoomTypes.map(code => {
-      const room = roomOptions.find(r => r.code === code);
-      return room ? `${room.name} (${room.code})` : 'Standard Room';
-    });
+    if (stars >= 5) return 'bg-amber-100 text-amber-800 border-amber-300';
+    if (stars >= 4) return 'bg-blue-100 text-blue-800 border-blue-300';
+    if (stars >= 3) return 'bg-green-100 text-green-800 border-green-300';
+    return 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
   const handleWhatsApp = () => {
@@ -277,16 +331,7 @@ function LiveHotelQuoteCardComponent({
       ? `\n🛏️ Room Types:\n${getSelectedRoomNames().map((name, i) => `   Room ${i + 1}: ${name}`).join('\n')}`
       : `\n🛏️ Rooms: ${rooms} room${rooms > 1 ? 's' : ''}`;
 
-    const filteredActivities = pkg.activitiesIncluded
-      .filter(activity => {
-        const lower = activity.toLowerCase();
-        return !lower.includes('accommodation') && 
-               !lower.includes('breakfast at selected') &&
-               !lower.includes('buffet breakfast at selected') &&
-               !lower.includes('room only');
-      });
-
-    const inclusionsList = [`${nights} nights accommodation`, ...filteredActivities].join(', ');
+    const inclusionsList = [`${nights} nights accommodation`, ...selectedActivities].join(', ');
 
     const text = `Greetings ${guestName || '(Guest)'}\n\n` +
       `The discounted package price for your getaway includes ${inclusionsList}. Our getaways are stylish and trendy with a bit of affordable sophistication.\n\n` +
@@ -303,39 +348,28 @@ function LiveHotelQuoteCardComponent({
 
   const handleEmail = () => {
     const roomDetails = rooms > 1 && roomOptions.length > 0
-      ? `Room Types:\n${getSelectedRoomNames().map((name, i) => `- Room ${i + 1}: ${name}`).join('\n')}`
-      : `Rooms: ${rooms} room${rooms > 1 ? 's' : ''}`;
+      ? `\nRoom Types:\n${getSelectedRoomNames().map((name, i) => `- Room ${i + 1}: ${name}`).join('\n')}`
+      : `\nRooms: ${rooms} room${rooms > 1 ? 's' : ''}`;
 
-    const filteredActivities = pkg.activitiesIncluded
-      .filter(activity => {
-        const lower = activity.toLowerCase();
-        return !lower.includes('accommodation') && 
-               !lower.includes('breakfast at selected') &&
-               !lower.includes('buffet breakfast at selected') &&
-               !lower.includes('room only');
-      });
+    const inclusionsList = [`${nights} nights accommodation`, ...selectedActivities].join(', ');
 
-    const inclusionsList = [`${nights} nights accommodation`, ...filteredActivities].join(', ');
-
-    const subject = `Booking Enquiry: ${hotel.name} - ${pkg.shortName}`;
+    const subject = `Booking Request - ${pkg.shortName} at ${hotel.name}`;
     const body = `Greetings ${guestName || '(Guest)'}\n\n` +
       `The discounted package price for your getaway includes ${inclusionsList}. Our getaways are stylish and trendy with a bit of affordable sophistication.\n\n` +
       `Hotel: ${hotel.name}\n` +
       `Package: ${pkg.name}\n` +
-      `Duration: ${nights} nights\n` +
-      `${roomDetails}\n` +
+      `Duration: ${nights} nights${roomDetails}\n` +
       `Guests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\n` +
-      `Total Price: ${formatCurrency(totalCost)}\n\n` +
-      `To start with your booking process, please send this email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.\n\n` +
-      `Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.\n\n` +
+      `Total: ${formatCurrency(totalCost)}\n\n` +
+      `To start with your booking process, please reply to this email. Our agents will then be in communication with you.\n\n` +
       `Thank you,\nBookings,\nTravel Affordable Pty Ltd`;
     
-    window.open(`mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+    window.location.href = `mailto:bookings@travelaffordable.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
-    <Card className="overflow-hidden border shadow-soft hover:shadow-lg transition-all duration-300">
-      <div className="grid md:grid-cols-[280px,1fr] gap-0">
+    <Card className="overflow-hidden border shadow-lg hover:shadow-xl transition-shadow">
+      <div className="grid md:grid-cols-[300px_1fr]">
         {/* Hotel Image */}
         <div className="relative h-48 md:h-full min-h-[200px]">
           <img
@@ -369,45 +403,65 @@ function LiveHotelQuoteCardComponent({
             )}
           </div>
 
-          {/* Package Info */}
+          {/* Package Info Header */}
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4">
             <p className="text-sm font-semibold text-primary mb-2">{pkg.shortName}</p>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                <Check className="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
-                <span className="line-clamp-1">{nights} nights accommodation</span>
-              </div>
-              {pkg.activitiesIncluded
-                .filter(activity => {
-                  const lower = activity.toLowerCase();
-                  return !lower.includes('accommodation') && 
-                         !lower.includes('breakfast at selected') &&
-                         !lower.includes('buffet breakfast at selected') &&
-                         !lower.includes('room only');
-                })
-                .slice(0, 3).map((activity, idx) => (
-                <div key={idx} className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                  <Check className="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="line-clamp-1">{activity}</span>
-                </div>
-              ))}
-            </div>
-            {pkg.activitiesIncluded.filter(a => {
-              const lower = a.toLowerCase();
-              return !lower.includes('accommodation') && 
-                     !lower.includes('breakfast at selected') &&
-                     !lower.includes('buffet breakfast at selected') &&
-                     !lower.includes('room only');
-            }).length > 3 && (
-              <p className="text-xs text-primary mt-2">+{pkg.activitiesIncluded.filter(a => {
-                const lower = a.toLowerCase();
-                return !lower.includes('accommodation') && 
-                       !lower.includes('breakfast at selected') &&
-                       !lower.includes('buffet breakfast at selected') &&
-                       !lower.includes('room only');
-              }).length - 3} more inclusions</p>
-            )}
+            <p className="text-xs text-muted-foreground">
+              Select or deselect activities below to customize your package. The price updates automatically.
+            </p>
           </div>
+
+          {/* Activity Selection Grid */}
+          {availableActivities.length > 0 && (
+            <div className="mb-4">
+              <p className="text-sm font-semibold text-foreground mb-3">Customize Your Activities</p>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                {availableActivities.map((activity) => {
+                  const isSelected = selectedActivities.some(
+                    a => a.toLowerCase() === activity.name.toLowerCase() || 
+                         activity.name.toLowerCase().includes(a.toLowerCase()) ||
+                         a.toLowerCase().includes(activity.name.toLowerCase())
+                  );
+                  
+                  return (
+                    <div
+                      key={activity.name}
+                      className="text-center cursor-pointer group"
+                      onClick={() => handleActivityToggle(activity.name)}
+                    >
+                      <div
+                        className={cn(
+                          "relative w-full aspect-square rounded-lg overflow-hidden border-2 transition-all",
+                          isSelected
+                            ? "border-primary ring-2 ring-primary/20"
+                            : "border-transparent hover:border-muted-foreground/30"
+                        )}
+                      >
+                        <img
+                          src={activity.image}
+                          alt={activity.name}
+                          className="w-full h-full object-cover"
+                        />
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                            <Check className="w-6 h-6 text-primary bg-white rounded-full p-1" />
+                          </div>
+                        )}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] font-medium py-1 px-1 leading-tight text-center">
+                          {activity.name.length > 25 ? activity.name.substring(0, 25) + '...' : activity.name}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {selectedActivities.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  {selectedActivities.length} activit{selectedActivities.length === 1 ? 'y' : 'ies'} selected
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Package Description - Personalized */}
           <div className="bg-muted/30 rounded-lg p-3 mb-4">
@@ -415,30 +469,15 @@ function LiveHotelQuoteCardComponent({
               Greetings {guestName || '(Guest)'}
             </p>
             <p className="text-sm text-foreground leading-relaxed mb-3">
-              The discounted package price for your getaway includes {nights} night{nights > 1 ? 's' : ''} accommodation, {pkg.activitiesIncluded
-                .filter(activity => {
-                  const lower = activity.toLowerCase();
-                  return !lower.includes('accommodation') && 
-                         !lower.includes('breakfast at selected') &&
-                         !lower.includes('buffet breakfast at selected') &&
-                         !lower.includes('room only');
-                })
-                .join(', ')}. Our getaways are stylish and trendy with a bit of affordable sophistication.
+              The discounted package price for your getaway includes {nights} night{nights > 1 ? 's' : ''} accommodation
+              {selectedActivities.length > 0 && `, ${selectedActivities.join(', ')}`}. Our getaways are stylish and trendy with a bit of affordable sophistication.
             </p>
             <p className="text-sm text-foreground leading-relaxed mb-2">
-              To start with your booking process, please click on the Request to Book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.
-            </p>
-            <p className="text-sm text-foreground leading-relaxed mb-3">
-              Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.
-            </p>
-            <p className="text-sm text-muted-foreground italic">
-              Thank you,<br />
-              Bookings,<br />
-              Travel Affordable Pty Ltd
+              To start with your booking process, simply click the buttons below and our agents will be in communication with you.
             </p>
           </div>
 
-          {/* Room Selection (when multiple rooms OR room options available) */}
+          {/* Room Selection */}
           {rooms >= 1 && roomOptions.length > 0 && (
             <div className="bg-muted/30 rounded-lg p-3 mb-4">
               <p className="text-sm font-semibold text-foreground mb-3">
@@ -488,7 +527,7 @@ function LiveHotelQuoteCardComponent({
             </div>
           )}
 
-          {/* Total Price */}
+          {/* Price Display */}
           <div className="flex items-end justify-between mb-4">
             <div>
               <p className="text-xs text-muted-foreground mb-1">Total Package Price</p>
@@ -505,7 +544,7 @@ function LiveHotelQuoteCardComponent({
           </div>
           </div>
 
-          {/* Actions */}
+          {/* Action Buttons */}
           <div className="flex gap-2">
             <Button onClick={handleEmail} variant="outline" className="flex-1">
               <Mail className="w-4 h-4 mr-2" />
