@@ -1,4 +1,4 @@
-import { useState, useMemo, memo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,6 +6,7 @@ import { Building2, DollarSign } from 'lucide-react';
 import { LiveHotelQuoteCard } from './LiveHotelQuoteCard';
 import { type LiveHotel } from '@/hooks/useHotelbedsSearch';
 import { type Package } from '@/data/travelData';
+import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
 
 interface LiveHotelQuotesProps {
   hotels: LiveHotel[];
@@ -35,6 +36,9 @@ export function LiveHotelQuotes({
   guestEmail = '',
 }: LiveHotelQuotesProps) {
   const [maxBudget, setMaxBudget] = useState<string>('');
+  
+  // Shared activity selection state for all cards (keyed by package ID)
+  const [sharedActivitySelections, setSharedActivitySelections] = useState<Record<string, string[]>>({});
 
   // Memoize parsed children ages to prevent re-renders
   const childrenAges = useMemo(() => {
@@ -43,6 +47,44 @@ export function LiveHotelQuotes({
       .map(a => parseInt(a.trim()))
       .filter(a => !isNaN(a) && a >= 3 && a <= 17);
   }, [childrenAgesString]);
+
+  // Filter activity name helper
+  const filterActivityName = (activity: string): boolean => {
+    const lower = activity.toLowerCase();
+    return !lower.includes('accommodation') && 
+           !lower.includes('breakfast at selected') &&
+           !lower.includes('buffet breakfast at selected') &&
+           !lower.includes('room only') &&
+           !lower.includes('shuttle service');
+  };
+
+  // Initialize shared activity selections for Durban packages
+  useEffect(() => {
+    const newSelections: Record<string, string[]> = {};
+    
+    selectedPackages.forEach(pkg => {
+      if (pkg.destination === 'durban') {
+        const availableActivities = getActivitiesForDestination(pkg.destination);
+        const initialActivities = pkg.activitiesIncluded
+          .filter(filterActivityName)
+          .filter(activityName => findActivityByName(activityName, availableActivities) !== undefined);
+        newSelections[pkg.id] = initialActivities;
+      }
+    });
+    
+    setSharedActivitySelections(prev => ({ ...prev, ...newSelections }));
+  }, [selectedPackages]);
+
+  // Handle activity toggle for a package (shared across all cards)
+  const handleActivityToggle = useCallback((packageId: string, activityName: string) => {
+    setSharedActivitySelections(prev => {
+      const current = prev[packageId] || [];
+      const updated = current.includes(activityName)
+        ? current.filter(a => a !== activityName)
+        : [...current, activityName];
+      return { ...prev, [packageId]: updated };
+    });
+  }, []);
 
   // Parse the optional budget filter
   const budgetNumber = maxBudget ? parseInt(maxBudget.replace(/[^\d]/g, '')) : null;
@@ -138,6 +180,8 @@ export function LiveHotelQuotes({
                   guestName={guestName}
                   guestTel={guestTel}
                   guestEmail={guestEmail}
+                  sharedSelectedActivities={sharedActivitySelections[pkg.id] || []}
+                  onActivityToggle={(activityName) => handleActivityToggle(pkg.id, activityName)}
                 />
               ))}
             </div>
