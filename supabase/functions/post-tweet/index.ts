@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { tweetSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -121,19 +122,19 @@ async function uploadMedia(mediaData: string): Promise<string> {
 
   if (!response.ok) {
     console.error("Media upload failed:", responseText);
-    throw new Error(`Media upload failed: ${response.status} - ${responseText}`);
+    throw new Error(`Media upload failed: ${response.status}`);
   }
 
   const result = JSON.parse(responseText);
-  console.log("Media uploaded successfully, media_id:", result.media_id_string);
+  console.log("Media uploaded successfully");
   
   return result.media_id_string;
 }
 
-async function sendTweet(tweetText: string, mediaIds?: string[]): Promise<any> {
+async function sendTweet(tweetText: string, mediaIds?: string[]): Promise<unknown> {
   const method = "POST";
   
-  const tweetBody: any = { text: tweetText };
+  const tweetBody: { text: string; media?: { media_ids: string[] } } = { text: tweetText };
   
   if (mediaIds && mediaIds.length > 0) {
     tweetBody.media = { media_ids: mediaIds };
@@ -142,7 +143,7 @@ async function sendTweet(tweetText: string, mediaIds?: string[]): Promise<any> {
   // For v2 API, we don't include body params in OAuth signature
   const oauthHeader = generateOAuthHeader(method, TWEET_URL);
 
-  console.log("Posting tweet...", { hasMedia: !!mediaIds });
+  console.log("Posting tweet...");
 
   const response = await fetch(TWEET_URL, {
     method: method,
@@ -157,8 +158,8 @@ async function sendTweet(tweetText: string, mediaIds?: string[]): Promise<any> {
   console.log("Tweet response status:", response.status);
 
   if (!response.ok) {
-    console.error("Tweet failed:", responseText);
-    throw new Error(`Twitter API error: ${response.status} - ${responseText}`);
+    console.error("Tweet failed");
+    throw new Error(`Twitter API error: ${response.status}`);
   }
 
   return JSON.parse(responseText);
@@ -171,16 +172,37 @@ Deno.serve(async (req) => {
 
   try {
     validateEnvironmentVariables();
+    
     const body = await req.json();
     
-    if (!body.tweet || typeof body.tweet !== 'string') {
-      throw new Error("Tweet text is required");
+    // Validate input using Zod schema
+    const validationResult = tweetSchema.safeParse(body);
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Validation failed",
+          details: validationResult.error.errors.map(e => e.message)
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
+    const { tweet, imageBase64 } = validationResult.data;
+
     // Truncate tweet if too long (especially when image is attached, character limit is more flexible)
-    let tweetText = body.tweet;
-    if (!body.imageBase64 && tweetText.length > 280) {
-      throw new Error("Tweet exceeds 280 character limit");
+    let tweetText = tweet;
+    if (!imageBase64 && tweetText.length > 280) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Tweet exceeds 280 character limit" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
     
     // For tweets with images, Twitter allows up to 280 chars for text
@@ -191,9 +213,9 @@ Deno.serve(async (req) => {
     let mediaIds: string[] | undefined;
     
     // If image is provided, upload it first
-    if (body.imageBase64) {
+    if (imageBase64) {
       console.log("Image data received, uploading media...");
-      const mediaId = await uploadMedia(body.imageBase64);
+      const mediaId = await uploadMedia(imageBase64);
       mediaIds = [mediaId];
     }
 
@@ -202,9 +224,9 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ success: true, data: result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (error: any) {
-    console.error("Tweet posting error:", error);
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
+  } catch (error: unknown) {
+    console.error("Tweet posting error:", error instanceof Error ? error.message : "Unknown error");
+    return new Response(JSON.stringify({ success: false, error: "Failed to post tweet" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

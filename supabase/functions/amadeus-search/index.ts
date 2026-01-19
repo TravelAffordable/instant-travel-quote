@@ -1,22 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { hotelSearchSchema, validateDestination } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface HotelSearchRequest {
-  destination: string;
-  checkIn: string;
-  checkOut: string;
-  adults: number;
-  children: number;
-  childrenAges?: number[];
-  rooms: number;
-}
-
 // Destination coordinates for geographic search
-// Keys support both hyphenated and space-separated formats
 const destinationConfig: Record<string, { latitude: number; longitude: number; radius: number; cityCode: string }> = {
   'durban': { latitude: -29.8560, longitude: 31.0315, radius: 3, cityCode: 'DUR' },
   'umhlanga': { latitude: -29.725, longitude: 31.085, radius: 3, cityCode: 'DUR' },
@@ -48,12 +38,11 @@ async function getAccessToken(apiKey: string, apiSecret: string): Promise<string
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: `grant_type=client_credentials&client_id=${apiKey}&client_secret=${apiSecret}`,
+    body: `grant_type=client_credentials&client_id=${encodeURIComponent(apiKey)}&client_secret=${encodeURIComponent(apiSecret)}`,
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error('OAuth token error:', response.status, errorText);
+    console.error('OAuth token error:', response.status);
     throw new Error(`Failed to get access token: ${response.status}`);
   }
 
@@ -74,7 +63,7 @@ async function getHotelsByLocation(
   url.searchParams.set('radius', radius.toString());
   url.searchParams.set('radiusUnit', 'KM');
 
-  console.log('Fetching hotels by location:', url.toString());
+  console.log('Fetching hotels by location');
 
   const response = await fetch(url.toString(), {
     headers: {
@@ -83,15 +72,14 @@ async function getHotelsByLocation(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Hotel list error:', response.status, errorText);
+    console.error('Hotel list error:', response.status);
     return [];
   }
 
   const data = await response.json();
-  const hotelIds = data.data?.map((hotel: any) => hotel.hotelId) || [];
+  const hotelIds = data.data?.map((hotel: { hotelId: string }) => hotel.hotelId) || [];
   console.log(`Found ${hotelIds.length} hotel IDs`);
-  return hotelIds; // Return all hotels found
+  return hotelIds;
 }
 
 // Search hotel offers/prices
@@ -102,12 +90,11 @@ async function searchHotelOffers(
   checkOut: string,
   adults: number,
   rooms: number
-): Promise<any[]> {
+): Promise<Array<{ hotel: { hotelId: string; name?: string; rating?: string; address?: { lines?: string[]; cityCode?: string } }; offers?: Array<{ id: string; price?: { total?: string }; room?: { description?: { text?: string } }; boardType?: string }> }>> {
   if (hotelIds.length === 0) return [];
 
-  // Amadeus API limits hotel IDs per request
   const batchSize = 20;
-  const allOffers: any[] = [];
+  const allOffers: Array<{ hotel: { hotelId: string; name?: string; rating?: string; address?: { lines?: string[]; cityCode?: string } }; offers?: Array<{ id: string; price?: { total?: string }; room?: { description?: { text?: string } }; boardType?: string }> }> = [];
 
   for (let i = 0; i < hotelIds.length; i += batchSize) {
     const batch = hotelIds.slice(i, i + batchSize);
@@ -120,7 +107,7 @@ async function searchHotelOffers(
     url.searchParams.set('currency', 'EUR');
     url.searchParams.set('bestRateOnly', 'true');
 
-    console.log(`Searching offers for batch ${i / batchSize + 1}:`, url.toString());
+    console.log(`Searching offers for batch ${i / batchSize + 1}`);
 
     try {
       const response = await fetch(url.toString(), {
@@ -130,8 +117,7 @@ async function searchHotelOffers(
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Hotel offers error:', response.status, errorText);
+        console.error('Hotel offers error:', response.status);
         continue;
       }
 
@@ -140,7 +126,7 @@ async function searchHotelOffers(
         allOffers.push(...data.data);
       }
     } catch (err) {
-      console.error('Batch search error:', err);
+      console.error('Batch search error:', err instanceof Error ? err.message : 'Unknown error');
     }
   }
 
@@ -148,7 +134,6 @@ async function searchHotelOffers(
 }
 
 serve(async (req) => {
-  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -165,20 +150,42 @@ serve(async (req) => {
       );
     }
 
-    const { destination, checkIn, checkOut, adults, children, childrenAges, rooms }: HotelSearchRequest = await req.json();
+    const body = await req.json();
+    
+    // Validate input using Zod schema
+    const validationResult = hotelSearchSchema.safeParse(body);
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Validation failed',
+          details: validationResult.error.errors.map(e => e.message)
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
 
-    console.log('Amadeus search request:', { destination, checkIn, checkOut, adults, children, rooms });
+    const { destination, checkIn, checkOut, adults, children, rooms } = validationResult.data;
 
-    // Get destination config
+    // Validate destination against allowlist
     const destKey = destination.toLowerCase();
+    if (!validateDestination(destKey)) {
+      return new Response(
+        JSON.stringify({ success: false, error: `Destination not supported: ${destination}` }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
     const config = destinationConfig[destKey];
 
     if (!config) {
       return new Response(
         JSON.stringify({ success: false, error: `Unknown destination: ${destination}` }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
+
+    console.log('Amadeus search request:', { destination: destKey, checkIn, checkOut, adults, children, rooms });
 
     // Get OAuth access token
     console.log('Getting Amadeus access token...');
@@ -186,7 +193,7 @@ serve(async (req) => {
     console.log('Access token obtained');
 
     // Get hotel IDs by location
-    console.log(`Searching hotels near ${destination} (${config.latitude}, ${config.longitude})`);
+    console.log(`Searching hotels near ${destination}`);
     const hotelIds = await getHotelsByLocation(
       accessToken,
       config.latitude,
@@ -216,28 +223,25 @@ serve(async (req) => {
 
     // EUR to ZAR conversion rate
     const EUR_TO_ZAR = 19.5;
-    const MARKUP = 1.05; // 5% markup
-    // Sandbox price correction factor - Amadeus sandbox returns inflated prices
-    // Realistic accommodation for 2 nights should be R1,000-R3,000, not R50,000+
-    const SANDBOX_CORRECTION = 0.05; // Apply 5% of sandbox price to get realistic rates
+    const MARKUP = 1.05;
+    const SANDBOX_CORRECTION = 0.05;
 
     // Process and format hotels
-    const hotels = offers.map((offer: any) => {
+    const hotels = offers.map((offer) => {
       const hotel = offer.hotel;
       const bestOffer = offer.offers?.[0];
       
       if (!bestOffer) return null;
 
       const priceEUR = parseFloat(bestOffer.price?.total || '0');
-      // Apply sandbox correction to get realistic accommodation prices
       const priceZAR = priceEUR * EUR_TO_ZAR * MARKUP * SANDBOX_CORRECTION;
 
       return {
         code: hotel.hotelId,
         name: hotel.name || 'Unknown Hotel',
         stars: hotel.rating ? parseInt(hotel.rating) : 3,
-        image: null, // Amadeus doesn't provide images in this endpoint
-        address: hotel.address?.lines?.join(', ') || hotel.cityCode || '',
+        image: null,
+        address: hotel.address?.lines?.join(', ') || hotel.address?.cityCode || '',
         minRate: Math.round(priceZAR),
         currency: 'ZAR',
         rooms: bestOffer ? [{
@@ -254,7 +258,7 @@ serve(async (req) => {
     }).filter(Boolean);
 
     // Sort by price
-    hotels.sort((a: any, b: any) => a.minRate - b.minRate);
+    hotels.sort((a, b) => (a?.minRate || 0) - (b?.minRate || 0));
 
     console.log(`Returning ${hotels.length} processed hotels`);
 
@@ -264,9 +268,9 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Amadeus search error:', error);
+    console.error('Amadeus search error:', error instanceof Error ? error.message : 'Unknown error');
     return new Response(
-      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ success: false, error: 'Internal server error' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }

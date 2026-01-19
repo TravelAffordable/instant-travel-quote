@@ -1,15 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { sendAdEmailSchema, escapeHtml } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-interface SendAdEmailRequest {
-  email: string;
-  adName: string;
-  adContent: string;
-}
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -18,26 +13,38 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, adName, adContent }: SendAdEmailRequest = await req.json();
-
-    // Validate inputs
-    if (!email || !adName || !adContent) {
-      throw new Error("Missing required fields: email, adName, or adContent");
+    const body = await req.json();
+    
+    // Validate and sanitize inputs using Zod schema
+    const validationResult = sendAdEmailSchema.safeParse(body);
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Validation failed", 
+          details: validationResult.error.errors 
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      throw new Error("Invalid email address format");
-    }
+    const { email, adName, adContent } = validationResult.data;
 
-    // Format the ad content for email
+    // Sanitize HTML content to prevent XSS
+    const safeAdName = escapeHtml(adName);
+    const safeAdContent = escapeHtml(adContent).replace(/\n/g, '<br>');
+
+    // Format the ad content for email with sanitized values
     const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${adName}</title>
+        <title>${safeAdName}</title>
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -102,10 +109,10 @@ const handler = async (req: Request): Promise<Response> => {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🌴 ${adName}</h1>
+            <h1>🌴 ${safeAdName}</h1>
           </div>
           <div class="content">
-            <div class="ad-content">${adContent.replace(/\n/g, '<br>')}</div>
+            <div class="ad-content">${safeAdContent}</div>
             <div class="cta">
               <a href="https://wa.me/27796813869">📲 WhatsApp Now</a>
             </div>
@@ -118,12 +125,10 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    // For now, we'll return success with a note that email requires Resend setup
-    // This demonstrates the structure - Resend API key needed for actual sending
-    console.log(`Email prepared for ${email}:`, { adName, contentLength: adContent.length });
-    
     // Check if Resend API key is available
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    
+    console.log(`Email prepared for ${email}:`, { adName: safeAdName, contentLength: adContent.length });
     
     if (resendApiKey) {
       // Actually send the email using Resend
@@ -136,7 +141,7 @@ const handler = async (req: Request): Promise<Response> => {
         body: JSON.stringify({
           from: "Sun City Getaways <onboarding@resend.dev>",
           to: [email],
-          subject: `🌴 ${adName} - Sun City Special Offer!`,
+          subject: `🌴 ${safeAdName} - Sun City Special Offer!`,
           html: htmlContent,
         }),
       });
@@ -145,12 +150,18 @@ const handler = async (req: Request): Promise<Response> => {
       
       if (!response.ok) {
         console.error("Resend API error:", result);
-        throw new Error(result.message || "Failed to send email via Resend");
+        return new Response(
+          JSON.stringify({ success: false, error: "Failed to send email" }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
       }
 
-      console.log("Email sent successfully:", result);
+      console.log("Email sent successfully");
       return new Response(
-        JSON.stringify({ success: true, data: result }),
+        JSON.stringify({ success: true }),
         {
           status: 200,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -162,8 +173,7 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: "Email queued (configure RESEND_API_KEY for delivery)",
-          preview: { to: email, subject: `${adName} - Sun City Special Offer!` }
+          message: "Email queued (configure RESEND_API_KEY for delivery)"
         }),
         {
           status: 200,
@@ -172,10 +182,10 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-  } catch (error: any) {
-    console.error("Error in send-ad-email function:", error);
+  } catch (error: unknown) {
+    console.error("Error in send-ad-email function:", error instanceof Error ? error.message : "Unknown error");
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: "Internal server error" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
