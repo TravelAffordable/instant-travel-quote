@@ -92,6 +92,8 @@ function LiveHotelQuoteCardComponent({
   guestTel = '',
   guestEmail = '',
 }: LiveHotelQuoteCardProps) {
+  const isDurbanPackage = pkg.destination === 'durban';
+
   // Get available activities for this destination
   const availableActivities = useMemo(() => {
     return getActivitiesForDestination(pkg.destination);
@@ -367,7 +369,201 @@ function LiveHotelQuoteCardComponent({
     window.location.href = `mailto:bookings@travelaffordable.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  return (
+  return isDurbanPackage ? (
+    <Card className="overflow-hidden">
+      <CardContent className="p-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Hotel Info */}
+          <div className="flex-1 space-y-3">
+            <h3 className="text-xl font-bold text-primary uppercase">{hotel.name}</h3>
+
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <p>
+                <span className="font-medium">Package:</span> {pkg.name}
+              </p>
+              <p>
+                <span className="font-medium">Nights:</span> {nights}
+              </p>
+              <p>
+                <span className="font-medium">Rooms:</span> {rooms}
+              </p>
+              <p>
+                <span className="font-medium">Guests:</span> {adults} adult{adults > 1 ? 's' : ''}
+                {children > 0
+                  ? ` and ${children} child${children > 1 ? 'ren' : ''} (${childrenAges.join(', ')})`
+                  : ''}
+              </p>
+              {hotel.address && (
+                <p className="col-span-2">
+                  <span className="font-medium">Area:</span> {hotel.address}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Hotel Image */}
+          <div className="w-full lg:w-72 h-48 relative rounded-lg overflow-hidden bg-muted">
+            <img
+              src={hotel.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'}
+              alt={hotel.name}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            <div className="absolute top-3 left-3">
+              <Badge className={`${getStarsColor(hotel.stars)} border`}>{getStarsLabel(hotel.stars)}</Badge>
+            </div>
+            <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-black/60 px-2 py-1 rounded">
+              <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+              <span className="text-white text-sm font-medium">{hotel.stars}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Activities Section */}
+        {availableActivities.length > 0 && (
+          <div className="mt-8">
+            <h4 className="text-lg font-bold mb-4">
+              Add fun activities to make it a complete getaway package
+            </h4>
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+              {availableActivities.map((activity) => {
+                const isSelected = selectedActivities.some(
+                  (a) =>
+                    a.toLowerCase() === activity.name.toLowerCase() ||
+                    activity.name.toLowerCase().includes(a.toLowerCase()) ||
+                    a.toLowerCase().includes(activity.name.toLowerCase())
+                );
+
+                return (
+                  <div
+                    key={activity.name}
+                    className="text-center cursor-pointer group"
+                    onClick={() => handleActivityToggle(activity.name)}
+                  >
+                    <div
+                      className={cn(
+                        "relative w-full aspect-square rounded-lg overflow-hidden border-2 transition-all",
+                        isSelected
+                          ? "border-primary ring-2 ring-primary/20"
+                          : "border-transparent hover:border-muted-foreground/30"
+                      )}
+                    >
+                      <img
+                        src={activity.image}
+                        alt={activity.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                          <Check className="w-8 h-8 text-primary bg-white rounded-full p-1" />
+                        </div>
+                      )}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-sm font-medium py-2 px-1 leading-tight text-center">
+                        {activity.name.length > 40
+                          ? activity.name.substring(0, 40) + '...'
+                          : activity.name}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Selected Activities */}
+            {selectedActivities.length > 0 && (
+              <div className="mt-6">
+                <h4 className="font-bold mb-2">Selected Activities:</h4>
+                <ul className="list-disc list-inside text-sm space-y-1">
+                  {selectedActivities.map((activity) => (
+                    <li key={activity}>{activity}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Room Selection */}
+        {rooms >= 1 && roomOptions.length > 0 && (
+          <div className="mt-6">
+            <div className="bg-muted/30 rounded-lg p-3">
+              <p className="text-sm font-semibold text-foreground mb-3">
+                {rooms > 1 ? 'Select Room Types' : 'Select Room Type'}
+              </p>
+              <div className="space-y-3">
+                {Array.from({ length: rooms }, (_, i) => (
+                  <div key={i} className="space-y-1">
+                    <label className="text-xs font-medium text-muted-foreground">Room {i + 1}</label>
+                    <Select
+                      value={selectedRoomTypes[i] || roomOptions[0]?.code}
+                      onValueChange={(value) => handleRoomTypeChange(i, value)}
+                    >
+                      <SelectTrigger className="w-full bg-background">
+                        <SelectValue placeholder="Select room type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roomOptions.map((room) => (
+                          <SelectItem key={room.code} value={room.code}>
+                            <div className="flex items-center gap-2 w-full">
+                              <span className="flex-1">
+                                {room.name} ({room.code})
+                              </span>
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Users className="w-3 h-3" />
+                                {room.capacity}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedRoomTypes[i] && (
+                      <div className="text-xs text-muted-foreground mt-1 px-1">
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          Sleeps {roomOptions.find((r) => r.code === selectedRoomTypes[i])?.capacity || 2}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Pricing Summary */}
+        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+          <div className="flex flex-col items-end">
+            <div className="text-right">
+              <p className="text-xl font-bold text-primary">
+                Grand total for {adults} adult{adults > 1 ? 's' : ''}
+                {children > 0 ? ` and ${children} kid${children > 1 ? 's' : ''}` : ''}:
+              </p>
+              <p className="text-3xl font-bold text-destructive">{formatCurrency(totalCost)}</p>
+            </div>
+            {children === 0 && (
+              <p className="text-sm text-muted-foreground mt-1">{formatCurrency(pricePerPerson)} per person</p>
+            )}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 mt-6">
+          <Button onClick={handleEmail} variant="outline" className="flex-1">
+            <Mail className="w-4 h-4 mr-2" />
+            Request to Book
+          </Button>
+          <Button onClick={handleWhatsApp} className="flex-1 bg-green-600 hover:bg-green-700">
+            <MessageSquare className="w-4 h-4 mr-2" />
+            WhatsApp Us
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  ) : (
     <Card className="overflow-hidden border shadow-lg hover:shadow-xl transition-shadow">
       <div className="grid md:grid-cols-[300px_1fr]">
         {/* Hotel Image */}
@@ -378,9 +574,7 @@ function LiveHotelQuoteCardComponent({
             className="w-full h-full object-cover"
           />
           <div className="absolute top-3 left-3">
-            <Badge className={`${getStarsColor(hotel.stars)} border`}>
-              {getStarsLabel(hotel.stars)}
-            </Badge>
+            <Badge className={`${getStarsColor(hotel.stars)} border`}>{getStarsLabel(hotel.stars)}</Badge>
           </div>
           <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-black/60 px-2 py-1 rounded">
             <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
@@ -392,9 +586,7 @@ function LiveHotelQuoteCardComponent({
         <div className="p-5">
           {/* Hotel Name & Address */}
           <div className="mb-3">
-            <h3 className="text-xl font-display font-bold text-foreground mb-1">
-              {hotel.name}
-            </h3>
+            <h3 className="text-xl font-display font-bold text-foreground mb-1">{hotel.name}</h3>
             {hotel.address && (
               <p className="text-sm text-muted-foreground flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5" />
@@ -418,11 +610,12 @@ function LiveHotelQuoteCardComponent({
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
                 {availableActivities.map((activity) => {
                   const isSelected = selectedActivities.some(
-                    a => a.toLowerCase() === activity.name.toLowerCase() || 
-                         activity.name.toLowerCase().includes(a.toLowerCase()) ||
-                         a.toLowerCase().includes(activity.name.toLowerCase())
+                    (a) =>
+                      a.toLowerCase() === activity.name.toLowerCase() ||
+                      activity.name.toLowerCase().includes(a.toLowerCase()) ||
+                      a.toLowerCase().includes(activity.name.toLowerCase())
                   );
-                  
+
                   return (
                     <div
                       key={activity.name}
@@ -470,10 +663,12 @@ function LiveHotelQuoteCardComponent({
             </p>
             <p className="text-sm text-foreground leading-relaxed mb-3">
               The discounted package price for your getaway includes {nights} night{nights > 1 ? 's' : ''} accommodation
-              {selectedActivities.length > 0 && `, ${selectedActivities.join(', ')}`}. Our getaways are stylish and trendy with a bit of affordable sophistication.
+              {selectedActivities.length > 0 && `, ${selectedActivities.join(', ')}`}. Our getaways are stylish and trendy
+              with a bit of affordable sophistication.
             </p>
             <p className="text-sm text-foreground leading-relaxed mb-2">
-              To start with your booking process, simply click the buttons below and our agents will be in communication with you.
+              To start with your booking process, simply click the buttons below and our agents will be in communication
+              with you.
             </p>
           </div>
 
@@ -486,9 +681,7 @@ function LiveHotelQuoteCardComponent({
               <div className="space-y-3">
                 {Array.from({ length: rooms }, (_, i) => (
                   <div key={i} className="space-y-1">
-                    <label className="text-xs font-medium text-muted-foreground">
-                      Room {i + 1}
-                    </label>
+                    <label className="text-xs font-medium text-muted-foreground">Room {i + 1}</label>
                     <Select
                       value={selectedRoomTypes[i] || roomOptions[0]?.code}
                       onValueChange={(value) => handleRoomTypeChange(i, value)}
@@ -517,7 +710,7 @@ function LiveHotelQuoteCardComponent({
                       <div className="text-xs text-muted-foreground mt-1 px-1">
                         <span className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
-                          Sleeps {roomOptions.find(r => r.code === selectedRoomTypes[i])?.capacity || 2}
+                          Sleeps {roomOptions.find((r) => r.code === selectedRoomTypes[i])?.capacity || 2}
                         </span>
                       </div>
                     )}
@@ -533,15 +726,18 @@ function LiveHotelQuoteCardComponent({
               <p className="text-xs text-muted-foreground mb-1">Total Package Price</p>
               <p className="text-2xl font-bold text-primary">{formatCurrency(totalCost)}</p>
               {children === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  {formatCurrency(pricePerPerson)} per person
-                </p>
+                <p className="text-sm text-muted-foreground">{formatCurrency(pricePerPerson)} per person</p>
               )}
             </div>
-          <div className="text-right text-sm">
-            <p className="font-medium text-foreground">{nights} nights • {rooms} room{rooms > 1 ? 's' : ''}</p>
-            <p className="text-muted-foreground">{adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` • ${children} child${children > 1 ? 'ren' : ''}` : ''}</p>
-          </div>
+            <div className="text-right text-sm">
+              <p className="font-medium text-foreground">
+                {nights} nights • {rooms} room{rooms > 1 ? 's' : ''}
+              </p>
+              <p className="text-muted-foreground">
+                {adults} adult{adults > 1 ? 's' : ''}
+                {children > 0 ? ` • ${children} child${children > 1 ? 'ren' : ''}` : ''}
+              </p>
+            </div>
           </div>
 
           {/* Action Buttons */}
