@@ -107,11 +107,20 @@ function LiveHotelQuoteCardComponent({
   // Filter package activities to exclude accommodation/breakfast items
   const filterActivityName = (activity: string): boolean => {
     const lower = activity.toLowerCase();
-    return !lower.includes('accommodation') && 
-           !lower.includes('breakfast at selected') &&
-           !lower.includes('buffet breakfast at selected') &&
-           !lower.includes('room only') &&
-           !lower.includes('shuttle service');
+
+    // Always exclude non-activities
+    if (lower.includes('accommodation') ||
+        lower.includes('breakfast at selected') ||
+        lower.includes('buffet breakfast at selected') ||
+        lower.includes('room only')) {
+      return false;
+    }
+
+    // Durban must keep shuttle as an activity (client can deselect it)
+    if (isDurbanPackage) return true;
+
+    // Other destinations: keep previous behavior
+    return !lower.includes('shuttle service');
   };
 
   // For Durban packages, use shared selection; otherwise use local state
@@ -143,51 +152,49 @@ function LiveHotelQuoteCardComponent({
     }
   };
 
-  // Sort activities: package activities first (in order), then others
+  // Sort activities: Durban package activities first (fixed order), then others
   const sortedActivities = useMemo(() => {
     if (!isDurbanPackage) return availableActivities;
-    
-    // Get package activity names that match available activities
-    const packageActivityNames = pkg.activitiesIncluded
-      .filter(filterActivityName)
-      .filter(activityName => findActivityByName(activityName, availableActivities) !== undefined);
-    
-    // Separate package activities and other activities
+
+    const DURBAN_DEFAULT_ACTIVITY_ORDER = [
+      'uShaka Marine World combo tickets (Sea World & Wet n Wild)',
+      '3 Hour Durban Open Top Fun Bus City Tour',
+      'Isle of Capri Boat Cruise',
+      'Daily shuttle transport',
+    ];
+
+    // Prefer the fixed Durban order; fall back to whatever is in the package if needed
+    const preferredNames = DURBAN_DEFAULT_ACTIVITY_ORDER
+      .map(label => findActivityByName(label, availableActivities)?.name)
+      .filter((v): v is string => Boolean(v));
+
+    const packageActivityNames = (preferredNames.length > 0
+      ? preferredNames
+      : pkg.activitiesIncluded
+          .filter(filterActivityName)
+          .map(label => findActivityByName(label, availableActivities)?.name)
+          .filter((v): v is string => Boolean(v))
+    );
+
     const packageActivities: typeof availableActivities = [];
     const otherActivities: typeof availableActivities = [];
-    
+
     availableActivities.forEach(activity => {
       const isPackageActivity = packageActivityNames.some(
-        name => 
-          name.toLowerCase() === activity.name.toLowerCase() ||
-          activity.name.toLowerCase().includes(name.toLowerCase()) ||
-          name.toLowerCase().includes(activity.name.toLowerCase())
+        name => name.toLowerCase() === activity.name.toLowerCase()
       );
-      
-      if (isPackageActivity) {
-        packageActivities.push(activity);
-      } else {
-        otherActivities.push(activity);
-      }
+
+      if (isPackageActivity) packageActivities.push(activity);
+      else otherActivities.push(activity);
     });
-    
-    // Sort package activities by their order in the package definition
+
+    // Keep package activities in the requested order
     packageActivities.sort((a, b) => {
-      const aIndex = packageActivityNames.findIndex(
-        name => 
-          name.toLowerCase() === a.name.toLowerCase() ||
-          a.name.toLowerCase().includes(name.toLowerCase()) ||
-          name.toLowerCase().includes(a.name.toLowerCase())
-      );
-      const bIndex = packageActivityNames.findIndex(
-        name => 
-          name.toLowerCase() === b.name.toLowerCase() ||
-          b.name.toLowerCase().includes(name.toLowerCase()) ||
-          name.toLowerCase().includes(b.name.toLowerCase())
-      );
+      const aIndex = packageActivityNames.findIndex(n => n.toLowerCase() === a.name.toLowerCase());
+      const bIndex = packageActivityNames.findIndex(n => n.toLowerCase() === b.name.toLowerCase());
       return aIndex - bIndex;
     });
-    
+
     return [...packageActivities, ...otherActivities];
   }, [availableActivities, pkg.activitiesIncluded, isDurbanPackage]);
 

@@ -49,29 +49,52 @@ export function LiveHotelQuotes({
   }, [childrenAgesString]);
 
   // Filter activity name helper
-  const filterActivityName = (activity: string): boolean => {
+  const filterActivityName = (activity: string, isDurban: boolean): boolean => {
     const lower = activity.toLowerCase();
-    return !lower.includes('accommodation') && 
-           !lower.includes('breakfast at selected') &&
-           !lower.includes('buffet breakfast at selected') &&
-           !lower.includes('room only') &&
-           !lower.includes('shuttle service');
+
+    // Always remove non-activities
+    if (lower.includes('accommodation') || lower.includes('breakfast at selected') || lower.includes('buffet breakfast at selected') || lower.includes('room only')) {
+      return false;
+    }
+
+    // Durban must keep shuttle as an activity (client can deselect it)
+    if (isDurban) return true;
+
+    // Other destinations: keep previous behavior
+    return !lower.includes('shuttle service');
   };
+
+  const DURBAN_DEFAULT_ACTIVITY_ORDER = [
+    'uShaka Marine World combo tickets (Sea World & Wet n Wild)',
+    '3 Hour Durban Open Top Fun Bus City Tour',
+    'Isle of Capri Boat Cruise',
+    'Daily shuttle transport',
+  ];
 
   // Initialize shared activity selections for Durban packages
   useEffect(() => {
     const newSelections: Record<string, string[]> = {};
-    
+
     selectedPackages.forEach(pkg => {
       if (pkg.destination === 'durban') {
         const availableActivities = getActivitiesForDestination(pkg.destination);
-        const initialActivities = pkg.activitiesIncluded
-          .filter(filterActivityName)
-          .filter(activityName => findActivityByName(activityName, availableActivities) !== undefined);
-        newSelections[pkg.id] = initialActivities;
+
+        // Build default selection from the required Durban package activities (canonical activity names)
+        const fromRequiredList = DURBAN_DEFAULT_ACTIVITY_ORDER
+          .map(label => findActivityByName(label, availableActivities)?.name)
+          .filter((v): v is string => Boolean(v));
+
+        // Fallback: if something isn't found, include whatever is in the package definition
+        const fromPackageDefinition = pkg.activitiesIncluded
+          .filter(a => filterActivityName(a, true))
+          .map(label => findActivityByName(label, availableActivities)?.name)
+          .filter((v): v is string => Boolean(v));
+
+        const initialActivities = (fromRequiredList.length > 0 ? fromRequiredList : fromPackageDefinition);
+        newSelections[pkg.id] = Array.from(new Set(initialActivities));
       }
     });
-    
+
     setSharedActivitySelections(prev => ({ ...prev, ...newSelections }));
   }, [selectedPackages]);
 

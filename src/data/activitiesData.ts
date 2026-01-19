@@ -40,6 +40,7 @@ export const activitiesByDestination: Record<string, Activity[]> = {
     { name: 'Moses Mabhida Stadium', image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=100', rates: { adult: 80, child: 65, freeAge: 0 } },
     { name: '60 minute full body massage at a beachfront spa', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 700, child: 450, freeAge: 12 } },
     { name: 'Open top Bus 3 hours', image: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=100', rates: { adult: 250, child: 250, freeAge: 0 } },
+    { name: 'Daily shuttle transport', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=100', rates: { adult: 0, child: 0, freeAge: 0 }, isShuttle: true, shuttleBaseCost: 800 },
     { name: 'Gondola Boat cruise with romantic picnic', image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=100', rates: { adult: 750, child: 750, freeAge: 0 } },
     { name: '1 hour Waterfront pedal boat', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=100', rates: { adult: 250, child: 250, freeAge: 0 } },
     { name: 'Segway Glides on the beachfront', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100', rates: { adult: 750, child: 750, freeAge: 0 } },
@@ -153,15 +154,53 @@ export const getActivitiesForDestination = (destination: string): Activity[] => 
 
 // Helper function to find matching activity by name (fuzzy match)
 export const findActivityByName = (name: string, activities: Activity[]): Activity | undefined => {
-  // Exact match first
-  const exactMatch = activities.find(a => a.name.toLowerCase() === name.toLowerCase());
-  if (exactMatch) return exactMatch;
-  
-  // Partial match - check if activity name contains the search name or vice versa
-  return activities.find(a => 
-    a.name.toLowerCase().includes(name.toLowerCase()) || 
-    name.toLowerCase().includes(a.name.toLowerCase())
-  );
+  const normalize = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/\b(hours?|hrs?)\b/g, 'hour')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const n = normalize(name);
+  if (!n) return undefined;
+
+  // 1) Exact normalized match
+  const exact = activities.find(a => normalize(a.name) === n);
+  if (exact) return exact;
+
+  // 2) Substring match (either direction)
+  const substring = activities.find(a => {
+    const an = normalize(a.name);
+    return an.includes(n) || n.includes(an);
+  });
+  if (substring) return substring;
+
+  // 3) Token overlap score (handles wording differences like "3 hour open bus city tour" vs "Open top Bus 3 hours")
+  const tokens = new Set(n.split(' ').filter(t => t.length >= 2));
+  let best: { activity: Activity; score: number } | undefined;
+
+  for (const a of activities) {
+    const an = normalize(a.name);
+    const at = new Set(an.split(' ').filter(t => t.length >= 2));
+
+    let overlap = 0;
+    tokens.forEach(t => {
+      if (at.has(t)) overlap += 1;
+    });
+
+    // Light domain boosts
+    if (n.includes('ushaka') && an.includes('ushaka')) overlap += 3;
+    if ((n.includes('bus') || n.includes('tour')) && (an.includes('bus') || an.includes('tour'))) overlap += 1;
+    if (n.includes('cruise') && an.includes('cruise')) overlap += 2;
+    if (n.includes('shuttle') && an.includes('shuttle')) overlap += 2;
+
+    const score = overlap / Math.max(1, Math.min(tokens.size, at.size));
+    if (!best || score > best.score) best = { activity: a, score };
+  }
+
+  return best && best.score >= 0.34 ? best.activity : undefined;
 };
 
 // Calculate activity cost for adults
