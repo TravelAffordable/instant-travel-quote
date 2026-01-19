@@ -33,6 +33,9 @@ interface LiveHotelQuoteCardProps {
   guestName?: string;
   guestTel?: string;
   guestEmail?: string;
+  // Shared activity selection for Durban packages (synced across all cards)
+  sharedSelectedActivities?: string[];
+  onActivityToggle?: (activityName: string) => void;
 }
 
 // Room capacity mapping based on common Hotelbeds room type codes
@@ -91,6 +94,8 @@ function LiveHotelQuoteCardComponent({
   guestName = '',
   guestTel = '',
   guestEmail = '',
+  sharedSelectedActivities = [],
+  onActivityToggle,
 }: LiveHotelQuoteCardProps) {
   const isDurbanPackage = pkg.destination === 'durban';
 
@@ -109,28 +114,82 @@ function LiveHotelQuoteCardComponent({
            !lower.includes('shuttle service');
   };
 
-  // Initialize selected activities from package inclusions
-  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  // For Durban packages, use shared selection; otherwise use local state
+  const [localSelectedActivities, setLocalSelectedActivities] = useState<string[]>([]);
   
-  // Initialize selected activities when package changes
+  // Use shared activities for Durban, local for others
+  const selectedActivities = isDurbanPackage ? sharedSelectedActivities : localSelectedActivities;
+  
+  // Initialize local activities for non-Durban packages
   useEffect(() => {
-    const initialActivities = pkg.activitiesIncluded
-      .filter(filterActivityName)
-      .filter(activityName => {
-        // Only include if we have this activity in our available activities
-        return findActivityByName(activityName, availableActivities) !== undefined;
-      });
-    setSelectedActivities(initialActivities);
-  }, [pkg.id, availableActivities]);
+    if (!isDurbanPackage) {
+      const initialActivities = pkg.activitiesIncluded
+        .filter(filterActivityName)
+        .filter(activityName => findActivityByName(activityName, availableActivities) !== undefined);
+      setLocalSelectedActivities(initialActivities);
+    }
+  }, [pkg.id, availableActivities, isDurbanPackage]);
 
   // Handle activity selection toggle
   const handleActivityToggle = (activityName: string) => {
-    setSelectedActivities(prev => 
-      prev.includes(activityName)
-        ? prev.filter(a => a !== activityName)
-        : [...prev, activityName]
-    );
+    if (isDurbanPackage && onActivityToggle) {
+      onActivityToggle(activityName);
+    } else {
+      setLocalSelectedActivities(prev => 
+        prev.includes(activityName)
+          ? prev.filter(a => a !== activityName)
+          : [...prev, activityName]
+      );
+    }
   };
+
+  // Sort activities: package activities first (in order), then others
+  const sortedActivities = useMemo(() => {
+    if (!isDurbanPackage) return availableActivities;
+    
+    // Get package activity names that match available activities
+    const packageActivityNames = pkg.activitiesIncluded
+      .filter(filterActivityName)
+      .filter(activityName => findActivityByName(activityName, availableActivities) !== undefined);
+    
+    // Separate package activities and other activities
+    const packageActivities: typeof availableActivities = [];
+    const otherActivities: typeof availableActivities = [];
+    
+    availableActivities.forEach(activity => {
+      const isPackageActivity = packageActivityNames.some(
+        name => 
+          name.toLowerCase() === activity.name.toLowerCase() ||
+          activity.name.toLowerCase().includes(name.toLowerCase()) ||
+          name.toLowerCase().includes(activity.name.toLowerCase())
+      );
+      
+      if (isPackageActivity) {
+        packageActivities.push(activity);
+      } else {
+        otherActivities.push(activity);
+      }
+    });
+    
+    // Sort package activities by their order in the package definition
+    packageActivities.sort((a, b) => {
+      const aIndex = packageActivityNames.findIndex(
+        name => 
+          name.toLowerCase() === a.name.toLowerCase() ||
+          a.name.toLowerCase().includes(name.toLowerCase()) ||
+          name.toLowerCase().includes(a.name.toLowerCase())
+      );
+      const bIndex = packageActivityNames.findIndex(
+        name => 
+          name.toLowerCase() === b.name.toLowerCase() ||
+          b.name.toLowerCase().includes(name.toLowerCase()) ||
+          name.toLowerCase().includes(b.name.toLowerCase())
+      );
+      return aIndex - bIndex;
+    });
+    
+    return [...packageActivities, ...otherActivities];
+  }, [availableActivities, pkg.activitiesIncluded, isDurbanPackage]);
 
   // Process available room options with capacity and pricing
   const roomOptions: RoomOption[] = useMemo(() => {
@@ -420,14 +479,14 @@ function LiveHotelQuoteCardComponent({
         </div>
 
         {/* Activities Section */}
-        {availableActivities.length > 0 && (
+        {sortedActivities.length > 0 && (
           <div className="mt-8">
             <h4 className="text-lg font-bold mb-4">
-              Add fun activities to make it a complete getaway package
+              Below are selected package activities, you may remove an activity by deselecting it or add another activity by selecting it
             </h4>
 
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-              {availableActivities.map((activity) => {
+              {sortedActivities.map((activity) => {
                 const isSelected = selectedActivities.some(
                   (a) =>
                     a.toLowerCase() === activity.name.toLowerCase() ||
