@@ -511,7 +511,7 @@ function LiveHotelQuoteCardComponent({
                       className={cn(
                         "relative w-full aspect-square rounded-lg overflow-hidden border-2 transition-all",
                         isSelected
-                          ? "border-primary ring-2 ring-primary/20"
+                          ? "border-red-500 ring-2 ring-red-500/20"
                           : "border-transparent hover:border-muted-foreground/30"
                       )}
                     >
