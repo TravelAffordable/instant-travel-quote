@@ -1,43 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createHash } from "https://deno.land/std@0.177.0/node/crypto.ts";
+import { hotelbedsCheckRateSchema, hotelbedsBookingSchema, hotelbedsCanelSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-interface CheckRateRequest {
-  action: 'checkRate';
-  rateKey: string;
-}
-
-interface BookingRequest {
-  action: 'book';
-  rateKey: string;
-  holder: {
-    name: string;
-    surname: string;
-  };
-  rooms: Array<{
-    rateKey: string;
-    paxes: Array<{
-      roomId: number;
-      type: 'AD' | 'CH';
-      name: string;
-      surname: string;
-      age?: number;
-    }>;
-  }>;
-  clientReference: string;
-  remark?: string;
-}
-
-interface CancelRequest {
-  action: 'cancel';
-  bookingReference: string;
-}
-
-type HotelbedsRequest = CheckRateRequest | BookingRequest | CancelRequest;
 
 function generateSignature(apiKey: string, secret: string): string {
   const timestamp = Math.floor(Date.now() / 1000);
@@ -71,7 +39,19 @@ serve(async (req) => {
   }
 
   try {
-    const body: HotelbedsRequest = await req.json();
+    const body = await req.json();
+    
+    // Determine action and validate accordingly
+    if (!body.action || typeof body.action !== 'string') {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Missing or invalid action field'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const signature = generateSignature(apiKey, apiSecret);
 
     console.log('='.repeat(60));
@@ -80,16 +60,26 @@ serve(async (req) => {
 
     // ========== CHECK RATE ==========
     if (body.action === 'checkRate') {
+      const validationResult = hotelbedsCheckRateSchema.safeParse(body);
+      if (!validationResult.success) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Validation failed',
+          details: validationResult.error.errors.map(e => e.message)
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const { rateKey } = validationResult.data;
       console.log('[REQUEST] CheckRate');
-      console.log('Rate Key:', body.rateKey);
 
       const checkRatePayload = {
         rooms: [{
-          rateKey: body.rateKey
+          rateKey: rateKey
         }]
       };
-
-      console.log('[REQUEST PAYLOAD]:', JSON.stringify(checkRatePayload, null, 2));
 
       const response = await fetch('https://api.test.hotelbeds.com/hotel-api/1.0/checkrates', {
         method: 'POST',
@@ -104,15 +94,11 @@ serve(async (req) => {
 
       const responseText = await response.text();
       console.log('[RESPONSE STATUS]:', response.status);
-      console.log('[RESPONSE BODY]:', responseText);
 
       if (!response.ok) {
         return new Response(JSON.stringify({
           success: false,
-          error: 'CheckRate failed',
-          details: responseText,
-          request: checkRatePayload,
-          response: { status: response.status, body: responseText }
+          error: 'CheckRate failed'
         }), {
           status: response.status,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -120,8 +106,6 @@ serve(async (req) => {
       }
 
       const data = JSON.parse(responseText);
-      
-      // Extract validated rate info
       const hotel = data.hotel;
       const room = hotel?.rooms?.[0];
       const rate = room?.rates?.[0];
@@ -140,11 +124,6 @@ serve(async (req) => {
           boardName: rate?.boardName,
           cancellationPolicies: rate?.cancellationPolicies,
           rateComments: rate?.rateComments,
-        },
-        // Full logs for certification
-        logs: {
-          request: checkRatePayload,
-          response: data
         }
       };
 
@@ -156,18 +135,27 @@ serve(async (req) => {
 
     // ========== BOOKING (CONFIRMATION) ==========
     if (body.action === 'book') {
+      const validationResult = hotelbedsBookingSchema.safeParse(body);
+      if (!validationResult.success) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Validation failed',
+          details: validationResult.error.errors.map(e => e.message)
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const { holder, rooms, clientReference, remark } = validationResult.data;
       console.log('[REQUEST] Book/Confirm');
-      console.log('Holder:', body.holder);
-      console.log('Client Reference:', body.clientReference);
 
       const bookingPayload = {
-        holder: body.holder,
-        rooms: body.rooms,
-        clientReference: body.clientReference,
-        remark: body.remark || 'Test booking for API certification',
+        holder,
+        rooms,
+        clientReference,
+        remark: remark || 'Booking via Travel Affordable',
       };
-
-      console.log('[REQUEST PAYLOAD]:', JSON.stringify(bookingPayload, null, 2));
 
       const response = await fetch('https://api.test.hotelbeds.com/hotel-api/1.0/bookings', {
         method: 'POST',
@@ -182,15 +170,11 @@ serve(async (req) => {
 
       const responseText = await response.text();
       console.log('[RESPONSE STATUS]:', response.status);
-      console.log('[RESPONSE BODY]:', responseText);
 
       if (!response.ok) {
         return new Response(JSON.stringify({
           success: false,
-          error: 'Booking failed',
-          details: responseText,
-          request: bookingPayload,
-          response: { status: response.status, body: responseText }
+          error: 'Booking failed'
         }), {
           status: response.status,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -213,11 +197,11 @@ serve(async (req) => {
             name: booking?.hotel?.name,
             checkIn: booking?.hotel?.checkIn,
             checkOut: booking?.hotel?.checkOut,
-            rooms: booking?.hotel?.rooms?.map((r: any) => ({
+            rooms: booking?.hotel?.rooms?.map((r: { code: string; name: string; paxes: unknown[]; rates?: Array<{ net: string; boardCode: string; boardName: string }> }) => ({
               code: r.code,
               name: r.name,
               paxes: r.paxes,
-              rates: r.rates?.map((rt: any) => ({
+              rates: r.rates?.map((rt) => ({
                 net: rt.net,
                 netZAR: Math.round(parseFloat(rt.net) * EUR_TO_ZAR * MARKUP),
                 boardCode: rt.boardCode,
@@ -229,11 +213,6 @@ serve(async (req) => {
           totalNetZAR: booking?.totalNet ? Math.round(parseFloat(booking.totalNet) * EUR_TO_ZAR * MARKUP) : null,
           currency: 'EUR',
           cancellationReference: booking?.cancellationReference,
-        },
-        // Full logs for certification
-        logs: {
-          request: bookingPayload,
-          response: data
         }
       };
 
@@ -245,12 +224,33 @@ serve(async (req) => {
 
     // ========== CANCELLATION ==========
     if (body.action === 'cancel') {
+      const validationResult = hotelbedsCanelSchema.safeParse(body);
+      if (!validationResult.success) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Validation failed',
+          details: validationResult.error.errors.map(e => e.message)
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const { bookingReference } = validationResult.data;
       console.log('[REQUEST] Cancel Booking');
-      console.log('Booking Reference:', body.bookingReference);
 
-      const cancelUrl = `https://api.test.hotelbeds.com/hotel-api/1.0/bookings/${body.bookingReference}?cancellationFlag=CANCELLATION`;
+      // Validate booking reference format (alphanumeric only)
+      if (!/^[a-zA-Z0-9-]+$/.test(bookingReference)) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Invalid booking reference format'
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-      console.log('[REQUEST URL]:', cancelUrl);
+      const cancelUrl = `https://api.test.hotelbeds.com/hotel-api/1.0/bookings/${encodeURIComponent(bookingReference)}?cancellationFlag=CANCELLATION`;
 
       const response = await fetch(cancelUrl, {
         method: 'DELETE',
@@ -263,15 +263,11 @@ serve(async (req) => {
 
       const responseText = await response.text();
       console.log('[RESPONSE STATUS]:', response.status);
-      console.log('[RESPONSE BODY]:', responseText);
 
       if (!response.ok) {
         return new Response(JSON.stringify({
           success: false,
-          error: 'Cancellation failed',
-          details: responseText,
-          request: { bookingReference: body.bookingReference, url: cancelUrl },
-          response: { status: response.status, body: responseText }
+          error: 'Cancellation failed'
         }), {
           status: response.status,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -291,11 +287,6 @@ serve(async (req) => {
             code: booking?.hotel?.code,
             name: booking?.hotel?.name,
           }
-        },
-        // Full logs for certification
-        logs: {
-          request: { bookingReference: body.bookingReference },
-          response: data
         }
       };
 
@@ -314,11 +305,10 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('[ERROR]:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[ERROR]:', error instanceof Error ? error.message : 'Unknown error');
     return new Response(JSON.stringify({
       success: false,
-      error: errorMessage
+      error: 'Internal server error'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
