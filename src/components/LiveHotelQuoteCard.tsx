@@ -157,10 +157,10 @@ function LiveHotelQuoteCardComponent({
     if (!isDurbanPackage) return availableActivities;
 
     const DURBAN_DEFAULT_ACTIVITY_ORDER = [
-      'uShaka Marine World combo tickets (Sea World & Wet n Wild)',
-      '3 Hour Durban Open Top Fun Bus City Tour',
-      'Isle of Capri Boat Cruise',
-      'Daily shuttle transport',
+      'USHAKA MARINE WORLD COMBO TICKET',
+      'ISLE OF CAPRI BOAT CRUISE',
+      '60 MINUTE FULL BODY MASSAGE',
+      'SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK',
     ];
 
     // Prefer the fixed Durban order; fall back to whatever is in the package if needed

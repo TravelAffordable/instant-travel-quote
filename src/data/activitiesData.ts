@@ -35,12 +35,12 @@ export const destinationToActivityKey: Record<string, string> = {
 // All activities organized by destination
 export const activitiesByDestination: Record<string, Activity[]> = {
   'Durban Beachfront Accommodation': [
-    { name: 'Ushaka Marine World', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=100', rates: { adult: 500, child: 420, freeAge: 3 } },
-    { name: 'Boat Cruise', image: 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=100', rates: { adult: 150, child: 100, freeAge: 0 } },
+    { name: 'USHAKA MARINE WORLD COMBO TICKET', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=100', rates: { adult: 500, child: 420, freeAge: 3 } },
+    { name: 'ISLE OF CAPRI BOAT CRUISE', image: 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=100', rates: { adult: 150, child: 100, freeAge: 0 } },
     { name: 'Moses Mabhida Stadium', image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=100', rates: { adult: 80, child: 65, freeAge: 0 } },
-    { name: '60 minute full body massage at a beachfront spa', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 700, child: 450, freeAge: 12 } },
+    { name: '60 MINUTE FULL BODY MASSAGE', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 700, child: 450, freeAge: 12 } },
     { name: 'Open top Bus 3 hours', image: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=100', rates: { adult: 250, child: 250, freeAge: 0 } },
-    { name: 'Daily shuttle transport', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=100', rates: { adult: 0, child: 0, freeAge: 0 }, isShuttle: true, shuttleBaseCost: 800 },
+    { name: 'SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=100', rates: { adult: 0, child: 0, freeAge: 0 }, isShuttle: true, shuttleBaseCost: 800 },
     { name: 'Gondola Boat cruise with romantic picnic', image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=100', rates: { adult: 750, child: 750, freeAge: 0 } },
     { name: '1 hour Waterfront pedal boat', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=100', rates: { adult: 250, child: 250, freeAge: 0 } },
     { name: 'Segway Glides on the beachfront', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100', rates: { adult: 750, child: 750, freeAge: 0 } },
