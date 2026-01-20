@@ -509,10 +509,10 @@ function LiveHotelQuoteCardComponent({
                   >
                     <div
                       className={cn(
-                        "relative w-full aspect-square rounded-lg overflow-hidden border-2 transition-all",
+                        "relative w-full aspect-square rounded-lg overflow-hidden transition-all",
                         isSelected
-                          ? "border-red-500 ring-2 ring-red-500/20"
-                          : "border-transparent hover:border-muted-foreground/30"
+                          ? "border-4 border-red-500 ring-2 ring-red-500/20"
+                          : "border-2 border-transparent hover:border-muted-foreground/30"
                       )}
                     >
                       <img
@@ -526,7 +526,7 @@ function LiveHotelQuoteCardComponent({
                           <Check className="w-8 h-8 text-primary bg-white rounded-full p-1" />
                         </div>
                       )}
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-sm font-medium py-2 px-1 leading-tight text-center">
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-sm font-bold py-2 px-1 leading-tight text-center uppercase">
                         {activity.name.length > 40
                           ? activity.name.substring(0, 40) + '...'
                           : activity.name}
@@ -543,7 +543,7 @@ function LiveHotelQuoteCardComponent({
                 <h4 className="font-bold mb-2">Selected Activities:</h4>
                 <ul className="list-disc list-inside text-sm space-y-1">
                   {selectedActivities.map((activity) => (
-                    <li key={activity}>{activity}</li>
+                    <li key={activity} className="uppercase">{activity}</li>
                   ))}
                 </ul>
               </div>
