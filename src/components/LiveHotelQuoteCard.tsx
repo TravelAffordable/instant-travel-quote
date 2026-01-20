@@ -537,17 +537,23 @@ function LiveHotelQuoteCardComponent({
               })}
             </div>
 
-            {/* Selected Activities */}
-            {selectedActivities.length > 0 && (
-              <div className="mt-6">
-                <h4 className="font-bold mb-2">Selected Activities:</h4>
-                <ul className="list-disc list-inside text-sm space-y-1">
-                  {selectedActivities.map((activity) => (
-                    <li key={activity} className="uppercase">{activity}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {/* Dynamic Personalized Package Description */}
+            <div className="mt-6 bg-muted/30 rounded-lg p-4">
+              <p className="text-sm font-bold text-foreground leading-relaxed uppercase">
+                GREETINGS {guestName?.toUpperCase() || '(GUEST)'}, THE DISCOUNTED PACKAGE PRICE YOU SEE INCLUDES {nights} NIGHT{nights > 1 ? 'S' : ''} HOTEL ACCOMMODATION
+                {selectedActivities.length > 0 && selectedActivities.map((activity, index) => {
+                  const activityDescriptions: Record<string, string> = {
+                    'USHAKA MARINE WORLD COMBO TICKET': 'USHAKA MARINE WORLD FUN COMBO TICKETS FOR SEAWORLD AND WET N WILD',
+                    'ISLE OF CAPRI BOAT CRUISE': 'CRUISE IN LEISURE ON THE ISLE OF CAPRI BOAT CRUISE',
+                    '60 MINUTE FULL BODY MASSAGE': 'YOU WILL ENJOY A 60 MINUTE FULL BODY MASSAGE AT A TRENDY BEACHFRONT SPA INCLUDING DRINKS AND HYDRO FACILITIES (SAUNA, STEAM, JACCUZZI)',
+                    'SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK': 'SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK',
+                  };
+                  const description = activityDescriptions[activity.toUpperCase()] || activity.toUpperCase();
+                  return ` ° ${description}`;
+                })}
+                {' '}° OUR GETAWAYS ARE STYLISH AND TRENDY WITH A BIT OF AFFORDABLE SOPHISTICATION. TO MAKE A BOOKING PLEASE CLICK ON THE BOOK NOW BUTTON.
+              </p>
+            </div>
           </div>
         )}
 
@@ -618,9 +624,9 @@ function LiveHotelQuoteCardComponent({
 
         {/* Action Buttons */}
         <div className="flex gap-2 mt-6">
-          <Button onClick={handleEmail} variant="outline" className="flex-1">
+          <Button onClick={handleEmail} className="flex-1 bg-primary hover:bg-primary/90">
             <Mail className="w-4 h-4 mr-2" />
-            Request to Book
+            Book Now
           </Button>
           <Button onClick={handleWhatsApp} className="flex-1 bg-green-600 hover:bg-green-700">
             <MessageSquare className="w-4 h-4 mr-2" />
@@ -724,17 +730,19 @@ function LiveHotelQuoteCardComponent({
 
           {/* Package Description - Personalized */}
           <div className="bg-muted/30 rounded-lg p-3 mb-4">
-            <p className="text-sm text-foreground leading-relaxed font-medium mb-2">
-              Greetings {guestName || '(Guest)'}
-            </p>
-            <p className="text-sm text-foreground leading-relaxed mb-3">
-              The discounted package price for your getaway includes {nights} night{nights > 1 ? 's' : ''} accommodation
-              {selectedActivities.length > 0 && `, ${selectedActivities.join(', ')}`}. Our getaways are stylish and trendy
-              with a bit of affordable sophistication.
-            </p>
-            <p className="text-sm text-foreground leading-relaxed mb-2">
-              To start with your booking process, simply click the buttons below and our agents will be in communication
-              with you.
+            <p className="text-sm font-bold text-foreground leading-relaxed uppercase">
+              GREETINGS {guestName?.toUpperCase() || '(GUEST)'}, THE DISCOUNTED PACKAGE PRICE YOU SEE INCLUDES {nights} NIGHT{nights > 1 ? 'S' : ''} HOTEL ACCOMMODATION
+              {selectedActivities.length > 0 && selectedActivities.map((activity) => {
+                const activityDescriptions: Record<string, string> = {
+                  'USHAKA MARINE WORLD COMBO TICKET': 'USHAKA MARINE WORLD FUN COMBO TICKETS FOR SEAWORLD AND WET N WILD',
+                  'ISLE OF CAPRI BOAT CRUISE': 'CRUISE IN LEISURE ON THE ISLE OF CAPRI BOAT CRUISE',
+                  '60 MINUTE FULL BODY MASSAGE': 'YOU WILL ENJOY A 60 MINUTE FULL BODY MASSAGE AT A TRENDY BEACHFRONT SPA INCLUDING DRINKS AND HYDRO FACILITIES (SAUNA, STEAM, JACCUZZI)',
+                  'SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK': 'SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK',
+                };
+                const description = activityDescriptions[activity.toUpperCase()] || activity.toUpperCase();
+                return ` ° ${description}`;
+              })}
+              {' '}° OUR GETAWAYS ARE STYLISH AND TRENDY WITH A BIT OF AFFORDABLE SOPHISTICATION. TO MAKE A BOOKING PLEASE CLICK ON THE BOOK NOW BUTTON.
             </p>
           </div>
 
@@ -808,9 +816,9 @@ function LiveHotelQuoteCardComponent({
 
           {/* Action Buttons */}
           <div className="flex gap-2">
-            <Button onClick={handleEmail} variant="outline" className="flex-1">
+            <Button onClick={handleEmail} className="flex-1 bg-primary hover:bg-primary/90">
               <Mail className="w-4 h-4 mr-2" />
-              Request to Book
+              Book Now
             </Button>
             <Button onClick={handleWhatsApp} className="flex-1 bg-green-600 hover:bg-green-700">
               <MessageSquare className="w-4 h-4 mr-2" />
