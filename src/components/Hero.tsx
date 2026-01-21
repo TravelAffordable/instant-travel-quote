@@ -170,6 +170,16 @@ interface HeroProps {
   onGetQuote: () => void;
 }
 
+// Admin access check - only show custom hotels when admin=true in URL
+const useIsAdmin = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setIsAdmin(params.get('admin') === 'true');
+  }, []);
+  return isAdmin;
+};
+
 interface FamilyData {
   parentName: string;
   adults: number;
@@ -186,6 +196,7 @@ interface FamilyQuotes {
 
 export function Hero({ onGetQuote }: HeroProps) {
   const navigate = useNavigate();
+  const isAdmin = useIsAdmin();
   const [destination, setDestination] = useState('');
   const [packageIds, setPackageIds] = useState<string[]>([]);
   const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(false);
@@ -1093,8 +1104,8 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
-        {/* Custom Hotels Section - Durban, Hartbeespoort, Mpumalanga & Sun City (for with-activities booking type) */}
-        {bookingType === 'with-activities' && destination && getCustomHotelsForDestination(destination).length > 0 && hasSearched && (
+        {/* Custom Hotels Section - Admin Only */}
+        {isAdmin && bookingType === 'with-activities' && destination && getCustomHotelsForDestination(destination).length > 0 && hasSearched && (
           <div className="max-w-4xl mx-auto mt-6 animate-fade-in">
             <div className="bg-amber-50 border-2 border-amber-200 backdrop-blur-md rounded-2xl shadow-xl p-6">
               <div className="flex items-center justify-between mb-4">
@@ -1187,7 +1198,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         )}
 
         {/* Quote Results */}
-        {(liveHotels.length > 0 || (hasSearched && customHotelQuotes.length > 0) || (hasSearched && bookingType === 'with-activities' && destination && getCustomHotelsForDestination(destination).length > 0)) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
+        {(liveHotels.length > 0 || (isAdmin && hasSearched && customHotelQuotes.length > 0) || (isAdmin && hasSearched && bookingType === 'with-activities' && destination && getCustomHotelsForDestination(destination).length > 0)) && (bookingType === 'accommodation-only' || packageIds.length > 0) ? (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
               {bookingType === 'accommodation-only' ? (
@@ -1236,12 +1247,12 @@ export function Hero({ onGetQuote }: HeroProps) {
                   ) : (
                     <div className="text-center py-6 mb-6 bg-amber-50 rounded-xl border border-amber-200">
                       <p className="text-amber-800 font-medium">No hotels found via our system for this search.</p>
-                      <p className="text-amber-700 text-sm mt-2">Use the custom hotels section above to generate a quote with your own hotel pricing.</p>
+                      <p className="text-amber-700 text-sm mt-2">Please try different dates or contact us for assistance.</p>
                     </div>
                   )}
                   
-                  {/* Custom Hotel Quotes */}
-                  {customHotelQuotes.length > 0 && (
+                  {/* Custom Hotel Quotes - Admin Only */}
+                  {isAdmin && customHotelQuotes.length > 0 && (
                     <div className="mt-8 pt-6 border-t-2 border-amber-200">
                       <h3 className="text-xl font-display font-semibold text-amber-900 mb-4">
                         🏨 Custom Hotel Quotes ({customHotelQuotes.length})
