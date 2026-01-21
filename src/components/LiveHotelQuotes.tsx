@@ -166,51 +166,92 @@ export function LiveHotelQuotes({
       </div>
 
       {/* Package Sections - One for each selected package */}
-      {selectedPackages.map((pkg) => (
-        <div key={pkg.id} className="space-y-4">
-          {/* Package Header */}
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-            <h3 className="text-lg font-display font-bold text-primary uppercase">
-              {pkg.name}
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''} available
-            </p>
-          </div>
-
-          {/* Hotel Cards */}
-          {filteredHotels.length === 0 ? (
-            <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
-              <CardContent className="py-8 text-center">
-                <p className="text-muted-foreground text-sm">
-                  No hotels match your budget. Try increasing your budget amount or remove the filter to see all options.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {filteredHotels.map((hotel) => (
-                <LiveHotelQuoteCard
-                  key={`${pkg.id}-${hotel.code}`}
-                  hotel={hotel}
-                  pkg={pkg}
-                  nights={nights}
-                  adults={adults}
-                  children={children}
-                  childrenAges={childrenAges}
-                  rooms={rooms}
-                  budget={budget}
-                  guestName={guestName}
-                  guestTel={guestTel}
-                  guestEmail={guestEmail}
-                  sharedSelectedActivities={sharedActivitySelections[pkg.id] || []}
-                  onActivityToggle={(activityName) => handleActivityToggle(pkg.id, activityName)}
-                />
-              ))}
+      {selectedPackages.map((pkg) => {
+        // Group hotels into three tiers based on price
+        const sortedHotels = [...filteredHotels].sort((a, b) => a.minRate - b.minRate);
+        const tierSize = Math.ceil(sortedHotels.length / 3);
+        
+        const budgetHotels = sortedHotels.slice(0, tierSize);
+        const affordableHotels = sortedHotels.slice(tierSize, tierSize * 2);
+        const premiumHotels = sortedHotels.slice(tierSize * 2);
+        
+        const tiers = [
+          { name: 'BUDGET OPTIONS', hotels: budgetHotels, color: 'bg-green-500', textColor: 'text-green-700', borderColor: 'border-green-300', bgColor: 'bg-green-50' },
+          { name: 'AFFORDABLE OPTIONS', hotels: affordableHotels, color: 'bg-blue-500', textColor: 'text-blue-700', borderColor: 'border-blue-300', bgColor: 'bg-blue-50' },
+          { name: 'PREMIUM OPTIONS', hotels: premiumHotels, color: 'bg-purple-500', textColor: 'text-purple-700', borderColor: 'border-purple-300', bgColor: 'bg-purple-50' },
+        ];
+        
+        return (
+          <div key={pkg.id} className="space-y-6">
+            {/* Package Header */}
+            <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-4">
+              <h3 className="text-xl font-display font-bold text-primary uppercase text-center">
+                {pkg.name}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1 text-center">
+                {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''} available
+              </p>
             </div>
-          )}
-        </div>
-      ))}
+
+            {/* Hotel Cards grouped by tier */}
+            {filteredHotels.length === 0 ? (
+              <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
+                <CardContent className="py-8 text-center">
+                  <p className="text-muted-foreground text-sm">
+                    No hotels match your budget. Try increasing your budget amount or remove the filter to see all options.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-8">
+                {tiers.map((tier) => tier.hotels.length > 0 && (
+                  <div key={tier.name} className="space-y-4">
+                    {/* Tier Header */}
+                    <div className={`${tier.bgColor} border-2 ${tier.borderColor} rounded-lg p-3`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`${tier.color} w-4 h-4 rounded-full`}></div>
+                        <h4 className={`text-lg font-bold ${tier.textColor} uppercase tracking-wide`}>
+                          {tier.name}
+                        </h4>
+                        <span className="text-sm text-muted-foreground">
+                          ({tier.hotels.length} hotel{tier.hotels.length !== 1 ? 's' : ''})
+                        </span>
+                      </div>
+                      <p className={`text-xs ${tier.textColor} mt-1 ml-7`}>
+                        {tier.name === 'BUDGET OPTIONS' && 'Best value for money - comfortable and clean accommodations'}
+                        {tier.name === 'AFFORDABLE OPTIONS' && 'Great balance of comfort and price - excellent amenities'}
+                        {tier.name === 'PREMIUM OPTIONS' && 'Luxury experience - top-tier facilities and service'}
+                      </p>
+                    </div>
+                    
+                    {/* Hotels in this tier */}
+                    <div className="space-y-4">
+                      {tier.hotels.map((hotel) => (
+                        <LiveHotelQuoteCard
+                          key={`${pkg.id}-${hotel.code}`}
+                          hotel={hotel}
+                          pkg={pkg}
+                          nights={nights}
+                          adults={adults}
+                          children={children}
+                          childrenAges={childrenAges}
+                          rooms={rooms}
+                          budget={budget}
+                          guestName={guestName}
+                          guestTel={guestTel}
+                          guestEmail={guestEmail}
+                          sharedSelectedActivities={sharedActivitySelections[pkg.id] || []}
+                          onActivityToggle={(activityName) => handleActivityToggle(pkg.id, activityName)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
