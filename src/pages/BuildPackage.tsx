@@ -17,6 +17,20 @@ import sundownRanch2 from '@/assets/sundown-ranch-2.jpeg';
 import guesthouseA1 from '@/assets/guesthouse-a-1.png';
 import guesthouseA2 from '@/assets/guesthouse-a-2.jpeg';
 
+// Import Durban activity images
+import ushakaMarineWorldImg from '@/assets/activities/ushaka-marine-world.jpg';
+import isleOfCapriImg from '@/assets/activities/isle-of-capri-boat-cruise.jpg';
+import mosesMabhidaImg from '@/assets/activities/moses-mabhida-stadium.jpg';
+import fullBodyMassageImg from '@/assets/activities/full-body-massage-spa.jpg';
+import openTopBusImg from '@/assets/activities/durban-open-top-bus.jpg';
+import gondolaBoatImg from '@/assets/activities/gondola-boat-cruise.jpg';
+import pedalBoatImg from '@/assets/activities/waterfront-pedal-boat.jpg';
+import segwayGlidesImg from '@/assets/activities/segway-glides-beach.jpg';
+import airportShuttleImg from '@/assets/activities/airport-shuttle.jpg';
+import umhlangaTripImg from '@/assets/activities/durban-umhlanga-trip.jpg';
+import romanticRoomImg from '@/assets/activities/romantic-birthday-room.jpg';
+import luxuryCanalCruiseImg from '@/assets/activities/luxury-canal-boat-cruise.jpg';
+
 // Types
 interface Hotel {
   id: string;
@@ -152,17 +166,18 @@ const hotels: Record<string, Hotel[]> = {
 // Activities organized by destination - Individual activities (degrouped)
 const activitiesByDestination: Record<string, Activity[]> = {
   'Durban Beachfront Accommodation': [
-    { name: 'Ushaka Marine World', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=100', rates: { adult: 500, child: 420, freeAge: 3 } },
-    { name: 'Boat Cruise', image: 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=100', rates: { adult: 150, child: 100, freeAge: 0 } },
-    { name: 'Moses Mabhida Stadium', image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=100', rates: { adult: 80, child: 65, freeAge: 0 } },
-    { name: '60 minute full body massage at a beachfront spa', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 700, child: 450, freeAge: 12 } },
-    { name: 'Open top Bus 3 hours', image: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=100', rates: { adult: 250, child: 250, freeAge: 0 } },
-    { name: 'Gondola Boat cruise with romantic picnic', image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=100', rates: { adult: 750, child: 750, freeAge: 0 } },
-    { name: '1 hour Waterfront pedal boat', image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=100', rates: { adult: 250, child: 250, freeAge: 0 } },
-    { name: 'Segway Glides on the beachfront', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100', rates: { adult: 750, child: 750, freeAge: 0 } },
-    { name: 'Airport shuttle to Durban Hotels', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=100', rates: { adult: 400, child: 400, freeAge: 0 } },
-    { name: 'Trip from Durban Beachfront to Umhlanga main beach and The Oceans Mall', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=100', rates: { adult: 850, child: 850, freeAge: 0 } },
-    { name: 'Romantic or Happy Birthday settings in room', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=100', rates: { adult: 950, child: 950, freeAge: 0 } },
+    { name: 'uShaka Marine World Combo Tickets for Sea World and WetnWild per Adult', image: ushakaMarineWorldImg, rates: { adult: 500, child: 420, freeAge: 3 } },
+    { name: 'Isle Of Capri Boat Cruise per Adult', image: isleOfCapriImg, rates: { adult: 140, child: 100, freeAge: 0 } },
+    { name: 'Moses Mabhida Stadium Tour and Picnic Spot per Adult', image: mosesMabhidaImg, rates: { adult: 200, child: 150, freeAge: 0 } },
+    { name: '60 Minute Full Body Massage with Welcome Drinks and Steam, Sauna and Pools per Adult', image: fullBodyMassageImg, rates: { adult: 700, child: 450, freeAge: 12 } },
+    { name: 'Durban Open Top Bus Tour per Adult', image: openTopBusImg, rates: { adult: 170, child: 170, freeAge: 0 } },
+    { name: 'Gondola Boat Cruise With Picnic Basket for 2 per Adult', image: gondolaBoatImg, rates: { adult: 400, child: 400, freeAge: 0 } },
+    { name: '1 Hour Waterfront Canal Pedal Boat for 2 per Adult', image: pedalBoatImg, rates: { adult: 250, child: 250, freeAge: 0 } },
+    { name: 'Segway Glides on The Beach from Moses Mabhida to uShaka Marine World per Adult', image: segwayGlidesImg, rates: { adult: 750, child: 750, freeAge: 0 } },
+    { name: 'Airport Shuttle to all of Durban and Umhlanga Hotels per Adult', image: airportShuttleImg, rates: { adult: 400, child: 400, freeAge: 0 } },
+    { name: 'Trip from Durban Beachfront to Umhlanga Main Beach and Back per Adult', image: umhlangaTripImg, rates: { adult: 600, child: 600, freeAge: 0 } },
+    { name: 'Romantic or Birthday Settings in Your Hotel Room per Adult', image: romanticRoomImg, rates: { adult: 1000, child: 1000, freeAge: 0 } },
+    { name: 'Luxury Canal Boat Cruise per Adult', image: luxuryCanalCruiseImg, rates: { adult: 200, child: 200, freeAge: 0 } },
   ],
   'Harties Cruise and Cableway Accommodation': [
     { name: '2 Hour Sunset Champagne Buffet Boat Cruise', image: 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?w=100', rates: { adult: 600, child: 400, freeAge: 6 } },
@@ -802,13 +817,13 @@ const BuildPackage = () => {
                                   <Check className="w-8 h-8 text-primary bg-white rounded-full p-1" />
                                 </div>
                               )}
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-sm font-medium py-2 px-1 leading-tight text-center">
-                                {activity.name.length > 40 ? activity.name.substring(0, 40) + '...' : activity.name}
+                              {/* Full image overlay title */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end justify-center p-2">
+                                <span className="text-white text-xs font-semibold leading-tight text-center drop-shadow-lg">
+                                  {activity.name}
+                                </span>
                               </div>
                             </div>
-                            <p className="text-xs mt-1 text-muted-foreground">
-                              {formatCurrency(activity.rates.adult)}/adult
-                            </p>
                           </div>
                         ))}
                       </div>
