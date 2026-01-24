@@ -51,6 +51,10 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   
+  // Accommodation type filter
+  type AccommodationType = 'budget' | 'affordable' | 'premium';
+  const [accommodationType, setAccommodationType] = useState<AccommodationType>('affordable');
+  
   // Contact details (required)
   const [guestName, setGuestName] = useState('');
   const [guestTel, setGuestTel] = useState('');
@@ -213,23 +217,27 @@ export function Hero({ onGetQuote }: HeroProps) {
     } else {
       // Standard booking - calculate quotes for all three tiers
       let allQuotes: QuoteResult[] = [];
-      const hotelTypes: Array<'very-affordable' | 'affordable' | 'premium'> = ['very-affordable', 'affordable', 'premium'];
+      // Map accommodation type to hotel type
+      const hotelTypeMap: Record<AccommodationType, 'very-affordable' | 'affordable' | 'premium'> = {
+        'budget': 'very-affordable',
+        'affordable': 'affordable',
+        'premium': 'premium'
+      };
+      const selectedHotelType = hotelTypeMap[accommodationType];
       
       packageIds.forEach(pkgId => {
-        hotelTypes.forEach(hotelType => {
-          const results = calculateAllQuotes({
-            destination,
-            packageId: pkgId,
-            checkIn: new Date(checkIn),
-            checkOut: new Date(checkOut),
-            adults,
-            children,
-            childrenAges: ages,
-            rooms,
-            hotelType,
-          });
-          allQuotes = [...allQuotes, ...results];
+        const results = calculateAllQuotes({
+          destination,
+          packageId: pkgId,
+          checkIn: new Date(checkIn),
+          checkOut: new Date(checkOut),
+          adults,
+          children,
+          childrenAges: ages,
+          rooms,
+          hotelType: selectedHotelType,
         });
+        allQuotes = [...allQuotes, ...results];
       });
 
       if (allQuotes.length > 0) {
@@ -575,6 +583,47 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
+              {/* Accommodation Type Selection */}
+              {bookingType === 'with-activities' && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Accommodation Type</Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setAccommodationType('budget')}
+                      className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                        accommodationType === 'budget'
+                          ? 'border-green-500 bg-green-50 text-green-700'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50/50'
+                      }`}
+                    >
+                      Budget Option
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAccommodationType('affordable')}
+                      className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                        accommodationType === 'affordable'
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-primary/50 hover:bg-primary/5'
+                      }`}
+                    >
+                      Affordable
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAccommodationType('premium')}
+                      className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                        accommodationType === 'premium'
+                          ? 'border-purple-500 bg-purple-50 text-purple-700'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300 hover:bg-purple-50/50'
+                      }`}
+                    >
+                      Premium
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Family Split Option */}
               {showFamilySplitOption && !isFamilySplitMode && (
