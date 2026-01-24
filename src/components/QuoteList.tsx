@@ -289,10 +289,28 @@ Web: www.travelaffordable.co.za`;
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-2xl font-bold text-primary font-display">
-                  {formatCurrency(quote.totalForGroup)}
-                </p>
-                <p className="text-xs text-muted-foreground">Grand Total</p>
+                {/* Adults only: show per person price first, then grand total */}
+                {quote.children === 0 ? (
+                  <>
+                    <p className="text-2xl font-bold text-primary font-display">
+                      {formatCurrency(roundToNearest10(quote.totalForGroup / quote.adults))}
+                    </p>
+                    <p className="text-xs text-muted-foreground">per person</p>
+                    <p className="text-sm font-semibold text-primary mt-1">
+                      {formatCurrency(quote.totalForGroup)} total
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-2xl font-bold text-primary font-display">
+                      {formatCurrency(quote.totalForGroup)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Grand Total</p>
+                    <p className="text-xs text-muted-foreground">
+                      {quote.adults} Adult{quote.adults > 1 ? 's' : ''}, {quote.children} Kid{quote.children > 1 ? 's' : ''}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
