@@ -14,6 +14,8 @@ export interface Hotel {
   includesBreakfast?: boolean;
   capacity?: number; // Room capacity (2 for 2-sleeper, 4 for 4-sleeper)
   roomType?: string; // Room type description
+  forAdultsOnly?: boolean; // 4-sleeper rooms for adults-only groups
+  forFamilyWithKids?: boolean; // 4-sleeper rooms for family groups with kids
 }
 
 export interface KidsPriceTier {
@@ -94,18 +96,44 @@ const durbanBudgetHotels4Sleeper: { name: string; price: number; roomType: strin
 
 // Custom Durban Premium Hotels with specific names, prices, and room types
 // 2-sleeper rooms
-const durbanPremiumHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
-  { name: 'The Balmoral', price: 1200, roomType: 'Double or Twin Room', capacity: 2 },
-  { name: 'Belaire Suites Hotel', price: 1284, roomType: 'Superior Double or Twin Room', capacity: 2 },
-  { name: 'Blue Waters Hotel', price: 1285, roomType: 'Deluxe King or Twin Room', capacity: 2 },
+const durbanPremiumHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
+  { name: 'The Balmoral', price: 1200, roomType: 'Double or Twin Room', capacity: 2, includesBreakfast: true },
+  { name: 'Belaire Suites Hotel', price: 1284, roomType: 'Superior Double or Twin Room', capacity: 2, includesBreakfast: true },
+  { name: 'Blue Waters Hotel', price: 1285, roomType: 'Deluxe King or Twin Room', capacity: 2, includesBreakfast: true },
   { name: 'Gooderson Tropicana Hotel', price: 1400, roomType: 'Family Double Room', capacity: 2 },
-  { name: 'Southern Sun Garden Court South Beach', price: 1440, roomType: 'Standard Queen Room', capacity: 2 },
+  { name: 'Southern Sun Garden Court South Beach', price: 1440, roomType: 'Standard Queen Room', capacity: 2, includesBreakfast: true },
   { name: 'Gooderson Leisure Silver Sands 2', price: 1495, roomType: 'Studio with Sea View', capacity: 2 },
-  { name: 'Southern Sun The Edward', price: 1543, roomType: 'Standard Twin Room', capacity: 2 },
+  { name: 'Southern Sun The Edward', price: 1543, roomType: 'Standard Twin Room', capacity: 2, includesBreakfast: true },
   { name: 'First Group The Palace All-Suite', price: 1579, roomType: 'Standard Double Room with Sea View', capacity: 2 },
-  { name: 'Southern Sun Garden Court Marine Parade', price: 1635, roomType: 'Standard King Room', capacity: 2 },
-  { name: 'Southern Sun Elangeni & Maharani Hotel', price: 1925, roomType: 'Elangeni Standard Queen', capacity: 2 },
+  { name: 'Southern Sun Garden Court Marine Parade', price: 1635, roomType: 'Standard King Room', capacity: 2, includesBreakfast: true },
+  { name: 'Southern Sun Elangeni & Maharani Hotel', price: 1925, roomType: 'Elangeni Standard Queen', capacity: 2, includesBreakfast: true },
   { name: 'Suncoast Hotel & Towers', price: 2226, roomType: 'Standard Room Pool Facing', capacity: 2 },
+];
+
+// 4-sleeper rooms for 4 adults
+const durbanPremiumHotels4SleeperAdults: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
+  { name: 'Gooderson Tropicana Hotel', price: 1400, roomType: 'Family Double Room', capacity: 4 },
+  { name: 'Sea Esta Luxury Apartment 107', price: 1880, roomType: 'Deluxe Apartment', capacity: 4 },
+  { name: 'Blue Waters Hotel', price: 1930, roomType: 'Deluxe Quadruple Room', capacity: 4, includesBreakfast: true },
+  { name: 'Belaire Suites Hotel', price: 1949, roomType: 'Superior King Suite', capacity: 4, includesBreakfast: true },
+  { name: 'Beach Hurst 303', price: 2000, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Gooderson Leisure Silver Sands 2', price: 2086, roomType: 'One-Bedroom Apartment with Sea View', capacity: 4 },
+  { name: 'First Group The Palace All-Suite', price: 3736, roomType: 'Two-Bedroom Apartment', capacity: 4, includesBreakfast: true },
+];
+
+// 4-sleeper rooms for 2 adults + 2 kids (family rooms)
+const durbanPremiumHotels4SleeperFamily: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
+  { name: 'Gooderson Tropicana Hotel', price: 1400, roomType: 'Family Double Room', capacity: 4 },
+  { name: 'Gooderson Leisure Silver Sands 2', price: 1495, roomType: 'Studio with Sea View', capacity: 4 },
+  { name: 'Sea Esta Luxury Apartment 107', price: 1880, roomType: 'Deluxe Apartment', capacity: 4 },
+  { name: 'Garden Court Marine Parade', price: 1885, roomType: 'Standard Double Room with Two Double Beds', capacity: 4, includesBreakfast: true },
+  { name: 'Blue Waters Hotel', price: 1930, roomType: 'Deluxe Quadruple Room', capacity: 4, includesBreakfast: true },
+  { name: 'Belaire Suites Hotel', price: 1949, roomType: 'Family Room with Side Sea View', capacity: 4, includesBreakfast: true },
+  { name: 'The Balmoral', price: 2041, roomType: 'Large Twin Room', capacity: 4, includesBreakfast: true },
+  { name: 'Southern Sun Elangeni & Maharani', price: 2145, roomType: 'Elangeni Standard Side Sea Facing Double Double', capacity: 4, includesBreakfast: true },
+  { name: 'UshakaViews', price: 2520, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'First Group The Palace All-Suite', price: 3502, roomType: 'Two-Bedroom Apartment', capacity: 4, includesBreakfast: true },
+  { name: 'The Edward', price: 3927, roomType: 'Superior Double Double Room', capacity: 4, includesBreakfast: true },
 ];
 
 // Combined Durban budget hotels (for backward compatibility)
@@ -305,10 +333,11 @@ function generateHotels(): Hotel[] {
     // Premium Hotels (10 per destination: A-J)
     // Use custom names and prices for Durban, default for others
     if (destId === 'durban') {
+      // Add 2-sleeper premium hotels
       durbanPremiumHotels2Sleeper.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         allHotels.push({
-          id: `${destId}-premium-${letter.toLowerCase()}`,
+          id: `${destId}-premium-2s-${letter.toLowerCase()}`,
           name: hotel.name,
           destination: destId,
           pricePerNight: hotel.price,
@@ -318,6 +347,45 @@ function generateHotels(): Hotel[] {
           image: premiumImages[index % premiumImages.length],
           capacity: 2,
           roomType: hotel.roomType,
+          includesBreakfast: hotel.includesBreakfast,
+        });
+      });
+      
+      // Add 4-sleeper premium hotels for adults-only groups
+      durbanPremiumHotels4SleeperAdults.forEach((hotel, index) => {
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        allHotels.push({
+          id: `${destId}-premium-4sa-${letter.toLowerCase()}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: 4.5 + (Math.random() * 0.5),
+          type: 'premium',
+          amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining', 'Beachfront'],
+          image: premiumImages[index % premiumImages.length],
+          capacity: 4,
+          roomType: hotel.roomType,
+          includesBreakfast: hotel.includesBreakfast,
+          forAdultsOnly: true,
+        });
+      });
+      
+      // Add 4-sleeper premium hotels for family groups (with kids)
+      durbanPremiumHotels4SleeperFamily.forEach((hotel, index) => {
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        allHotels.push({
+          id: `${destId}-premium-4sf-${letter.toLowerCase()}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: 4.5 + (Math.random() * 0.5),
+          type: 'premium',
+          amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining', 'Beachfront'],
+          image: premiumImages[index % premiumImages.length],
+          capacity: 4,
+          roomType: hotel.roomType,
+          includesBreakfast: hotel.includesBreakfast,
+          forFamilyWithKids: true,
         });
       });
     } else {
@@ -1263,9 +1331,10 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
 // Calculate quotes for ALL hotels in a type, sorted by price (cheapest first)
 export function calculateAllQuotes(request: Omit<QuoteRequest, 'selectedHotelId'>): QuoteResult[] {
   const totalGuests = request.adults + request.children;
+  const hasKids = request.children > 0;
   
   // Filter hotels by destination, type, and capacity
-  // For Durban budget options: show 4-sleeper rooms when total guests > 2, otherwise show 2-sleeper
+  // For Durban: show appropriate room types based on guest count and composition
   const availableHotels = hotels.filter(h => {
     if (h.destination !== request.destination || h.type !== request.hotelType) {
       return false;
@@ -1276,6 +1345,23 @@ export function calculateAllQuotes(request: Omit<QuoteRequest, 'selectedHotelId'
       // If total guests > 2, only show 4-sleeper options
       if (totalGuests > 2) {
         return h.capacity >= 4;
+      }
+      // If total guests <= 2, only show 2-sleeper options
+      return h.capacity === 2;
+    }
+    
+    // For Durban premium hotels with capacity info, filter by guest count and composition
+    if (h.destination === 'durban' && h.type === 'premium' && h.capacity) {
+      // If total guests > 2, only show 4-sleeper options
+      if (totalGuests > 2) {
+        // Filter by family vs adults-only
+        if (hasKids) {
+          // Show family rooms for groups with kids
+          return h.capacity >= 4 && h.forFamilyWithKids === true;
+        } else {
+          // Show adults-only rooms for all-adult groups
+          return h.capacity >= 4 && h.forAdultsOnly === true;
+        }
       }
       // If total guests <= 2, only show 2-sleeper options
       return h.capacity === 2;
