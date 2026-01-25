@@ -85,7 +85,7 @@ Check-in: ${formatDate(quote.checkIn)}
 Check-out: ${formatDate(quote.checkOut)}
 Duration: ${nightsCount} nights
 Guests: ${quote.adults} Adult${quote.adults > 1 ? 's' : ''}${quote.children > 0 ? `, ${quote.children} Child${quote.children > 1 ? 'ren' : ''}` : ''}
-Rooms: ${quote.rooms} ${quote.is4SleeperRoom ? '4-Sleeper' : '2-Sleeper'} Room${quote.rooms > 1 ? 's' : ''}
+Rooms: ${quote.rooms} ${quote.roomType || (quote.is4SleeperRoom ? '4-Sleeper Room' : '2-Sleeper Room')}${quote.rooms > 1 ? 's' : ''}
 
 PRICING
 Grand Total: ${formatCurrency(quote.totalForGroup)}
@@ -318,7 +318,7 @@ Web: www.travelaffordable.co.za`;
               <span>•</span>
               <span>{quote.nights} nights</span>
               <span>•</span>
-              <span>{quote.rooms} {quote.is4SleeperRoom ? '4-sleeper' : '2-sleeper'} room{quote.rooms > 1 ? 's' : ''}</span>
+              <span>{quote.rooms} {quote.roomType || (quote.is4SleeperRoom ? '4-sleeper room' : '2-sleeper room')}{quote.rooms > 1 ? 's' : ''}</span>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
