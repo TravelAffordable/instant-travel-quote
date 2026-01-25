@@ -68,17 +68,30 @@ const destinationShortNames: Record<string, string> = {
 // Budget Option pricing tiers (per night) - 10 hotels A-J
 const budgetPrices = [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
 
-// Custom Durban Budget Hotels with specific names and prices
-const durbanBudgetHotels: { name: string; price: number }[] = [
-  { name: 'Durban Beachfront Budget Option SeaIMP', price: 574 },
-  { name: 'Durban Beachfront Budget Option SeaNOMA', price: 640 },
-  { name: 'Durban Beachfront Budget Option SeaESC', price: 720 },
-  { name: 'Durban Beachfront Budget Option SeaShaka2B', price: 855 },
-  { name: 'Durban Beachfront Budget Option SeaBV', price: 900 },
-  { name: 'Durban Beachfront Budget Option SeaSOL', price: 920 },
-  { name: 'Durban Beachfront Budget Option SeaLANC', price: 1152 },
-  { name: 'Durban Beachfront Budget Option SeaWIND', price: 1275 },
+// Custom Durban Budget Hotels with specific names, prices, and room types
+// 2-sleeper rooms (standard double occupancy)
+const durbanBudgetHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
+  { name: 'Durban Beachfront Budget Option SeaIMP', price: 574, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Durban Beachfront Budget Option SeaNOMA', price: 640, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Durban Beachfront Budget Option SeaESC', price: 720, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Durban Beachfront Budget Option SeaShaka2B', price: 855, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Durban Beachfront Budget Option SeaBV', price: 900, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Durban Beachfront Budget Option SeaSOL', price: 920, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Durban Beachfront Budget Option SeaLANC', price: 1152, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Durban Beachfront Budget Option SeaWIND', price: 1275, roomType: 'Standard Room', capacity: 2 },
 ];
+
+// 4-sleeper rooms (family/group occupancy - 4 adults or 2 adults + 2 kids or 1 adult + 3 kids)
+const durbanBudgetHotels4Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
+  { name: 'Durban Beachfront Budget Option SeaNOMA', price: 632, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Durban Beachfront Budget Option SeaIMP', price: 956, roomType: 'Apartment with Sea View', capacity: 4 },
+  { name: 'Durban Beachfront Budget Option SeaSOL', price: 1104, roomType: 'Family Apartment', capacity: 4 },
+  { name: 'Durban Beachfront Budget Option SeaLANC', price: 1152, roomType: 'One-Bedroom Apartment', capacity: 4 },
+  { name: 'Durban Beachfront Budget Option SeaWIND', price: 1233, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+];
+
+// Combined Durban budget hotels (for backward compatibility)
+const durbanBudgetHotels = durbanBudgetHotels2Sleeper;
 // Affordable pricing tiers (per night) - 10 hotels A-J
 const affordablePrices = [1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100];
 // Premium pricing tiers (per night) - 10 hotels A-J
