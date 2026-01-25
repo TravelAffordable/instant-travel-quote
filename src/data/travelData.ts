@@ -92,6 +92,22 @@ const durbanBudgetHotels4Sleeper: { name: string; price: number; roomType: strin
   { name: 'Durban Beachfront Budget Option SeaWIND', price: 1233, roomType: 'Two-Bedroom Apartment', capacity: 4 },
 ];
 
+// Custom Durban Premium Hotels with specific names, prices, and room types
+// 2-sleeper rooms
+const durbanPremiumHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
+  { name: 'The Balmoral', price: 1200, roomType: 'Double or Twin Room', capacity: 2 },
+  { name: 'Belaire Suites Hotel', price: 1284, roomType: 'Superior Double or Twin Room', capacity: 2 },
+  { name: 'Blue Waters Hotel', price: 1285, roomType: 'Deluxe King or Twin Room', capacity: 2 },
+  { name: 'Gooderson Tropicana Hotel', price: 1400, roomType: 'Family Double Room', capacity: 2 },
+  { name: 'Southern Sun Garden Court South Beach', price: 1440, roomType: 'Standard Queen Room', capacity: 2 },
+  { name: 'Gooderson Leisure Silver Sands 2', price: 1495, roomType: 'Studio with Sea View', capacity: 2 },
+  { name: 'Southern Sun The Edward', price: 1543, roomType: 'Standard Twin Room', capacity: 2 },
+  { name: 'First Group The Palace All-Suite', price: 1579, roomType: 'Standard Double Room with Sea View', capacity: 2 },
+  { name: 'Southern Sun Garden Court Marine Parade', price: 1635, roomType: 'Standard King Room', capacity: 2 },
+  { name: 'Southern Sun Elangeni & Maharani Hotel', price: 1925, roomType: 'Elangeni Standard Queen', capacity: 2 },
+  { name: 'Suncoast Hotel & Towers', price: 2226, roomType: 'Standard Room Pool Facing', capacity: 2 },
+];
+
 // Combined Durban budget hotels (for backward compatibility)
 const durbanBudgetHotels = durbanBudgetHotels2Sleeper;
 // Affordable pricing tiers (per night) - 10 hotels A-J
@@ -287,18 +303,37 @@ function generateHotels(): Hotel[] {
     });
 
     // Premium Hotels (10 per destination: A-J)
-    hotelLetters.forEach((letter, index) => {
-      allHotels.push({
-        id: `${destId}-premium-${letter.toLowerCase()}`,
-        name: `${shortName} Premium Hotel ${letter}`,
-        destination: destId,
-        pricePerNight: premiumPrices[index],
-        rating: 4.5 + (Math.random() * 0.5),
-        type: 'premium',
-        amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
-        image: premiumImages[index % premiumImages.length],
+    // Use custom names and prices for Durban, default for others
+    if (destId === 'durban') {
+      durbanPremiumHotels2Sleeper.forEach((hotel, index) => {
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        allHotels.push({
+          id: `${destId}-premium-${letter.toLowerCase()}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: 4.5 + (Math.random() * 0.5),
+          type: 'premium',
+          amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining', 'Beachfront'],
+          image: premiumImages[index % premiumImages.length],
+          capacity: 2,
+          roomType: hotel.roomType,
+        });
       });
-    });
+    } else {
+      hotelLetters.forEach((letter, index) => {
+        allHotels.push({
+          id: `${destId}-premium-${letter.toLowerCase()}`,
+          name: `${shortName} Premium Hotel ${letter}`,
+          destination: destId,
+          pricePerNight: premiumPrices[index],
+          rating: 4.5 + (Math.random() * 0.5),
+          type: 'premium',
+          amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
+          image: premiumImages[index % premiumImages.length],
+        });
+      });
+    }
   });
 
   return allHotels;
