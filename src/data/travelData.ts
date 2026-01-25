@@ -139,25 +139,7 @@ const durbanPremiumHotels4SleeperFamily: { name: string; price: number; roomType
 // Combined Durban budget hotels (for backward compatibility)
 const durbanBudgetHotels = durbanBudgetHotels2Sleeper;
 
-// Custom Durban Affordable Hotels with specific names, prices, and room types
-// 2-sleeper rooms (prices between budget and premium: R900-R1500)
-const durbanAffordableHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
-  { name: 'Garden Court South Beach', price: 950, roomType: 'Standard Double Room', capacity: 2, includesBreakfast: true },
-  { name: 'Gooderson Leisure Hotel', price: 1050, roomType: 'Comfort Room', capacity: 2 },
-  { name: 'Blue Waters Beachfront', price: 1150, roomType: 'Standard Twin Room', capacity: 2, includesBreakfast: true },
-  { name: 'Tropicana Hotel Durban', price: 1250, roomType: 'Deluxe Room', capacity: 2 },
-  { name: 'Marine Parade Hotel', price: 1350, roomType: 'Sea View Room', capacity: 2, includesBreakfast: true },
-  { name: 'Riverside Hotel Durban', price: 1450, roomType: 'Superior Room', capacity: 2 },
-];
-
-// 4-sleeper rooms for affordable tier (groups of 3-4)
-const durbanAffordableHotels4Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
-  { name: 'Garden Court South Beach', price: 1400, roomType: 'Family Room', capacity: 4, includesBreakfast: true },
-  { name: 'Gooderson Leisure Hotel', price: 1550, roomType: 'Two-Bedroom Suite', capacity: 4 },
-  { name: 'Blue Waters Beachfront', price: 1650, roomType: 'Quadruple Room', capacity: 4, includesBreakfast: true },
-  { name: 'Tropicana Hotel Durban', price: 1750, roomType: 'Family Suite', capacity: 4 },
-  { name: 'Marine Parade Hotel', price: 1850, roomType: 'Two-Bedroom Apartment', capacity: 4, includesBreakfast: true },
-];
+// Durban affordable hotels - use generic placeholders like other destinations
 
 // Affordable pricing tiers (per night) - 10 hotels A-J
 const affordablePrices = [1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100];
@@ -337,57 +319,19 @@ function generateHotels(): Hotel[] {
       });
     }
 
-    // Affordable Hotels (10 per destination: A-J)
-    // Use custom names and prices for Durban, default for others
-    if (destId === 'durban') {
-      // Add 2-sleeper affordable hotels
-      durbanAffordableHotels2Sleeper.forEach((hotel, index) => {
-        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
-        allHotels.push({
-          id: `${destId}-affordable-2s-${letter.toLowerCase()}`,
-          name: hotel.name,
-          destination: destId,
-          pricePerNight: hotel.price,
-          rating: 4.0 + (Math.random() * 0.3),
-          type: 'affordable',
-          amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant', 'Beachfront'],
-          image: affordableImages[index % affordableImages.length],
-          capacity: 2,
-          roomType: hotel.roomType,
-          includesBreakfast: hotel.includesBreakfast,
-        });
+    // Affordable Hotels (10 per destination: A-J) - use generic format for all destinations
+    hotelLetters.forEach((letter, index) => {
+      allHotels.push({
+        id: `${destId}-affordable-${letter.toLowerCase()}`,
+        name: `${shortName} Affordable Hotel ${letter}`,
+        destination: destId,
+        pricePerNight: affordablePrices[index],
+        rating: 4.0 + (Math.random() * 0.3),
+        type: 'affordable',
+        amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant'],
+        image: affordableImages[index % affordableImages.length],
       });
-      // Add 4-sleeper affordable hotels
-      durbanAffordableHotels4Sleeper.forEach((hotel, index) => {
-        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
-        allHotels.push({
-          id: `${destId}-affordable-4s-${letter.toLowerCase()}`,
-          name: hotel.name,
-          destination: destId,
-          pricePerNight: hotel.price,
-          rating: 4.0 + (Math.random() * 0.3),
-          type: 'affordable',
-          amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant', 'Beachfront', 'Kitchen'],
-          image: affordableImages[index % affordableImages.length],
-          capacity: 4,
-          roomType: hotel.roomType,
-          includesBreakfast: hotel.includesBreakfast,
-        });
-      });
-    } else {
-      hotelLetters.forEach((letter, index) => {
-        allHotels.push({
-          id: `${destId}-affordable-${letter.toLowerCase()}`,
-          name: `${shortName} Affordable Hotel ${letter}`,
-          destination: destId,
-          pricePerNight: affordablePrices[index],
-          rating: 4.0 + (Math.random() * 0.3),
-          type: 'affordable',
-          amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant'],
-          image: affordableImages[index % affordableImages.length],
-        });
-      });
-    }
+    });
 
     // Premium Hotels (10 per destination: A-J)
     // Use custom names and prices for Durban, default for others
@@ -1409,15 +1353,7 @@ export function calculateAllQuotes(request: Omit<QuoteRequest, 'selectedHotelId'
       return h.capacity === 2;
     }
     
-    // For Durban affordable hotels with capacity info, filter by guest count
-    if (h.destination === 'durban' && h.type === 'affordable' && h.capacity) {
-      // If total guests > 2, only show 4-sleeper options
-      if (totalGuests > 2) {
-        return h.capacity >= 4;
-      }
-      // If total guests <= 2, only show 2-sleeper options
-      return h.capacity === 2;
-    }
+    // Affordable tier uses generic hotels for all destinations (no capacity filtering)
     
     // For Durban premium hotels with capacity info, filter by guest count and composition
     if (h.destination === 'durban' && h.type === 'premium' && h.capacity) {
