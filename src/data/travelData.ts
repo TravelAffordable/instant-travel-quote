@@ -67,6 +67,18 @@ const destinationShortNames: Record<string, string> = {
 
 // Budget Option pricing tiers (per night) - 10 hotels A-J
 const budgetPrices = [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
+
+// Custom Durban Budget Hotels with specific names and prices
+const durbanBudgetHotels: { name: string; price: number }[] = [
+  { name: 'Durban Beachfront Budget Option SeaIMP', price: 574 },
+  { name: 'Durban Beachfront Budget Option SeaNOMA', price: 640 },
+  { name: 'Durban Beachfront Budget Option SeaESC', price: 720 },
+  { name: 'Durban Beachfront Budget Option SeaShaka2B', price: 855 },
+  { name: 'Durban Beachfront Budget Option SeaBV', price: 900 },
+  { name: 'Durban Beachfront Budget Option SeaSOL', price: 920 },
+  { name: 'Durban Beachfront Budget Option SeaLANC', price: 1152 },
+  { name: 'Durban Beachfront Budget Option SeaWIND', price: 1275 },
+];
 // Affordable pricing tiers (per night) - 10 hotels A-J
 const affordablePrices = [1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2100];
 // Premium pricing tiers (per night) - 10 hotels A-J
@@ -194,18 +206,35 @@ function generateHotels(): Hotel[] {
     ];
 
     // Budget Option Hotels (10 per destination: A-J)
-    hotelLetters.forEach((letter, index) => {
-      allHotels.push({
-        id: `${destId}-very-affordable-${letter.toLowerCase()}`,
-        name: `${shortName} Budget Hotel Option ${letter}`,
-        destination: destId,
-        pricePerNight: budgetPrices[index],
-        rating: 3.5 + (Math.random() * 0.5),
-        type: 'very-affordable',
-        amenities: ['WiFi', 'Parking', 'TV'],
-        image: budgetImages[index % budgetImages.length],
+    // Use custom names and prices for Durban, default for others
+    if (destId === 'durban') {
+      durbanBudgetHotels.forEach((hotel, index) => {
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        allHotels.push({
+          id: `${destId}-very-affordable-${letter.toLowerCase()}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: 3.5 + (Math.random() * 0.5),
+          type: 'very-affordable',
+          amenities: ['WiFi', 'Parking', 'TV'],
+          image: budgetImages[index % budgetImages.length],
+        });
       });
-    });
+    } else {
+      hotelLetters.forEach((letter, index) => {
+        allHotels.push({
+          id: `${destId}-very-affordable-${letter.toLowerCase()}`,
+          name: `${shortName} Budget Hotel Option ${letter}`,
+          destination: destId,
+          pricePerNight: budgetPrices[index],
+          rating: 3.5 + (Math.random() * 0.5),
+          type: 'very-affordable',
+          amenities: ['WiFi', 'Parking', 'TV'],
+          image: budgetImages[index % budgetImages.length],
+        });
+      });
+    }
 
     // Affordable Hotels (10 per destination: A-J)
     hotelLetters.forEach((letter, index) => {
