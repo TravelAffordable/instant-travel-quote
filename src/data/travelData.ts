@@ -12,6 +12,8 @@ export interface Hotel {
   amenities: string[];
   image: string;
   includesBreakfast?: boolean;
+  capacity?: number; // Room capacity (2 for 2-sleeper, 4 for 4-sleeper)
+  roomType?: string; // Room type description
 }
 
 export interface KidsPriceTier {
@@ -221,10 +223,11 @@ function generateHotels(): Hotel[] {
     // Budget Option Hotels (10 per destination: A-J)
     // Use custom names and prices for Durban, default for others
     if (destId === 'durban') {
-      durbanBudgetHotels.forEach((hotel, index) => {
+      // Add 2-sleeper rooms
+      durbanBudgetHotels2Sleeper.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         allHotels.push({
-          id: `${destId}-very-affordable-${letter.toLowerCase()}`,
+          id: `${destId}-very-affordable-2sleeper-${letter.toLowerCase()}`,
           name: hotel.name,
           destination: destId,
           pricePerNight: hotel.price,
@@ -232,6 +235,24 @@ function generateHotels(): Hotel[] {
           type: 'very-affordable',
           amenities: ['WiFi', 'Parking', 'TV'],
           image: budgetImages[index % budgetImages.length],
+          capacity: 2,
+          roomType: hotel.roomType,
+        });
+      });
+      // Add 4-sleeper rooms
+      durbanBudgetHotels4Sleeper.forEach((hotel, index) => {
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        allHotels.push({
+          id: `${destId}-very-affordable-4sleeper-${letter.toLowerCase()}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: 3.5 + (Math.random() * 0.5),
+          type: 'very-affordable',
+          amenities: ['WiFi', 'Parking', 'TV', 'Kitchen'],
+          image: budgetImages[index % budgetImages.length],
+          capacity: 4,
+          roomType: hotel.roomType,
         });
       });
     } else {
@@ -245,6 +266,8 @@ function generateHotels(): Hotel[] {
           type: 'very-affordable',
           amenities: ['WiFi', 'Parking', 'TV'],
           image: budgetImages[index % budgetImages.length],
+          capacity: 2,
+          roomType: 'Standard Room',
         });
       });
     }
@@ -1151,7 +1174,8 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   const totalPeople = request.adults + validChildren;
   const totalPerPerson = Math.round(totalCost / totalPeople);
   
-  const roomType = 'Standard Room';
+  const roomType = hotel.roomType || 'Standard Room';
+  const is4SleeperRoom = (hotel.capacity || 2) >= 4;
   const hotelNameDisplay = hotel.includesBreakfast 
     ? `${hotel.name} (includes breakfast)` 
     : hotel.name;
@@ -1188,7 +1212,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     childDiscount,
     totalPerPerson,
     totalForGroup: totalCost,
-    is4SleeperRoom: false,
+    is4SleeperRoom,
     roomType,
     includesBreakfast: hotel.includesBreakfast || false,
     activitiesIncluded: pkg.activitiesIncluded,
@@ -1203,7 +1227,27 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
 
 // Calculate quotes for ALL hotels in a type, sorted by price (cheapest first)
 export function calculateAllQuotes(request: Omit<QuoteRequest, 'selectedHotelId'>): QuoteResult[] {
-  const availableHotels = hotels.filter(h => h.destination === request.destination && h.type === request.hotelType);
+  const totalGuests = request.adults + request.children;
+  
+  // Filter hotels by destination, type, and capacity
+  // For Durban budget options: show 4-sleeper rooms when total guests > 2, otherwise show 2-sleeper
+  const availableHotels = hotels.filter(h => {
+    if (h.destination !== request.destination || h.type !== request.hotelType) {
+      return false;
+    }
+    
+    // For Durban budget hotels with capacity info, filter by guest count
+    if (h.destination === 'durban' && h.type === 'very-affordable' && h.capacity) {
+      // If total guests > 2, only show 4-sleeper options
+      if (totalGuests > 2) {
+        return h.capacity >= 4;
+      }
+      // If total guests <= 2, only show 2-sleeper options
+      return h.capacity === 2;
+    }
+    
+    return true;
+  });
   
   const quotes: QuoteResult[] = [];
   
