@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Check, Home, Package, MessageCircle, Mail, BedDouble, CheckCircle2 } from 'lucide-react';
+import { Mail, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Card, CardContent } from '@/components/ui/card';
 import { type QuoteResult } from '@/data/travelData';
 import { toast } from 'sonner';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { QuoteCard } from './QuoteCard';
 
 interface QuoteListProps {
   quotes: QuoteResult[];
@@ -258,151 +258,15 @@ Web: www.travelaffordable.co.za`;
             {packageGroups[packageName].map((quote) => {
               const index = globalIndex++;
               return (
-                <Card 
+                <QuoteCard 
                   key={`${quote.hotelId}-${quote.packageName}`}
-                  className={`border-0 shadow-soft transition-all ${
-                    selectedQuotes.has(quote.hotelId) 
-                      ? 'ring-2 ring-primary bg-primary/5' 
-                      : 'bg-gradient-to-br from-card to-muted/20'
-                  } ${index === 0 ? 'ring-2 ring-accent/50' : ''}`}
-                >
-          <CardHeader className="pb-3 bg-muted/30 border-b">
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div className="flex items-center gap-3 flex-1">
-                <Checkbox 
-                  checked={selectedQuotes.has(quote.hotelId)}
-                  onCheckedChange={() => toggleQuoteSelection(quote.hotelId)}
-                  className="mt-1"
+                  quote={quote}
+                  index={index}
+                  isSelected={selectedQuotes.has(quote.hotelId)}
+                  onToggleSelection={() => toggleQuoteSelection(quote.hotelId)}
+                  onRequestToBook={() => handleRequestToBook(quote)}
+                  onWhatsApp={() => handleWhatsApp(quote)}
                 />
-                <div className="flex-1">
-                  {index === 0 && (
-                    <span className="text-[10px] font-bold uppercase tracking-wide bg-accent text-accent-foreground px-2 py-0.5 rounded-full mb-2 inline-block">
-                      Best Value
-                    </span>
-                  )}
-                  <h3 className="text-lg font-bold uppercase tracking-wide text-foreground mb-2">
-                    {quote.hotelName}
-                  </h3>
-                  <p className="text-base font-bold uppercase tracking-wide text-primary">
-                    {quote.packageName}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                {/* Adults only: show per person price first, then grand total */}
-                {quote.children === 0 ? (
-                  <>
-                    <p className="text-2xl font-bold text-primary font-display">
-                      {formatCurrency(roundToNearest10(quote.totalForGroup / quote.adults))}
-                    </p>
-                    <p className="text-xs text-muted-foreground">per person</p>
-                    <p className="text-sm font-semibold text-primary mt-1">
-                      {formatCurrency(quote.totalForGroup)} total
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-2xl font-bold text-primary font-display">
-                      {formatCurrency(quote.totalForGroup)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Grand Total</p>
-                    <p className="text-xs text-muted-foreground">
-                      {quote.adults} Adult{quote.adults > 1 ? 's' : ''}, {quote.children} Kid{quote.children > 1 ? 's' : ''}
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{quote.destination}</span>
-              <span>•</span>
-              <span>{quote.nights} nights</span>
-              <span>•</span>
-              <span>{quote.rooms} x {quote.roomType || (quote.is4SleeperRoom ? '4 Sleeper' : '2 Sleeper')}</span>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Package Description - THE KEY INFO */}
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-              <div className="flex items-start gap-2">
-                <Package className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="font-semibold text-sm text-primary mb-2">Package: {quote.packageName}</p>
-                  {quote.activitiesIncluded && quote.activitiesIncluded.length > 0 && (
-                    <ul className="space-y-1.5">
-                      <li className="flex items-start gap-2 text-sm text-foreground">
-                        <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                        <span>{quote.nights} nights accommodation</span>
-                      </li>
-                      {quote.activitiesIncluded
-                        .filter(activity => {
-                          const lower = activity.toLowerCase();
-                          return !lower.includes('accommodation') && 
-                                 !lower.includes('breakfast at selected') &&
-                                 !lower.includes('buffet breakfast at selected') &&
-                                 !lower.includes('room only');
-                        })
-                        .map((activity, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
-                            <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                            <span>{activity}</span>
-                          </li>
-                        ))}
-                      {quote.includesBreakfast && (
-                        <li className="flex items-start gap-2 text-sm text-foreground">
-                          <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                          <span>Breakfast included</span>
-                        </li>
-                      )}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Room Info */}
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Home className="w-4 h-4" />
-                <span>{quote.roomType || (quote.is4SleeperRoom ? '4 Sleeper' : '2 Sleeper')}</span>
-              </div>
-              {quote.is4SleeperRoom && quote.roomTypeName && (
-                <div className="flex items-center gap-2 text-muted-foreground col-span-2">
-                  <BedDouble className="w-4 h-4" />
-                  <span>{quote.roomTypeName}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Hotel Image */}
-            <div className="rounded-lg overflow-hidden">
-              <img 
-                src={quote.hotelImage} 
-                alt={quote.hotelName}
-                className="w-full h-48 object-cover"
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-2">
-              <Button 
-                className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground"
-                onClick={() => handleRequestToBook(quote)}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Request to Book
-              </Button>
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => handleWhatsApp(quote)}
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                WhatsApp Us
-              </Button>
-            </div>
-          </CardContent>
-              </Card>
               );
             })}
           </div>
