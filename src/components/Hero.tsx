@@ -15,9 +15,14 @@ import {
   type QuoteResult 
 } from '@/data/travelData';
 import { QuoteList } from './QuoteList';
+import { RMSHotelQuotes } from './RMSHotelQuotes';
 import { toast } from 'sonner';
+import { useRMSHotels } from '@/hooks/useRMSHotels';
 
 type BookingType = 'accommodation-only' | 'with-activities';
+
+// Destinations that should use the RMS (database) hotel list instead of static placeholders
+const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga'];
 
 interface HeroProps {
   onGetQuote: () => void;
@@ -50,6 +55,14 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [rooms, setRooms] = useState(1);
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+
+  // RMS hotel search (database-backed)
+  const {
+    searchHotels: searchRMSHotels,
+    hotels: rmsHotels,
+    isLoading: isSearchingRMS,
+    clearHotels: clearRMSHotels,
+  } = useRMSHotels();
   
   // Accommodation type filter
   type AccommodationType = 'budget' | 'affordable' | 'premium';
@@ -80,6 +93,7 @@ export function Hero({ onGetQuote }: HeroProps) {
     setPackageIds([]);
     setQuotes([]);
     setFamilyQuotes([]);
+    clearRMSHotels();
   }, [destination]);
 
   // Show family split option when 4+ adults AND children
@@ -122,7 +136,7 @@ export function Hero({ onGetQuote }: HeroProps) {
     setFamilies(newFamilies);
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     // For accommodation only, redirect to contact
     if (bookingType === 'accommodation-only') {
       toast.info('For accommodation only bookings, please contact us directly.');
@@ -149,6 +163,7 @@ export function Hero({ onGetQuote }: HeroProps) {
     // Always reset previous results before calculating
     setQuotes([]);
     setFamilyQuotes([]);
+    clearRMSHotels();
 
     // Parse children ages
     const ages = childrenAges
@@ -160,6 +175,35 @@ export function Hero({ onGetQuote }: HeroProps) {
     // Ensure we have ages for all children
     while (ages.length < children) {
       ages.push(5); // Default age
+    }
+
+    const useRMS = RMS_DESTINATIONS.includes(destination);
+
+    // RMS path (homepage quote flow) — this is what powers the real hotel names.
+    // We only use it for the standard (non-family-split) flow.
+    if (useRMS && !isFamilySplitMode) {
+      try {
+        const result = await searchRMSHotels({
+          destination,
+          checkIn,
+          checkOut,
+          adults,
+          children,
+          rooms,
+        });
+
+        if (result.length > 0) {
+          toast.success(`${result.length} hotels found!`);
+        } else {
+          toast.info('No hotels available for this search. Please try different dates.');
+        }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Could not fetch hotels';
+        toast.error(msg);
+      } finally {
+        setIsCalculating(false);
+      }
+      return;
     }
 
     if (isFamilySplitMode) {
@@ -801,9 +845,9 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <Button
                   onClick={handleCalculate}
                   className="flex-1 h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
-                  disabled={isCalculating}
+                  disabled={isCalculating || isSearchingRMS}
                 >
-                  {isCalculating ? (
+                  {isCalculating || isSearchingRMS ? (
                     <>
                       <Sparkles className="w-5 h-5 mr-2 animate-spin" />
                       Calculating...
@@ -829,6 +873,26 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Quote Results */}
+        {rmsHotels.length > 0 && packageIds.length > 0 && !isFamilySplitMode && (
+          <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
+              <RMSHotelQuotes
+                hotels={rmsHotels.filter(h => h.tier === accommodationType)}
+                packages={packages.filter(p => packageIds.includes(p.id))}
+                nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
+                adults={adults}
+                children={children}
+                childrenAgesString={childrenAges}
+                rooms={rooms}
+                budget={accommodationType}
+                guestName={guestName}
+                guestTel={guestTel}
+                guestEmail={guestEmail}
+              />
+            </div>
+          </div>
+        )}
+
         {quotes.length > 0 && (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
