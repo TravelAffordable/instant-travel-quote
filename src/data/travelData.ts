@@ -1186,6 +1186,7 @@ export interface QuoteResult {
   totalForGroup: number;
   is4SleeperRoom: boolean;
   roomType: string;
+  roomTypeName?: string;
   includesBreakfast: boolean;
   checkIn: Date;
   checkOut: Date;
