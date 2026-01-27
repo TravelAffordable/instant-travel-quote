@@ -14,9 +14,14 @@ import {
 import { CalendarDays, Users, Home, Package, Sparkles, Calculator, BedDouble } from 'lucide-react';
 import { QuoteList } from './QuoteList';
 import { LiveHotelQuotes } from './LiveHotelQuotes';
+import { RMSHotelQuotes } from './RMSHotelQuotes';
 import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
+import { useRMSHotels } from '@/hooks/useRMSHotels';
 import { toast } from 'sonner';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+
+// Destinations that use RMS (database) instead of Hotelbeds API
+const RMS_DESTINATIONS = ['harties', 'magalies'];
 
 interface QuoteCalculatorProps {
   onQuoteGenerated?: (quote: QuoteResult) => void;
@@ -52,6 +57,9 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
   // Live hotel search - using Hotelbeds API (pre-production)
   const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, error: hotelError, clearHotels } = useHotelbedsSearch();
   
+  // RMS hotel search - using database (for harties, magalies, etc.)
+  const { searchHotels: searchRMSHotels, hotels: rmsHotels, isLoading: isSearchingRMS, clearHotels: clearRMSHotels } = useRMSHotels();
+  
   // Family split mode
   const [showFamilySplitOption, setShowFamilySplitOption] = useState(false);
   const [isFamilySplitMode, setIsFamilySplitMode] = useState(false);
@@ -70,6 +78,7 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     setQuotes([]);
     setFamilyQuotes([]);
     clearHotels();
+    clearRMSHotels();
   }, [destination]);
   
 
@@ -136,27 +145,48 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
     }
 
     if (!isFamilySplitMode) {
-      // Fetch live hotels from Hotelbeds
+      // Check if this destination uses RMS (database) or Hotelbeds API
+      const useRMS = RMS_DESTINATIONS.includes(destination);
+      
       try {
-        const result = await searchHotels({
-          destination,
-          checkIn,
-          checkOut,
-          adults,
-          children,
-          childrenAges: ages,
-          rooms,
-        });
+        if (useRMS) {
+          // Fetch hotels from RMS database
+          const result = await searchRMSHotels({
+            destination,
+            checkIn,
+            checkOut,
+            adults,
+            children,
+            rooms,
+          });
 
-        if (result && result.length > 0) {
-          toast.success(`${result.length} hotels found!`);
-        } else if (hotelError) {
-          toast.error(hotelError);
+          if (result && result.length > 0) {
+            toast.success(`${result.length} hotels found!`);
+          } else {
+            toast.info('No hotels available for this search. Please try different dates.');
+          }
         } else {
-          toast.info('No hotels available for this search. Please try different dates.');
+          // Fetch live hotels from Hotelbeds API
+          const result = await searchHotels({
+            destination,
+            checkIn,
+            checkOut,
+            adults,
+            children,
+            childrenAges: ages,
+            rooms,
+          });
+
+          if (result && result.length > 0) {
+            toast.success(`${result.length} hotels found!`);
+          } else if (hotelError) {
+            toast.error(hotelError);
+          } else {
+            toast.info('No hotels available for this search. Please try different dates.');
+          }
         }
       } catch (error) {
-        console.error('Live hotel search error:', error);
+        console.error('Hotel search error:', error);
         toast.error('Could not fetch hotels. Please try again.');
       }
       setIsCalculating(false);
@@ -538,12 +568,12 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
           <Button
             onClick={handleCalculate}
             className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
-            disabled={isCalculating || isSearchingHotels}
+            disabled={isCalculating || isSearchingHotels || isSearchingRMS}
           >
-            {isCalculating || isSearchingHotels ? (
+            {isCalculating || isSearchingHotels || isSearchingRMS ? (
               <>
                 <Sparkles className="w-5 h-5 mr-2 animate-spin" />
-                {isSearchingHotels ? 'Searching Hotels...' : 'Calculating...'}
+                {isSearchingHotels || isSearchingRMS ? 'Searching Hotels...' : 'Calculating...'}
               </>
             ) : (
               <>
@@ -557,8 +587,20 @@ export function QuoteCalculator({ onQuoteGenerated }: QuoteCalculatorProps) {
 
       {/* Quote Results Section */}
       <div className="space-y-6">
-        {/* Live Hotel Results */}
-        {liveHotels.length > 0 && packageId ? (
+        {/* RMS Hotel Results (for harties, magalies, etc.) */}
+        {rmsHotels.length > 0 && packageId ? (
+          <RMSHotelQuotes
+            hotels={rmsHotels}
+            packages={packages.filter(p => p.id === packageId)}
+            nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
+            adults={adults}
+            children={children}
+            childrenAgesString={childrenAges}
+            rooms={rooms}
+            budget={budget}
+          />
+        ) : liveHotels.length > 0 && packageId ? (
+          /* Live Hotel Results (Hotelbeds API) */
           <LiveHotelQuotes
             hotels={liveHotels}
             packages={packages.filter(p => p.id === packageId)}
