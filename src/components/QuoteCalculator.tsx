@@ -20,8 +20,8 @@ import { useRMSHotels } from '@/hooks/useRMSHotels';
 import { toast } from 'sonner';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
-// Destinations that use RMS (database) instead of Hotelbeds API
-const RMS_DESTINATIONS = ['harties', 'magalies'];
+// All destinations now use RMS (database) - Hotelbeds API disabled
+const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga'];
 
 interface QuoteCalculatorProps {
   onQuoteGenerated?: (quote: QuoteResult) => void;
