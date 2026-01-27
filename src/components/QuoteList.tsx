@@ -85,7 +85,7 @@ Check-in: ${formatDate(quote.checkIn)}
 Check-out: ${formatDate(quote.checkOut)}
 Duration: ${nightsCount} nights
 Guests: ${quote.adults} Adult${quote.adults > 1 ? 's' : ''}${quote.children > 0 ? `, ${quote.children} Child${quote.children > 1 ? 'ren' : ''}` : ''}
-Rooms: ${quote.rooms} ${quote.roomType || (quote.is4SleeperRoom ? '4-Sleeper Room' : '2-Sleeper Room')}${quote.rooms > 1 ? 's' : ''}
+Rooms: ${quote.rooms} x ${quote.roomType || (quote.is4SleeperRoom ? '4 Sleeper' : '2 Sleeper')}
 
 PRICING
 Grand Total: ${formatCurrency(quote.totalForGroup)}
@@ -318,7 +318,7 @@ Web: www.travelaffordable.co.za`;
               <span>•</span>
               <span>{quote.nights} nights</span>
               <span>•</span>
-              <span>{quote.rooms} {quote.roomType || (quote.is4SleeperRoom ? '4-sleeper room' : '2-sleeper room')}{quote.rooms > 1 ? 's' : ''}</span>
+              <span>{quote.rooms} x {quote.roomType || (quote.is4SleeperRoom ? '4 Sleeper' : '2 Sleeper')}</span>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -364,12 +364,12 @@ Web: www.travelaffordable.co.za`;
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Home className="w-4 h-4" />
-                <span>{quote.roomType}</span>
+                <span>{quote.roomType || (quote.is4SleeperRoom ? '4 Sleeper' : '2 Sleeper')}</span>
               </div>
-              {quote.is4SleeperRoom && (
+              {quote.is4SleeperRoom && quote.roomTypeName && (
                 <div className="flex items-center gap-2 text-muted-foreground col-span-2">
                   <BedDouble className="w-4 h-4" />
-                  <span>4-Sleeper room for 3-4 guests</span>
+                  <span>{quote.roomTypeName}</span>
                 </div>
               )}
             </div>
