@@ -15,14 +15,124 @@ import {
   type QuoteResult 
 } from '@/data/travelData';
 import { QuoteList } from './QuoteList';
-import { RMSHotelQuotes } from './RMSHotelQuotes';
 import { toast } from 'sonner';
-import { useRMSHotels } from '@/hooks/useRMSHotels';
+import { useRMSHotels, type RMSHotel } from '@/hooks/useRMSHotels';
+import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
+import { roundToNearest10 } from '@/lib/utils';
 
 type BookingType = 'accommodation-only' | 'with-activities';
 
 // Destinations that should use the RMS (database) hotel list instead of static placeholders
 const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga'];
+
+// Service fee calculation
+function calculateServiceFees(adults: number, childrenAges: number[]): number {
+  let adultFee = 0;
+  if (adults === 1) adultFee = 1000;
+  else if (adults <= 3) adultFee = 850;
+  else if (adults <= 9) adultFee = 800;
+  else adultFee = 750;
+
+  const totalAdultFees = adultFee * adults;
+
+  let childFees = 0;
+  childrenAges.forEach(age => {
+    if (age <= 2) childFees += 0;
+    else if (age <= 12) childFees += 200;
+    else childFees += 300;
+  });
+
+  return totalAdultFees + childFees;
+}
+
+// Convert RMS hotels to QuoteResult format for QuoteList display
+function convertRMSToQuotes(
+  hotels: RMSHotel[],
+  selectedPackages: typeof packages,
+  params: {
+    checkIn: Date;
+    checkOut: Date;
+    adults: number;
+    children: number;
+    childrenAges: number[];
+    rooms: number;
+    destination: string;
+  }
+): QuoteResult[] {
+  const results: QuoteResult[] = [];
+  const nights = Math.ceil((params.checkOut.getTime() - params.checkIn.getTime()) / (1000 * 60 * 60 * 24));
+  const serviceFees = calculateServiceFees(params.adults, params.childrenAges);
+
+  // Get activities for this destination
+  const availableActivities = getActivitiesForDestination(params.destination);
+
+  // Default hotel image for display
+  const hotelImages = [
+    'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800',
+    'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800',
+    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
+    'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800',
+  ];
+
+  for (const pkg of selectedPackages) {
+    // Calculate activities cost from package
+    let activitiesCost = 0;
+    const activitiesForPackage = pkg.activitiesIncluded
+      .filter(a => !a.toLowerCase().includes('accommodation') && !a.toLowerCase().includes('breakfast'))
+      .map(label => findActivityByName(label, availableActivities))
+      .filter(Boolean);
+
+    activitiesForPackage.forEach(activity => {
+      if (activity) {
+        activitiesCost += (activity.rates.adult * params.adults) + (activity.rates.child * params.children);
+      }
+    });
+
+    for (let i = 0; i < hotels.length; i++) {
+      const hotel = hotels[i];
+      const accommodationCost = hotel.totalRate * params.rooms;
+      const totalForGroup = roundToNearest10(accommodationCost + activitiesCost + serviceFees);
+      const totalPeople = params.adults + params.children;
+      const totalPerPerson = roundToNearest10(totalForGroup / totalPeople);
+
+      const hotelNameDisplay = hotel.includesBreakfast 
+        ? `${hotel.name} (includes breakfast)` 
+        : hotel.name;
+
+      results.push({
+        packageName: pkg.name,
+        packageDescription: pkg.description,
+        hotelName: hotelNameDisplay,
+        hotelId: `${hotel.code}-${pkg.id}`,
+        hotelImage: hotelImages[i % hotelImages.length],
+        destination: params.destination,
+        nights,
+        accommodationCost,
+        packageCost: activitiesCost,
+        activitiesCost,
+        childDiscount: 0,
+        totalPerPerson,
+        totalForGroup,
+        is4SleeperRoom: hotel.capacity === '4_sleeper',
+        roomType: `${hotel.roomTypeName} (${hotel.capacity === '2_sleeper' ? '2 Sleeper' : '4 Sleeper'})`,
+        includesBreakfast: hotel.includesBreakfast,
+        checkIn: params.checkIn,
+        checkOut: params.checkOut,
+        adults: params.adults,
+        children: params.children,
+        rooms: params.rooms,
+        activitiesIncluded: pkg.activitiesIncluded,
+        breakdown: [
+          { label: `Accommodation (${nights} nights × ${params.rooms} rooms)`, amount: accommodationCost },
+          { label: 'Activities', amount: activitiesCost },
+          { label: 'Service Fees', amount: serviceFees },
+        ],
+      });
+    }
+  }
+
+  return results;
+}
 
 interface HeroProps {
   onGetQuote: () => void;
@@ -192,10 +302,35 @@ export function Hero({ onGetQuote }: HeroProps) {
           rooms,
         });
 
-        if (result.length > 0) {
-          toast.success(`${result.length} hotels found!`);
-        } else {
+        if (result.length === 0) {
           toast.info('No hotels available for this search. Please try different dates.');
+          setIsCalculating(false);
+          return;
+        }
+
+        // Filter hotels by selected accommodation type (tier)
+        const filteredHotels = result.filter(h => h.tier === accommodationType);
+
+        // Convert RMS hotels to QuoteResult format for QuoteList display
+        const rmsQuotes = convertRMSToQuotes(
+          filteredHotels,
+          packages.filter(p => packageIds.includes(p.id)),
+          {
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            adults,
+            children,
+            childrenAges: ages,
+            rooms,
+            destination,
+          }
+        );
+
+        if (rmsQuotes.length > 0) {
+          setQuotes(rmsQuotes);
+          toast.success(`${rmsQuotes.length} quotes found!`);
+        } else {
+          toast.info('No hotels available for this tier. Try a different option.');
         }
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Could not fetch hotels';
@@ -873,25 +1008,6 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Quote Results */}
-        {rmsHotels.length > 0 && packageIds.length > 0 && !isFamilySplitMode && (
-          <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
-            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
-              <RMSHotelQuotes
-                hotels={rmsHotels.filter(h => h.tier === accommodationType)}
-                packages={packages.filter(p => packageIds.includes(p.id))}
-                nights={Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))}
-                adults={adults}
-                children={children}
-                childrenAgesString={childrenAges}
-                rooms={rooms}
-                budget={accommodationType}
-                guestName={guestName}
-                guestTel={guestTel}
-                guestEmail={guestEmail}
-              />
-            </div>
-          </div>
-        )}
 
         {quotes.length > 0 && (
           <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
