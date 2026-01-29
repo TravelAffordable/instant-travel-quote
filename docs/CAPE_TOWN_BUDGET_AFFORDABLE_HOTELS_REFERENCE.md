@@ -14,11 +14,6 @@ This document maps the public display aliases to real hotel names for the Cape T
 | Cape Town Budget 2 Sleeper Option 6 | Craigrownie Luxury Guest House | Premier King Room | Sea Point | R1,360 |
 | Cape Town Budget 2 Sleeper Option 7 | Albatross Guest House Bantry Bay | One-Bedroom Apartment | Sea Point | R1,368 |
 | Cape Town Budget 2 Sleeper Option 8 | MoTown by Mojo | Double Room with Shared Bathroom | Sea Point | R1,433 |
-| HAVN Aparthotel by Totalstay | HAVN Aparthotel by Totalstay | Budget Double Room | City Centre | R1,056 |
-| Cape Diamond Boutique Hotel | Cape Diamond Boutique Hotel | Economy Double Room | City Centre | R1,462 |
-| The Tokyo Aparthotel by Totalstay | The Tokyo Aparthotel by Totalstay | Studio | City Centre | R1,560 |
-| Habitat Aparthotel by Totalstay | Habitat Aparthotel by Totalstay | Standard Studio | City Centre | R1,319 |
-| Fountains Hotel | Fountains Hotel | Standard Accessible Room | City Centre | R1,631 |
 
 ## Budget Tier - 4 Sleeper Options
 
@@ -43,11 +38,6 @@ This document maps the public display aliases to real hotel names for the Cape T
 | Cape Town Affordable 2 Sleeper Option 5 | Mountview Guest House | Twin Room | Sea Point | R3,200 | ✓ Included |
 | Cape Town Affordable 2 Sleeper Option 6 | Villa Costa Rose | Double Room with Garden View | Sea Point | R3,285 | ✓ Included |
 | Cape Town Affordable 2 Sleeper Option 7 | The Villa Rosa Hotel & Self-catering Apartments | Deluxe Double or Twin Room | Sea Point | R3,800 | ✓ Included |
-| ONOMO Hotel Cape Town – Inn On The Square | ONOMO Hotel Cape Town – Inn On The Square | Standard Twin Room | City Centre | R1,675 | ✓ Included |
-| ONOMO Hotel Foreshore | ONOMO Hotel Foreshore | Standard Double Room | City Centre | R1,573 | ✓ Included |
-| ONOMO Hotel Waterfront | ONOMO Hotel Waterfront | Standard Queen Room | City Centre | R2,601 | ✓ Included |
-| Cresta Grande Cape Town | Cresta Grande Cape Town | Superior Twin Room | City Centre | R2,120 | ✗ Not Included |
-| Camps Bay Village | Camps Bay Village | Adventure Pads | Camps Bay | R2,326 | ✗ Not Included |
 
 ## Affordable Tier - 4 Sleeper Options (All Include Breakfast)
 
@@ -58,7 +48,7 @@ This document maps the public display aliases to real hotel names for the Cape T
 | Cape Town Affordable 4 Sleeper Option 3 | The Tropicana Hotel | Two-Bedroom Superior Apartment | Sea Point | R6,286 | ✓ Included |
 | Cape Town Affordable 4 Sleeper Option 4 | Villa Costa Rose | 2× Double Rooms | Sea Point | R6,670 | ✓ Included |
 
-## Premium Tier - 2 Sleeper Options (All Include Breakfast, Real Names)
+## Premium Tier - 2 Sleeper Options (All Use Real Names)
 
 | Hotel Name | Room Type | Area | Rate/Night | Breakfast |
 |------------|-----------|------|------------|-----------|
@@ -73,10 +63,20 @@ This document maps the public display aliases to real hotel names for the Cape T
 | The Marly Boutique Hotel | Classic Mountain Facing Room | Camps Bay | R19,195 | ✓ Included |
 | The Bay Hotel | Mountain View Room | Camps Bay | R12,856 | ✓ Included |
 | Twelve Apostles Hotel & Spa | Milkwood Room | Camps Bay | R13,877 | ✓ Included |
+| Camps Bay Village | Adventure Pads | Camps Bay | R2,326 | ✗ Not Included |
 | Compass House Boutique Hotel | Junior Suite with Sea View | Bantry Bay | R17,000 | ✓ Included |
 | The Clarendon - Bantry Bay | Standard Room | Bantry Bay | R15,000 | ✓ Included |
+| HAVN Aparthotel by Totalstay | Budget Double Room | City Centre | R1,056 | ✗ Not Included |
+| Cape Diamond Boutique Hotel | Economy Double Room | City Centre | R1,462 | ✗ Not Included |
+| The Tokyo Aparthotel by Totalstay | Studio | City Centre | R1,560 | ✗ Not Included |
+| Habitat Aparthotel by Totalstay | Standard Studio | City Centre | R1,319 | ✗ Not Included |
+| Fountains Hotel | Standard Accessible Room | City Centre | R1,631 | ✗ Not Included |
+| ONOMO Hotel Cape Town – Inn On The Square | Standard Twin Room | City Centre | R1,675 | ✓ Included |
+| ONOMO Hotel Foreshore | Standard Double Room | City Centre | R1,573 | ✓ Included |
+| ONOMO Hotel Waterfront | Standard Queen Room | City Centre | R2,601 | ✓ Included |
+| Cresta Grande Cape Town | Superior Twin Room | City Centre | R2,120 | ✗ Not Included |
 
-## Premium Tier - 4 Sleeper Options (All Include Breakfast, Real Names)
+## Premium Tier - 4 Sleeper Options (All Use Real Names)
 
 | Hotel Name | Room Type | Area | Rate/Night | Breakfast |
 |------------|-----------|------|------------|-----------|
@@ -93,7 +93,6 @@ This document maps the public display aliases to real hotel names for the Cape T
 - **Weekend rates**: 1.1x multiplier applied to weekday rates (Friday-Sunday)
 - **Seasonal multipliers**: Applied on top of base rates (see docs/BOOKING_SYSTEM_MANUAL.md)
 - **Taxes**: All rates include taxes and charges where applicable
-- **Breakfast**: All Affordable and Premium tier options include breakfast (except noted)
 - **Premium naming**: Premium tier uses real hotel names (not aliases)
 
 ## Data Source
