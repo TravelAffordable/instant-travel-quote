@@ -312,6 +312,20 @@ export function Hero({ onGetQuote }: HeroProps) {
         // Filter hotels by selected accommodation type (tier)
         const filteredHotels = result.filter(h => h.tier === accommodationType);
 
+        // If no hotels match the selected tier, show available tiers
+        if (filteredHotels.length === 0) {
+          const availableTiers = [...new Set(result.map(h => h.tier))];
+          const tierLabels: Record<string, string> = {
+            budget: 'Budget',
+            affordable: 'Affordable', 
+            premium: 'Premium'
+          };
+          const availableTierNames = availableTiers.map(t => tierLabels[t] || t).join(', ');
+          toast.info(`No ${tierLabels[accommodationType]} hotels available for ${destination.replace('-', ' ')}. Available tiers: ${availableTierNames}`);
+          setIsCalculating(false);
+          return;
+        }
+
         // Convert RMS hotels to QuoteResult format for QuoteList display
         const rmsQuotes = convertRMSToQuotes(
           filteredHotels,
