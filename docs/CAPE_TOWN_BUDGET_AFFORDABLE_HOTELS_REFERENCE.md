@@ -1,4 +1,4 @@
-# Cape Town Budget & Affordable Hotels Reference
+# Cape Town Hotels Reference (All Tiers)
 
 This document maps the public display aliases to real hotel names for the Cape Town Budget and Affordable tiers.
 
@@ -48,15 +48,36 @@ This document maps the public display aliases to real hotel names for the Cape T
 | Cape Town Affordable 4 Sleeper Option 3 | The Tropicana Hotel | Two-Bedroom Superior Apartment | Sea Point | R6,286 | ✓ Included |
 | Cape Town Affordable 4 Sleeper Option 4 | Villa Costa Rose | 2× Double Rooms | Sea Point | R6,670 | ✓ Included |
 
+## Premium Tier - 2 Sleeper Options (All Include Breakfast, Real Names)
+
+| Hotel Name | Room Type | Area | Rate/Night | Breakfast |
+|------------|-----------|------|------------|-----------|
+| Home Suite Hotels Sea Point | The Home Standard Sea View | Sea Point | R4,710 | ✓ Included |
+| Protea Hotel by Marriott Cape Town Sea Point | Guest Room, 1 Queen | Sea Point | R4,394 | ✓ Included |
+| The Bantry Aparthotel by Totalstay | Standard Double Room | Sea Point | R4,050 | ✓ Included |
+| Southern Sun The Cullinan | Standard Queen Room | Foreshore/Waterfront | R4,335 | ✓ Included |
+| Southern Sun Waterfront Cape Town | Standard Queen Room - Non-Smoking | Foreshore/Waterfront | R3,613 | ✓ Included |
+| Hotel Sky Cape Town | Double Room | Foreshore/Waterfront | R3,000 | ✓ Included |
+| Camps Bay Forest Pods | Pod Room with Forest View | Camps Bay | R3,500 | ✓ Included |
+| Sea Castle Hotel Camps Bay | Standard Double Room No Sea View | Camps Bay | R8,100 | ✓ Included |
+
+## Premium Tier - 4 Sleeper Options (All Include Breakfast, Real Names)
+
+| Hotel Name | Room Type | Area | Rate/Night | Breakfast |
+|------------|-----------|------|------------|-----------|
+| President Hotel | Two Bedroom One Bathroom Apartment Sea Facing | Sea Point | R14,942 | ✓ Included |
+| Southern Sun Waterfront Cape Town | 2× Standard Queen Room - Non-Smoking | Foreshore/Waterfront | R7,225 | ✓ Included |
+
 ## Pricing Notes
 
 - **Weekend rates**: 1.1x multiplier applied to weekday rates (Friday-Sunday)
 - **Seasonal multipliers**: Applied on top of base rates (see docs/BOOKING_SYSTEM_MANUAL.md)
 - **Taxes**: All rates include taxes and charges where applicable
-- **Breakfast**: All Affordable tier options include breakfast
+- **Breakfast**: All Affordable and Premium tier options include breakfast
+- **Premium naming**: Premium tier uses real hotel names (not aliases)
 
 ## Data Source
 
 - Source: Booking.com
 - Data Date: January 2025
-- Search Criteria: Sea Point, Cape Town, 2/4 adults, 1 night
+- Search Criteria: Sea Point/Cape Town CBD/Camps Bay, 2/4 adults, 1 night
