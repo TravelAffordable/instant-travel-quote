@@ -25,6 +25,9 @@ type BookingType = 'accommodation-only' | 'with-activities';
 // Destinations that should use the RMS (database) hotel list instead of static placeholders
 const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga'];
 
+// Mpumalanga package IDs that require Graskop-only hotels (near Blyde River Canyon)
+const GRASKOP_ONLY_PACKAGES = ['mp1']; // MP1 - In Style Getaway with Blyde River Canyon
+
 // Service fee calculation
 function calculateServiceFees(adults: number, childrenAges: number[]): number {
   let adultFee = 0;
@@ -294,6 +297,11 @@ export function Hero({ onGetQuote }: HeroProps) {
     // We only use it for the standard (non-family-split) flow.
     if (useRMS && !isFamilySplitMode) {
       try {
+        // Determine if we need to filter by area for Mpumalanga packages
+        // MP1 (In Style Getaway) requires Graskop-only hotels (near Blyde River Canyon)
+        const requiresGraskopOnly = destination === 'mpumalanga' && 
+          packageIds.some(id => GRASKOP_ONLY_PACKAGES.includes(id));
+        
         const result = await searchRMSHotels({
           destination,
           checkIn,
@@ -301,6 +309,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           adults,
           children,
           rooms,
+          areaName: requiresGraskopOnly ? 'Graskop' : undefined,
         });
 
         if (result.length === 0) {

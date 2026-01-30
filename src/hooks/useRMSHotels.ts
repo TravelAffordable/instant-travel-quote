@@ -23,6 +23,7 @@ interface SearchParams {
   adults: number;
   children: number;
   rooms: number;
+  areaName?: string; // Optional filter by area name (e.g., 'Graskop', 'Hazyview')
 }
 
 import type { Database } from '@/integrations/supabase/types';
@@ -66,8 +67,8 @@ export function useRMSHotels() {
       const checkOutDate = new Date(params.checkOut);
       const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
 
-      // Fetch hotels with their room types and rates
-      const { data: hotelsData, error: hotelsError } = await supabase
+      // Build query for hotels - optionally filter by area name
+      let hotelsQuery = supabase
         .from('hotels')
         .select(`
           id,
@@ -79,6 +80,13 @@ export function useRMSHotels() {
         `)
         .eq('is_active', true)
         .eq('areas.destination', dbDestination);
+
+      // Apply area filter if specified (e.g., 'Graskop' for MP1 In Style package)
+      if (params.areaName) {
+        hotelsQuery = hotelsQuery.eq('areas.name', params.areaName);
+      }
+
+      const { data: hotelsData, error: hotelsError } = await hotelsQuery;
 
       if (hotelsError) {
         throw new Error(hotelsError.message);
