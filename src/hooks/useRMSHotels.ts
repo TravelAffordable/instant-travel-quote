@@ -39,6 +39,8 @@ const destinationMap: Record<string, DestinationCode> = {
   'cape-town': 'cape_town',
   'mpumalanga': 'mpumalanga',
   'vaal': 'vaal',
+  // UI uses `vaal-river` as the destination id; backend uses the `vaal` destination code.
+  'vaal-river': 'vaal',
 };
 
 export function useRMSHotels() {
