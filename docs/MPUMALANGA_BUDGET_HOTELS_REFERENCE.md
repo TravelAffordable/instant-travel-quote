@@ -57,6 +57,15 @@ This document maps public-facing Budget tier aliases to real hotel names and roo
 - **Breakfast**: Most budget options do not include breakfast (except Royal Bakoena)
 - **Self-catering**: Many properties are self-catering with kitchen facilities
 
+## Area-Based Filtering Logic
+
+The system applies automatic area filtering based on the selected package:
+
+| Package ID | Package Name | Area Filter | Reason |
+|------------|--------------|-------------|--------|
+| MP1 | MPUMALANGA INSTYLE GETAWAY WITH BLYDE RIVER CANYON BOAT CRUISE | Graskop only | Graskop is closer to Blyde River Canyon cruise departure point |
+| MP2, MP3, MP4 | Other Mpumalanga packages | All areas | Both Hazyview and Graskop are suitable |
+
 ## Data Source
 
 Rates sourced from Booking.com (January 2026) for properties in Hazyview and Graskop areas within 20km of Blyde River Canyon.
