@@ -320,6 +320,7 @@ export type Database = {
         | "mpumalanga"
         | "hartbeespoort"
         | "magaliesburg"
+        | "vaal"
       price_tier: "budget" | "affordable" | "premium"
       room_capacity: "2_sleeper" | "4_sleeper"
     }
@@ -456,6 +457,7 @@ export const Constants = {
         "mpumalanga",
         "hartbeespoort",
         "magaliesburg",
+        "vaal",
       ],
       price_tier: ["budget", "affordable", "premium"],
       room_capacity: ["2_sleeper", "4_sleeper"],
