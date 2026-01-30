@@ -20,8 +20,9 @@ import { useRMSHotels } from '@/hooks/useRMSHotels';
 import { toast } from 'sonner';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
-// All destinations now use RMS (database) - Hotelbeds API disabled
-const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga'];
+// Destinations that should use the RMS (database) hotel list instead of static placeholders
+// Note: UI destination id for Vaal is `vaal-river`, while backend destination code is `vaal`.
+const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga', 'vaal', 'vaal-river'];
 
 interface QuoteCalculatorProps {
   onQuoteGenerated?: (quote: QuoteResult) => void;
