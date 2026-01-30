@@ -38,6 +38,7 @@ const destinationMap: Record<string, DestinationCode> = {
   'durban': 'durban',
   'cape-town': 'cape_town',
   'mpumalanga': 'mpumalanga',
+  'vaal': 'vaal',
 };
 
 export function useRMSHotels() {

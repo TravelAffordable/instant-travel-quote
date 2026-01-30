@@ -24,6 +24,7 @@ const DESTINATIONS = [
   { value: "mpumalanga", label: "Mpumalanga" },
   { value: "hartbeespoort", label: "Hartbeespoort" },
   { value: "magaliesburg", label: "Magaliesburg" },
+  { value: "vaal", label: "Vaal" },
 ];
 
 export const AreasManager = () => {
