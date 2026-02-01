@@ -22,7 +22,7 @@ import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 // Destinations that should use the RMS (database) hotel list instead of static placeholders
 // Note: UI destination id for Vaal is `vaal-river`, while backend destination code is `vaal`.
-const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga', 'vaal', 'vaal-river'];
+const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga', 'vaal', 'vaal-river', 'bela-bela'];
 
 interface QuoteCalculatorProps {
   onQuoteGenerated?: (quote: QuoteResult) => void;
