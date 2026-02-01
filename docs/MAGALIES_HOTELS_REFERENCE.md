@@ -54,9 +54,38 @@ This document maps the display names to real hotel names for easy reference when
 | Magalies Affordable 4 Sleeper Option 7 | Cozy cottage in the Cradle of Humankind | R1,600 | Entire Apartment |
 | Magalies Affordable 4 Sleeper Option 8 | Kromdraai Guest Rooms | R1,700 | 2 Private Rooms |
 
+## Premium 2-Sleeper Options (1-2 guests)
+
+| Display Name | Real Hotel Name | Rate/Night | Room Type |
+|--------------|-----------------|------------|-----------|
+| Forum Homini Boutique Hotel | Forum Homini Boutique Hotel | R4,770 | Standard Luxury Suite |
+| African Hills Safari Lodge & Spa | African Hills Safari Lodge & Spa | R4,540 | Standard Room |
+| Kloofzicht Lodge & Spa | Kloofzicht Lodge & Spa | R4,020 | Deluxe Suite |
+| De Hoek Country Hotel | De Hoek Country Hotel | R4,000 | Standard Twin Room |
+| Vivari Hotel and Spa by Mantis | Vivari Hotel and Spa by Mantis | R3,800 | Classic King Room |
+| Sibani Lodge | Sibani Lodge | R3,700 | Chalet |
+| Mount Grace Hotel & Spa | Mount Grace Hotel & Spa | R3,466 | Standard Premium Room |
+| Valley Lodge & Spa | Valley Lodge & Spa | R3,120 | Standard Double Room |
+| Avianto | Avianto | R2,907 | Double Room |
+| Maropeng Boutique Hotel | Maropeng Boutique Hotel | R2,243 | Double Room |
+| 26° South Bush Boho Hotel | 26° South Bush Boho Hotel | R1,332 | Double Room |
+
+## Premium 4-Sleeper Options (3-4 guests)
+
+| Display Name | Real Hotel Name | Rate/Night | Room Type |
+|--------------|-----------------|------------|-----------|
+| Forum Homini Boutique Hotel | Forum Homini Boutique Hotel | R9,540 | 2x Standard Luxury Suite |
+| Kloofzicht Lodge & Spa | Kloofzicht Lodge & Spa | R9,240 | Deluxe + Family Suite |
+| African Hills Safari Lodge & Spa | African Hills Safari Lodge & Spa | R9,080 | 2x Standard Room |
+| Mount Grace Hotel & Spa | Mount Grace Hotel & Spa | R7,241 | Premium + Superior Room |
+| Cradle Moon Lakeside Game Lodge | Cradle Moon Lakeside Game Lodge | R6,600 | 2x Deluxe Double Room |
+| Valley Lodge & Spa | Valley Lodge & Spa | R6,240 | 2x Standard Double Room |
+| Maropeng Boutique Hotel | Maropeng Boutique Hotel | R4,529 | 2x Double Room |
+| 26° South Bush Boho Hotel | 26° South Bush Boho Hotel | R2,664 | 2x Double Room |
+
 ---
 
-**Last Updated:** January 2026
+**Last Updated:** February 2026
 
 **Notes:**
 - When a booking is made for "Magalies Budget/Affordable X Sleeper Option Y", refer to this table to find the real hotel name
