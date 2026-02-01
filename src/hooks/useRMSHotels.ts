@@ -114,7 +114,10 @@ export function useRMSHotels() {
         throw new Error(roomTypesError.message);
       }
 
-      if (!roomTypesData || roomTypesData.length === 0) {
+      // Use the roomTypesData we have, or fallback to alt capacity
+      let finalRoomTypes = roomTypesData || [];
+      
+      if (finalRoomTypes.length === 0) {
         // No room types found for required capacity - try the other capacity
         const altCapacity = requiredCapacity === '2_sleeper' ? '4_sleeper' : '2_sleeper';
         const { data: altRoomTypes, error: altError } = await supabase
@@ -129,12 +132,11 @@ export function useRMSHotels() {
           return [];
         }
 
-        // Use alt room types
-        Object.assign(roomTypesData, altRoomTypes);
+        finalRoomTypes = altRoomTypes;
       }
 
       // Get rates for these room types
-      const roomTypeIds = roomTypesData.map(rt => rt.id);
+      const roomTypeIds = finalRoomTypes.map(rt => rt.id);
       const { data: ratesData, error: ratesError } = await supabase
         .from('room_rates')
         .select('room_type_id, base_rate_weekday, base_rate_weekend')
@@ -161,7 +163,7 @@ export function useRMSHotels() {
       const rmsHotels: RMSHotel[] = [];
 
       for (const hotel of hotelsData) {
-        const roomType = roomTypesData.find(rt => rt.hotel_id === hotel.id);
+        const roomType = finalRoomTypes.find(rt => rt.hotel_id === hotel.id);
         if (!roomType) continue;
 
         const rate = ratesData?.find(r => r.room_type_id === roomType.id);

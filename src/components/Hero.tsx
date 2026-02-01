@@ -209,7 +209,7 @@ export function Hero({ onGetQuote }: HeroProps) {
     setQuotes([]);
     setFamilyQuotes([]);
     clearRMSHotels();
-  }, [destination]);
+  }, [destination, clearRMSHotels]);
 
   // Show family split option when 4+ adults AND children
   useEffect(() => {
