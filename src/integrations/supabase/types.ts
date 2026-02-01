@@ -321,6 +321,7 @@ export type Database = {
         | "hartbeespoort"
         | "magaliesburg"
         | "vaal"
+        | "bela_bela"
       price_tier: "budget" | "affordable" | "premium"
       room_capacity: "2_sleeper" | "4_sleeper"
     }
@@ -458,6 +459,7 @@ export const Constants = {
         "hartbeespoort",
         "magaliesburg",
         "vaal",
+        "bela_bela",
       ],
       price_tier: ["budget", "affordable", "premium"],
       room_capacity: ["2_sleeper", "4_sleeper"],
