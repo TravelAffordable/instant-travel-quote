@@ -36,6 +36,8 @@ const destinationMap: Record<string, DestinationCode> = {
   'magalies': 'magaliesburg',
   'sun-city': 'sun_city',
   'durban': 'durban',
+  // UI uses `umhlanga` as a separate destination; backend maps to `durban` with Umhlanga area filter
+  'umhlanga': 'durban',
   'cape-town': 'cape_town',
   'mpumalanga': 'mpumalanga',
   'vaal': 'vaal',
