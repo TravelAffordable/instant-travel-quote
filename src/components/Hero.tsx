@@ -366,6 +366,10 @@ export function Hero({ onGetQuote }: HeroProps) {
         if (rmsQuotes.length > 0) {
           setQuotes(rmsQuotes);
           toast.success(`${rmsQuotes.length} quotes found!`);
+          // Scroll to results after a short delay to ensure they're rendered
+          setTimeout(() => {
+            document.getElementById('quote-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
         } else {
           toast.info('No hotels available for this tier. Try a different option.');
         }
@@ -1045,9 +1049,8 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Quote Results */}
-
         {quotes.length > 0 && (
-          <div className="max-w-4xl mx-auto mt-8 animate-fade-in">
+          <div id="quote-results" className="max-w-4xl mx-auto mt-8 animate-fade-in scroll-mt-4">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
               <QuoteList quotes={quotes} />
             </div>
