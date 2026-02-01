@@ -41,6 +41,7 @@ const destinationMap: Record<string, DestinationCode> = {
   'vaal': 'vaal',
   // UI uses `vaal-river` as the destination id; backend uses the `vaal` destination code.
   'vaal-river': 'vaal',
+  'bela-bela': 'bela_bela',
 };
 
 export function useRMSHotels() {

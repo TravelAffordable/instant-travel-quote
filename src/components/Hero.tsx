@@ -24,7 +24,7 @@ type BookingType = 'accommodation-only' | 'with-activities';
 
 // Destinations that should use the RMS (database) hotel list instead of static placeholders
 // Note: UI destination id for Vaal is `vaal-river`, while backend destination code is `vaal`.
-const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga', 'vaal', 'vaal-river'];
+const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga', 'vaal', 'vaal-river', 'bela-bela'];
 
 // Mpumalanga package IDs that require Graskop-only hotels (near Blyde River Canyon)
 const GRASKOP_ONLY_PACKAGES = ['mp1']; // MP1 - In Style Getaway with Blyde River Canyon
