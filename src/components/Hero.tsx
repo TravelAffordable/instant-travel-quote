@@ -24,7 +24,8 @@ type BookingType = 'accommodation-only' | 'with-activities';
 
 // Destinations that should use the RMS (database) hotel list instead of static placeholders
 // Note: UI destination id for Vaal is `vaal-river`, while backend destination code is `vaal`.
-const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga', 'vaal', 'vaal-river', 'bela-bela'];
+// Note: UI uses `umhlanga` as a separate destination, but it maps to `durban` destination with area filter.
+const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'umhlanga', 'cape-town', 'sun-city', 'mpumalanga', 'vaal', 'vaal-river', 'bela-bela'];
 
 // Mpumalanga package IDs that require Graskop-only hotels (near Blyde River Canyon)
 const GRASKOP_ONLY_PACKAGES = ['mp1']; // MP1 - In Style Getaway with Blyde River Canyon
@@ -298,10 +299,21 @@ export function Hero({ onGetQuote }: HeroProps) {
     // We only use it for the standard (non-family-split) flow.
     if (useRMS && !isFamilySplitMode) {
       try {
-        // Determine if we need to filter by area for Mpumalanga packages
+        // Determine if we need to filter by area
         // MP1 (In Style Getaway) requires Graskop-only hotels (near Blyde River Canyon)
         const requiresGraskopOnly = destination === 'mpumalanga' && 
           packageIds.some(id => GRASKOP_ONLY_PACKAGES.includes(id));
+        
+        // Umhlanga destination should filter to Umhlanga area under Durban
+        const requiresUmhlangaArea = destination === 'umhlanga';
+        
+        // Determine area filter
+        let areaFilter: string | undefined;
+        if (requiresGraskopOnly) {
+          areaFilter = 'Graskop';
+        } else if (requiresUmhlangaArea) {
+          areaFilter = 'Umhlanga';
+        }
         
         const result = await searchRMSHotels({
           destination,
@@ -310,7 +322,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           adults,
           children,
           rooms,
-          areaName: requiresGraskopOnly ? 'Graskop' : undefined,
+          areaName: areaFilter,
         });
 
         if (result.length === 0) {
