@@ -307,12 +307,17 @@ export function Hero({ onGetQuote }: HeroProps) {
         // Umhlanga destination should filter to Umhlanga area under Durban
         const requiresUmhlangaArea = destination === 'umhlanga';
         
+        // Durban destination should filter to Golden Mile area only (excludes Umhlanga hotels)
+        const requiresGoldenMileArea = destination === 'durban';
+        
         // Determine area filter
         let areaFilter: string | undefined;
         if (requiresGraskopOnly) {
           areaFilter = 'Graskop';
         } else if (requiresUmhlangaArea) {
           areaFilter = 'Umhlanga';
+        } else if (requiresGoldenMileArea) {
+          areaFilter = 'Golden Mile';
         }
         
         const result = await searchRMSHotels({
