@@ -227,6 +227,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Trisara Phuket' },
   ],
   'pretoria': [
+    { name: 'Mint Hotel The Blyde', includesBreakfast: true },
     { name: 'Blyde Penthouse Apartments' },
   ],
 };
