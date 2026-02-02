@@ -138,6 +138,7 @@ const hotels: Record<string, Hotel[]> = {
     { id: 'riverside-sun', name: 'Riverside Sun', nightlyRate: 1400, roomType: 'Standard Room', amenities: 'River views', guests: '2 adults', images: ['https://images.unsplash.com/photo-1582719508461-905c673771fd?w=300'] },
   ],
   'The Blyde Getaways': [
+    { id: 'mint-hotel-blyde', name: 'Mint Hotel The Blyde', nightlyRate: 1320, roomType: '2 Sleeper Room', amenities: 'Breakfast included, Spa access', guests: '2 adults', images: ['https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=300'] },
     { id: 'blyde-penthouse', name: 'Blyde Penthouse Apartments', nightlyRate: 2600, roomType: '4 Sleeper Penthouse', amenities: 'Spa access, Resort facilities', guests: '4 adults', images: ['https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=300'] },
   ],
   'Bali Adventure': [
