@@ -66,7 +66,7 @@ const destinationShortNames: Record<string, string> = {
   'bali': 'Bali',
   'dubai': 'Dubai',
   'thailand': 'Thailand',
-  'pretoria': 'Pretoria',
+  'pretoria': 'The Blyde',
 };
 
 // Budget Option pricing tiers (per night) - 10 hotels A-J
@@ -227,10 +227,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Trisara Phuket' },
   ],
   'pretoria': [
-    { name: 'Sheraton Pretoria Hotel' },
-    { name: 'Irene Country Lodge' },
-    { name: 'Kievits Kroon' },
-    { name: 'Castello di Monte' },
+    { name: 'Mint Hotel The Blyde' },
   ],
 };
 
@@ -996,16 +993,16 @@ export const packages: Package[] = [
     duration: '2-3 nights'
   },
 
-  // ============= PRETORIA PACKAGES =============
+  // ============= THE BLYDE PACKAGES =============
   {
-    id: 'pret1',
-    name: 'PRETORIA - CITY TOUR',
-    shortName: 'City Tour',
-    description: 'Includes accommodation, Breakfast at hotel, The Union Buildings, Church Square, Melrose House, Voortrekker Monument.',
+    id: 'bly1',
+    name: 'BLY1 - THE BLYDE PLEASURE RESORT WITH 60 MINUTE HOT STONE MASSAGE AND SPA MOMENTS',
+    shortName: 'Blyde Spa Getaway',
+    description: 'Includes accommodation at Mint Hotel The Blyde, 60 minute hot stone massage, spa moments experience at The Blyde FUNtastic Pleasure Resort.',
     destination: 'pretoria',
-    basePrice: 1200,
-    kidsPrice: 600,
-    activitiesIncluded: ['Accommodation', 'The Union Buildings', 'Church Square', 'Melrose House', 'Voortrekker Monument'],
+    basePrice: 950,
+    kidsPrice: 500,
+    activitiesIncluded: ['Accommodation at Mint Hotel The Blyde', '60 minute hot stone massage', 'Spa moments experience', 'Access to The Blyde FUNtastic Pleasure Resort facilities'],
     duration: '2 nights'
   },
 
@@ -1150,7 +1147,7 @@ export const destinations: Destination[] = [
   { id: 'knysna', name: 'Knysna', shortName: 'Knysna', country: 'South Africa', description: 'Garden Route gem with lagoon, forests, and oyster experiences.', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', startingPrice: 2750, popular: false, international: false },
   { id: 'vaal-river', name: 'Vaal River', shortName: 'Vaal', country: 'South Africa', description: 'Riverside relaxation and water sports just outside Johannesburg.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800', startingPrice: 2250, popular: false, international: false },
   { id: 'bela-bela', name: 'Bela Bela', shortName: 'Bela Bela', country: 'South Africa', description: 'Hot springs, game reserves, and adventure activities in Limpopo.', image: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800', startingPrice: 2600, popular: false, international: false },
-  { id: 'pretoria', name: 'Pretoria', shortName: 'Pretoria', country: 'South Africa', description: 'Jacaranda city with historic landmarks and cultural attractions.', image: 'https://images.unsplash.com/photo-1577948000111-9c970dfe3743?w=800', startingPrice: 2400, popular: false, international: false },
+  { id: 'pretoria', name: 'The Blyde FUNtastic Pleasure Resort, Pretoria', shortName: 'The Blyde', country: 'South Africa', description: 'Luxury spa resort with hot stone massage, relaxation facilities and scenic getaway experiences.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800', startingPrice: 2200, popular: false, international: false },
   { id: 'bali', name: 'Bali', shortName: 'Bali', country: 'Indonesia', description: 'Volcanic mountains, rice paddies, beaches and coral reefs.', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800', startingPrice: 4600, popular: true, international: true },
   { id: 'dubai', name: 'Dubai', shortName: 'Dubai', country: 'UAE', description: 'Luxury shopping, ultramodern architecture and lively nightlife.', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800', startingPrice: 5600, popular: true, international: true },
   { id: 'thailand', name: 'Thailand', shortName: 'Thailand', country: 'Thailand', description: 'Tropical beaches, opulent palaces, ancient ruins and ornate temples.', image: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=800', startingPrice: 5000, popular: true, international: true },

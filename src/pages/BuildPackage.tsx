@@ -210,7 +210,7 @@ const activitiesByDestination: Record<string, Activity[]> = {
     { name: 'Elephant Sanctuary and Harties Cableway', image: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=100', rates: { adult: 940, child: 580, freeAge: 0, childAgeRange: { min: 6, max: 18 } } },
     { name: 'Elephant Sanctuary and 2 Hour Fine Dining Luxury Cruise', image: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=100', rates: { adult: 1600, child: 900, freeAge: 0, childAgeRange: { min: 6, max: 18 } } },
     { name: 'Maboneng outing with 60 minute Swedish Massage', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 1050, child: 750, freeAge: 0, childAgeRange: { min: 6, max: 18 } } },
-    { name: 'Gautrain Ride to Pretoria and Pretoria Tour', image: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=100', rates: { adult: 1040, child: 900, freeAge: 0, childAgeRange: { min: 6, max: 18 } } },
+    { name: 'The Blyde Spa - 60 Minute Hot Stone Massage', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 750, child: 400, freeAge: 0, childAgeRange: { min: 12, max: 18 } } },
   ],
   'Mpumalanga Getaways': [
     { name: 'Mpumalanga Sightseeing Tour', image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=100', rates: { adult: 1700, child: 900, freeAge: 0 } },
