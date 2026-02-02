@@ -389,6 +389,25 @@ function generateHotels(): Hotel[] {
           forFamilyWithKids: true,
         });
       });
+    } else if (destId === 'pretoria') {
+      // The Blyde: Only 2 specific hotels based on capacity
+      const pretoriaHotels = premiumHotelNames['pretoria'] || [];
+      pretoriaHotels.forEach((hotel, index) => {
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        allHotels.push({
+          id: `${destId}-premium-${letter.toLowerCase()}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.nightlyRate || 2600,
+          rating: 4.5 + (Math.random() * 0.5),
+          type: 'premium',
+          amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
+          image: premiumImages[index % premiumImages.length],
+          capacity: hotel.capacity === '2_sleeper' ? 2 : 4,
+          roomType: hotel.capacity === '2_sleeper' ? '2 Sleeper Room' : '4 Sleeper Penthouse',
+          includesBreakfast: hotel.includesBreakfast,
+        });
+      });
     } else {
       hotelLetters.forEach((letter, index) => {
         allHotels.push({
@@ -1368,6 +1387,16 @@ export function calculateAllQuotes(request: Omit<QuoteRequest, 'selectedHotelId'
         }
       }
       // If total guests <= 2, only show 2-sleeper options
+      return h.capacity === 2;
+    }
+    
+    // For Pretoria (The Blyde) premium hotels with capacity info, filter by guest count
+    if (h.destination === 'pretoria' && h.type === 'premium' && h.capacity) {
+      // If total guests > 2, only show 4-sleeper options (Blyde Penthouse)
+      if (totalGuests > 2) {
+        return h.capacity >= 4;
+      }
+      // If total guests <= 2, only show 2-sleeper options (Mint Hotel)
       return h.capacity === 2;
     }
     
