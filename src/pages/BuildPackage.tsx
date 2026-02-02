@@ -137,11 +137,8 @@ const hotels: Record<string, Hotel[]> = {
     { id: 'emerald-resort', name: 'Emerald Resort & Casino', nightlyRate: 1600, roomType: 'Chalet', amenities: 'Casino, Aquadome', guests: '4 adults', images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300'] },
     { id: 'riverside-sun', name: 'Riverside Sun', nightlyRate: 1400, roomType: 'Standard Room', amenities: 'River views', guests: '2 adults', images: ['https://images.unsplash.com/photo-1582719508461-905c673771fd?w=300'] },
   ],
-  'Pretoria Getaways': [
-    { id: 'sheraton-pretoria', name: 'Sheraton Pretoria Hotel', nightlyRate: 1800, roomType: 'Deluxe Room', amenities: 'City centre, pool', guests: '2 adults', images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300'] },
-    { id: 'irene-country', name: 'Irene Country Lodge', nightlyRate: 2200, roomType: 'Country Room', amenities: 'Spa, gardens', guests: '2 adults', images: ['https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=300'] },
-    { id: 'kievits-kroon', name: 'Kievits Kroon', nightlyRate: 1900, roomType: 'Vineyard Room', amenities: 'Wine estate', guests: '2 adults', images: ['https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=300'] },
-    { id: 'castello-monte', name: 'Castello di Monte', nightlyRate: 2400, roomType: 'Tuscan Suite', amenities: 'Luxury boutique', guests: '2 adults', images: ['https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=300'] },
+  'The Blyde Getaways': [
+    { id: 'blyde-penthouse', name: 'Blyde Penthouse Apartments', nightlyRate: 2600, roomType: '4 Sleeper Penthouse', amenities: 'Spa access, Resort facilities', guests: '4 adults', images: ['https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=300'] },
   ],
   'Bali Adventure': [
     { id: 'hanging-gardens', name: 'Hanging Gardens of Bali', nightlyRate: 4500, roomType: 'Infinity Pool Villa', amenities: 'Breakfast, spa', guests: '2 adults', images: ['https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=300'] },
@@ -210,7 +207,7 @@ const activitiesByDestination: Record<string, Activity[]> = {
     { name: 'Elephant Sanctuary and Harties Cableway', image: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=100', rates: { adult: 940, child: 580, freeAge: 0, childAgeRange: { min: 6, max: 18 } } },
     { name: 'Elephant Sanctuary and 2 Hour Fine Dining Luxury Cruise', image: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=100', rates: { adult: 1600, child: 900, freeAge: 0, childAgeRange: { min: 6, max: 18 } } },
     { name: 'Maboneng outing with 60 minute Swedish Massage', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 1050, child: 750, freeAge: 0, childAgeRange: { min: 6, max: 18 } } },
-    { name: 'The Blyde Spa - 60 Minute Hot Stone Massage', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 750, child: 400, freeAge: 0, childAgeRange: { min: 12, max: 18 } } },
+    { name: 'The Blyde Spa - 60 Minute Hot Stone Massage', image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=100', rates: { adult: 1200, child: 600, freeAge: 0, childAgeRange: { min: 12, max: 18 } } },
   ],
   'Mpumalanga Getaways': [
     { name: 'Mpumalanga Sightseeing Tour', image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=100', rates: { adult: 1700, child: 900, freeAge: 0 } },

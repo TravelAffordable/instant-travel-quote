@@ -227,7 +227,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Trisara Phuket' },
   ],
   'pretoria': [
-    { name: 'Mint Hotel The Blyde' },
+    { name: 'Blyde Penthouse Apartments' },
   ],
 };
 
@@ -998,11 +998,11 @@ export const packages: Package[] = [
     id: 'bly1',
     name: 'BLY1 - THE BLYDE PLEASURE RESORT WITH 60 MINUTE HOT STONE MASSAGE AND SPA MOMENTS',
     shortName: 'Blyde Spa Getaway',
-    description: 'Includes accommodation at Mint Hotel The Blyde, 60 minute hot stone massage, spa moments experience at The Blyde FUNtastic Pleasure Resort.',
+    description: 'Includes accommodation at Blyde Penthouse Apartments, 60 minute hot stone massage, spa moments experience at The Blyde FUNtastic Pleasure Resort.',
     destination: 'pretoria',
-    basePrice: 950,
-    kidsPrice: 500,
-    activitiesIncluded: ['Accommodation at Mint Hotel The Blyde', '60 minute hot stone massage', 'Spa moments experience', 'Access to The Blyde FUNtastic Pleasure Resort facilities'],
+    basePrice: 1200,
+    kidsPrice: 600,
+    activitiesIncluded: ['Accommodation at Blyde Penthouse Apartments', '60 minute hot stone massage', 'Spa moments experience', 'Access to The Blyde FUNtastic Pleasure Resort facilities'],
     duration: '2 nights'
   },
 
