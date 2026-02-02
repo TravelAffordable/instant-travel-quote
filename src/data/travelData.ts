@@ -37,6 +37,11 @@ export interface Package {
   activitiesIncluded: string[];
   duration: string;
   image?: string;
+  // Optional: different inclusions for affordable tier (e.g., outside resort)
+  affordableInclusions?: string[];
+  // Optional: disable budget tier with custom message
+  budgetDisabled?: boolean;
+  budgetDisabledMessage?: string;
 }
 
 export interface Destination {
@@ -236,6 +241,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
 const pretoriaAffordableHotels: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
   { name: 'The Blyde Crystal Lagoon Affordable 2 Sleeper Option 1', price: 912, roomType: '2 Sleeper Room', capacity: 2 },
   { name: 'The Blyde Crystal Lagoon Affordable 2 Sleeper Option 2', price: 941, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'The Blyde Crystal Lagoon Affordable 4 Sleeper Option 1', price: 1300, roomType: '4 Sleeper Room', capacity: 4 },
 ];
 
 // Generate hotels dynamically
@@ -1047,19 +1053,12 @@ export const packages: Package[] = [
     destination: 'pretoria',
     basePrice: 1200,
     kidsPrice: 600,
-    activitiesIncluded: ['Accommodation at Blyde Penthouse Apartments', '60 minute hot stone massage', 'Spa moments experience', 'Access to The Blyde FUNtastic Pleasure Resort facilities'],
-    duration: '2 nights'
-  },
-  {
-    id: 'bly2',
-    name: 'BLY2 - THE BLYDE CRYSTAL LAGOON AFFORDABLE GETAWAY WITH FULL DAY LAGOON ACCESS',
-    shortName: 'Crystal Lagoon Getaway',
-    description: 'Includes accommodation a few kilometers outside The Blyde, with full day entry access to the Blyde Crystal Lagoon including all facilities.',
-    destination: 'pretoria',
-    basePrice: 500,
-    kidsPrice: 300,
-    activitiesIncluded: ['Accommodation (a few kilometers outside The Blyde)', 'Full Day entry access to the Blyde Crystal Lagoon including all facilities'],
-    duration: '2 nights'
+    activitiesIncluded: ['2 nights accommodation inside the Blyde Crystal Lagoon', '60 minute hot stone massage with amazing spa moments for couples, or trendy group massage session if you are a group', 'Full Access to The Blyde FUNtastic Crystal Lagoon including all facilities, pools and restaurants'],
+    duration: '2 nights',
+    // Flag to indicate affordable tier has different inclusions (outside the resort)
+    affordableInclusions: ['2 nights quality accommodation just outside the Blyde Crystal Lagoon', '60 minute hot stone massage with amazing spa moments for couples, or trendy group massage session if you are a group', 'Full Day Access to The Blyde FUNtastic Crystal Lagoon including all facilities, pools and restaurants'],
+    budgetDisabled: true,
+    budgetDisabledMessage: 'This option is currently not available, please check out the Affordable and Premium options.'
   },
 
   // ============= BELA BELA PACKAGES =============
@@ -1247,6 +1246,10 @@ export interface QuoteResult {
   children: number;
   rooms: number;
   activitiesIncluded: string[];
+  // Optional: alternative inclusions for affordable tier (when different from premium)
+  affordableInclusions?: string[];
+  // Hotel tier to determine which inclusions to display
+  hotelTier?: 'budget' | 'affordable' | 'premium';
   breakdown: {
     label: string;
     amount: number;
