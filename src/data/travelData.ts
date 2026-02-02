@@ -335,7 +335,7 @@ function generateHotels(): Hotel[] {
       pretoriaAffordableHotels.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         allHotels.push({
-          id: `${destId}-affordable-${letter.toLowerCase()}`,
+          id: `${destId}-affordable-${hotel.capacity}sleeper-${letter.toLowerCase()}`,
           name: hotel.name,
           destination: destId,
           pricePerNight: hotel.price,
@@ -343,7 +343,7 @@ function generateHotels(): Hotel[] {
           type: 'affordable',
           amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant', 'Crystal Lagoon Access'],
           image: affordableImages[index % affordableImages.length],
-          capacity: 2,
+          capacity: hotel.capacity,
           roomType: hotel.roomType,
         });
       });
