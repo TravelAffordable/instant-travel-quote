@@ -232,6 +232,12 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
   ],
 };
 
+// Custom The Blyde (Pretoria) Affordable Hotels - outside The Blyde, includes Crystal Lagoon access
+const pretoriaAffordableHotels: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
+  { name: 'The Blyde Crystal Lagoon Affordable 2 Sleeper Option 1', price: 912, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'The Blyde Crystal Lagoon Affordable 2 Sleeper Option 2', price: 941, roomType: '2 Sleeper Room', capacity: 2 },
+];
+
 // Generate hotels dynamically
 function generateHotels(): Hotel[] {
   const allHotels: Hotel[] = [];
@@ -318,18 +324,37 @@ function generateHotels(): Hotel[] {
     }
 
     // Affordable Hotels (10 per destination: A-J) - use generic format for all destinations
-    hotelLetters.forEach((letter, index) => {
-      allHotels.push({
-        id: `${destId}-affordable-${letter.toLowerCase()}`,
-        name: `${shortName} Affordable Hotel ${letter}`,
-        destination: destId,
-        pricePerNight: affordablePrices[index],
-        rating: 4.0 + (Math.random() * 0.3),
-        type: 'affordable',
-        amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant'],
-        image: affordableImages[index % affordableImages.length],
+    // Pretoria (The Blyde) uses custom affordable hotels
+    if (destId === 'pretoria') {
+      pretoriaAffordableHotels.forEach((hotel, index) => {
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        allHotels.push({
+          id: `${destId}-affordable-${letter.toLowerCase()}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: 4.0 + (Math.random() * 0.3),
+          type: 'affordable',
+          amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant', 'Crystal Lagoon Access'],
+          image: affordableImages[index % affordableImages.length],
+          capacity: 2,
+          roomType: hotel.roomType,
+        });
       });
-    });
+    } else {
+      hotelLetters.forEach((letter, index) => {
+        allHotels.push({
+          id: `${destId}-affordable-${letter.toLowerCase()}`,
+          name: `${shortName} Affordable Hotel ${letter}`,
+          destination: destId,
+          pricePerNight: affordablePrices[index],
+          rating: 4.0 + (Math.random() * 0.3),
+          type: 'affordable',
+          amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant'],
+          image: affordableImages[index % affordableImages.length],
+        });
+      });
+    }
 
     // Premium Hotels (10 per destination: A-J)
     // Use custom names and prices for Durban, default for others
@@ -1023,6 +1048,17 @@ export const packages: Package[] = [
     basePrice: 1200,
     kidsPrice: 600,
     activitiesIncluded: ['Accommodation at Blyde Penthouse Apartments', '60 minute hot stone massage', 'Spa moments experience', 'Access to The Blyde FUNtastic Pleasure Resort facilities'],
+    duration: '2 nights'
+  },
+  {
+    id: 'bly2',
+    name: 'BLY2 - THE BLYDE CRYSTAL LAGOON AFFORDABLE GETAWAY WITH FULL DAY LAGOON ACCESS',
+    shortName: 'Crystal Lagoon Getaway',
+    description: 'Includes accommodation a few kilometers outside The Blyde, with full day entry access to the Blyde Crystal Lagoon including all facilities.',
+    destination: 'pretoria',
+    basePrice: 500,
+    kidsPrice: 300,
+    activitiesIncluded: ['Accommodation (a few kilometers outside The Blyde)', 'Full Day entry access to the Blyde Crystal Lagoon including all facilities'],
     duration: '2 nights'
   },
 
