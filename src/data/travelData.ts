@@ -147,7 +147,7 @@ const affordablePrices = [1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 
 const premiumPrices = [2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100];
 
 // Premium Hotels with their actual names (prices will use premiumPrices array - 4 hotels per destination)
-const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean }[]> = {
+const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean; capacity?: '2_sleeper' | '4_sleeper'; nightlyRate?: number }[]> = {
   'harties': [
     { name: 'Villa Paradiso Hotel' },
     { name: 'Cocomo Boutique Hotel' },
@@ -227,8 +227,8 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Trisara Phuket' },
   ],
   'pretoria': [
-    { name: 'Mint Hotel The Blyde', includesBreakfast: true },
-    { name: 'Blyde Penthouse Apartments' },
+    { name: 'Mint Hotel The Blyde', includesBreakfast: true, capacity: '2_sleeper', nightlyRate: 1320 },
+    { name: 'Blyde Penthouse Apartments', capacity: '4_sleeper', nightlyRate: 2600 },
   ],
 };
 
