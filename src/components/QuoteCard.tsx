@@ -172,34 +172,36 @@ export function QuoteCard({
             <Package className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
             <div className="flex-1">
               <p className="font-semibold text-sm text-primary mb-2">Package: {quote.packageName}</p>
-              {quote.activitiesIncluded && quote.activitiesIncluded.length > 0 && (
-                <ul className="space-y-1.5">
-                  <li className="flex items-start gap-2 text-sm text-foreground">
-                    <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                    <span>{quote.nights} nights accommodation</span>
-                  </li>
-                  {quote.activitiesIncluded
-                    .filter(activity => {
-                      const lower = activity.toLowerCase();
-                      return !lower.includes('accommodation') && 
-                             !lower.includes('breakfast at selected') &&
-                             !lower.includes('buffet breakfast at selected') &&
-                             !lower.includes('room only');
-                    })
-                    .map((activity, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+              {(() => {
+                // Use affordableInclusions if hotel tier is affordable and package has them
+                const inclusions = (quote.hotelTier === 'affordable' && quote.affordableInclusions && quote.affordableInclusions.length > 0)
+                  ? quote.affordableInclusions
+                  : quote.activitiesIncluded;
+                
+                return inclusions && inclusions.length > 0 ? (
+                  <ul className="space-y-1.5">
+                    {inclusions
+                      .filter(activity => {
+                        const lower = activity.toLowerCase();
+                        return !lower.includes('breakfast at selected') &&
+                               !lower.includes('buffet breakfast at selected') &&
+                               !lower.includes('room only');
+                      })
+                      .map((activity, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                          <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                          <span>{activity}</span>
+                        </li>
+                      ))}
+                    {quote.includesBreakfast && (
+                      <li className="flex items-start gap-2 text-sm text-foreground">
                         <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                        <span>{activity}</span>
+                        <span>Breakfast included</span>
                       </li>
-                    ))}
-                  {quote.includesBreakfast && (
-                    <li className="flex items-start gap-2 text-sm text-foreground">
-                      <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                      <span>Breakfast included</span>
-                    </li>
-                  )}
-                </ul>
-              )}
+                    )}
+                  </ul>
+                ) : null;
+              })()}
             </div>
           </div>
         </div>

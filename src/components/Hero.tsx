@@ -128,6 +128,8 @@ function convertRMSToQuotes(
         children: params.children,
         rooms: params.rooms,
         activitiesIncluded: pkg.activitiesIncluded,
+        affordableInclusions: (pkg as any).affordableInclusions,
+        hotelTier: hotel.tier,
         breakdown: [
           { label: `Accommodation (${nights} nights × ${params.rooms} rooms)`, amount: accommodationCost },
           { label: 'Activities', amount: activitiesCost },
@@ -211,6 +213,17 @@ export function Hero({ onGetQuote }: HeroProps) {
     setFamilyQuotes([]);
     clearRMSHotels();
   }, [destination, clearRMSHotels]);
+
+  // Reset to affordable if budget-disabled package is selected while budget is active
+  useEffect(() => {
+    if (accommodationType === 'budget' && packageIds.length > 0) {
+      const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
+      const hasBudgetDisabled = selectedPkgs.some(p => (p as any).budgetDisabled);
+      if (hasBudgetDisabled) {
+        setAccommodationType('affordable');
+      }
+    }
+  }, [packageIds, accommodationType]);
 
   // Show family split option when 4+ adults AND children
   useEffect(() => {
@@ -812,41 +825,59 @@ export function Hero({ onGetQuote }: HeroProps) {
               {bookingType === 'with-activities' && (
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Accommodation Type</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setAccommodationType('budget')}
-                      className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
-                        accommodationType === 'budget'
-                          ? 'border-green-500 bg-green-50 text-green-700'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50/50'
-                      }`}
-                    >
-                      Budget Option
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAccommodationType('affordable')}
-                      className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
-                        accommodationType === 'affordable'
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-primary/50 hover:bg-primary/5'
-                      }`}
-                    >
-                      Affordable
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAccommodationType('premium')}
-                      className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
-                        accommodationType === 'premium'
-                          ? 'border-purple-500 bg-purple-50 text-purple-700'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300 hover:bg-purple-50/50'
-                      }`}
-                    >
-                      Premium
-                    </button>
-                  </div>
+                  {(() => {
+                    // Check if any selected package has budget disabled
+                    const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
+                    const budgetDisabledPkg = selectedPkgs.find(p => p.budgetDisabled);
+                    const isBudgetDisabled = !!budgetDisabledPkg;
+                    const budgetDisabledMessage = budgetDisabledPkg?.budgetDisabledMessage || 'Budget option is not available for this package.';
+                    
+                    return (
+                      <div className="grid grid-cols-3 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isBudgetDisabled) {
+                              toast.info(budgetDisabledMessage);
+                              return;
+                            }
+                            setAccommodationType('budget');
+                          }}
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                            isBudgetDisabled
+                              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : accommodationType === 'budget'
+                                ? 'border-green-500 bg-green-50 text-green-700'
+                                : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50/50'
+                          }`}
+                        >
+                          Budget Option
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAccommodationType('affordable')}
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                            accommodationType === 'affordable'
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-gray-200 bg-white text-gray-700 hover:border-primary/50 hover:bg-primary/5'
+                          }`}
+                        >
+                          Affordable
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAccommodationType('premium')}
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                            accommodationType === 'premium'
+                              ? 'border-purple-500 bg-purple-50 text-purple-700'
+                              : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300 hover:bg-purple-50/50'
+                          }`}
+                        >
+                          Premium
+                        </button>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
