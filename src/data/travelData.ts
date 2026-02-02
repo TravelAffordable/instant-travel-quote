@@ -1411,6 +1411,16 @@ export function calculateAllQuotes(request: Omit<QuoteRequest, 'selectedHotelId'
     }
     
     // Affordable tier uses generic hotels for all destinations (no capacity filtering)
+
+    // For Pretoria (The Blyde) affordable hotels with capacity info, filter by guest count
+    if (h.destination === 'pretoria' && h.type === 'affordable' && h.capacity) {
+      // If total guests > 2, only show 4-sleeper options
+      if (totalGuests > 2) {
+        return h.capacity >= 4;
+      }
+      // If total guests <= 2, only show 2-sleeper options
+      return h.capacity === 2;
+    }
     
     // For Durban premium hotels with capacity info, filter by guest count and composition
     if (h.destination === 'durban' && h.type === 'premium' && h.capacity) {
