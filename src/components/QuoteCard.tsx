@@ -6,6 +6,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { type QuoteResult } from '@/data/travelData';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import useEmblaCarousel from 'embla-carousel-react';
+import { 
+  hartiesBudget2SleeperImages, 
+  hartiesAffordable2SleeperImages 
+} from '@/data/hartiesHotelImages';
 
 interface QuoteCardProps {
   quote: QuoteResult;
@@ -16,15 +20,28 @@ interface QuoteCardProps {
   onWhatsApp: () => void;
 }
 
-// Generate placeholder images for the carousel (4 images per hotel)
-const getHotelImages = (hotelImage: string, hotelName: string) => {
-  // Use the main image and generate 3 variations using placeholder
-  return [
-    hotelImage,
-    hotelImage,
-    hotelImage,
-    hotelImage,
-  ];
+// Get hotel images - uses specific carousel images for Harties properties
+const getHotelImages = (hotelImage: string, hotelName: string): string[] => {
+  // Check if this is a Harties Budget 2-sleeper hotel
+  const budgetMatch = hotelName.match(/Harties Budget 2 Sleeper Option (\d+)/i);
+  if (budgetMatch) {
+    const optionNum = parseInt(budgetMatch[1], 10);
+    if (optionNum >= 1 && optionNum <= 8) {
+      return hartiesBudget2SleeperImages[optionNum - 1] || [hotelImage];
+    }
+  }
+  
+  // Check if this is a Harties Affordable 2-sleeper hotel
+  const affordableMatch = hotelName.match(/Harties Affordable 2 Sleeper Option (\d+)/i);
+  if (affordableMatch) {
+    const optionNum = parseInt(affordableMatch[1], 10);
+    if (optionNum >= 1 && optionNum <= 8) {
+      return hartiesAffordable2SleeperImages[optionNum - 1] || [hotelImage];
+    }
+  }
+  
+  // Default: use the main image repeated (for non-Harties hotels)
+  return [hotelImage, hotelImage, hotelImage, hotelImage];
 };
 
 export function QuoteCard({ 

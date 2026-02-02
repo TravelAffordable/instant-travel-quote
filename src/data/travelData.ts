@@ -1,6 +1,10 @@
 // Complete Travel Affordable package and hotel data with pricing
 
 import sunCityImage from '@/assets/sun-city.jpeg';
+import { 
+  hartiesBudget2SleeperPrimaryImages, 
+  hartiesAffordable2SleeperPrimaryImages 
+} from './hartiesHotelImages';
 
 export interface Hotel {
   id: string;
@@ -244,6 +248,32 @@ const pretoriaAffordableHotels: { name: string; price: number; roomType: string;
   { name: 'The Blyde Crystal Lagoon Affordable 4 Sleeper Option 1', price: 1300, roomType: '4 Sleeper Room', capacity: 4 },
 ];
 
+// Custom Hartbeespoort Budget Hotels (2-sleeper) - with actual hotel images
+// Real hotel names are in docs/HARTIES_BUDGET_HOTELS_REFERENCE.md for booking reference
+const hartiesBudgetHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
+  { name: 'Harties Budget 2 Sleeper Option 1', price: 600, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Budget 2 Sleeper Option 2', price: 633, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Budget 2 Sleeper Option 3', price: 680, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Budget 2 Sleeper Option 4', price: 690, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Budget 2 Sleeper Option 5', price: 695, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Budget 2 Sleeper Option 6', price: 707, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Budget 2 Sleeper Option 7', price: 713, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Budget 2 Sleeper Option 8', price: 720, roomType: '2 Sleeper Room', capacity: 2 },
+];
+
+// Custom Hartbeespoort Affordable Hotels (2-sleeper) - with actual hotel images  
+// Real hotel names are in docs/HARTIES_AFFORDABLE_HOTELS_REFERENCE.md for booking reference
+const hartiesAffordableHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
+  { name: 'Harties Affordable 2 Sleeper Option 1', price: 1053, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Affordable 2 Sleeper Option 2', price: 1071, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Affordable 2 Sleeper Option 3', price: 1080, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Affordable 2 Sleeper Option 4', price: 1080, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Affordable 2 Sleeper Option 5', price: 1080, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Affordable 2 Sleeper Option 6', price: 1100, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Affordable 2 Sleeper Option 7', price: 1100, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Affordable 2 Sleeper Option 8', price: 1100, roomType: '2 Sleeper Room', capacity: 2 },
+];
+
 // Generate hotels dynamically
 function generateHotels(): Hotel[] {
   const allHotels: Hotel[] = [];
@@ -278,7 +308,7 @@ function generateHotels(): Hotel[] {
     ];
 
     // Budget Option Hotels (10 per destination: A-J)
-    // Use custom names and prices for Durban, default for others
+    // Use custom names and prices for Durban and Harties, default for others
     if (destId === 'durban') {
       // Add 2-sleeper rooms
       durbanBudgetHotels2Sleeper.forEach((hotel, index) => {
@@ -312,6 +342,22 @@ function generateHotels(): Hotel[] {
           roomType: hotel.roomType,
         });
       });
+    } else if (destId === 'harties') {
+      // Hartbeespoort Budget 2-sleeper hotels with custom images
+      hartiesBudgetHotels2Sleeper.forEach((hotel, index) => {
+        allHotels.push({
+          id: `${destId}-very-affordable-2sleeper-${index + 1}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: 3.5 + (Math.random() * 0.5),
+          type: 'very-affordable',
+          amenities: ['WiFi', 'Parking', 'TV', 'Braai'],
+          image: hartiesBudget2SleeperPrimaryImages[index] || budgetImages[0],
+          capacity: 2,
+          roomType: hotel.roomType,
+        });
+      });
     } else {
       hotelLetters.forEach((letter, index) => {
         allHotels.push({
@@ -330,7 +376,7 @@ function generateHotels(): Hotel[] {
     }
 
     // Affordable Hotels (10 per destination: A-J) - use generic format for all destinations
-    // Pretoria (The Blyde) uses custom affordable hotels
+    // Pretoria (The Blyde) and Harties use custom affordable hotels
     if (destId === 'pretoria') {
       pretoriaAffordableHotels.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
@@ -344,6 +390,22 @@ function generateHotels(): Hotel[] {
           amenities: ['WiFi', 'Pool', 'Parking', 'Restaurant', 'Crystal Lagoon Access'],
           image: affordableImages[index % affordableImages.length],
           capacity: hotel.capacity,
+          roomType: hotel.roomType,
+        });
+      });
+    } else if (destId === 'harties') {
+      // Hartbeespoort Affordable 2-sleeper hotels with custom images
+      hartiesAffordableHotels2Sleeper.forEach((hotel, index) => {
+        allHotels.push({
+          id: `${destId}-affordable-2sleeper-${index + 1}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: 4.0 + (Math.random() * 0.3),
+          type: 'affordable',
+          amenities: ['WiFi', 'Pool', 'Parking', 'Braai', 'Mountain Views'],
+          image: hartiesAffordable2SleeperPrimaryImages[index] || affordableImages[0],
+          capacity: 2,
           roomType: hotel.roomType,
         });
       });
