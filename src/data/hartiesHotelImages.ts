@@ -61,6 +61,28 @@ import hartiesAffordable2s6b from '@/assets/hotels/harties-affordable-2s-6b.jpg'
 import hartiesAffordable2s6c from '@/assets/hotels/harties-affordable-2s-6c.jpg';
 import hartiesAffordable2s6d from '@/assets/hotels/harties-affordable-2s-6d.jpg';
 
+// Budget 4-Sleeper Images
+import hartiesBudget4s1a from '@/assets/hotels/harties-budget-4s-1a.jpg';
+import hartiesBudget4s1b from '@/assets/hotels/harties-budget-4s-1b.jpg';
+import hartiesBudget4s1c from '@/assets/hotels/harties-budget-4s-1c.jpg';
+import hartiesBudget4s1d from '@/assets/hotels/harties-budget-4s-1d.jpg';
+import hartiesBudget4s2a from '@/assets/hotels/harties-budget-4s-2a.jpg';
+import hartiesBudget4s2b from '@/assets/hotels/harties-budget-4s-2b.jpg';
+import hartiesBudget4s2c from '@/assets/hotels/harties-budget-4s-2c.jpg';
+import hartiesBudget4s2d from '@/assets/hotels/harties-budget-4s-2d.jpg';
+import hartiesBudget4s3a from '@/assets/hotels/harties-budget-4s-3a.jpg';
+import hartiesBudget4s3b from '@/assets/hotels/harties-budget-4s-3b.jpg';
+import hartiesBudget4s3c from '@/assets/hotels/harties-budget-4s-3c.jpg';
+import hartiesBudget4s3d from '@/assets/hotels/harties-budget-4s-3d.jpg';
+import hartiesBudget4s4a from '@/assets/hotels/harties-budget-4s-4a.jpg';
+import hartiesBudget4s4b from '@/assets/hotels/harties-budget-4s-4b.jpg';
+import hartiesBudget4s4c from '@/assets/hotels/harties-budget-4s-4c.jpg';
+import hartiesBudget4s4d from '@/assets/hotels/harties-budget-4s-4d.jpg';
+import hartiesBudget4s8a from '@/assets/hotels/harties-budget-4s-8a.jpg';
+import hartiesBudget4s8b from '@/assets/hotels/harties-budget-4s-8b.jpg';
+import hartiesBudget4s8c from '@/assets/hotels/harties-budget-4s-8c.jpg';
+import hartiesBudget4s8d from '@/assets/hotels/harties-budget-4s-8d.jpg';
+
 // Export image arrays by hotel option (for carousel - 4 images each)
 export const hartiesBudget2SleeperImages: string[][] = [
   [hartiesBudget2s1a, hartiesBudget2s1b, hartiesBudget2s1c, hartiesBudget2s1d], // Option 1 - Out of Africa Lodge
@@ -71,6 +93,17 @@ export const hartiesBudget2SleeperImages: string[][] = [
   [hartiesBudget2s6a, hartiesBudget2s6b, hartiesBudget2s6c, hartiesBudget2s6d], // Option 6 - Cottage 3 Cynthias Country
   [hartiesBudget2s7a, hartiesBudget2s7b, hartiesBudget2s7c, hartiesBudget2s7d], // Option 7 - Chalet 5 Cynthias Country
   [hartiesBudget2s8a, hartiesBudget2s8b, hartiesBudget2s8c, hartiesBudget2s8d], // Option 8 - The Hart House
+];
+
+export const hartiesBudget4SleeperImages: string[][] = [
+  [hartiesBudget4s1a, hartiesBudget4s1b, hartiesBudget4s1c, hartiesBudget4s1d], // Option 1 - Harties Lodge Bay View 7
+  [hartiesBudget4s2a, hartiesBudget4s2b, hartiesBudget4s2c, hartiesBudget4s2d], // Option 2 - Harties Is Africa Safari Lodge
+  [hartiesBudget4s3a, hartiesBudget4s3b, hartiesBudget4s3c, hartiesBudget4s3d], // Option 3 - Mill Lane Farmhouse
+  [hartiesBudget4s4a, hartiesBudget4s4b, hartiesBudget4s4c, hartiesBudget4s4d], // Option 4 - Edwil's Place
+  [hartiesBudget2s3a, hartiesBudget2s3b, hartiesBudget2s3c, hartiesBudget2s3d], // Option 5 - Chalet 2 Cynthias Country (same as 2-sleeper)
+  [hartiesBudget2s4a, hartiesBudget2s4b, hartiesBudget2s4c, hartiesBudget2s4d], // Option 6 - Sun Deck Lodge (same as 2-sleeper)
+  [hartiesBudget2s1a, hartiesBudget2s1b, hartiesBudget2s1c, hartiesBudget2s1d], // Option 7 - Out of Africa Lodge (same as 2-sleeper)
+  [hartiesBudget4s8a, hartiesBudget4s8b, hartiesBudget4s8c, hartiesBudget4s8d], // Option 8 - Mount Amanzi
 ];
 
 export const hartiesAffordable2SleeperImages: string[][] = [
@@ -86,6 +119,7 @@ export const hartiesAffordable2SleeperImages: string[][] = [
 
 // Primary image for hotel cards (first image from each set)
 export const hartiesBudget2SleeperPrimaryImages: string[] = hartiesBudget2SleeperImages.map(images => images[0]);
+export const hartiesBudget4SleeperPrimaryImages: string[] = hartiesBudget4SleeperImages.map(images => images[0]);
 export const hartiesAffordable2SleeperPrimaryImages: string[] = hartiesAffordable2SleeperImages.map(images => images[0]);
 
 // Helper function to get all images for a specific Harties hotel
@@ -100,7 +134,9 @@ export function getHartiesHotelImages(
       : hartiesAffordable2SleeperImages[optionNumber - 1];
     return images || [];
   }
-  // 4-sleeper images not yet generated - return empty for now
+  if (capacity === '4_sleeper' && tier === 'budget') {
+    return hartiesBudget4SleeperImages[optionNumber - 1] || [];
+  }
   return [];
 }
 
