@@ -64,6 +64,10 @@ import hartiesAffordable2s6a from '@/assets/hotels/harties-affordable-2s-6a.jpg'
 import hartiesAffordable2s6b from '@/assets/hotels/harties-affordable-2s-6b.jpg';
 import hartiesAffordable2s6c from '@/assets/hotels/harties-affordable-2s-6c.jpg';
 import hartiesAffordable2s6d from '@/assets/hotels/harties-affordable-2s-6d.jpg';
+import hartiesAffordable2s9a from '@/assets/hotels/harties-affordable-2s-9a.jpg';
+import hartiesAffordable2s9b from '@/assets/hotels/harties-affordable-2s-9b.jpg';
+import hartiesAffordable2s9c from '@/assets/hotels/harties-affordable-2s-9c.jpg';
+import hartiesAffordable2s9d from '@/assets/hotels/harties-affordable-2s-9d.jpg';
 
 // Budget 4-Sleeper Images
 import hartiesBudget4s1a from '@/assets/hotels/harties-budget-4s-1a.jpg';
@@ -121,12 +125,27 @@ export const hartiesAffordable2SleeperImages: string[][] = [
   [hartiesAffordable2s6a, hartiesAffordable2s6b, hartiesAffordable2s6c, hartiesAffordable2s6d], // Option 6 - Harties Lodge Meerhof Bay View 7
   [hartiesAffordable2s6a, hartiesAffordable2s6b, hartiesAffordable2s6c, hartiesAffordable2s6d], // Option 7 - Harties Lodge Meerhof Bay View 8 (same property)
   [hartiesAffordable2s6a, hartiesAffordable2s6b, hartiesAffordable2s6c, hartiesAffordable2s6d], // Option 8 - Harties Lodge Meerhof Bay View 6 (same property)
+  [hartiesAffordable2s9a, hartiesAffordable2s9b, hartiesAffordable2s9c, hartiesAffordable2s9d], // Option 9 - Leopard Lodge
+];
+
+// Affordable 4-Sleeper Images (reuse 2-sleeper images for same properties)
+export const hartiesAffordable4SleeperImages: string[][] = [
+  [hartiesAffordable2s1a, hartiesAffordable2s1b, hartiesAffordable2s1c, hartiesAffordable2s1d], // Option 1 - Guesthouse Serenity
+  [hartiesAffordable2s2a, hartiesAffordable2s2b, hartiesAffordable2s2c, hartiesAffordable2s2d], // Option 2 - Leopard Lodge (placeholder)
+  [hartiesAffordable2s3a, hartiesAffordable2s3b, hartiesAffordable2s3c, hartiesAffordable2s3d], // Option 3 - La Bastide Guest House
+  [hartiesAffordable2s4a, hartiesAffordable2s4b, hartiesAffordable2s4c, hartiesAffordable2s4d], // Option 4 - Cathy & P Guesthouse
+  [hartiesAffordable2s5a, hartiesAffordable2s5b, hartiesAffordable2s5c, hartiesAffordable2s5d], // Option 5 - Pamensky Accommodation
+  [hartiesAffordable2s6a, hartiesAffordable2s6b, hartiesAffordable2s6c, hartiesAffordable2s6d], // Option 6 - Damascus Bush Lodge
+  [hartiesAffordable2s6a, hartiesAffordable2s6b, hartiesAffordable2s6c, hartiesAffordable2s6d], // Option 7 - Cock & Bull
+  [hartiesAffordable2s6a, hartiesAffordable2s6b, hartiesAffordable2s6c, hartiesAffordable2s6d], // Option 8 - Mansion Guest House
+  [hartiesAffordable2s9a, hartiesAffordable2s9b, hartiesAffordable2s9c, hartiesAffordable2s9d], // Option 9 - Leopard Lodge
 ];
 
 // Primary image for hotel cards (first image from each set)
 export const hartiesBudget2SleeperPrimaryImages: string[] = hartiesBudget2SleeperImages.map(images => images[0]);
 export const hartiesBudget4SleeperPrimaryImages: string[] = hartiesBudget4SleeperImages.map(images => images[0]);
 export const hartiesAffordable2SleeperPrimaryImages: string[] = hartiesAffordable2SleeperImages.map(images => images[0]);
+export const hartiesAffordable4SleeperPrimaryImages: string[] = hartiesAffordable4SleeperImages.map(images => images[0]);
 
 // Helper function to get all images for a specific Harties hotel
 export function getHartiesHotelImages(
@@ -140,8 +159,11 @@ export function getHartiesHotelImages(
       : hartiesAffordable2SleeperImages[optionNumber - 1];
     return images || [];
   }
-  if (capacity === '4_sleeper' && tier === 'budget') {
-    return hartiesBudget4SleeperImages[optionNumber - 1] || [];
+  if (capacity === '4_sleeper') {
+    const images = tier === 'budget'
+      ? hartiesBudget4SleeperImages[optionNumber - 1]
+      : hartiesAffordable4SleeperImages[optionNumber - 1];
+    return images || [];
   }
   return [];
 }
