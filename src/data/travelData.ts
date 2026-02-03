@@ -250,14 +250,8 @@ const pretoriaAffordableHotels: { name: string; price: number; roomType: string;
 
 // Custom Hartbeespoort Budget Hotels (2-sleeper) - with actual hotel images
 // Real hotel names are in docs/HARTIES_BUDGET_HOTELS_REFERENCE.md for booking reference
+// Only showing options with real user-provided images (Options 1-7 hidden - AI images)
 const hartiesBudgetHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
-  { name: 'Harties Budget 2 Sleeper Option 1', price: 600, roomType: '2 Sleeper Room', capacity: 2 },
-  { name: 'Harties Budget 2 Sleeper Option 2', price: 633, roomType: '2 Sleeper Room', capacity: 2 },
-  { name: 'Harties Budget 2 Sleeper Option 3', price: 680, roomType: '2 Sleeper Room', capacity: 2 },
-  { name: 'Harties Budget 2 Sleeper Option 4', price: 690, roomType: '2 Sleeper Room', capacity: 2 },
-  { name: 'Harties Budget 2 Sleeper Option 5', price: 695, roomType: '2 Sleeper Room', capacity: 2 },
-  { name: 'Harties Budget 2 Sleeper Option 6', price: 707, roomType: '2 Sleeper Room', capacity: 2 },
-  { name: 'Harties Budget 2 Sleeper Option 7', price: 713, roomType: '2 Sleeper Room', capacity: 2 },
   { name: 'Harties Budget 2 Sleeper Option 8', price: 720, roomType: '2 Sleeper Room', capacity: 2 },
 ];
 
