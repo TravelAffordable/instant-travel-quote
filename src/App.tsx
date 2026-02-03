@@ -10,6 +10,7 @@ import BuildPackage from "./pages/BuildPackage";
 import HotelbedsTest from "./pages/HotelbedsTest";
 import HotelbedsLetterPage from "./pages/HotelbedsLetter";
 import RateAdmin from "./pages/RateAdmin";
+import ImageCompare from "./pages/ImageCompare";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/hotelbeds-test" element={<HotelbedsTest />} />
           <Route path="/hotelbeds-letter" element={<HotelbedsLetterPage />} />
           <Route path="/rate-admin" element={<RateAdmin />} />
+          <Route path="/compare/harties/budget/2-sleeper/8" element={<ImageCompare />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
