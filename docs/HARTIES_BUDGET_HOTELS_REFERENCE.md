@@ -14,6 +14,7 @@ This document maps the display names to real hotel names for easy reference when
 | Harties Budget 2 Sleeper Option 6 | Cottage 3 at Cynthias Country | R707 | Entire vacation home |
 | Harties Budget 2 Sleeper Option 7 | Chalet 5 At Cynthias Country | R713 | Entire chalet |
 | Harties Budget 2 Sleeper Option 8 | The Hart House | R720 | Private room |
+| Harties Budget 2 Sleeper Option 9 | Mansion Lodge | R750 | Private room |
 
 ## 4-Sleeper Options (3-4 guests)
 
@@ -27,6 +28,7 @@ This document maps the display names to real hotel names for easy reference when
 | Harties Budget 4 Sleeper Option 6 | Sun Deck Lodge | R1,400 | Private room |
 | Harties Budget 4 Sleeper Option 7 | Out of Africa Lodge | R1,440 | Entire chalet |
 | Harties Budget 4 Sleeper Option 8 | Mount Amanzi | R1,500 | One-Bedroom Chalet |
+| Harties Budget 4 Sleeper Option 9 | Mansion Lodge | R1,670 | 2 Double Rooms |
 
 ---
 
