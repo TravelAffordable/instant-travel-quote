@@ -258,7 +258,7 @@ const hartiesBudgetHotels2Sleeper: { name: string; price: number; roomType: stri
 
 // Custom Hartbeespoort Affordable Hotels (2-sleeper) - with actual hotel images  
 // Real hotel names are in docs/HARTIES_AFFORDABLE_HOTELS_REFERENCE.md for booking reference
-const hartiesAffordableHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
+const hartiesAffordableHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
   { name: 'Harties Affordable 2 Sleeper Option 1', price: 1053, roomType: '2 Sleeper Room', capacity: 2 },
   { name: 'Harties Affordable 2 Sleeper Option 2', price: 1071, roomType: '2 Sleeper Room', capacity: 2 },
   { name: 'Harties Affordable 2 Sleeper Option 3', price: 1080, roomType: '2 Sleeper Room', capacity: 2 },
@@ -267,6 +267,7 @@ const hartiesAffordableHotels2Sleeper: { name: string; price: number; roomType: 
   { name: 'Harties Affordable 2 Sleeper Option 6', price: 1100, roomType: '2 Sleeper Room', capacity: 2 },
   { name: 'Harties Affordable 2 Sleeper Option 7', price: 1100, roomType: '2 Sleeper Room', capacity: 2 },
   { name: 'Harties Affordable 2 Sleeper Option 8', price: 1100, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Affordable 2 Sleeper Option 9', price: 1500, roomType: '2 Sleeper Room', capacity: 2, includesBreakfast: true },
 ];
 
 // Generate hotels dynamically
