@@ -8,6 +8,7 @@ import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import useEmblaCarousel from 'embla-carousel-react';
 import { 
   hartiesBudget2SleeperImages, 
+  hartiesBudget4SleeperImages,
   hartiesAffordable2SleeperImages 
 } from '@/data/hartiesHotelImages';
 
@@ -23,11 +24,20 @@ interface QuoteCardProps {
 // Get hotel images - uses specific carousel images for Harties properties
 const getHotelImages = (hotelImage: string, hotelName: string): string[] => {
   // Check if this is a Harties Budget 2-sleeper hotel
-  const budgetMatch = hotelName.match(/Harties Budget 2 Sleeper Option (\d+)/i);
-  if (budgetMatch) {
-    const optionNum = parseInt(budgetMatch[1], 10);
+  const budget2sMatch = hotelName.match(/Harties Budget 2 Sleeper Option (\d+)/i);
+  if (budget2sMatch) {
+    const optionNum = parseInt(budget2sMatch[1], 10);
     if (optionNum >= 1 && optionNum <= 8) {
       return hartiesBudget2SleeperImages[optionNum - 1] || [hotelImage];
+    }
+  }
+  
+  // Check if this is a Harties Budget 4-sleeper hotel
+  const budget4sMatch = hotelName.match(/Harties Budget 4 Sleeper Option (\d+)/i);
+  if (budget4sMatch) {
+    const optionNum = parseInt(budget4sMatch[1], 10);
+    if (optionNum >= 1 && optionNum <= 8) {
+      return hartiesBudget4SleeperImages[optionNum - 1] || [hotelImage];
     }
   }
   
