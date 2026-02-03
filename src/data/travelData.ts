@@ -253,6 +253,7 @@ const pretoriaAffordableHotels: { name: string; price: number; roomType: string;
 // Only showing options with real user-provided images (Options 1-7 hidden - AI images)
 const hartiesBudgetHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
   { name: 'Harties Budget 2 Sleeper Option 8', price: 720, roomType: '2 Sleeper Room', capacity: 2 },
+  { name: 'Harties Budget 2 Sleeper Option 9', price: 750, roomType: '2 Sleeper Room', capacity: 2 },
 ];
 
 // Custom Hartbeespoort Affordable Hotels (2-sleeper) - with actual hotel images  

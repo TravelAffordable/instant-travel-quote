@@ -34,6 +34,10 @@ import hartiesBudget2s8a from '@/assets/hotels/harties-budget-2s-8a.jpg';
 import hartiesBudget2s8b from '@/assets/hotels/harties-budget-2s-8b.jpg';
 import hartiesBudget2s8c from '@/assets/hotels/harties-budget-2s-8c.jpg';
 import hartiesBudget2s8d from '@/assets/hotels/harties-budget-2s-8d.jpg';
+import hartiesBudget2s9a from '@/assets/hotels/harties-budget-2s-9a.jpg';
+import hartiesBudget2s9b from '@/assets/hotels/harties-budget-2s-9b.jpg';
+import hartiesBudget2s9c from '@/assets/hotels/harties-budget-2s-9c.jpg';
+import hartiesBudget2s9d from '@/assets/hotels/harties-budget-2s-9d.jpg';
 
 // Affordable 2-Sleeper Images (6 options × 4 images each - Options 7 & 8 use Option 6 images as they're the same property)
 import hartiesAffordable2s1a from '@/assets/hotels/harties-affordable-2s-1a.jpg';
@@ -93,6 +97,7 @@ export const hartiesBudget2SleeperImages: string[][] = [
   [hartiesBudget2s6a, hartiesBudget2s6b, hartiesBudget2s6c, hartiesBudget2s6d], // Option 6 - Cottage 3 Cynthias Country
   [hartiesBudget2s7a, hartiesBudget2s7b, hartiesBudget2s7c, hartiesBudget2s7d], // Option 7 - Chalet 5 Cynthias Country
   [hartiesBudget2s8a, hartiesBudget2s8b, hartiesBudget2s8c, hartiesBudget2s8d], // Option 8 - The Hart House
+  [hartiesBudget2s9a, hartiesBudget2s9b, hartiesBudget2s9c, hartiesBudget2s9d], // Option 9 - Mansion Lodge
 ];
 
 export const hartiesBudget4SleeperImages: string[][] = [
@@ -104,6 +109,7 @@ export const hartiesBudget4SleeperImages: string[][] = [
   [hartiesBudget2s4a, hartiesBudget2s4b, hartiesBudget2s4c, hartiesBudget2s4d], // Option 6 - Sun Deck Lodge (same as 2-sleeper)
   [hartiesBudget2s1a, hartiesBudget2s1b, hartiesBudget2s1c, hartiesBudget2s1d], // Option 7 - Out of Africa Lodge (same as 2-sleeper)
   [hartiesBudget4s8a, hartiesBudget4s8b, hartiesBudget4s8c, hartiesBudget4s8d], // Option 8 - Mount Amanzi
+  [hartiesBudget2s9a, hartiesBudget2s9b, hartiesBudget2s9c, hartiesBudget2s9d], // Option 9 - Mansion Lodge (same images as 2-sleeper)
 ];
 
 export const hartiesAffordable2SleeperImages: string[][] = [
