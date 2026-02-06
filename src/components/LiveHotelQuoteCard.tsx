@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import { cn } from '@/lib/utils';
 import { 
   getActivitiesForDestination, 
@@ -333,10 +334,7 @@ function LiveHotelQuoteCardComponent({
     if (totalPeople >= 25) {
       const adultFees = adults * 550;
       let kidsFees = 0;
-      const kidFeePerChild = adults >= 2 ? 150 : 300;
-      childrenAges.forEach((age) => {
-        if (age >= 4 && age <= 16) kidsFees += kidFeePerChild;
-      });
+      kidsFees = calculateChildServiceFeesUtil(adults, childrenAges);
       return { adultFees, kidsFees, totalFees: adultFees + kidsFees };
     }
 
@@ -349,12 +347,7 @@ function LiveHotelQuoteCardComponent({
     
     const adultFees = adults * adultFeePerPerson;
     
-    let kidsFees = 0;
-    const kidFeePerChild = adults >= 2 ? 150 : 300;
-    childrenAges.forEach((age) => {
-      if (age >= 0 && age <= 3) kidsFees += 0; // Free for under 4
-      else if (age >= 4 && age <= 16) kidsFees += kidFeePerChild;
-    });
+    const kidsFees = calculateChildServiceFeesUtil(adults, childrenAges);
 
     return {
       adultFees,

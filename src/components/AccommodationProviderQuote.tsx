@@ -13,6 +13,7 @@ import {
   type Package
 } from '@/data/travelData';
 import { toast } from 'sonner';
+import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import { jsPDF } from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { addBookingDisclaimerToPDF, addQuoteDataToPDF, QuoteFormData } from '@/lib/pdfQuoteUtils';
@@ -176,11 +177,7 @@ export function AccommodationProviderQuote() {
     // Groups of 25+ use flat rate
     if (totalPeople >= 25) {
       const adultFees = adults * 400;
-      let kidsFees = 0;
-      const kidFeePerChild = adults >= 2 ? 150 : 300;
-      childrenAges.forEach((age) => {
-        if (age >= 4 && age <= 16) kidsFees += kidFeePerChild;
-      });
+      const kidsFees = calculateChildServiceFeesUtil(adults, childrenAges);
       return { adultFees, kidsFees, totalFees: adultFees + kidsFees };
     }
 
@@ -193,12 +190,7 @@ export function AccommodationProviderQuote() {
     
     const adultFees = adults * adultFeePerPerson;
     
-    let kidsFees = 0;
-    const kidFeePerChild = adults >= 2 ? 150 : 300;
-    childrenAges.forEach((age) => {
-      if (age >= 0 && age <= 3) kidsFees += 0; // Free for under 4
-      else if (age >= 4 && age <= 16) kidsFees += kidFeePerChild;
-    });
+    const kidsFees = calculateChildServiceFeesUtil(adults, childrenAges);
 
     return {
       adultFees,
