@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Mail, MessageSquare, Star, MapPin, Bus, Users, Download } from 'lucide-react';
 import { type LiveHotel } from '@/hooks/useHotelbedsSearch';
 import { type Package } from '@/data/travelData';
+import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import {
   Select,
   SelectContent,
@@ -155,11 +156,7 @@ export function BusHireHotelCard({
     // Groups of 25+ use flat rate
     if (totalPeople >= 25) {
       const adultFees = adults * 400;
-      let kidsFees = 0;
-      const kidFeePerChild = adults >= 2 ? 150 : 300;
-      childrenAges.forEach((age) => {
-        if (age >= 4 && age <= 16) kidsFees += kidFeePerChild;
-      });
+      const kidsFees = calculateChildServiceFeesUtil(adults, childrenAges);
       return { adultFees, kidsFees, totalFees: adultFees + kidsFees };
     }
 
@@ -172,12 +169,7 @@ export function BusHireHotelCard({
     
     const adultFees = adults * adultFeePerPerson;
     
-    let kidsFees = 0;
-    const kidFeePerChild = adults >= 2 ? 150 : 300;
-    childrenAges.forEach((age) => {
-      if (age >= 0 && age <= 3) kidsFees += 0; // Free for under 4
-      else if (age >= 4 && age <= 16) kidsFees += kidFeePerChild;
-    });
+    const kidsFees = calculateChildServiceFeesUtil(adults, childrenAges);
 
     return {
       adultFees,

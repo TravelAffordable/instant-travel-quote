@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle } from 'lucide-react';
+import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import { 
   destinations, 
   packages, 
@@ -40,12 +41,7 @@ function calculateServiceFees(adults: number, childrenAges: number[]): number {
 
   const totalAdultFees = adultFee * adults;
 
-  let childFees = 0;
-  childrenAges.forEach(age => {
-    if (age <= 2) childFees += 0;
-    else if (age <= 12) childFees += 200;
-    else childFees += 300;
-  });
+  const childFees = calculateChildServiceFeesUtil(adults, childrenAges);
 
   return totalAdultFees + childFees;
 }

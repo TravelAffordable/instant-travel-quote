@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Check, ChevronLeft, ChevronRight, MapPin, Users, Calendar, Search, Sparkles } from 'lucide-react';
 import { cn, formatCurrency } from '@/lib/utils';
+import { getChildServiceFeeForAge as getChildServiceFeeForAgeUtil } from '@/lib/childServiceFees';
 
 // Import images
 import sunCityImage from '@/assets/sun-city.jpeg';
@@ -451,9 +452,9 @@ const BuildPackage = () => {
     return 0;
   };
 
-  // Calculate fee per child based on adult count (matching travelData.ts)
-  const calculateChildFee = (numAdults: number) => {
-    return numAdults >= 2 ? 150 : 300;
+  // Calculate fee per child based on adult count using shared utility
+  const calculateChildFee = (numAdults: number, childAge: number, isFirstEligible: boolean) => {
+    return getChildServiceFeeForAgeUtil(numAdults, childAge, isFirstEligible);
   };
 
   // Calculate total cost
@@ -476,11 +477,14 @@ const BuildPackage = () => {
     const totalPackageCostPerAdult =
       adults > 0 ? costPerAdult + additionalFeePerAdult + totalAdultActivityCost / adults : 0;
 
-    const feePerChild = calculateChildFee(adults);
-
+    let eligibleChildIndex = 0;
     const totalPackageCostsPerChild = kidAges.reduce((acc, age) => {
       // Only children ages 4-16 are charged fees (matching travelData.ts)
       if (age < 4 || age > 16) return acc;
+
+      const isFirstEligible = eligibleChildIndex === 0;
+      eligibleChildIndex++;
+      const feePerChild = calculateChildFee(adults, age, isFirstEligible);
 
       const childActivityCost = selectedActivities.reduce((actAcc, activityName) => {
         const activity = activities.find(a => a.name === activityName);

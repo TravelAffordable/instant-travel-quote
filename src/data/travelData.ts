@@ -5,6 +5,7 @@ import {
   hartiesBudget2SleeperPrimaryImages, 
   hartiesAffordable2SleeperPrimaryImages 
 } from './hartiesHotelImages';
+import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
 export interface Hotel {
   id: string;
@@ -1344,11 +1345,13 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   let childrenOnceFees = 0;
   let validChildren = 0;
   
-  const kidFeePerChild = request.adults >= 2 ? 150 : 300;
+  let eligibleChildIndex = 0;
   
   request.childrenAges.forEach(age => {
     // Only children 4-16 are charged service fees
     if (age >= 4 && age <= 16) {
+      const isFirstEligible = eligibleChildIndex === 0;
+      eligibleChildIndex++;
       validChildren++;
       // Add package cost for child using tiered pricing if available
       if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
@@ -1367,8 +1370,8 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
         childrenPackageCost += pkg.basePrice * 0.5;
       }
       
-      // Once-off fees based on adult count
-      childrenOnceFees += kidFeePerChild;
+      // Once-off fees using shared child service fee utility
+      childrenOnceFees += getChildServiceFeeForAge(request.adults, age, isFirstEligible);
     }
     // Children under 4 are free
   });

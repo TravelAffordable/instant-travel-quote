@@ -8,6 +8,7 @@ import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getActivitiesForDestination, findActivityByName, type Activity } from '@/data/activitiesData';
+import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 
 interface RMSHotelQuotesProps {
   hotels: RMSHotel[];
@@ -61,12 +62,7 @@ function calculateServiceFees(adults: number, children: number, childrenAges: nu
 
   const totalAdultFees = adultFee * adults;
 
-  let childFees = 0;
-  childrenAges.forEach(age => {
-    if (age <= 2) childFees += 0;
-    else if (age <= 12) childFees += 200;
-    else childFees += 300;
-  });
+  const childFees = calculateChildServiceFeesUtil(adults, childrenAges);
 
   return totalAdultFees + childFees;
 }
