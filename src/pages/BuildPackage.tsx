@@ -453,8 +453,8 @@ const BuildPackage = () => {
   };
 
   // Calculate fee per child based on adult count using shared utility
-  const calculateChildFee = (numAdults: number, childAge: number, isFirstEligible: boolean) => {
-    return getChildServiceFeeForAgeUtil(numAdults, childAge, isFirstEligible);
+  const calculateChildFee = (numAdults: number, childAge: number, isFirstEligible: boolean, totalEligible: number) => {
+    return getChildServiceFeeForAgeUtil(numAdults, childAge, isFirstEligible, totalEligible);
   };
 
   // Calculate total cost
@@ -477,6 +477,8 @@ const BuildPackage = () => {
     const totalPackageCostPerAdult =
       adults > 0 ? costPerAdult + additionalFeePerAdult + totalAdultActivityCost / adults : 0;
 
+    const eligibleKids = kidAges.filter(age => age >= 4 && age <= 16);
+    const totalEligible = eligibleKids.length;
     let eligibleChildIndex = 0;
     const totalPackageCostsPerChild = kidAges.reduce((acc, age) => {
       // Only children ages 4-16 are charged fees (matching travelData.ts)
@@ -484,7 +486,7 @@ const BuildPackage = () => {
 
       const isFirstEligible = eligibleChildIndex === 0;
       eligibleChildIndex++;
-      const feePerChild = calculateChildFee(adults, age, isFirstEligible);
+      const feePerChild = calculateChildFee(adults, age, isFirstEligible, totalEligible);
 
       const childActivityCost = selectedActivities.reduce((actAcc, activityName) => {
         const activity = activities.find(a => a.name === activityName);

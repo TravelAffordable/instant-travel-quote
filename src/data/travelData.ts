@@ -1345,6 +1345,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   let childrenOnceFees = 0;
   let validChildren = 0;
   
+  const totalEligibleChildren = request.childrenAges.filter(age => age >= 4 && age <= 16).length;
   let eligibleChildIndex = 0;
   
   request.childrenAges.forEach(age => {
@@ -1371,7 +1372,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
       }
       
       // Once-off fees using shared child service fee utility
-      childrenOnceFees += getChildServiceFeeForAge(request.adults, age, isFirstEligible);
+      childrenOnceFees += getChildServiceFeeForAge(request.adults, age, isFirstEligible, totalEligibleChildren);
     }
     // Children under 4 are free
   });
