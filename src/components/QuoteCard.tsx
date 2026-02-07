@@ -6,11 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { type QuoteResult } from '@/data/travelData';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import useEmblaCarousel from 'embla-carousel-react';
-import { 
-  hartiesBudget2SleeperImages, 
-  hartiesBudget4SleeperImages,
-  hartiesAffordable2SleeperImages 
-} from '@/data/hartiesHotelImages';
+import { getActivityImagesForDestination } from '@/data/destinationActivityImages';
 
 interface QuoteCardProps {
   quote: QuoteResult;
@@ -21,37 +17,9 @@ interface QuoteCardProps {
   onWhatsApp: () => void;
 }
 
-// Get hotel images - uses specific carousel images for Harties properties
-const getHotelImages = (hotelImage: string, hotelName: string): string[] => {
-  // Check if this is a Harties Budget 2-sleeper hotel
-  const budget2sMatch = hotelName.match(/Harties Budget 2 Sleeper Option (\d+)/i);
-  if (budget2sMatch) {
-    const optionNum = parseInt(budget2sMatch[1], 10);
-    if (optionNum >= 1 && optionNum <= 8) {
-      return hartiesBudget2SleeperImages[optionNum - 1] || [hotelImage];
-    }
-  }
-  
-  // Check if this is a Harties Budget 4-sleeper hotel
-  const budget4sMatch = hotelName.match(/Harties Budget 4 Sleeper Option (\d+)/i);
-  if (budget4sMatch) {
-    const optionNum = parseInt(budget4sMatch[1], 10);
-    if (optionNum >= 1 && optionNum <= 8) {
-      return hartiesBudget4SleeperImages[optionNum - 1] || [hotelImage];
-    }
-  }
-  
-  // Check if this is a Harties Affordable 2-sleeper hotel
-  const affordableMatch = hotelName.match(/Harties Affordable 2 Sleeper Option (\d+)/i);
-  if (affordableMatch) {
-    const optionNum = parseInt(affordableMatch[1], 10);
-    if (optionNum >= 1 && optionNum <= 8) {
-      return hartiesAffordable2SleeperImages[optionNum - 1] || [hotelImage];
-    }
-  }
-  
-  // Default: use the main image repeated (for non-Harties hotels)
-  return [hotelImage, hotelImage, hotelImage, hotelImage];
+// Get activity images based on destination
+const getCarouselImages = (destination: string): string[] => {
+  return getActivityImagesForDestination(destination);
 };
 
 export function QuoteCard({ 
@@ -79,7 +47,7 @@ export function QuoteCard({
     }
   }, [emblaApi]);
 
-  const hotelImages = getHotelImages(quote.hotelImage, quote.hotelName);
+  const carouselImages = getCarouselImages(quote.destination);
 
   return (
     <Card 
@@ -93,11 +61,11 @@ export function QuoteCard({
       <div className="relative">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
-            {hotelImages.map((image, idx) => (
+            {carouselImages.map((image, idx) => (
               <div key={idx} className="flex-[0_0_100%] min-w-0">
                 <img 
                   src={image} 
-                  alt={`${quote.hotelName} - Image ${idx + 1}`}
+                  alt={`${quote.destination} activity ${idx + 1}`}
                   className="w-full h-56 object-cover"
                 />
               </div>
@@ -123,7 +91,7 @@ export function QuoteCard({
 
         {/* Slide Indicators */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-          {hotelImages.map((_, idx) => (
+          {carouselImages.map((_, idx) => (
             <div 
               key={idx} 
               className={`w-2 h-2 rounded-full transition-all ${
