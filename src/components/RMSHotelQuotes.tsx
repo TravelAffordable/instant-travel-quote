@@ -25,14 +25,16 @@ interface RMSHotelQuotesProps {
 }
 
 // Tier configuration
+const TIER_DESCRIPTION = 'Please use the price comparison options below to select an option that suits your budget. The prices you see includes hotel accommodation and the activities associated with the package. Please select the package that you like and that fits your budget, email or WhatsApp it to us using the buttons below so we can send you an accurate quote with available hotel options that suit your budget and preferences.';
+
 const TIER_CONFIG = {
   budget: {
-    name: 'BUDGET OPTIONS',
+    name: 'CHEAPEST OPTIONS',
     color: 'bg-green-500',
     textColor: 'text-green-700',
     borderColor: 'border-green-300',
     bgColor: 'bg-green-50',
-    description: 'Best value for money - comfortable and clean accommodations',
+    description: TIER_DESCRIPTION,
   },
   affordable: {
     name: 'AFFORDABLE OPTIONS',
@@ -40,7 +42,7 @@ const TIER_CONFIG = {
     textColor: 'text-blue-700',
     borderColor: 'border-blue-300',
     bgColor: 'bg-blue-50',
-    description: 'Great balance of comfort and price - excellent amenities',
+    description: TIER_DESCRIPTION,
   },
   premium: {
     name: 'PREMIUM OPTIONS',
@@ -48,7 +50,7 @@ const TIER_CONFIG = {
     textColor: 'text-purple-700',
     borderColor: 'border-purple-300',
     bgColor: 'bg-purple-50',
-    description: 'Luxury experience - top-tier facilities and service',
+    description: TIER_DESCRIPTION,
   },
 };
 
