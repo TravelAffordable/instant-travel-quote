@@ -176,7 +176,7 @@ export function LiveHotelQuotes({
         const premiumHotels = sortedHotels.slice(tierSize * 2);
         
         const tiers = [
-          { name: 'BUDGET OPTIONS', hotels: budgetHotels, color: 'bg-green-500', textColor: 'text-green-700', borderColor: 'border-green-300', bgColor: 'bg-green-50' },
+          { name: 'CHEAPEST OPTIONS', hotels: budgetHotels, color: 'bg-green-500', textColor: 'text-green-700', borderColor: 'border-green-300', bgColor: 'bg-green-50' },
           { name: 'AFFORDABLE OPTIONS', hotels: affordableHotels, color: 'bg-blue-500', textColor: 'text-blue-700', borderColor: 'border-blue-300', bgColor: 'bg-blue-50' },
           { name: 'PREMIUM OPTIONS', hotels: premiumHotels, color: 'bg-purple-500', textColor: 'text-purple-700', borderColor: 'border-purple-300', bgColor: 'bg-purple-50' },
         ];
@@ -218,7 +218,7 @@ export function LiveHotelQuotes({
                         </span>
                       </div>
                       <p className={`text-xs ${tier.textColor} mt-1 ml-7`}>
-                        {tier.name === 'BUDGET OPTIONS' && 'Best value for money - comfortable and clean accommodations'}
+                        {tier.name === 'CHEAPEST OPTIONS' && 'Best value for money - comfortable and clean accommodations'}
                         {tier.name === 'AFFORDABLE OPTIONS' && 'Great balance of comfort and price - excellent amenities'}
                         {tier.name === 'PREMIUM OPTIONS' && 'Luxury experience - top-tier facilities and service'}
                       </p>
