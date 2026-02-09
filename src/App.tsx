@@ -7,8 +7,6 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SocialAds from "./pages/SocialAds";
 import BuildPackage from "./pages/BuildPackage";
-import HotelbedsTest from "./pages/HotelbedsTest";
-import HotelbedsLetterPage from "./pages/HotelbedsLetter";
 import RateAdmin from "./pages/RateAdmin";
 import ImageCompare from "./pages/ImageCompare";
 
@@ -24,8 +22,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/ads" element={<SocialAds />} />
           <Route path="/build-package" element={<BuildPackage />} />
-          <Route path="/hotelbeds-test" element={<HotelbedsTest />} />
-          <Route path="/hotelbeds-letter" element={<HotelbedsLetterPage />} />
           <Route path="/rate-admin" element={<RateAdmin />} />
           <Route path="/compare/harties/budget/2-sleeper/8" element={<ImageCompare />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
