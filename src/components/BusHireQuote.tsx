@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
-import { Bus, Users, Calculator, ChevronDown, Check, Search, Building2, DollarSign } from 'lucide-react';
+import { Bus, Users, Calculator, ChevronDown, Check, Building2, Hotel } from 'lucide-react';
 import { 
   destinations, 
   packages, 
@@ -13,11 +13,15 @@ import {
   type Package
 } from '@/data/travelData';
 import { toast } from 'sonner';
-import { useHotelbedsSearch } from '@/hooks/useHotelbedsSearch';
-import { BusHireHotelCard } from './BusHireHotelCard';
+import { useRMSHotels } from '@/hooks/useRMSHotels';
+import { RMSHotelQuotes } from './RMSHotelQuotes';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 
 type UserType = 'bus-company' | 'group-organizer' | null;
+
+// Destinations that use RMS database hotels
+const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'cape-town', 'sun-city', 'mpumalanga', 'vaal', 'vaal-river', 'bela-bela'];
 
 export function BusHireQuote() {
   const [userType, setUserType] = useState<UserType>(null);
@@ -31,10 +35,11 @@ export function BusHireQuote() {
   const [childrenAges, setChildrenAges] = useState<number[]>([]);
   const [rooms, setRooms] = useState(10);
   const [busQuoteAmount, setBusQuoteAmount] = useState('');
-  const [maxBudget, setMaxBudget] = useState('');
-  const [hasSearched, setHasSearched] = useState(false);
+  const [hasCalculated, setHasCalculated] = useState(false);
+  const [showHotelAccommodation, setShowHotelAccommodation] = useState(false);
 
-  const { searchHotels, hotels: liveHotels, isLoading: isSearchingHotels, clearHotels } = useHotelbedsSearch();
+  // RMS hotel search
+  const { searchHotels: searchRMSHotels, hotels: rmsHotels, isLoading: isSearchingRMS, clearHotels: clearRMSHotels } = useRMSHotels();
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
   const selectedPackages = packages.filter(p => packageIds.includes(p.id));
@@ -42,8 +47,9 @@ export function BusHireQuote() {
   // Reset packages when destination changes
   useEffect(() => {
     setPackageIds([]);
-    clearHotels();
-    setHasSearched(false);
+    clearRMSHotels();
+    setHasCalculated(false);
+    setShowHotelAccommodation(false);
   }, [destination]);
 
   // Auto-set checkout to day after check-in
@@ -76,39 +82,104 @@ export function BusHireQuote() {
     );
   };
 
+  const totalPeople = adults + children;
+  const busAmount = parseFloat(busQuoteAmount) || 0;
+  const nights = checkIn && checkOut 
+    ? Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) 
+    : 0;
 
-  const handleSearch = async () => {
+  // Calculate the activities-only quote (no hotel)
+  const activitiesQuote = useMemo(() => {
+    if (selectedPackages.length === 0) return null;
+
+    let totalActivitiesCost = 0;
+
+    selectedPackages.forEach(pkg => {
+      // Adult package cost
+      totalActivitiesCost += pkg.basePrice * adults;
+
+      // Kids package cost
+      if (children > 0 && childrenAges.length > 0) {
+        childrenAges.forEach(age => {
+          if (age >= 4 && age <= 16) {
+            if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
+              const tier = pkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+              if (tier) {
+                totalActivitiesCost += tier.price;
+              } else if (pkg.kidsPrice) {
+                totalActivitiesCost += pkg.kidsPrice;
+              }
+            } else if (pkg.kidsPrice) {
+              totalActivitiesCost += pkg.kidsPrice;
+            }
+          }
+        });
+      } else if (children > 0 && pkg.kidsPrice) {
+        totalActivitiesCost += pkg.kidsPrice * children;
+      }
+    });
+
+    // Service fees
+    const totalPeopleCount = adults + childrenAges.length;
+    let serviceFees = 0;
+    if (totalPeopleCount >= 25) {
+      serviceFees = adults * 400 + calculateChildServiceFeesUtil(adults, childrenAges);
+    } else {
+      let adultFeePerPerson = 0;
+      if (adults === 1) adultFeePerPerson = 1000;
+      else if (adults >= 2 && adults <= 3) adultFeePerPerson = 850;
+      else if (adults >= 4 && adults <= 9) adultFeePerPerson = 800;
+      else if (adults >= 10) adultFeePerPerson = 750;
+      serviceFees = adults * adultFeePerPerson + calculateChildServiceFeesUtil(adults, childrenAges);
+    }
+
+    const activitiesAndServiceTotal = totalActivitiesCost + serviceFees;
+    const combinedTotal = activitiesAndServiceTotal + busAmount;
+    const perPerson = totalPeople > 0 ? roundToNearest10(combinedTotal / totalPeople) : 0;
+
+    return {
+      busAmount,
+      combinedTotal: roundToNearest10(combinedTotal),
+      perPerson,
+    };
+  }, [selectedPackages, adults, children, childrenAges, busAmount, totalPeople]);
+
+  const handleCalculate = () => {
     if (!destination || packageIds.length === 0 || !checkIn || !checkOut) {
       toast.error('Please fill in all required fields');
       return;
     }
+    setHasCalculated(true);
+    setShowHotelAccommodation(false);
+    clearRMSHotels();
+  };
 
-    setHasSearched(true);
+  const handleAddHotelAccommodation = async () => {
+    setShowHotelAccommodation(true);
 
-    // Search for hotels using Hotelbeds API
-    await searchHotels({
-      destination,
-      checkIn,
-      checkOut,
-      adults,
-      children,
-      childrenAges,
-      rooms,
-    });
+    // Search for hotels using RMS
+    if (RMS_DESTINATIONS.includes(destination)) {
+      const result = await searchRMSHotels({
+        destination,
+        checkIn,
+        checkOut,
+        adults,
+        children,
+        rooms,
+      });
+
+      if (result && result.length > 0) {
+        toast.success(`${result.length} hotels found!`);
+      } else {
+        toast.info('No hotels available for this destination. Please contact us directly.');
+      }
+    } else {
+      toast.info('Hotel options for this destination are coming soon. Please contact us directly.');
+    }
   };
 
   const today = new Date().toISOString().split('T')[0];
-  const nights = checkIn && checkOut 
-    ? Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) 
-    : 0;
-  const busAmount = parseFloat(busQuoteAmount) || 0;
   const destinationName = destinations.find(d => d.id === destination)?.name || destination;
-
-  // Filter hotels by budget
-  const budgetNumber = maxBudget ? parseInt(maxBudget.replace(/[^\d]/g, '')) : null;
-  const filteredHotels = budgetNumber 
-    ? liveHotels.filter(hotel => hotel.minRate <= budgetNumber)
-    : liveHotels;
 
   if (!userType) {
     return (
@@ -178,8 +249,9 @@ export function BusHireQuote() {
             variant={userType === 'bus-company' ? 'default' : 'outline'}
             onClick={() => {
               setUserType('bus-company');
-              clearHotels();
-              setHasSearched(false);
+              clearRMSHotels();
+              setHasCalculated(false);
+              setShowHotelAccommodation(false);
             }}
             className="gap-2"
           >
@@ -190,8 +262,9 @@ export function BusHireQuote() {
             variant={userType === 'group-organizer' ? 'default' : 'outline'}
             onClick={() => {
               setUserType('group-organizer');
-              clearHotels();
-              setHasSearched(false);
+              clearRMSHotels();
+              setHasCalculated(false);
+              setShowHotelAccommodation(false);
             }}
             className="gap-2"
           >
@@ -202,8 +275,9 @@ export function BusHireQuote() {
             variant="ghost"
             onClick={() => {
               setUserType(null);
-              clearHotels();
-              setHasSearched(false);
+              clearRMSHotels();
+              setHasCalculated(false);
+              setShowHotelAccommodation(false);
             }}
             className="text-gray-500"
           >
@@ -219,8 +293,8 @@ export function BusHireQuote() {
           </h2>
           <p className="text-gray-600">
             {userType === 'bus-company'
-              ? 'Enter your bus transport quote and search for hotels to generate complete quotes for your clients'
-              : 'Search for accommodation and activities, then add your transport costs for a complete group quote'}
+              ? 'Enter your bus transport quote and select fun activity packages to generate group quotes for your clients'
+              : 'Select your activities and add your transport costs for a complete group quote'}
           </p>
         </div>
 
@@ -401,143 +475,141 @@ export function BusHireQuote() {
                 </div>
               )}
 
-              {/* Search Button */}
+              {/* Calculate Button */}
               <Button
-                onClick={handleSearch}
-                disabled={isSearchingHotels}
+                onClick={handleCalculate}
                 className="w-full h-12 text-lg gap-2"
                 size="lg"
               >
-                {isSearchingHotels ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                    Searching Hotels...
-                  </>
-                ) : (
-                  <>
-                    <Search className="w-5 h-5" />
-                    Search Hotels & Calculate Quotes
-                  </>
-                )}
+                <Calculator className="w-5 h-5" />
+                Calculate Transport and Fun Activities
               </Button>
             </div>
           </div>
 
           {/* Results Section */}
-          {hasSearched && (
-            <div className="mt-8 bg-white rounded-2xl shadow-xl p-6 md:p-8 animate-fade-in">
-              {liveHotels.length === 0 ? (
-                <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
-                  <CardContent className="py-12 text-center">
-                    <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No Hotels Found</h3>
-                    <p className="text-muted-foreground text-sm">
-                      No hotels found for this destination and dates. Please try different dates or contact us directly for assistance.
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-6">
-                  {/* Disclaimer */}
-                  <div className="bg-muted/50 border border-border rounded-lg p-4 space-y-2">
-                    <p className="text-sm text-muted-foreground">
-                      Please note that the images shown are for illustration purposes only. The price includes 
-                      hotel accommodation, all activities associated with the package, and your bus transport quote.
-                      Select your preferred option and contact us via email or WhatsApp for an accurate quote with confirmed availability.
-                    </p>
-                    <p className="text-sm text-primary font-medium">
-                      Select any package below to download or send for booking confirmation.
+          {hasCalculated && activitiesQuote && (
+            <div className="mt-8 space-y-6 animate-fade-in">
+              {/* Bus + Activities Quote Summary */}
+              {selectedPackages.map(pkg => (
+                <div key={pkg.id} className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+                  {/* Package Header */}
+                  <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-4 mb-6">
+                    <h3 className="text-xl font-display font-bold text-primary uppercase text-center">
+                      {pkg.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1 text-center">
+                      {destinationName} • {nights} night{nights !== 1 ? 's' : ''} • {adults} adult{adults !== 1 ? 's' : ''}{children > 0 ? ` + ${children} child${children !== 1 ? 'ren' : ''}` : ''}
                     </p>
                   </div>
 
-                  {/* Budget Filter */}
-                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                    <Label className="flex items-center gap-2 text-sm font-medium mb-2">
-                      <DollarSign className="w-4 h-4 text-primary" />
-                      Filter by accommodation budget (Optional)
-                    </Label>
-                    <Input
-                      type="text"
-                      placeholder="e.g. R5000 - Enter max accommodation amount to filter hotels"
-                      value={maxBudget}
-                      onChange={(e) => setMaxBudget(e.target.value)}
-                      className="h-10 bg-background"
-                    />
-                    {budgetNumber && filteredHotels.length !== liveHotels.length && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Showing {filteredHotels.length} of {liveHotels.length} hotels within your budget
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Summary */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-blue-900 mb-2">Quote Summary</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <p className="text-blue-700">Destination</p>
-                        <p className="font-medium text-blue-900">{destinationName}</p>
-                      </div>
-                      <div>
-                        <p className="text-blue-700">Duration</p>
-                        <p className="font-medium text-blue-900">{nights} night{nights !== 1 ? 's' : ''}</p>
-                      </div>
-                      <div>
-                        <p className="text-blue-700">Group Size</p>
-                        <p className="font-medium text-blue-900">{adults} adults{children > 0 ? ` + ${children} children` : ''}</p>
-                      </div>
-                      <div>
-                        <p className="text-blue-700">Bus Transport</p>
-                        <p className="font-medium text-blue-900">{busAmount > 0 ? formatCurrency(busAmount) : 'Not specified'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Package Sections */}
-                  {selectedPackages.map((pkg) => (
-                    <div key={pkg.id} className="space-y-4">
-                      {/* Package Header */}
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                        <h3 className="text-lg font-display font-bold text-primary uppercase">
-                          {pkg.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''} available
-                        </p>
-                      </div>
-
-                      {/* Hotel Cards */}
-                      {filteredHotels.length === 0 ? (
-                        <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
-                          <CardContent className="py-8 text-center">
-                            <p className="text-muted-foreground text-sm">
-                              No hotels match your budget. Try increasing your budget amount or remove the filter to see all options.
-                            </p>
-                          </CardContent>
-                        </Card>
-                      ) : (
-                        <div className="space-y-4">
-                          {filteredHotels.map((hotel) => (
-                            <BusHireHotelCard
-                              key={`${pkg.id}-${hotel.code}`}
-                              hotel={hotel}
-                              pkg={pkg}
-                              nights={nights}
-                              adults={adults}
-                              children={children}
-                              childrenAges={childrenAges}
-                              rooms={rooms}
-                              busQuoteAmount={busAmount}
-                              destinationName={destinationName}
-                              checkIn={checkIn}
-                              checkOut={checkOut}
-                              userType={userType}
-                            />
-                          ))}
+                  {/* Package Inclusions */}
+                  <div className="bg-muted/30 border border-border rounded-lg p-4 mb-6">
+                    <p className="text-sm font-semibold text-foreground mb-3">Package Inclusions:</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {pkg.activitiesIncluded.map((activity, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span>{activity}</span>
                         </div>
-                      )}
+                      ))}
+                      <div className="flex items-start gap-2 text-sm text-blue-600 font-medium">
+                        <Bus className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span>Bus Transport Included</span>
+                      </div>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Simplified Price Display */}
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center text-lg">
+                        <span className="text-blue-800 font-medium flex items-center gap-2">
+                          <Bus className="w-5 h-5" />
+                          Bus Transport Quote
+                        </span>
+                        <span className="font-bold text-blue-900">{formatCurrency(activitiesQuote.busAmount)}</span>
+                      </div>
+
+                      <div className="border-t-2 border-blue-300 pt-4">
+                        <div className="flex justify-between items-center text-xl">
+                          <span className="text-blue-800 font-semibold">Combined Total</span>
+                          <span className="font-bold text-blue-900 text-2xl">{formatCurrency(activitiesQuote.combinedTotal)}</span>
+                        </div>
+                        <p className="text-sm text-blue-600 mt-1">(Bus transport + activities for the group)</p>
+                      </div>
+
+                      <div className="border-t-2 border-blue-300 pt-4">
+                        <div className="flex justify-between items-center text-lg">
+                          <span className="text-blue-800 font-medium">Per Person</span>
+                          <span className="font-bold text-primary text-2xl">{formatCurrency(activitiesQuote.perPerson)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Add Hotel Accommodation Button */}
+              {!showHotelAccommodation && (
+                <div className="text-center">
+                  <Button
+                    onClick={handleAddHotelAccommodation}
+                    disabled={isSearchingRMS}
+                    size="lg"
+                    className="h-14 text-lg px-8 gap-3 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg"
+                  >
+                    {isSearchingRMS ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                        Searching Hotels...
+                      </>
+                    ) : (
+                      <>
+                        <Hotel className="w-6 h-6" />
+                        Add Hotel Accommodation to Your Quote
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Hotel Accommodation Section */}
+              {showHotelAccommodation && (
+                <div className="animate-fade-in">
+                  {rmsHotels.length > 0 ? (
+                    <RMSHotelQuotes
+                      hotels={rmsHotels}
+                      packages={selectedPackages}
+                      nights={nights}
+                      adults={adults}
+                      children={children}
+                      childrenAgesString={childrenAges.join(',')}
+                      rooms={rooms}
+                      budget=""
+                      busQuoteAmount={busAmount}
+                    />
+                  ) : isSearchingRMS ? (
+                    <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
+                      <CardContent className="py-12 text-center">
+                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold mb-2">Searching for Hotels...</h3>
+                        <p className="text-muted-foreground text-sm">
+                          Finding the best accommodation options for your group.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card className="border-0 shadow-soft bg-gradient-to-br from-muted/50 to-background">
+                      <CardContent className="py-12 text-center">
+                        <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold mb-2">No Hotels Found</h3>
+                        <p className="text-muted-foreground text-sm">
+                          No hotels found for this destination and dates. Please contact us directly for assistance.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
               )}
             </div>

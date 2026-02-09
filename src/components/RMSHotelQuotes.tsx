@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Star, Coffee, MapPin, Phone, Mail, BedDouble } from 'lucide-react';
+import { Building2, Star, Coffee, MapPin, Phone, Mail, BedDouble, Bus } from 'lucide-react';
 import { type RMSHotel } from '@/hooks/useRMSHotels';
 import { type Package } from '@/data/travelData';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
@@ -22,6 +22,7 @@ interface RMSHotelQuotesProps {
   guestName?: string;
   guestTel?: string;
   guestEmail?: string;
+  busQuoteAmount?: number;
 }
 
 // Tier configuration
@@ -34,6 +35,7 @@ const TIER_CONFIG = {
     textColor: 'text-green-700',
     borderColor: 'border-green-300',
     bgColor: 'bg-green-50',
+    activeColor: 'bg-green-600',
     description: TIER_DESCRIPTION,
   },
   affordable: {
@@ -42,6 +44,7 @@ const TIER_CONFIG = {
     textColor: 'text-blue-700',
     borderColor: 'border-blue-300',
     bgColor: 'bg-blue-50',
+    activeColor: 'bg-blue-600',
     description: TIER_DESCRIPTION,
   },
   premium: {
@@ -50,6 +53,7 @@ const TIER_CONFIG = {
     textColor: 'text-purple-700',
     borderColor: 'border-purple-300',
     bgColor: 'bg-purple-50',
+    activeColor: 'bg-purple-600',
     description: TIER_DESCRIPTION,
   },
 };
@@ -63,11 +67,12 @@ function calculateServiceFees(adults: number, children: number, childrenAges: nu
   else adultFee = 750;
 
   const totalAdultFees = adultFee * adults;
-
   const childFees = calculateChildServiceFeesUtil(adults, childrenAges);
 
   return totalAdultFees + childFees;
 }
+
+type TierKey = 'budget' | 'affordable' | 'premium';
 
 export function RMSHotelQuotes({
   hotels,
@@ -81,7 +86,11 @@ export function RMSHotelQuotes({
   guestName = '',
   guestTel = '',
   guestEmail = '',
+  busQuoteAmount = 0,
 }: RMSHotelQuotesProps) {
+  // Active tier tab - default to 'budget' (cheapest)
+  const [activeTier, setActiveTier] = useState<TierKey>('budget');
+
   // Shared activity selection state
   const [sharedActivitySelections, setSharedActivitySelections] = useState<Record<string, string[]>>({});
 
@@ -118,7 +127,7 @@ export function RMSHotelQuotes({
 
   // Group hotels by tier
   const hotelsByTier = useMemo(() => {
-    const grouped: Record<string, RMSHotel[]> = {
+    const grouped: Record<TierKey, RMSHotel[]> = {
       budget: [],
       affordable: [],
       premium: [],
@@ -130,6 +139,17 @@ export function RMSHotelQuotes({
     });
     return grouped;
   }, [hotels]);
+
+  // Auto-select the first tier that has hotels
+  useEffect(() => {
+    if (hotelsByTier.budget.length > 0) {
+      setActiveTier('budget');
+    } else if (hotelsByTier.affordable.length > 0) {
+      setActiveTier('affordable');
+    } else if (hotelsByTier.premium.length > 0) {
+      setActiveTier('premium');
+    }
+  }, [hotelsByTier]);
 
   if (hotels.length === 0) {
     return (
@@ -145,6 +165,10 @@ export function RMSHotelQuotes({
     );
   }
 
+  const availableTiers = (['budget', 'affordable', 'premium'] as const).filter(
+    tier => hotelsByTier[tier].length > 0
+  );
+
   return (
     <div className="space-y-6">
       {/* Disclaimer */}
@@ -157,6 +181,41 @@ export function RMSHotelQuotes({
           Select any package below to send to us for booking confirmation.
         </p>
       </div>
+
+      {/* Tier Selection Buttons */}
+      <div className="flex flex-wrap gap-3 justify-center">
+        {availableTiers.map(tier => {
+          const config = TIER_CONFIG[tier];
+          const isActive = activeTier === tier;
+          return (
+            <Button
+              key={tier}
+              variant={isActive ? 'default' : 'outline'}
+              onClick={() => setActiveTier(tier)}
+              className={`gap-2 px-6 py-3 text-sm font-bold uppercase tracking-wide transition-all ${
+                isActive 
+                  ? `${config.activeColor} text-white hover:opacity-90 shadow-lg` 
+                  : `${config.borderColor} ${config.textColor} hover:${config.bgColor}`
+              }`}
+            >
+              <div className={`w-3 h-3 rounded-full ${isActive ? 'bg-white' : config.color}`} />
+              {config.name}
+              <span className="text-xs font-normal opacity-80">
+                ({hotelsByTier[tier].length})
+              </span>
+            </Button>
+          );
+        })}
+      </div>
+
+      {/* Active Tier Description */}
+      {activeTier && (
+        <div className={`${TIER_CONFIG[activeTier].bgColor} border-2 ${TIER_CONFIG[activeTier].borderColor} rounded-lg p-4`}>
+          <p className={`text-xs ${TIER_CONFIG[activeTier].textColor}`}>
+            {TIER_CONFIG[activeTier].description}
+          </p>
+        </div>
+      )}
 
       {/* Package Sections */}
       {selectedPackages.map((pkg) => {
@@ -174,6 +233,9 @@ export function RMSHotelQuotes({
 
         const serviceFees = calculateServiceFees(adults, children, childrenAges);
 
+        // Get hotels for active tier
+        const tierHotels = hotelsByTier[activeTier];
+
         return (
           <div key={pkg.id} className="space-y-6">
             {/* Package Header */}
@@ -182,7 +244,7 @@ export function RMSHotelQuotes({
                 {pkg.name}
               </h3>
               <p className="text-sm text-muted-foreground mt-1 text-center">
-                {hotels.length} hotel{hotels.length !== 1 ? 's' : ''} available
+                {tierHotels.length} hotel{tierHotels.length !== 1 ? 's' : ''} available in {TIER_CONFIG[activeTier].name.toLowerCase()}
               </p>
             </div>
 
@@ -213,143 +275,114 @@ export function RMSHotelQuotes({
               </div>
             </div>
 
-            {/* Hotels by Tier */}
-            <div className="space-y-8">
-              {(['budget', 'affordable', 'premium'] as const).map(tier => {
-                const tierHotels = hotelsByTier[tier];
-                if (tierHotels.length === 0) return null;
+            {/* Hotel Cards for Active Tier */}
+            <div className="space-y-4">
+              {tierHotels.map(hotel => {
+                const accommodationCost = hotel.totalRate * rooms;
+                let grandTotal = roundToNearest10(accommodationCost + activitiesCost + serviceFees);
+                
+                // Add bus quote if present
+                if (busQuoteAmount > 0) {
+                  grandTotal = roundToNearest10(grandTotal + busQuoteAmount);
+                }
+                
+                const perPerson = roundToNearest10(grandTotal / (adults + children));
 
-                const config = TIER_CONFIG[tier];
+                const busInfo = busQuoteAmount > 0 ? `\n🚌 Bus Transport: ${formatCurrency(busQuoteAmount)}` : '';
+                const whatsappMessage = `Hi! I'd like to book:\n\n🏨 ${hotel.name}\n📦 ${pkg.name}\n📅 ${nights} nights\n👥 ${adults} adults${children > 0 ? `, ${children} children` : ''}\n🛏️ ${rooms} room(s) - ${hotel.roomTypeName}${busInfo}\n💰 Total: ${formatCurrency(grandTotal)}\n\nGuest: ${guestName || 'Not provided'}\nTel: ${guestTel || 'Not provided'}\nEmail: ${guestEmail || 'Not provided'}`;
+
+                const emailSubject = `Booking Request: ${hotel.name} - ${pkg.name}`;
+                const emailBody = `Dear Travel Affordable,\n\nI would like to request a booking:\n\nHotel: ${hotel.name}\nPackage: ${pkg.name}\nNights: ${nights}\nGuests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\nRooms: ${rooms} x ${hotel.roomTypeName}${busQuoteAmount > 0 ? `\nBus Transport: ${formatCurrency(busQuoteAmount)}` : ''}\nTotal: ${formatCurrency(grandTotal)}\n\nGuest Details:\nName: ${guestName || 'Not provided'}\nTel: ${guestTel || 'Not provided'}\nEmail: ${guestEmail || 'Not provided'}\n\nPlease confirm availability.\n\nThank you!`;
 
                 return (
-                  <div key={tier} className="space-y-4">
-                    {/* Tier Header */}
-                    <div className={`${config.bgColor} border-2 ${config.borderColor} rounded-lg p-3`}>
-                      <div className="flex items-center gap-3">
-                        <div className={`${config.color} w-4 h-4 rounded-full`}></div>
-                        <h4 className={`text-lg font-bold ${config.textColor} uppercase tracking-wide`}>
-                          {config.name}
-                        </h4>
-                        <span className="text-sm text-muted-foreground">
-                          ({tierHotels.length} hotel{tierHotels.length !== 1 ? 's' : ''})
-                        </span>
-                      </div>
-                      <p className={`text-xs ${config.textColor} mt-1 ml-7`}>
-                        {config.description}
-                      </p>
-                    </div>
-
-                    {/* Hotel Cards */}
-                    <div className="space-y-4">
-                      {tierHotels.map(hotel => {
-                        const accommodationCost = hotel.totalRate * rooms;
-                        const grandTotal = roundToNearest10(accommodationCost + activitiesCost + serviceFees);
-                        const perPerson = roundToNearest10(grandTotal / (adults + children));
-
-                        const whatsappMessage = `Hi! I'd like to book:\n\n🏨 ${hotel.name}\n📦 ${pkg.name}\n📅 ${nights} nights\n👥 ${adults} adults${children > 0 ? `, ${children} children` : ''}\n🛏️ ${rooms} room(s) - ${hotel.roomTypeName}\n💰 Total: ${formatCurrency(grandTotal)}\n\nGuest: ${guestName || 'Not provided'}\nTel: ${guestTel || 'Not provided'}\nEmail: ${guestEmail || 'Not provided'}`;
-
-                        const emailSubject = `Booking Request: ${hotel.name} - ${pkg.name}`;
-                        const emailBody = `Dear Travel Affordable,\n\nI would like to request a booking:\n\nHotel: ${hotel.name}\nPackage: ${pkg.name}\nNights: ${nights}\nGuests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\nRooms: ${rooms} x ${hotel.roomTypeName}\nTotal: ${formatCurrency(grandTotal)}\n\nGuest Details:\nName: ${guestName || 'Not provided'}\nTel: ${guestTel || 'Not provided'}\nEmail: ${guestEmail || 'Not provided'}\n\nPlease confirm availability.\n\nThank you!`;
-
-                        return (
-                          <Card key={hotel.code} className="border shadow-sm overflow-hidden">
-                            <CardContent className="p-4">
-                              <div className="flex flex-col md:flex-row md:items-start gap-4">
-                                {/* Hotel Info */}
-                                <div className="flex-1">
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <h5 className="font-bold text-lg uppercase text-primary">
-                                        {hotel.name}
-                                      </h5>
-                                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                                        <MapPin className="w-3 h-3" />
-                                        {hotel.areaName}
-                                      </div>
-                                      <div className="flex items-center gap-2 mt-2">
-                                        {hotel.starRating && (
-                                          <div className="flex items-center gap-1">
-                                            {Array.from({ length: hotel.starRating }).map((_, i) => (
-                                              <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                            ))}
-                                          </div>
-                                        )}
-                                        {hotel.includesBreakfast && (
-                                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
-                                            <Coffee className="w-3 h-3 mr-1" />
-                                            Breakfast Included
-                                          </Badge>
-                                        )}
-                                      </div>
-                                      <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                                        <BedDouble className="w-4 h-4" />
-                                        {hotel.roomTypeName} ({hotel.capacity === '2_sleeper' ? '2 Sleeper' : '4 Sleeper'})
-                                      </div>
-                                    </div>
-
-                                    {/* Pricing */}
-                                    <div className="text-right">
-                                      <div className="text-2xl font-bold text-primary">
-                                        {formatCurrency(perPerson)}
-                                      </div>
-                                      <div className="text-xs text-muted-foreground">per person</div>
-                                      <div className="text-sm font-semibold text-primary mt-1">
-                                        {formatCurrency(grandTotal)} total
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {/* Cost Breakdown */}
-                                  <div className="mt-4 pt-4 border-t border-border">
-                                    <div className="grid grid-cols-2 gap-2 text-sm">
-                                      <div className="text-muted-foreground">Accommodation ({nights} nights × {rooms} room{rooms > 1 ? 's' : ''}):</div>
-                                      <div className="text-right font-medium">{formatCurrency(accommodationCost)}</div>
-                                      <div className="text-muted-foreground">Activities:</div>
-                                      <div className="text-right font-medium">{formatCurrency(activitiesCost)}</div>
-                                      <div className="text-muted-foreground">Service Fees:</div>
-                                      <div className="text-right font-medium">{formatCurrency(serviceFees)}</div>
-                                    </div>
-                                  </div>
-
-                                  {/* Actions */}
-                                  <div className="mt-4 flex gap-2">
-                                    <Button
-                                      variant="default"
-                                      size="sm"
-                                      className="flex-1"
-                                      asChild
-                                    >
-                                      <a 
-                                        href={`mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`}
-                                      >
-                                        <Mail className="w-4 h-4 mr-2" />
-                                        Request to Book
-                                      </a>
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="flex-1"
-                                      asChild
-                                    >
-                                      <a
-                                        href={`https://wa.me/27796813869?text=${encodeURIComponent(whatsappMessage)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                      >
-                                        <Phone className="w-4 h-4 mr-2" />
-                                        WhatsApp Us
-                                      </a>
-                                    </Button>
-                                  </div>
-                                </div>
+                  <Card key={hotel.code} className="border shadow-sm overflow-hidden">
+                    <CardContent className="p-4">
+                      <div className="flex flex-col md:flex-row md:items-start gap-4">
+                        {/* Hotel Info */}
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h5 className="font-bold text-lg uppercase text-primary">
+                                {hotel.name}
+                              </h5>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                                <MapPin className="w-3 h-3" />
+                                {hotel.areaName}
                               </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </div>
+                              <div className="flex items-center gap-2 mt-2">
+                                {hotel.starRating && (
+                                  <div className="flex items-center gap-1">
+                                    {Array.from({ length: hotel.starRating }).map((_, i) => (
+                                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                    ))}
+                                  </div>
+                                )}
+                                {hotel.includesBreakfast && (
+                                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+                                    <Coffee className="w-3 h-3 mr-1" />
+                                    Breakfast Included
+                                  </Badge>
+                                )}
+                                {busQuoteAmount > 0 && (
+                                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-300">
+                                    <Bus className="w-3 h-3 mr-1" />
+                                    Bus Included
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                                <BedDouble className="w-4 h-4" />
+                                {hotel.roomTypeName} ({hotel.capacity === '2_sleeper' ? '2 Sleeper' : '4 Sleeper'})
+                              </div>
+                            </div>
+
+                            {/* Pricing */}
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-primary">
+                                {formatCurrency(perPerson)}
+                              </div>
+                              <div className="text-xs text-muted-foreground">per person</div>
+                              <div className="text-sm font-semibold text-primary mt-1">
+                                {formatCurrency(grandTotal)} total
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="mt-4 flex gap-2">
+                            <Button
+                              variant="default"
+                              size="sm"
+                              className="flex-1"
+                              asChild
+                            >
+                              <a 
+                                href={`mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`}
+                              >
+                                <Mail className="w-4 h-4 mr-2" />
+                                Request to Book
+                              </a>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                              asChild
+                            >
+                              <a
+                                href={`https://wa.me/27796813869?text=${encodeURIComponent(whatsappMessage)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Phone className="w-4 h-4 mr-2" />
+                                WhatsApp Us
+                              </a>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </div>
