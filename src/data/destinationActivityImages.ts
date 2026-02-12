@@ -8,9 +8,11 @@ import durbanBoatCruise from '@/assets/activities/durban-boat-cruise.jpg';
 import durbanOpenTopBus from '@/assets/activities/durban-open-top-bus.jpg';
 import durbanSpaMassage from '@/assets/activities/durban-spa-massage.jpg';
 
-// Umhlanga Activities (uShaka Marine, boat cruise, Umhlanga beach, Gateway Mall)
+// Umhlanga Activities (beach aerial, waterpark, Moses Mabhida, beachfront segway)
 import umhlangaBeach from '@/assets/activities/umhlanga-beach.jpg';
 import umhlangaGatewayMall from '@/assets/activities/umhlanga-gateway-mall.jpg';
+import durbanMosesMabhida from '@/assets/activities/durban-moses-mabhida.jpg';
+import durbanBeachfrontSegway from '@/assets/activities/durban-beachfront-segway.jpg';
 
 // Hartbeespoort / Magalies Activities
 import hartiesBoatCruise from '@/assets/activities/harties-boat-cruise.jpg';
@@ -64,8 +66,8 @@ export const destinationActivityImages: Record<string, string[]> = {
   // Durban: uShaka Marine World, boat cruise, open top bus tour, spa/massage
   'durban': [durbanUshaka, durbanBoatCruise, durbanOpenTopBus, durbanSpaMassage],
   
-  // Umhlanga: uShaka Marine, boat cruise, Umhlanga Beach, Gateway Mall
-  'umhlanga': [durbanUshaka, durbanBoatCruise, umhlangaBeach, umhlangaGatewayMall],
+  // Umhlanga: beach aerial, waterpark, Moses Mabhida, beachfront segway
+  'umhlanga': [umhlangaBeach, umhlangaGatewayMall, durbanMosesMabhida, durbanBeachfrontSegway],
   
   // Hartbeespoort: boat cruise, cableway, horse riding, animal/safari park
   'harties': [hartiesBoatCruise, hartiesCableway, hartiesHorseRiding, hartiesSafariPark],
