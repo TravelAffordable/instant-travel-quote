@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap } from 'lucide-react';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import { 
   destinations, 
@@ -709,6 +709,13 @@ export function Hero({ onGetQuote }: HeroProps) {
             >
               <Puzzle className="w-5 h-5" />
               <span className="font-medium">I'd like to build my own package according to my budget</span>
+            </button>
+            <button
+              onClick={() => navigate('/school-trips')}
+              className="flex items-center gap-3 px-6 py-4 rounded-xl transition-all bg-gradient-to-r from-teal-500 to-emerald-500 text-white hover:from-teal-600 hover:to-emerald-600 shadow-lg hover:scale-105"
+            >
+              <GraduationCap className="w-5 h-5" />
+              <span className="font-medium">School Trips</span>
             </button>
           </div>
           
