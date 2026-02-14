@@ -9,6 +9,7 @@ import SocialAds from "./pages/SocialAds";
 import BuildPackage from "./pages/BuildPackage";
 import RateAdmin from "./pages/RateAdmin";
 import ImageCompare from "./pages/ImageCompare";
+import SchoolTrips from "./pages/SchoolTrips";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/build-package" element={<BuildPackage />} />
           <Route path="/rate-admin" element={<RateAdmin />} />
           <Route path="/compare/harties/budget/2-sleeper/8" element={<ImageCompare />} />
+          <Route path="/school-trips" element={<SchoolTrips />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
