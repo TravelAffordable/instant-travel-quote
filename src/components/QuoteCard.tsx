@@ -222,7 +222,7 @@ export function QuoteCard({
             onClick={onRequestToBook}
           >
             <Mail className="w-4 h-4 mr-2" />
-            Request to Book
+            Enquire About This Option
           </Button>
           <Button 
             variant="outline" 

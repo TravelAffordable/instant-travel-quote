@@ -360,7 +360,7 @@ export function RMSHotelQuotes({
                                 href={`mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`}
                               >
                                 <Mail className="w-4 h-4 mr-2" />
-                                Request to Book
+                                Enquire About This Option
                               </a>
                             </Button>
                             <Button
