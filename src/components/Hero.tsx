@@ -4,8 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap } from 'lucide-react';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import { 
@@ -797,56 +795,107 @@ export function Hero({ onGetQuote }: HeroProps) {
 
               {/* Row 2: Package (only for with-activities), Adults, Kids, Rooms */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {bookingType === 'with-activities' && (
-                  <div className="space-y-2 col-span-2 md:col-span-1">
+              {bookingType === 'with-activities' && (
+                  <div className="space-y-2 col-span-2 md:col-span-4">
                     <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
                     <p className="text-xs text-muted-foreground mb-1">
-                      Please select the package/s you'd like quote for by selecting in the dropdown. You may choose more than one package to generate quotes for various packages.
+                      Click "Show Packages" to view available packages for your destination. You may select one or more packages to get a quote.
                     </p>
-                    <Popover open={isPackageDropdownOpen} onOpenChange={setIsPackageDropdownOpen}>
-                      <PopoverTrigger asChild>
+                    
+                    {/* Show Packages button - only when no packages shown yet */}
+                    {!isPackageDropdownOpen && packageIds.length === 0 && (
+                      <Button
+                        variant="outline"
+                        disabled={!destination}
+                        onClick={() => setIsPackageDropdownOpen(true)}
+                        className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                      >
+                        {destination ? 'Show Packages' : 'Select destination first'}
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    )}
+
+                    {/* Selected packages summary + change button */}
+                    {packageIds.length > 0 && !isPackageDropdownOpen && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {availablePackages
+                            .filter(pkg => packageIds.includes(pkg.id))
+                            .map(pkg => (
+                              <div
+                                key={pkg.id}
+                                className="border-2 border-primary bg-primary/5 rounded-xl p-4 relative"
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => togglePackageSelection(pkg.id)}
+                                  className="absolute top-2 right-2 text-gray-400 hover:text-destructive text-lg leading-none"
+                                  aria-label="Remove package"
+                                >
+                                  ×
+                                </button>
+                                <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
+                                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                              </div>
+                            ))}
+                        </div>
                         <Button
                           variant="outline"
-                          role="combobox"
-                          disabled={!destination}
-                          className="w-full h-11 justify-between bg-white border-gray-200 text-left font-normal"
+                          size="sm"
+                          onClick={() => setIsPackageDropdownOpen(true)}
+                          className="border-primary text-primary hover:bg-primary/10"
                         >
-                          <span className="truncate">
-                            {packageIds.length === 0 
-                              ? (destination ? "Select packages" : "Select destination first")
-                              : `${packageIds.length} package${packageIds.length > 1 ? 's' : ''} selected`
-                            }
-                          </span>
-                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          Change Packages
                         </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[600px] max-h-[400px] overflow-y-auto p-2" align="start">
-                        <div className="space-y-1">
-                          {availablePackages.map(pkg => (
-                            <div
-                              key={pkg.id}
-                              className="flex items-start space-x-3 p-2 hover:bg-accent/50 rounded-md cursor-pointer"
-                              onClick={() => {
-                                togglePackageSelection(pkg.id);
-                                setIsPackageDropdownOpen(false);
-                              }}
-                            >
-                              <Checkbox
-                                checked={packageIds.includes(pkg.id)}
-                                onCheckedChange={() => {
-                                  togglePackageSelection(pkg.id);
-                                  setIsPackageDropdownOpen(false);
-                                }}
-                                className="mt-1"
-                              />
-                              <label className="text-sm cursor-pointer flex-1 leading-tight">
-                                {pkg.name}
-                              </label>
-                            </div>
-                          ))}
+                      </div>
+                    )}
+
+                    {/* Package cards grid */}
+                    {isPackageDropdownOpen && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto">
+                          {availablePackages.map(pkg => {
+                            const isSelected = packageIds.includes(pkg.id);
+                            return (
+                              <div
+                                key={pkg.id}
+                                onClick={() => togglePackageSelection(pkg.id)}
+                                className={`border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md ${
+                                  isSelected
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-gray-200 bg-white hover:border-primary/40'
+                                }`}
+                              >
+                                <h4 className="text-sm font-bold text-primary uppercase leading-tight">{pkg.name}</h4>
+                                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={isSelected ? 'default' : 'outline'}
+                                  className="mt-3 w-full text-xs"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    togglePackageSelection(pkg.id);
+                                  }}
+                                >
+                                  {isSelected ? '✓ Selected' : 'Get a quote for this option'}
+                                </Button>
+                              </div>
+                            );
+                          })}
                         </div>
-                      </PopoverContent>
-                    </Popover>
+                        {packageIds.length > 0 && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => setIsPackageDropdownOpen(false)}
+                            className="w-full"
+                          >
+                            Done – {packageIds.length} package{packageIds.length > 1 ? 's' : ''} selected
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="space-y-2">
@@ -951,7 +1000,10 @@ export function Hero({ onGetQuote }: HeroProps) {
               {/* Accommodation Type Selection - shown for both booking types */}
               {(bookingType === 'with-activities' || bookingType === 'accommodation-only') && (
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Accommodation Type</Label>
+                  <Label className="text-sm font-medium text-gray-700">Accommodation Type by budget:</Label>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Please use the buttons to navigate various budget options, each time you change to another button to view options always click the get quotes button again to see new results. Once you've found the option that fits your budget please click request to book and send it via email so we can send you pictures of the hotel.
+                  </p>
                   {(() => {
                     // Check if any selected package has budget disabled
                     const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
@@ -960,7 +1012,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                     const budgetDisabledMessage = budgetDisabledPkg?.budgetDisabledMessage || 'Budget option is not available for this package.';
                     
                     return (
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <button
                           type="button"
                           onClick={() => {
@@ -970,7 +1022,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                             }
                             setAccommodationType('budget');
                           }}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
                             isBudgetDisabled
                               ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
                               : accommodationType === 'budget'
@@ -978,29 +1030,29 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50/50'
                           }`}
                         >
-                          Cheapest Options
+                          Budget Friendly Hotel Options
                         </button>
                         <button
                           type="button"
                           onClick={() => setAccommodationType('affordable')}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
                             accommodationType === 'affordable'
                               ? 'border-primary bg-primary/10 text-primary'
                               : 'border-gray-200 bg-white text-gray-700 hover:border-primary/50 hover:bg-primary/5'
                           }`}
                         >
-                          Affordable
+                          Affordable Hotel Options
                         </button>
                         <button
                           type="button"
                           onClick={() => setAccommodationType('premium')}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium ${
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
                             accommodationType === 'premium'
                               ? 'border-purple-500 bg-purple-50 text-purple-700'
                               : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300 hover:bg-purple-50/50'
                           }`}
                         >
-                          Premium
+                          Premium Hotel Options
                         </button>
                       </div>
                     );
