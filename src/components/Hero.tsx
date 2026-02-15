@@ -1002,7 +1002,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Accommodation Type by budget:</Label>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Please use the buttons to navigate various budget options, each time you change to another button to view options always click the get quotes button again to see new results. Once you've found the option that fits your budget please click request to book and send it via email so we can send you pictures of the hotel.
+                    Please use the buttons to navigate various budget options, each time you change to another button to view options always click the get quotes button again to see new results. Once you've found the option that fits your budget please click enquire about this option and send it via email so we can send you pictures of the hotel.
                   </p>
                   {(() => {
                     // Check if any selected package has budget disabled
