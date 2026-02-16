@@ -348,6 +348,35 @@ export function RMSHotelQuotes({
                             </div>
                           </div>
 
+                          {/* Price Breakdown */}
+                          <div className="mt-3 bg-muted/30 border border-border rounded-lg p-3 space-y-1.5">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Price Breakdown</p>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Accommodation ({nights} nights × {rooms} room{rooms > 1 ? 's' : ''})</span>
+                              <span className="font-medium">{formatCurrency(accommodationCost)}</span>
+                            </div>
+                            {activitiesCost > 0 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Activities</span>
+                                <span className="font-medium">{formatCurrency(activitiesCost)}</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Service Fees</span>
+                              <span className="font-medium">{formatCurrency(serviceFees)}</span>
+                            </div>
+                            {busQuoteAmount > 0 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Bus Transport</span>
+                                <span className="font-medium">{formatCurrency(busQuoteAmount)}</span>
+                              </div>
+                            )}
+                            <div className="border-t border-border pt-1.5 mt-1.5 flex justify-between text-sm font-bold">
+                              <span>Grand Total</span>
+                              <span className="text-primary">{formatCurrency(grandTotal)}</span>
+                            </div>
+                          </div>
+
                           {/* Actions */}
                           <div className="mt-4 flex gap-2">
                             <Button

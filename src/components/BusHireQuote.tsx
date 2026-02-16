@@ -531,12 +531,34 @@ export function BusHireQuote() {
                         <span className="font-bold text-blue-900">{formatCurrency(activitiesQuote.busAmount)}</span>
                       </div>
 
+                      {/* Service Fees Line */}
+                      {(() => {
+                        const totalPeopleCount = adults + childrenAges.length;
+                        let serviceFees = 0;
+                        if (totalPeopleCount >= 25) {
+                          serviceFees = adults * 400 + calculateChildServiceFeesUtil(adults, childrenAges);
+                        } else {
+                          let adultFeePerPerson = 0;
+                          if (adults === 1) adultFeePerPerson = 1000;
+                          else if (adults >= 2 && adults <= 3) adultFeePerPerson = 850;
+                          else if (adults >= 4 && adults <= 9) adultFeePerPerson = 800;
+                          else if (adults >= 10) adultFeePerPerson = 750;
+                          serviceFees = adults * adultFeePerPerson + calculateChildServiceFeesUtil(adults, childrenAges);
+                        }
+                        return (
+                          <div className="flex justify-between items-center text-lg">
+                            <span className="text-blue-800 font-medium">Service Fees</span>
+                            <span className="font-bold text-blue-900">{formatCurrency(serviceFees)}</span>
+                          </div>
+                        );
+                      })()}
+
                       <div className="border-t-2 border-blue-300 pt-4">
                         <div className="flex justify-between items-center text-xl">
                           <span className="text-blue-800 font-semibold">Combined Total</span>
                           <span className="font-bold text-blue-900 text-2xl">{formatCurrency(activitiesQuote.combinedTotal)}</span>
                         </div>
-                        <p className="text-sm text-blue-600 mt-1">(Bus transport + activities for the group)</p>
+                        <p className="text-sm text-blue-600 mt-1">(Bus transport + activities + service fees for the group)</p>
                       </div>
 
                       <div className="border-t-2 border-blue-300 pt-4">
