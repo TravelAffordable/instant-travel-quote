@@ -879,65 +879,28 @@ const BuildPackage = () => {
                       )}
 
                       {/* Pricing Summary */}
-                      <div className="mt-6 p-4 bg-muted/50 rounded-lg space-y-2">
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Price Breakdown</p>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Accommodation ({totalNights} nights × {rooms} room{rooms > 1 ? 's' : ''})</span>
-                          <span className="font-medium">{formatCurrency(hotel.totalRate * rooms)}</span>
-                        </div>
-                        {selectedActivities.length > 0 && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Activities</span>
-                            <span className="font-medium">
-                              {formatCurrency(
-                                calculateTotalCostRMS(hotel) - (hotel.totalRate * rooms) - 
-                                (() => {
-                                  const additionalFeePerAdult = calculateAdditionalFee(adults);
-                                  const eligibleKids = kidAges.filter(age => age >= 4 && age <= 16);
-                                  const totalEligible = eligibleKids.length;
-                                  let eligibleIdx = 0;
-                                  const childFees = kidAges.reduce((acc, age) => {
-                                    if (age < 4 || age > 16) return acc;
-                                    const isFirst = eligibleIdx === 0;
-                                    eligibleIdx++;
-                                    return acc + calculateChildFee(adults, age, isFirst, totalEligible);
-                                  }, 0);
-                                  return (additionalFeePerAdult * adults) + childFees;
-                                })()
-                              )}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Service Fees</span>
-                          <span className="font-medium">
-                            {formatCurrency(
-                              (() => {
-                                const additionalFeePerAdult = calculateAdditionalFee(adults);
-                                const eligibleKids = kidAges.filter(age => age >= 4 && age <= 16);
-                                const totalEligible = eligibleKids.length;
-                                let eligibleIdx = 0;
-                                const childFees = kidAges.reduce((acc, age) => {
-                                  if (age < 4 || age > 16) return acc;
-                                  const isFirst = eligibleIdx === 0;
-                                  eligibleIdx++;
-                                  return acc + calculateChildFee(adults, age, isFirst, totalEligible);
-                                }, 0);
-                                return (additionalFeePerAdult * adults) + childFees;
-                              })()
+                      <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+                        <div className="flex flex-col items-end">
+                          <div className="text-right">
+                            {kids > 0 ? (
+                              <>
+                                <p className="text-3xl font-bold text-primary">
+                                  {formatCurrency(calculateTotalCostRMS(hotel))}
+                                </p>
+                                <p className="text-sm text-muted-foreground">Grand Total</p>
+                                <p className="text-xs text-muted-foreground">{adults} Adult{adults > 1 ? 's' : ''}, {kids} Kid{kids > 1 ? 's' : ''}</p>
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-3xl font-bold text-primary">
+                                  {formatCurrency(Math.round(calculateTotalCostRMS(hotel) / adults / 10) * 10)}
+                                </p>
+                                <p className="text-sm text-muted-foreground">per person</p>
+                                <p className="text-sm font-semibold text-primary mt-1">
+                                  {formatCurrency(calculateTotalCostRMS(hotel))} total
+                                </p>
+                              </>
                             )}
-                          </span>
-                        </div>
-                        <div className="border-t border-border pt-2 mt-2">
-                          <div className="flex flex-col items-end">
-                            <div className="text-right">
-                              <p className="text-xl font-bold text-primary">
-                                Grand total for {adults} adult{adults > 1 ? 's' : ''}{kids > 0 ? ` and ${kids} kid${kids > 1 ? 's' : ''}` : ''}:
-                              </p>
-                              <p className="text-3xl font-bold text-destructive">
-                                {formatCurrency(calculateTotalCostRMS(hotel))}
-                              </p>
-                            </div>
                           </div>
                         </div>
                       </div>

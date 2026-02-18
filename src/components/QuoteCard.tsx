@@ -215,22 +215,6 @@ export function QuoteCard({
           )}
         </div>
 
-        {/* Price Breakdown with Service Fees */}
-        {quote.breakdown && quote.breakdown.length > 0 && (
-          <div className="bg-muted/30 border border-border rounded-lg p-3 space-y-1.5">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Price Breakdown</p>
-            {quote.breakdown.map((item, idx) => (
-              <div key={idx} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{item.label}</span>
-                <span className="font-medium">{formatCurrency(item.amount)}</span>
-              </div>
-            ))}
-            <div className="border-t border-border pt-1.5 mt-1.5 flex justify-between text-sm font-bold">
-              <span>Total</span>
-              <span className="text-primary">{formatCurrency(quote.totalForGroup)}</span>
-            </div>
-          </div>
-        )}
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-2">
