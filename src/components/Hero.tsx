@@ -971,7 +971,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent className="max-h-[200px]">
-                                {Array.from({ length: 15 }, (_, age) => age + 3).map(age => (
+                                {Array.from({ length: 18 }, (_, age) => age).map(age => (
                                   <SelectItem key={age} value={age.toString()}>{age} yrs</SelectItem>
                                 ))}
                               </SelectContent>
