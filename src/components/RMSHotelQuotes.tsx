@@ -338,13 +338,27 @@ export function RMSHotelQuotes({
 
                             {/* Pricing */}
                             <div className="text-right">
-                              <div className="text-2xl font-bold text-primary">
-                                {formatCurrency(perPerson)}
-                              </div>
-                              <div className="text-xs text-muted-foreground">per person</div>
-                              <div className="text-sm font-semibold text-primary mt-1">
-                                {formatCurrency(grandTotal)} total
-                              </div>
+                              {children === 0 ? (
+                                <>
+                                  <div className="text-2xl font-bold text-primary">
+                                    {formatCurrency(perPerson)}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">per person</div>
+                                  <div className="text-sm font-semibold text-primary mt-1">
+                                    {formatCurrency(grandTotal)} total
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="text-2xl font-bold text-primary">
+                                    {formatCurrency(grandTotal)}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">Grand Total</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {adults} Adult{adults > 1 ? 's' : ''}, {children} Kid{children > 1 ? 's' : ''}
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </div>
 
