@@ -1333,6 +1333,7 @@ export interface QuoteResult {
   affordableInclusions?: string[];
   // Hotel tier to determine which inclusions to display
   hotelTier?: 'budget' | 'affordable' | 'premium';
+  hotelImages?: string[]; // Real hotel photos if available
   breakdown: {
     label: string;
     amount: number;
@@ -1453,6 +1454,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     hotelName: hotelNameDisplay,
     hotelId: hotel.id,
     hotelImage: hotel.image,
+    hotelImages: hotel.images,
     destination: destinations.find(d => d.id === request.destination)?.name || request.destination,
     nights,
     accommodationCost,

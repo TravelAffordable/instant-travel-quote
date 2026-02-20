@@ -47,7 +47,10 @@ export function QuoteCard({
     }
   }, [emblaApi]);
 
-  const carouselImages = getCarouselImages(quote.destination);
+  // Use real hotel photos if available, otherwise fall back to AI activity images
+  const carouselImages = (quote.hotelImages && quote.hotelImages.length > 0)
+    ? quote.hotelImages
+    : getCarouselImages(quote.destination);
 
   return (
     <Card 
