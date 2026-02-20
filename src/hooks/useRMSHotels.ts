@@ -1,5 +1,11 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { hartiesIndlovukaziImages } from '@/data/hartiesHotelImages';
+
+// Map hotel names to their real photo arrays
+const hotelImageMap: Record<string, string[]> = {
+  'Indlovukazi Guesthouse': hartiesIndlovukaziImages,
+};
 
 export interface RMSHotel {
   code: string;
@@ -14,6 +20,7 @@ export interface RMSHotel {
   capacity: '2_sleeper' | '4_sleeper';
   areaName: string;
   destination: string;
+  images?: string[]; // Real hotel photos if available
 }
 
 interface SearchParams {
@@ -201,6 +208,7 @@ export function useRMSHotels() {
           capacity: roomType.capacity as '2_sleeper' | '4_sleeper',
           areaName: areas.name,
           destination: areas.destination,
+          images: hotelImageMap[hotel.name],
         });
       }
 

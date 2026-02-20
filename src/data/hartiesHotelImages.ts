@@ -1,6 +1,25 @@
 // Hartbeespoort Hotel Images - AI-generated images that authentically represent each property
 // Mapped by hotel tier and option number
 
+// Premium Hotel Images - Indlovukazi Guesthouse (7 real photos)
+import hartiesPremiumIndlovukazi1 from '@/assets/hotels/harties-premium-indlovukazi-1.jpg';
+import hartiesPremiumIndlovukazi2 from '@/assets/hotels/harties-premium-indlovukazi-2.jpg';
+import hartiesPremiumIndlovukazi3 from '@/assets/hotels/harties-premium-indlovukazi-3.jpg';
+import hartiesPremiumIndlovukazi4 from '@/assets/hotels/harties-premium-indlovukazi-4.jpg';
+import hartiesPremiumIndlovukazi5 from '@/assets/hotels/harties-premium-indlovukazi-5.jpg';
+import hartiesPremiumIndlovukazi6 from '@/assets/hotels/harties-premium-indlovukazi-6.jpg';
+import hartiesPremiumIndlovukazi7 from '@/assets/hotels/harties-premium-indlovukazi-7.jpg';
+
+export const hartiesIndlovukaziImages: string[] = [
+  hartiesPremiumIndlovukazi1,
+  hartiesPremiumIndlovukazi2,
+  hartiesPremiumIndlovukazi3,
+  hartiesPremiumIndlovukazi4,
+  hartiesPremiumIndlovukazi5,
+  hartiesPremiumIndlovukazi6,
+  hartiesPremiumIndlovukazi7,
+];
+
 // Budget 2-Sleeper Images (8 options × 4 images each)
 import hartiesBudget2s1a from '@/assets/hotels/harties-budget-2s-1a.jpg';
 import hartiesBudget2s1b from '@/assets/hotels/harties-budget-2s-1b.jpg';

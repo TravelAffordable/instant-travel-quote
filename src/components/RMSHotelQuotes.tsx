@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Star, Coffee, MapPin, Phone, Mail, BedDouble, Bus } from 'lucide-react';
+import { Building2, Star, Coffee, MapPin, Phone, Mail, BedDouble, Bus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { type RMSHotel } from '@/hooks/useRMSHotels';
 import { type Package } from '@/data/travelData';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getActivitiesForDestination, findActivityByName, type Activity } from '@/data/activitiesData';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
+import useEmblaCarousel from 'embla-carousel-react';
 
 interface RMSHotelQuotesProps {
   hotels: RMSHotel[];
@@ -73,6 +74,46 @@ function calculateServiceFees(adults: number, children: number, childrenAges: nu
 }
 
 type TierKey = 'budget' | 'affordable' | 'premium';
+
+// Small image carousel for hotel cards
+function HotelImageCarousel({ images, hotelName }: { images: string[]; hotelName: string }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [current, setCurrent] = useState(0);
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) { emblaApi.scrollPrev(); setCurrent(emblaApi.selectedScrollSnap()); }
+  }, [emblaApi]);
+  const scrollNext = useCallback(() => {
+    if (emblaApi) { emblaApi.scrollNext(); setCurrent(emblaApi.selectedScrollSnap()); }
+  }, [emblaApi]);
+
+  return (
+    <div className="relative rounded-lg overflow-hidden mb-4" style={{ height: 220 }}>
+      <div className="overflow-hidden h-full" ref={emblaRef}>
+        <div className="flex h-full">
+          {images.map((src, i) => (
+            <div key={i} className="flex-[0_0_100%] min-w-0 h-full">
+              <img src={src} alt={`${hotelName} photo ${i + 1}`} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <button onClick={scrollPrev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1.5 shadow-md">
+        <ChevronLeft className="w-4 h-4" />
+      </button>
+      <button onClick={scrollNext} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1.5 shadow-md">
+        <ChevronRight className="w-4 h-4" />
+      </button>
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+        {images.map((_, i) => (
+          <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === current ? 'bg-background' : 'bg-background/50'}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
 
 export function RMSHotelQuotes({
   hotels,
@@ -297,6 +338,10 @@ export function RMSHotelQuotes({
                 return (
                   <Card key={hotel.code} className="border shadow-sm overflow-hidden">
                     <CardContent className="p-4">
+                      {/* Hotel image carousel if real photos are available */}
+                      {hotel.images && hotel.images.length > 0 && (
+                        <HotelImageCarousel images={hotel.images} hotelName={hotel.name} />
+                      )}
                       <div className="flex flex-col md:flex-row md:items-start gap-4">
                         {/* Hotel Info */}
                         <div className="flex-1">
