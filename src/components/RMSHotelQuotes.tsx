@@ -80,15 +80,18 @@ function HotelImageCarousel({ images, hotelName }: { images: string[]; hotelName
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [current, setCurrent] = useState(0);
 
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) { emblaApi.scrollPrev(); setCurrent(emblaApi.selectedScrollSnap()); }
-  }, [emblaApi]);
-  const scrollNext = useCallback(() => {
-    if (emblaApi) { emblaApi.scrollNext(); setCurrent(emblaApi.selectedScrollSnap()); }
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setCurrent(emblaApi.selectedScrollSnap());
+    emblaApi.on('select', onSelect);
+    return () => { emblaApi.off('select', onSelect); };
   }, [emblaApi]);
 
+  const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
+  const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
+
   return (
-    <div className="relative rounded-lg overflow-hidden mb-4" style={{ height: 220 }}>
+    <div className="relative rounded-lg overflow-hidden mb-4" style={{ height: 260 }}>
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
           {images.map((src, i) => (
@@ -106,8 +109,11 @@ function HotelImageCarousel({ images, hotelName }: { images: string[]; hotelName
       </button>
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
         {images.map((_, i) => (
-          <div key={i} className={`w-1.5 h-1.5 rounded-full ${i === current ? 'bg-background' : 'bg-background/50'}`} />
+          <div key={i} className={`w-1.5 h-1.5 rounded-full transition-colors ${i === current ? 'bg-white' : 'bg-white/50'}`} />
         ))}
+      </div>
+      <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
+        {current + 1} / {images.length}
       </div>
     </div>
   );
