@@ -3,7 +3,8 @@
 import sunCityImage from '@/assets/sun-city.jpeg';
 import { 
   hartiesBudget2SleeperPrimaryImages, 
-  hartiesAffordable2SleeperPrimaryImages 
+  hartiesAffordable2SleeperPrimaryImages,
+  hartiesIndlovukaziImages
 } from './hartiesHotelImages';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
@@ -16,6 +17,7 @@ export interface Hotel {
   type: 'very-affordable' | 'affordable' | 'premium';
   amenities: string[];
   image: string;
+  images?: string[]; // Multiple images for carousel
   includesBreakfast?: boolean;
   capacity?: number; // Room capacity (2 for 2-sleeper, 4 for 4-sleeper)
   roomType?: string; // Room type description
@@ -159,6 +161,7 @@ const premiumPrices = [2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 310
 // Premium Hotels with their actual names (prices will use premiumPrices array - 4 hotels per destination)
 const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean; capacity?: '2_sleeper' | '4_sleeper'; nightlyRate?: number }[]> = {
   'harties': [
+    { name: 'Indlovukazi Guesthouse', nightlyRate: 1120 },
     { name: 'Villa Paradiso Hotel' },
     { name: 'Cocomo Boutique Hotel' },
     { name: 'The Riverleaf Hotel', includesBreakfast: true },
@@ -495,6 +498,27 @@ function generateHotels(): Hotel[] {
           image: premiumImages[index % premiumImages.length],
           capacity: hotel.capacity === '2_sleeper' ? 2 : 4,
           roomType: hotel.capacity === '2_sleeper' ? '2 Sleeper Room' : '4 Sleeper Penthouse',
+          includesBreakfast: hotel.includesBreakfast,
+        });
+      });
+    } else if (destId === 'harties') {
+      const hartiesHotels = premiumHotelNames['harties'] || [];
+      hartiesHotels.forEach((hotel, index) => {
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        // Indlovukazi Guesthouse (first entry) uses real photos
+        const isIndlovukazi = hotel.name === 'Indlovukazi Guesthouse';
+        allHotels.push({
+          id: `${destId}-premium-${letter.toLowerCase()}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.nightlyRate || premiumPrices[index],
+          rating: 4.5 + (Math.random() * 0.5),
+          type: 'premium',
+          amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining', 'Dam Views'],
+          image: isIndlovukazi ? hartiesIndlovukaziImages[0] : premiumImages[index % premiumImages.length],
+          images: isIndlovukazi ? hartiesIndlovukaziImages : undefined,
+          capacity: 2,
+          roomType: '2 Sleeper Room',
           includesBreakfast: hotel.includesBreakfast,
         });
       });
