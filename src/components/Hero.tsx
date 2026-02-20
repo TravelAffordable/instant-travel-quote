@@ -65,14 +65,6 @@ function convertRMSToQuotes(
   // Get activities for this destination
   const availableActivities = getActivitiesForDestination(params.destination);
 
-  // Default hotel image for display
-  const hotelImages = [
-    'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800',
-    'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800',
-    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
-    'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800',
-  ];
-
   for (const pkg of selectedPackages) {
     // Calculate activities cost from package
     let activitiesCost = 0;
@@ -103,7 +95,8 @@ function convertRMSToQuotes(
         packageDescription: pkg.description,
         hotelName: hotelNameDisplay,
         hotelId: `${hotel.code}-${pkg.id}`,
-        hotelImage: hotelImages[i % hotelImages.length],
+        hotelImage: hotel.images?.[0] || '',
+        hotelImages: hotel.images,
         destination: params.destination,
         nights,
         accommodationCost,
