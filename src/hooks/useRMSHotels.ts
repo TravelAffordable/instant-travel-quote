@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { hartiesIndlovukaziImages } from '@/data/hartiesHotelImages';
+import { hartiesIndlovukaziImages, hartiesKosmosManorImages } from '@/data/hartiesHotelImages';
 
 // Map hotel names to their real photo arrays
 const hotelImageMap: Record<string, string[]> = {
   'Indlovukazi Guesthouse': hartiesIndlovukaziImages,
+  'Kosmos Manor': hartiesKosmosManorImages,
 };
 
 export interface RMSHotel {

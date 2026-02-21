@@ -10,6 +10,17 @@ import hartiesPremiumIndlovukazi5 from '@/assets/hotels/harties-premium-indlovuk
 import hartiesPremiumIndlovukazi6 from '@/assets/hotels/harties-premium-indlovukazi-6.jpg';
 import hartiesPremiumIndlovukazi7 from '@/assets/hotels/harties-premium-indlovukazi-7.jpg';
 
+// Premium Hotel Images - Kosmos Manor (9 real photos)
+import kosmosManor1 from '@/assets/hotels/kosmos-manor-1.jpg';
+import kosmosManor2 from '@/assets/hotels/kosmos-manor-2.jpg';
+import kosmosManor3 from '@/assets/hotels/kosmos-manor-3.jpg';
+import kosmosManor4 from '@/assets/hotels/kosmos-manor-4.jpg';
+import kosmosManor5 from '@/assets/hotels/kosmos-manor-5.jpg';
+import kosmosManor6 from '@/assets/hotels/kosmos-manor-6.jpg';
+import kosmosManor7 from '@/assets/hotels/kosmos-manor-7.jpg';
+import kosmosManor8 from '@/assets/hotels/kosmos-manor-8.jpg';
+import kosmosManor9 from '@/assets/hotels/kosmos-manor-9.jpg';
+
 export const hartiesIndlovukaziImages: string[] = [
   hartiesPremiumIndlovukazi1,
   hartiesPremiumIndlovukazi2,
@@ -18,6 +29,18 @@ export const hartiesIndlovukaziImages: string[] = [
   hartiesPremiumIndlovukazi5,
   hartiesPremiumIndlovukazi6,
   hartiesPremiumIndlovukazi7,
+];
+
+export const hartiesKosmosManorImages: string[] = [
+  kosmosManor1,
+  kosmosManor2,
+  kosmosManor3,
+  kosmosManor4,
+  kosmosManor5,
+  kosmosManor6,
+  kosmosManor7,
+  kosmosManor8,
+  kosmosManor9,
 ];
 
 // Budget 2-Sleeper Images (8 options × 4 images each)
