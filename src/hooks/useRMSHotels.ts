@@ -5,7 +5,7 @@ import { hartiesIndlovukaziImages, hartiesKosmosManorImages } from '@/data/harti
 // Map hotel names to their real photo arrays
 const hotelImageMap: Record<string, string[]> = {
   'Indlovukazi Guesthouse': hartiesIndlovukaziImages,
-  'Kosmos Manor': hartiesKosmosManorImages,
+  'Kosmos Manor Guest House': hartiesKosmosManorImages,
 };
 
 export interface RMSHotel {
