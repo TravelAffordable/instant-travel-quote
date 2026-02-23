@@ -211,6 +211,42 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     }
   }, [isOpen]);
 
+  // Extract contact details from user messages in the conversation
+  const extractContactFromMessages = useCallback(() => {
+    const userMessages = messages.filter(m => m.role === 'user').map(m => m.content);
+    const allText = userMessages.join('\n');
+    
+    let name = '';
+    let phone = '';
+    let email = '';
+    
+    // Extract email
+    const emailMatch = allText.match(/[\w.+-]+@[\w-]+\.[\w.]+/);
+    if (emailMatch) email = emailMatch[0];
+    
+    // Extract phone (SA format or general)
+    const phoneMatch = allText.match(/(?:0\d{9}|\+27\d{9}|\d{3}[\s-]?\d{3}[\s-]?\d{4})/);
+    if (phoneMatch) phone = phoneMatch[0];
+    
+    // Extract name - look for common patterns
+    for (const msg of userMessages) {
+      const namePatterns = [
+        /(?:my name is|i'?m|name:?\s*)([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+        /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)$/m, // Full name on its own line
+      ];
+      for (const pattern of namePatterns) {
+        const match = msg.match(pattern);
+        if (match && match[1] && match[1].length > 2 && match[1].length < 50) {
+          name = match[1].trim();
+          break;
+        }
+      }
+      if (name) break;
+    }
+    
+    return { name, phone, email };
+  }, [messages]);
+
   const handleHotelClick = useCallback((linkData: ReturnType<typeof parseHotelLink>) => {
     if (!linkData) return;
     
@@ -246,6 +282,12 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     }
     params.set('budget', tier === 'very-affordable' ? 'budget' : tier);
     params.set('autoSearch', 'true');
+
+    // Extract and pass contact details from conversation
+    const contact = extractContactFromMessages();
+    if (contact.name) params.set('guestName', contact.name);
+    if (contact.phone) params.set('guestTel', contact.phone);
+    if (contact.email) params.set('guestEmail', contact.email);
 
     // Navigate to home with params - the Hero component will pick these up
     onToggle(); // Close chatbot
