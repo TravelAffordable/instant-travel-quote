@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -106,33 +107,89 @@ async function streamChat({
   onDone();
 }
 
-// Simple markdown renderer for bold and bullet points
-function renderMarkdown(text: string) {
-  const lines = text.split('\n');
-  return lines.map((line, lineIdx) => {
-    const isBullet = line.match(/^[•\-\*]\s/);
-    const content = isBullet ? line.slice(2) : line;
-    
-    const parts = content.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i}>{part.slice(2, -2)}</strong>;
-      }
-      return part;
-    });
+// Parse HOTEL_LINK format: HOTEL_LINK:destination|packageId|adults|childrenAges|tier|hotelName
+function parseHotelLink(linkData: string) {
+  const parts = linkData.split('|');
+  if (parts.length < 6) return null;
+  return {
+    destination: parts[0],
+    packageId: parts[1],
+    adults: parts[2],
+    childrenAges: parts[3],
+    tier: parts[4],
+    hotelName: parts.slice(5).join('|'),
+  };
+}
 
-    if (isBullet) {
-      return <div key={lineIdx} className="flex gap-1.5 ml-1"><span>•</span><span>{parts}</span></div>;
+// Render markdown with support for bold, bullets, emojis, and clickable hotel links
+function RenderMarkdown({ text, onHotelClick }: { text: string; onHotelClick: (link: ReturnType<typeof parseHotelLink>) => void }) {
+  const lines = text.split('\n');
+  
+  return (
+    <>
+      {lines.map((line, lineIdx) => {
+        const isBullet = line.match(/^[•\-\*]\s/);
+        const content = isBullet ? line.slice(2) : line;
+
+        // Parse inline content with bold and hotel links
+        const parts = parseInlineContent(content, onHotelClick);
+
+        if (isBullet) {
+          return <div key={lineIdx} className="flex gap-1.5 ml-1"><span>•</span><span>{parts}</span></div>;
+        }
+        return <span key={lineIdx}>{parts}{lineIdx < lines.length - 1 ? '\n' : ''}</span>;
+      })}
+    </>
+  );
+}
+
+function parseInlineContent(text: string, onHotelClick: (link: ReturnType<typeof parseHotelLink>) => void): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  // Match markdown links: [text](HOTEL_LINK:...) and **bold**
+  const regex = /(\[([^\]]+)\]\(HOTEL_LINK:([^)]+)\)|\*\*([^*]+)\*\*)/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    // Add text before match
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
     }
-    return <span key={lineIdx}>{parts}{lineIdx < lines.length - 1 ? '\n' : ''}</span>;
-  });
+
+    if (match[2] && match[3]) {
+      // Hotel link
+      const linkData = parseHotelLink(match[3]);
+      nodes.push(
+        <button
+          key={`link-${match.index}`}
+          onClick={() => onHotelClick(linkData)}
+          className="text-primary underline font-semibold hover:text-primary/80 cursor-pointer text-left inline"
+        >
+          {match[2]}
+        </button>
+      );
+    } else if (match[4]) {
+      // Bold
+      nodes.push(<strong key={`bold-${match.index}`}>{match[4]}</strong>);
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes.length > 0 ? nodes : [text];
 }
 
 export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: "👋 Hi! I'm your Travel Affordable AI assistant. I can help you:\n\n• Get instant quotes for any destination\n• Find the perfect package for your needs\n• Answer questions about our tours & pricing\n• Help plan romantic, family or adventure getaways\n\nWhere would you like to go?",
+      content: "👋 Hi! I'm your Travel Affordable AI assistant. I can help you find the perfect getaway!\n\n🌍 **Where would you like to go?**\n\n• Hartbeespoort (Harties)\n• Magaliesburg\n• Durban Beachfront\n• Umhlanga\n• Cape Town\n• Sun City\n• Mpumalanga\n• Knysna\n• Vaal River\n• Bela Bela\n• The Blyde (Pretoria)\n• 🌏 Bali, Dubai, Thailand\n\nJust tell me your dream destination! 😊",
       timestamp: new Date(),
     },
   ]);
@@ -154,6 +211,55 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     }
   }, [isOpen]);
 
+  const handleHotelClick = useCallback((linkData: ReturnType<typeof parseHotelLink>) => {
+    if (!linkData) return;
+    
+    // Map chatbot destination IDs to the main form's destination IDs
+    const destMap: Record<string, string> = {
+      'harties': 'harties',
+      'magalies': 'magalies',
+      'durban': 'durban',
+      'umhlanga': 'umhlanga',
+      'cape-town': 'cape-town',
+      'sun-city': 'sun-city',
+      'mpumalanga': 'mpumalanga',
+      'knysna': 'knysna',
+      'vaal-river': 'vaal-river',
+      'vaal': 'vaal-river',
+      'bela-bela': 'bela-bela',
+      'pretoria': 'pretoria',
+    };
+
+    const destination = destMap[linkData.destination] || linkData.destination;
+    const packageId = linkData.packageId;
+    const adults = linkData.adults;
+    const childrenAges = linkData.childrenAges;
+    const tier = linkData.tier;
+
+    // Build URL params to pre-fill the hero form
+    const params = new URLSearchParams();
+    params.set('destination', destination);
+    params.set('package', packageId);
+    params.set('adults', adults);
+    if (childrenAges && childrenAges !== '0') {
+      params.set('childrenAges', childrenAges);
+    }
+    params.set('budget', tier === 'budget' ? 'very-affordable' : tier);
+    params.set('autoSearch', 'true');
+
+    // Navigate to home with params - the Hero component will pick these up
+    onToggle(); // Close chatbot
+    navigate(`/?${params.toString()}`);
+    
+    // Scroll to the quote calculator section
+    setTimeout(() => {
+      const heroEl = document.getElementById('quote-section');
+      if (heroEl) {
+        heroEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 300);
+  }, [navigate, onToggle]);
+
   const handleSend = useCallback(async () => {
     if (!input.trim() || isTyping) return;
 
@@ -171,10 +277,9 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     let assistantSoFar = "";
 
     const chatHistory = [...messages, userMessage]
-      .filter(m => m.id !== '1') // skip initial greeting from history sent to AI
+      .filter(m => m.id !== '1')
       .map(m => ({ role: m.role, content: m.content }));
 
-    // Keep last 20 messages for context window
     const recentHistory = chatHistory.slice(-20);
 
     try {
@@ -273,7 +378,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
                       : 'bg-muted rounded-bl-sm'
                   }`}>
                     <div className="text-sm whitespace-pre-line leading-relaxed">
-                      {renderMarkdown(message.content)}
+                      <RenderMarkdown text={message.content} onHotelClick={handleHotelClick} />
                     </div>
                   </div>
                 </div>
