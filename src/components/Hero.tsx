@@ -224,6 +224,7 @@ interface FamilyQuotes {
 
 export function Hero({ onGetQuote }: HeroProps) {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [destination, setDestination] = useState('');
   const [packageIds, setPackageIds] = useState<string[]>([]);
   const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(false);
