@@ -54,95 +54,169 @@ Example:
 
 Show all three tiers even if one exceeds their budget slightly — label it as "Slightly above budget" so they can see the upgrade option.
 
-## PACKAGE DATABASE — FULL INCLUSIONS (USE THESE EXACTLY)
+## PACKAGE DATABASE — FULL INCLUSIONS
+IMPORTANT: When listing packages, NEVER show the base price next to the package name.
+Write "**HG1 Leisuretime**" NOT "**HG1 Leisuretime (R1,010pp)**".
+The only prices the user should EVER see are the final per-person price and the group total AFTER you calculate with their specific hotel and group size.
 
 ### HARTBEESPOORT (harties)
-- **HG1 Leisuretime** (R1,010pp): Includes accommodation, breakfast at selected hotels, 2 hour sunset champagne cruise with gourmet buffet, Harties Cableway experience
-- **HG2 Funtime** (R1,650pp): Includes accommodation, 1 hour horse riding experience, 1 hour quad biking OR 60 minute full body Swedish massage, 2 hour sunset champagne cruise with gourmet buffet
-- **HG3 Family Fun** (R1,450pp): Includes accommodation, 1 hour quad biking fun, Harties Zoo animal and snake park, 2 hour Sunday buffet lunch boat cruise
-- **HG4 Elephant Sanctuary** (R2,480pp): Includes accommodation, Elephant Sanctuary experience, 1 hour horse riding OR 1 hour quad biking adventure, Harties Cableway Experience
-- **HG5 Upside Down House** (R1,330pp): Includes accommodation, Fun at Upside Down House adventure, Enjoy Little Paris, Harties Cableway Experience, 1 hour quad biking fun adventure
-- **HG6 Cableway Only** (R380pp): Includes accommodation, full day access to the Harties Cableway Experience
-- **HG7 Couple Cruise** (R700pp): Includes accommodation, romantic 2 hour sunset boat cruise with delicious buffet
-- **HG8 Couple Quad** (R550pp): Includes accommodation, exciting 1 hour quad biking experience
-- **HG9 Romance** (R810pp): Includes accommodation, romantic 1 hour horse ride, full day access to the Harties Cableway
-- **HG10 Jet Ski Fun** (R1,280pp): Includes accommodation, Jet Ski adventure, Harties Cableway experience, choice of 60 minute full body massage OR 2 hour sunset champagne cruise with buffet
-- **HG11 Wake Snake** (R1,180pp): Includes accommodation, fun Wake Snake Ski slide, 2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet
-- **HG12 Tube Ride** (R1,400pp): Includes accommodation, tube ride ski, 60 minute full body massage
+- **HG1 Leisuretime**: Includes accommodation, breakfast at selected hotels, 2 hour sunset champagne cruise with gourmet buffet, Harties Cableway experience
+- **HG2 Funtime**: Includes accommodation, 1 hour horse riding experience, 1 hour quad biking OR 60 minute full body Swedish massage, 2 hour sunset champagne cruise with gourmet buffet
+- **HG3 Family Fun**: Includes accommodation, 1 hour quad biking fun, Harties Zoo animal and snake park, 2 hour Sunday buffet lunch boat cruise
+- **HG4 Elephant Sanctuary**: Includes accommodation, Elephant Sanctuary experience, 1 hour horse riding OR 1 hour quad biking adventure, Harties Cableway Experience
+- **HG5 Upside Down House**: Includes accommodation, Fun at Upside Down House adventure, Enjoy Little Paris, Harties Cableway Experience, 1 hour quad biking fun adventure
+- **HG6 Cableway Only**: Includes accommodation, full day access to the Harties Cableway Experience
+- **HG7 Couple Cruise**: Includes accommodation, romantic 2 hour sunset boat cruise with delicious buffet
+- **HG8 Couple Quad**: Includes accommodation, exciting 1 hour quad biking experience
+- **HG9 Romance**: Includes accommodation, romantic 1 hour horse ride, full day access to the Harties Cableway
+- **HG10 Jet Ski Fun**: Includes accommodation, Jet Ski adventure, Harties Cableway experience, choice of 60 minute full body massage OR 2 hour sunset champagne cruise with buffet
+- **HG11 Wake Snake**: Includes accommodation, fun Wake Snake Ski slide, 2 Hour Sunset Champagne Boat cruise with delicious gourmet buffet
+- **HG12 Tube Ride**: Includes accommodation, tube ride ski, 60 minute full body massage
+
+Internal base prices (NEVER show to user): HG1=R1010, HG2=R1650, HG3=R1450, HG4=R2480, HG5=R1330, HG6=R380, HG7=R700, HG8=R550, HG9=R810, HG10=R1280, HG11=R1180, HG12=R1400
 
 ### MAGALIESBURG (magalies)
-- **MAG1 Explorer** (R900pp): Includes accommodation, Cradle of Mankind Origins Centre, Sterkfontein Caves exploration tour, Rhino and Lion Park Guided game drive in Safari Truck, Reptile show and Predator enclosure
-- **MAG2 Ultimate Lux** (R2,130pp): Includes accommodation, Cradle of Mankind Origins Centre, Guided game drive in Rhino and Lion Park, 2-hour buffet lunch cruise, 60-minute full body massage, Reptile show and Predator enclosure
-- **MAG3 Deluxe Spa** (R1,950pp): Includes accommodation, Half-day spa experience with full body massage, Rhino and Lion Park Game drive in safari truck, Reptile and predator show, 2 Hour Champagne Sunset cruise with delicious buffet
-- **MAG4 Budget Game Drive** (R1,200pp): Includes accommodation, Entrance to Rhino and Lion Park, Guided game drive, 60-minute full body massage
-- **MAG5 Perfect Date** (R2,330pp): Includes accommodation, 60-minute horse riding experience, Quad biking adventure, Private romantic picnic setup, Champagne and picnic basket
-- **MAG6 Horse Spa Picnic** (R1,600pp): Includes accommodation, 1-hour horse trail, 60-minute full body massage, Private romantic picnic setup, Champagne and picnic basket
+- **MAG1 Explorer**: Includes accommodation, Cradle of Mankind Origins Centre, Sterkfontein Caves exploration tour, Rhino and Lion Park Guided game drive in Safari Truck, Reptile show and Predator enclosure
+- **MAG2 Ultimate Lux**: Includes accommodation, Cradle of Mankind Origins Centre, Guided game drive in Rhino and Lion Park, 2-hour buffet lunch cruise, 60-minute full body massage, Reptile show and Predator enclosure
+- **MAG3 Deluxe Spa**: Includes accommodation, Half-day spa experience with full body massage, Rhino and Lion Park Game drive in safari truck, Reptile and predator show, 2 Hour Champagne Sunset cruise with delicious buffet
+- **MAG4 Budget Game Drive**: Includes accommodation, Entrance to Rhino and Lion Park, Guided game drive, 60-minute full body massage
+- **MAG5 Perfect Date**: Includes accommodation, 60-minute horse riding experience, Quad biking adventure, Private romantic picnic setup, Champagne and picnic basket
+- **MAG6 Horse Spa Picnic**: Includes accommodation, 1-hour horse trail, 60-minute full body massage, Private romantic picnic setup, Champagne and picnic basket
+
+Internal base prices: MAG1=R900, MAG2=R2130, MAG3=R1950, MAG4=R1200, MAG5=R2330, MAG6=R1600
 
 ### DURBAN BEACHFRONT (durban)
-- **DUR1 Fun Beach** (R1,800pp): Includes accommodation, uShaka Marine World combo tickets (Sea World & Wet n Wild), Isle of Capri Boat Cruise, 60 minute full body massage, shuttle service between hotel and activities
-- **DUR2 Smiles Sea Shells** (R1,300pp): Includes accommodation, uShaka Marine World combo tickets (Sea World & Wet n Wild), 3 hour open bus city tour, Isle of Capri Boat Cruise, shuttle service between hotel and activities
-- **DUR3 Beach Spa** (R1,550pp): Includes accommodation, Half-day spa experience with full body massage and drinks, Luxury Canal boat cruise, shuttle service between hotel and activities
-- **DUR4 Party Vibes** (R2,000pp): Includes accommodation, Nightlife outing to Florida Road Cubana, uShaka Marine World combo tickets, Luxury boat canal cruise, 60 minute full body massage
-- **DUR5 Beach Couple uShaka** (R850pp): Includes accommodation, uShaka Marine World combo tickets, Suncoast Casino outing, shuttle service
-- **DUR6 Beach Couple Cruise** (R550pp): Includes accommodation, Isle of Capri Boat Cruise, Suncoast Casino outing, shuttle service
-- **DUR7 Beach Nightlife** (R400pp): Includes accommodation, Florida Road Cubana Outing, Suncoast Casino outing, shuttle service
-- **DUR8 Open Bus Tour** (R600pp): Includes accommodation, Suncoast Casino outing, 3 hour open top bus city tour, shuttle service
+- **DUR1 Fun Beach**: Includes accommodation, uShaka Marine World combo tickets (Sea World & Wet n Wild), Isle of Capri Boat Cruise, 60 minute full body massage, shuttle service between hotel and activities
+- **DUR2 Smiles Sea Shells**: Includes accommodation, uShaka Marine World combo tickets (Sea World & Wet n Wild), 3 hour open bus city tour, Isle of Capri Boat Cruise, shuttle service between hotel and activities
+- **DUR3 Beach Spa**: Includes accommodation, Half-day spa experience with full body massage and drinks, Luxury Canal boat cruise, shuttle service between hotel and activities
+- **DUR4 Party Vibes**: Includes accommodation, Nightlife outing to Florida Road Cubana, uShaka Marine World combo tickets, Luxury boat canal cruise, 60 minute full body massage
+- **DUR5 Beach Couple uShaka**: Includes accommodation, uShaka Marine World combo tickets, Suncoast Casino outing, shuttle service
+- **DUR6 Beach Couple Cruise**: Includes accommodation, Isle of Capri Boat Cruise, Suncoast Casino outing, shuttle service
+- **DUR7 Beach Nightlife**: Includes accommodation, Florida Road Cubana Outing, Suncoast Casino outing, shuttle service
+- **DUR8 Open Bus Tour**: Includes accommodation, Suncoast Casino outing, 3 hour open top bus city tour, shuttle service
+
+Internal base prices: DUR1=R1800, DUR2=R1300, DUR3=R1550, DUR4=R2000, DUR5=R850, DUR6=R550, DUR7=R400, DUR8=R600
 
 ### UMHLANGA (umhlanga)
-- **UMHLA1 Beach Leisure** (R500pp): Includes accommodation, breakfast, visit to Gateway Theatre of Dreams Shopping Mall, Umhlanga Rocks Main Beach, The Oceans Mall, shuttle transport
-- **UMHLA2 Beach Lifestyle** (R1,450pp): Includes accommodation, breakfast, uShaka Marine World full combo tickets, uShaka Marine Beach, Point Waterfront luxury canal boat cruise, uMhlanga Rocks Main Beach, shuttle transport
-- **UMHLA3 Three Beaches** (R1,850pp): Includes accommodation, buffet breakfast, uShaka Marine World full combo tickets, Boat cruise-Durban Harbour, Umhlanga Rocks Main Beach, Ballito Beach, shuttle transport
-- **UMHLA4 Romance** (R2,400pp): Includes accommodation, buffet breakfast, Romantic dinner date, Romantic room decor, uShaka Marine World full combo tickets, Gondola boat canal cruise with picnic basket, shuttle transport
+- **UMHLA1 Beach Leisure**: Includes accommodation, breakfast, visit to Gateway Theatre of Dreams Shopping Mall, Umhlanga Rocks Main Beach, The Oceans Mall, shuttle transport
+- **UMHLA2 Beach Lifestyle**: Includes accommodation, breakfast, uShaka Marine World full combo tickets, uShaka Marine Beach, Point Waterfront luxury canal boat cruise, uMhlanga Rocks Main Beach, shuttle transport
+- **UMHLA3 Three Beaches**: Includes accommodation, buffet breakfast, uShaka Marine World full combo tickets, Boat cruise-Durban Harbour, Umhlanga Rocks Main Beach, Ballito Beach, shuttle transport
+- **UMHLA4 Romance**: Includes accommodation, buffet breakfast, Romantic dinner date, Romantic room decor, uShaka Marine World full combo tickets, Gondola boat canal cruise with picnic basket, shuttle transport
+
+Internal base prices: UMHLA1=R500, UMHLA2=R1450, UMHLA3=R1850, UMHLA4=R2400
 
 ### CAPE TOWN (cape-town)
-- **CPT1 Iconic Tour** (R1,800pp, 3 nights): Includes accommodation, Cape Town Sightseeing Tour Bus, Robben Island tour with luxury boat transfer, Table Mountain Aerial Cableway ticket, Canal boat cruise
-- **CPT2 Sunset Explorer** (R1,200pp): Includes accommodation, 2 day Cape Town sightseeing tour, Table Mountain Cableway ticket, Canal boat cruise, Sunset tour with sundowners at Signal Hill
-- **CPTFW Wine Tram** (R2,300pp): Includes accommodation, Franschoek Wine Tram with wine tasting, Full day Cape Town city tour, Full body massage, Canal cruise
-- **CPTWTCM Wine & Mountain** (R2,600pp): Includes accommodation, Beach access, Wine route tour with wine tasting, Canal cruise, Table Mountain Cableway, Full Body Swedish massage
+- **CPT1 Iconic Tour** (3 nights): Includes accommodation, Cape Town Sightseeing Tour Bus, Robben Island tour with luxury boat transfer, Table Mountain Aerial Cableway ticket, Canal boat cruise
+- **CPT2 Sunset Explorer**: Includes accommodation, 2 day Cape Town sightseeing tour, Table Mountain Cableway ticket, Canal boat cruise, Sunset tour with sundowners at Signal Hill
+- **CPTFW Wine Tram**: Includes accommodation, Franschoek Wine Tram with wine tasting, Full day Cape Town city tour, Full body massage, Canal cruise
+- **CPTWTCM Wine & Mountain**: Includes accommodation, Beach access, Wine route tour with wine tasting, Canal cruise, Table Mountain Cableway, Full Body Swedish massage
+
+Internal base prices: CPT1=R1800, CPT2=R1200, CPTFW=R2300, CPTWTCM=R2600
 
 ### SUN CITY (sun-city)
-- **SUN1 Cruise Combo** (R1,550pp): Includes accommodation, Entrance fees Sun City, Valley of the Waves, Lunch in Sun City, Shuttle transport, 2 hour Sunday buffet lunch boat cruise in Harties
-- **SUN2 Valley & Quads** (R1,250pp): Includes accommodation, Entrance to Sun City, Valley of The Waves access, Quad biking, Lunch inside Sun City, Shuttle service
-- **SUN3 Valley Getaway** (R850pp): Includes accommodation, Entrance to Sun City, Valley of The Waves access, Lunch inside Sun City, Shuttle service
-- **SUN4 Safari Weekender** (R1,550pp): Includes accommodation, Entrance to Sun City, Valley of The Waves access, Game drive in Pilanesberg National Park, Lunch inside Sun City, Shuttle service
-- **SUN5 Spa & Safari** (R2,150pp): Includes accommodation, Entrance to Sun City, Valley of The Waves access, Half-day spa experience, Lunch inside Sun City, Shuttle service
-- **SUN6 Valley & Segway** (R1,700pp): Includes accommodation, Entrance to Sun City, Valley of The Waves, Segway glides, Lunch inside Sun City, Shuttle service
-- **SUN7 Valley & Maze** (R800pp): Includes accommodation, Entrance to Sun City, Valley of The Waves access, Maze adventure, Lunch inside Sun City, Shuttle service
-- **SUN8 Valley & Zipline** (R1,600pp): Includes accommodation, Entrance to Sun City, Valley of The Waves access, Zip lining adventure, Lunch inside Sun City, Shuttle service
+- **SUN1 Cruise Combo**: Includes accommodation, Entrance fees Sun City, Valley of the Waves, Lunch in Sun City, Shuttle transport, 2 hour Sunday buffet lunch boat cruise in Harties
+- **SUN2 Valley & Quads**: Includes accommodation, Entrance to Sun City, Valley of The Waves access, Quad biking, Lunch inside Sun City, Shuttle service
+- **SUN3 Valley Getaway**: Includes accommodation, Entrance to Sun City, Valley of The Waves access, Lunch inside Sun City, Shuttle service
+- **SUN4 Safari Weekender**: Includes accommodation, Entrance to Sun City, Valley of The Waves access, Game drive in Pilanesberg National Park, Lunch inside Sun City, Shuttle service
+- **SUN5 Spa & Safari**: Includes accommodation, Entrance to Sun City, Valley of The Waves access, Half-day spa experience, Lunch inside Sun City, Shuttle service
+- **SUN6 Valley & Segway**: Includes accommodation, Entrance to Sun City, Valley of The Waves, Segway glides, Lunch inside Sun City, Shuttle service
+- **SUN7 Valley & Maze**: Includes accommodation, Entrance to Sun City, Valley of The Waves access, Maze adventure, Lunch inside Sun City, Shuttle service
+- **SUN8 Valley & Zipline**: Includes accommodation, Entrance to Sun City, Valley of The Waves access, Zip lining adventure, Lunch inside Sun City, Shuttle service
+
+Internal base prices: SUN1=R1550, SUN2=R1250, SUN3=R850, SUN4=R1550, SUN5=R2150, SUN6=R1700, SUN7=R800, SUN8=R1600
 
 ### MPUMALANGA (mpumalanga)
-- **MP1 InStyle** (R1,320pp): Includes accommodation, Blyde River Canyon boat cruise with spectacular views, View of 3 Rondavels and Gods Window, Rare Kadishi Tufa Waterfalls experience, Graskop Gorge Lift with suspension bridge and gorge walking trails
-- **MP2 Fun Adventure** (R1,750pp): Includes accommodation, Graskop Lift, Gorge suspension bridge, Deep in the gorge Forest experience, Quad biking fun, Zip lining adventure
-- **MP3 Kruger Experience** (R2,100pp): Includes accommodation, Graskop Gorge Lift, Gorge suspension bridge, Forest experience, Guided Kruger National Park game drive in safari truck (morning or sunset)
-- **MP4 Weekender** (R2,800pp): Includes accommodation, Game drive in Kruger National Park, Full day Panorama Route tour, Gods Window & Wonderview, Berlin Falls, Pinnacle Rock, Bourkes Luck Potholes, Blyde River Canyon and Three Rondavels
+- **MP1 InStyle**: Includes accommodation, Blyde River Canyon boat cruise with spectacular views, View of 3 Rondavels and Gods Window, Rare Kadishi Tufa Waterfalls experience, Graskop Gorge Lift with suspension bridge and gorge walking trails
+- **MP2 Fun Adventure**: Includes accommodation, Graskop Lift, Gorge suspension bridge, Deep in the gorge Forest experience, Quad biking fun, Zip lining adventure
+- **MP3 Kruger Experience**: Includes accommodation, Graskop Gorge Lift, Gorge suspension bridge, Forest experience, Guided Kruger National Park game drive in safari truck (morning or sunset)
+- **MP4 Weekender**: Includes accommodation, Game drive in Kruger National Park, Full day Panorama Route tour, Gods Window & Wonderview, Berlin Falls, Pinnacle Rock, Bourkes Luck Potholes, Blyde River Canyon and Three Rondavels
+
+Internal base prices: MP1=R1320, MP2=R1750, MP3=R2100, MP4=R2800
 
 ### VAAL RIVER (vaal-river)
-- **EMER1 Aquadome & Cruise** (R1,100pp): Includes Aquadome Pools and Waterpark, Game drive in safari truck, Animal World, 2 Hour Sunday lunch buffet boat cruise
-- **EMER2 Family Fun** (R1,050pp): Includes Emerald Casino Resort, Aquadome Pools and Waterpark, 1 hour leisure cruise, Game drive in safari truck, Sunday lunch buffet and carvery
-- **EMER3 Leisure Spa** (R1,700pp): Includes Emerald Casino Resort, 60 Minute Full Body Massage, Game drive experience, Lunch cruise
+- **EMER1 Aquadome & Cruise**: Includes Aquadome Pools and Waterpark, Game drive in safari truck, Animal World, 2 Hour Sunday lunch buffet boat cruise
+- **EMER2 Family Fun**: Includes Emerald Casino Resort, Aquadome Pools and Waterpark, 1 hour leisure cruise, Game drive in safari truck, Sunday lunch buffet and carvery
+- **EMER3 Leisure Spa**: Includes Emerald Casino Resort, 60 Minute Full Body Massage, Game drive experience, Lunch cruise
+
+Internal base prices: EMER1=R1100, EMER2=R1050, EMER3=R1700
 
 ### BELA BELA (bela-bela)
-- **BELA1 Waterpark & Game Drive** (R800pp): Includes entrance into Bela Bela Resort Waterpark with water slides and warm pools, Guided game drive in safari truck, Accommodation inside or just outside the resort
-- **BELA2 Mabalingwe Adventure** (R850pp): Includes accommodation at Mabalingwe Nature Reserve, Entrance fees to Bela Bela Resort Waterpark, Choice between horseback safari or guided game drive
-- **BELA3 Mabula Safari** (R3,200pp): Includes accommodation at Mabula Game Lodge, Big 5 game drives, Bush walks, All meals included
-- **BELA4 Zebra Lodge Spa** (R2,600pp): Includes accommodation at Zebra Country Lodge, Spa treatment, Guided nature walks, Gourmet meals
-- **BELA5 Adventure Hot Springs** (R1,600pp): Includes accommodation, Quad biking adventure, Hot springs access, Breakfast daily
+- **BELA1 Waterpark & Game Drive**: Includes entrance into Bela Bela Resort Waterpark with water slides and warm pools, Guided game drive in safari truck, Accommodation inside or just outside the resort
+- **BELA2 Mabalingwe Adventure**: Includes accommodation at Mabalingwe Nature Reserve, Entrance fees to Bela Bela Resort Waterpark, Choice between horseback safari or guided game drive
+- **BELA3 Mabula Safari**: Includes accommodation at Mabula Game Lodge, Big 5 game drives, Bush walks, All meals included
+- **BELA4 Zebra Lodge Spa**: Includes accommodation at Zebra Country Lodge, Spa treatment, Guided nature walks, Gourmet meals
+- **BELA5 Adventure Hot Springs**: Includes accommodation, Quad biking adventure, Hot springs access, Breakfast daily
+
+Internal base prices: BELA1=R800, BELA2=R850, BELA3=R3200, BELA4=R2600, BELA5=R1600
 
 ### THE BLYDE (pretoria)
-- **BLY1 Blyde Spa Getaway** (R1,200pp): Includes 2 nights accommodation inside the Blyde Crystal Lagoon, 60 minute hot stone massage with spa moments, Full Access to The Blyde FUNtastic Crystal Lagoon including all facilities
+- **BLY1 Blyde Spa Getaway**: Includes 2 nights accommodation inside the Blyde Crystal Lagoon, 60 minute hot stone massage with spa moments, Full Access to The Blyde FUNtastic Crystal Lagoon including all facilities
+
+Internal base price: BLY1=R1200
 
 ### KNYSNA (knysna)
-- **KNY1 Boats & Quads Adventure** (R1,550pp): Includes accommodation, breakfast, Knysna wine and oyster luxury lounger sunset cruise, Knysna Forest guided quad biking adventure, Shuttle transport
+- **KNY1 Boats & Quads Adventure**: Includes accommodation, breakfast, Knysna wine and oyster luxury lounger sunset cruise, Knysna Forest guided quad biking adventure, Shuttle transport
+
+Internal base price: KNY1=R1550
 
 ### INTERNATIONAL
-- **Bali 6-Day Explorer** (R3,400pp): 5 nights accommodation, Return airport transfers, Sacred Monkey Forest, Tegalalang Rice Terraces, Tirta Empul Temple, Coffee Plantation, Balinese Dance, Quad Biking, Waterfall, Sunset Cruise with dinner, Besakih Temple
-- **Dubai Exclusive Moments** (R4,400pp): Burj Khalifa entry, Dubai Mega Yacht Cruise with Buffet Dinner, Museum Of The Future, Speedboat Tour, Sky Views Observatory, Desert Safari with Quad Bikes
-- **Phuket Adventure Explorer** (R3,800pp): James Bond Island tour, Phuket city tour, Yona Floating beach club, Phi Phi & Maya Bay, Elephant Jungle Sanctuary, Andamanda Water Park, Quad bikes adventure
+- **Bali 6-Day Explorer**: 5 nights accommodation, Return airport transfers, Sacred Monkey Forest, Tegalalang Rice Terraces, Tirta Empul Temple, Coffee Plantation, Balinese Dance, Quad Biking, Waterfall, Sunset Cruise with dinner, Besakih Temple (Internal: R3400pp)
+- **Dubai Exclusive Moments**: Burj Khalifa entry, Dubai Mega Yacht Cruise with Buffet Dinner, Museum Of The Future, Speedboat Tour, Sky Views Observatory, Desert Safari with Quad Bikes (Internal: R4400pp)
+- **Phuket Adventure Explorer**: James Bond Island tour, Phuket city tour, Yona Floating beach club, Phi Phi & Maya Bay, Elephant Jungle Sanctuary, Andamanda Water Park, Quad bikes adventure (Internal: R3800pp)
+
+## EXACT HOTEL NAMES BY DESTINATION AND TIER
+Use ONLY these exact hotel names when recommending hotels. Never make up hotel names.
+
+### Harties Budget Hotels
+- Harties Budget 2 Sleeper Option 8 (R720/night)
+- Harties Budget 2 Sleeper Option 9 (R750/night)
+
+### Harties Affordable Hotels
+- Harties Affordable 2 Sleeper Option 1 (R1,053/night)
+- Harties Affordable 2 Sleeper Option 2 (R1,071/night)
+- Harties Affordable 2 Sleeper Option 3 (R1,080/night)
+- Harties Affordable 2 Sleeper Option 4 (R1,080/night)
+- Harties Affordable 2 Sleeper Option 5 (R1,080/night)
+- Harties Affordable 2 Sleeper Option 6 (R1,100/night)
+- Harties Affordable 2 Sleeper Option 9 (R1,500/night, includes breakfast)
+
+### Harties Premium Hotels
+- Indlovukazi Guesthouse (R1,120/night)
+- Villa Paradiso Hotel
+- Cocomo Boutique Hotel
+- The Riverleaf Hotel (includes breakfast)
+- Kosmos Manor
+
+### Durban Budget Hotels (2-sleeper)
+- Durban Beachfront Budget Option SeaIMP (R574/night)
+- Durban Beachfront Budget Option SeaNOMA (R640/night)
+- Durban Beachfront Budget Option SeaESC (R720/night)
+- Durban Beachfront Budget Option SeaShaka2B (R855/night)
+- Durban Beachfront Budget Option SeaBV (R900/night)
+- Durban Beachfront Budget Option SeaSOL (R920/night)
+- Durban Beachfront Budget Option SeaLANC (R1,152/night)
+- Durban Beachfront Budget Option SeaWIND (R1,275/night)
+
+### Durban Premium Hotels (2-sleeper)
+- The Balmoral (R1,200/night, breakfast)
+- Belaire Suites Hotel (R1,284/night, breakfast)
+- Blue Waters Hotel (R1,285/night, breakfast)
+- Gooderson Tropicana Hotel (R1,400/night)
+- Southern Sun Garden Court South Beach (R1,440/night, breakfast)
+- Southern Sun The Edward (R1,543/night, breakfast)
+- Southern Sun Garden Court Marine Parade (R1,635/night, breakfast)
+- Southern Sun Elangeni & Maharani Hotel (R1,925/night, breakfast)
+- Suncoast Hotel & Towers (R2,226/night)
+
+### Other Destinations — use generic naming format:
+- Budget: "[Destination] Budget Hotel Option [A-J]"
+- Affordable: "[Destination] Affordable Hotel Option [A-J]"
+- Premium: Use specific names listed in the system (e.g., Sun City Hotel, Cascades Hotel, Perry's Bridge Hollow, etc.)
 
 ## ACCOMMODATION TIERS & SAMPLE PRICING (per room per night)
-- **Budget**: Basic clean rooms. Harties: R200-R1,100/night. Durban: R574-R1,275/night. Other destinations: R200-R1,100/night.
-- **Affordable**: Mid-range with more amenities. Harties: R450-R1,300/night. Durban: R600-R1,400/night. Other destinations: R450-R1,300/night.
-- **Premium**: Luxury properties (e.g., Indlovukazi Guesthouse, Kosmos Manor). From R1,500-R3,500/night.
+- **Budget**: Basic clean rooms. Harties: R720-R750/night. Durban: R574-R1,275/night. Other destinations: R200-R1,100/night.
+- **Affordable**: Mid-range with more amenities. Harties: R1,053-R1,500/night. Durban: R600-R1,400/night. Other destinations: R450-R1,300/night.
+- **Premium**: Luxury properties. From R1,120-R3,500/night.
 
 ## PRICING CALCULATION RULES (INTERNAL - NEVER SHOW BREAKDOWN)
 Calculate internally but NEVER show the breakdown to the user:
