@@ -269,6 +269,57 @@ export function Hero({ onGetQuote }: HeroProps) {
 
   const availablePackages = destination ? getPackagesByDestination(destination) : [];
 
+  // Handle chatbot URL params to pre-fill form
+  useEffect(() => {
+    const paramDest = searchParams.get('destination');
+    const paramPkg = searchParams.get('package');
+    const paramAdults = searchParams.get('adults');
+    const paramChildrenAges = searchParams.get('childrenAges');
+    const paramBudget = searchParams.get('budget');
+    const paramAutoSearch = searchParams.get('autoSearch');
+
+    if (paramDest && paramAutoSearch === 'true') {
+      setDestination(paramDest);
+      
+      if (paramAdults) setAdults(parseInt(paramAdults, 10) || 2);
+      if (paramChildrenAges && paramChildrenAges !== '0') {
+        const ages = paramChildrenAges.split(',');
+        setChildren(ages.length);
+        setChildrenAges(paramChildrenAges);
+      }
+      if (paramBudget) {
+        const budgetMap: Record<string, AccommodationType> = {
+          'very-affordable': 'budget',
+          'budget': 'budget',
+          'affordable': 'affordable',
+          'premium': 'premium',
+        };
+        setAccommodationType(budgetMap[paramBudget] || 'affordable');
+      }
+
+      // Set default check-in/out dates if not already set
+      if (!checkIn) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dayAfter = new Date(tomorrow);
+        dayAfter.setDate(dayAfter.getDate() + 2);
+        setCheckIn(tomorrow.toISOString().split('T')[0]);
+        setCheckOut(dayAfter.toISOString().split('T')[0]);
+      }
+
+      // Set package after a brief delay to let destination state propagate
+      if (paramPkg) {
+        setTimeout(() => {
+          setPackageIds([paramPkg]);
+          setBookingType('with-activities');
+        }, 100);
+      }
+
+      // Clear the URL params after applying
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams]);
+
   // Reset packages when destination changes
   useEffect(() => {
     setPackageIds([]);
