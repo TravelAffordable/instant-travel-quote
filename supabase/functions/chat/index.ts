@@ -47,11 +47,12 @@ Using their budget, show ONE hotel option per tier (Budget, Affordable, Premium)
 Format each option as a clickable link using this EXACT format:
 
 **For each hotel option, output this exact markdown pattern:**
-[🏨 Hotel Name - R X,XXX per person](HOTEL_LINK:destination|packageId|adults|children|hotelTier|hotelName)
+[🏨 Hotel Name](HOTEL_LINK:destination|packageId|adults|children|hotelTier|hotelName)
 
 Example:
-[🏨 Harties Budget Option A - R1,580pp](HOTEL_LINK:harties|hg1|2|0|budget|Harties Budget Option A)
+[🏨 Harties Budget 2 Sleeper Option 8](HOTEL_LINK:harties|hg1|2|0|budget|Harties Budget 2 Sleeper Option 8)
 
+Below the link, show the per-person price and/or total on a separate line. Do NOT put prices inside the link text.
 Show all three tiers even if one exceeds their budget slightly — label it as "Slightly above budget" so they can see the upgrade option.
 
 ## PACKAGE DATABASE — FULL INCLUSIONS

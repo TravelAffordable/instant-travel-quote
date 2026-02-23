@@ -244,7 +244,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     if (childrenAges && childrenAges !== '0') {
       params.set('childrenAges', childrenAges);
     }
-    params.set('budget', tier === 'budget' ? 'very-affordable' : tier);
+    params.set('budget', tier === 'very-affordable' ? 'budget' : tier);
     params.set('autoSearch', 'true');
 
     // Navigate to home with params - the Hero component will pick these up
