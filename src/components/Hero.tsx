@@ -297,6 +297,14 @@ export function Hero({ onGetQuote }: HeroProps) {
         setAccommodationType(budgetMap[paramBudget] || 'affordable');
       }
 
+      // Pre-fill contact details from chatbot
+      const paramName = searchParams.get('guestName');
+      const paramTel = searchParams.get('guestTel');
+      const paramEmail = searchParams.get('guestEmail');
+      if (paramName) setGuestName(paramName);
+      if (paramTel) setGuestTel(paramTel);
+      if (paramEmail) setGuestEmail(paramEmail);
+
       // Set default check-in/out dates if not already set
       if (!checkIn) {
         const tomorrow = new Date();
