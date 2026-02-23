@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageCircle, Send, X, Bot, User, Sparkles, Minimize2, Maximize2 } from 'lucide-react';
-import { destinations, packages, calculateQuote, getPackagesByDestination } from '@/data/travelData';
-import { formatCurrency } from '@/lib/utils';
+import { MessageCircle, Send, X, Bot, User, Minimize2, Maximize2 } from 'lucide-react';
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 interface Message {
   id: string;
@@ -19,12 +19,120 @@ interface ChatBotProps {
   onToggle: () => void;
 }
 
+async function streamChat({
+  messages,
+  onDelta,
+  onDone,
+  onError,
+}: {
+  messages: { role: string; content: string }[];
+  onDelta: (text: string) => void;
+  onDone: () => void;
+  onError: (err: string) => void;
+}) {
+  const resp = await fetch(CHAT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+    },
+    body: JSON.stringify({ messages }),
+  });
+
+  if (!resp.ok) {
+    const errorData = await resp.json().catch(() => ({ error: "Connection failed" }));
+    onError(errorData.error || "Something went wrong");
+    return;
+  }
+
+  if (!resp.body) {
+    onError("No response stream");
+    return;
+  }
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let textBuffer = "";
+  let streamDone = false;
+
+  while (!streamDone) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    textBuffer += decoder.decode(value, { stream: true });
+
+    let newlineIndex: number;
+    while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+      let line = textBuffer.slice(0, newlineIndex);
+      textBuffer = textBuffer.slice(newlineIndex + 1);
+
+      if (line.endsWith("\r")) line = line.slice(0, -1);
+      if (line.startsWith(":") || line.trim() === "") continue;
+      if (!line.startsWith("data: ")) continue;
+
+      const jsonStr = line.slice(6).trim();
+      if (jsonStr === "[DONE]") {
+        streamDone = true;
+        break;
+      }
+
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+        if (content) onDelta(content);
+      } catch {
+        textBuffer = line + "\n" + textBuffer;
+        break;
+      }
+    }
+  }
+
+  // Final flush
+  if (textBuffer.trim()) {
+    for (let raw of textBuffer.split("\n")) {
+      if (!raw) continue;
+      if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+      if (raw.startsWith(":") || raw.trim() === "") continue;
+      if (!raw.startsWith("data: ")) continue;
+      const jsonStr = raw.slice(6).trim();
+      if (jsonStr === "[DONE]") continue;
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+        if (content) onDelta(content);
+      } catch { /* ignore */ }
+    }
+  }
+
+  onDone();
+}
+
+// Simple markdown renderer for bold and bullet points
+function renderMarkdown(text: string) {
+  const lines = text.split('\n');
+  return lines.map((line, lineIdx) => {
+    const isBullet = line.match(/^[•\-\*]\s/);
+    const content = isBullet ? line.slice(2) : line;
+    
+    const parts = content.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i}>{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+
+    if (isBullet) {
+      return <div key={lineIdx} className="flex gap-1.5 ml-1"><span>•</span><span>{parts}</span></div>;
+    }
+    return <span key={lineIdx}>{parts}{lineIdx < lines.length - 1 ? '\n' : ''}</span>;
+  });
+}
+
 export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: "👋 Hi! I'm your Travel Affordable assistant. I can help you:\n\n• Get instant quotes for any destination\n• Find the perfect package for your needs\n• Answer questions about our tours\n\nWhere would you like to go?",
+      content: "👋 Hi! I'm your Travel Affordable AI assistant. I can help you:\n\n• Get instant quotes for any destination\n• Find the perfect package for your needs\n• Answer questions about our tours & pricing\n• Help plan romantic, family or adventure getaways\n\nWhere would you like to go?",
       timestamp: new Date(),
     },
   ]);
@@ -46,67 +154,8 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     }
   }, [isOpen]);
 
-
-  const generateResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
-
-    // Check for destination mentions
-    const destinationMatch = destinations.find(d => 
-      lowerMessage.includes(d.name.toLowerCase()) || 
-      lowerMessage.includes(d.id.toLowerCase())
-    );
-
-    if (destinationMatch) {
-      const destPackages = getPackagesByDestination(destinationMatch.id);
-      if (destPackages.length > 0) {
-        const packageList = destPackages.slice(0, 3).map(p => 
-          `• **${p.shortName}** - from ${formatCurrency(p.basePrice)}/person`
-        ).join('\n');
-        
-        return `Great choice! 🌴 **${destinationMatch.name}** is amazing!\n\n${destinationMatch.description}\n\n**Available Packages:**\n${packageList}\n\nFor an instant quote, tell me:\n1. When do you want to travel?\n2. How many adults and children?\n3. Which package interests you?`;
-      }
-      return `**${destinationMatch.name}** is a wonderful destination! ${destinationMatch.description}\n\nPackages start from ${formatCurrency(destinationMatch.startingPrice)}. Would you like me to help you get a quote?`;
-    }
-
-    // Price/quote related
-    if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('quote') || lowerMessage.includes('how much')) {
-      return "I'd love to give you a quote! 💰\n\nTo calculate an accurate price, I need to know:\n\n1. **Destination** - Where do you want to go?\n2. **Dates** - When are you planning to travel?\n3. **Travelers** - How many adults and children?\n4. **Package** - Any specific activities you want?\n\nOr you can use our **Instant Quote Calculator** on this page for immediate pricing!";
-    }
-
-    // Package related
-    if (lowerMessage.includes('package') || lowerMessage.includes('tour') || lowerMessage.includes('activity')) {
-      return "We have amazing packages for every type of traveler! 🎒\n\n**Popular Categories:**\n• **Adventure** - Quad biking, zip-lining, game drives\n• **Romance** - Couples retreats, sunset cruises, spa\n• **Family** - Theme parks, beaches, kid-friendly activities\n• **Relaxation** - Spa getaways, scenic cruises\n\nWhich type interests you? Or tell me your destination and I'll show you what's available!";
-    }
-
-    // Booking related
-    if (lowerMessage.includes('book') || lowerMessage.includes('reserve') || lowerMessage.includes('confirm')) {
-      return "Ready to book? Excellent! 🎉\n\nHere's how to proceed:\n\n1. **Use the Quote Calculator** to get your instant price\n2. **Click 'Book Now'** or **WhatsApp us** at 079 681 3869\n3. We'll confirm availability and send you the booking form\n4. Pay your deposit to secure your dates\n\nNeed help with anything specific?";
-    }
-
-    // Contact related
-    if (lowerMessage.includes('contact') || lowerMessage.includes('phone') || lowerMessage.includes('whatsapp') || lowerMessage.includes('email')) {
-      return "📞 **Contact Us:**\n\n• **WhatsApp:** 079 681 3869\n• **Email:** info@travelaffordable.co.za\n• **Email 2:** travelaffordable2017@gmail.com\n\nWe typically respond within 30 minutes during business hours. For instant quotes, use our calculator above!";
-    }
-
-    // Help/greeting
-    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey') || lowerMessage.includes('help')) {
-      return "Hello! Welcome to Travel Affordable! 😊\n\nI'm here to help you plan the perfect getaway. Here's what I can do:\n\n• **Find packages** - Tell me a destination\n• **Get quotes** - Tell me your travel details\n• **Answer questions** - About tours, bookings, etc.\n\nWhat would you like to explore today?";
-    }
-
-    // Destinations list
-    if (lowerMessage.includes('destination') || lowerMessage.includes('where') || lowerMessage.includes('option')) {
-      const saDestinations = destinations.filter(d => !d.international).map(d => d.name).join(', ');
-      const intDestinations = destinations.filter(d => d.international).map(d => `${d.name} (${d.country})`).join(', ');
-      
-      return `🗺️ **Our Destinations:**\n\n**South Africa:**\n${saDestinations}\n\n**International:**\n${intDestinations}\n\nWhich destination catches your eye?`;
-    }
-
-    // Default response
-    return "I'd be happy to help! 😊\n\nHere are some things you can ask me:\n\n• \"Tell me about Cape Town packages\"\n• \"How much for a Sun City trip?\"\n• \"What destinations do you have?\"\n• \"Help me plan a romantic getaway\"\n\nOr use the **Quote Calculator** above for instant pricing!";
-  };
-
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = useCallback(async () => {
+    if (!input.trim() || isTyping) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -119,19 +168,49 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI response delay
-    setTimeout(() => {
-      const response = generateResponse(userMessage.content);
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+    let assistantSoFar = "";
+
+    const chatHistory = [...messages, userMessage]
+      .filter(m => m.id !== '1') // skip initial greeting from history sent to AI
+      .map(m => ({ role: m.role, content: m.content }));
+
+    // Keep last 20 messages for context window
+    const recentHistory = chatHistory.slice(-20);
+
+    try {
+      await streamChat({
+        messages: recentHistory,
+        onDelta: (chunk) => {
+          assistantSoFar += chunk;
+          setMessages(prev => {
+            const last = prev[prev.length - 1];
+            if (last?.role === 'assistant' && last.id.startsWith('ai-')) {
+              return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
+            }
+            return [...prev, { id: `ai-${Date.now()}`, role: 'assistant', content: assistantSoFar, timestamp: new Date() }];
+          });
+        },
+        onDone: () => setIsTyping(false),
+        onError: (err) => {
+          setMessages(prev => [...prev, {
+            id: `err-${Date.now()}`,
+            role: 'assistant',
+            content: `⚠️ ${err}\n\nPlease try again, or contact us on WhatsApp: 079 681 3869`,
+            timestamp: new Date(),
+          }]);
+          setIsTyping(false);
+        },
+      });
+    } catch {
+      setMessages(prev => [...prev, {
+        id: `err-${Date.now()}`,
         role: 'assistant',
-        content: response,
+        content: "⚠️ Connection error. Please try again or WhatsApp us at 079 681 3869.",
         timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, assistantMessage]);
+      }]);
       setIsTyping(false);
-    }, 800 + Math.random() * 500);
-  };
+    }
+  }, [input, isTyping, messages]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -161,24 +240,14 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
           </div>
           <div>
             <CardTitle className="text-base font-semibold">Travel Assistant</CardTitle>
-            <p className="text-xs opacity-80">Online • Ready to help</p>
+            <p className="text-xs opacity-80">AI Powered • Ready to help</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20"
-            onClick={() => setIsMinimized(!isMinimized)}
-          >
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20" onClick={() => setIsMinimized(!isMinimized)}>
             {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20"
-            onClick={onToggle}
-          >
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20" onClick={onToggle}>
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -191,7 +260,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
               {messages.map(message => (
                 <div
                   key={message.id}
-                  className={`flex gap-3 chat-message ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+                  className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
                 >
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                     message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
@@ -203,16 +272,14 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
                       ? 'bg-primary text-primary-foreground rounded-br-sm' 
                       : 'bg-muted rounded-bl-sm'
                   }`}>
-                    <p className="text-sm whitespace-pre-line leading-relaxed">
-                      {message.content.split('**').map((part, i) => 
-                        i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-                      )}
-                    </p>
+                    <div className="text-sm whitespace-pre-line leading-relaxed">
+                      {renderMarkdown(message.content)}
+                    </div>
                   </div>
                 </div>
               ))}
-              {isTyping && (
-                <div className="flex gap-3 chat-message">
+              {isTyping && messages[messages.length - 1]?.role !== 'assistant' && (
+                <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                     <Bot className="w-4 h-4" />
                   </div>
