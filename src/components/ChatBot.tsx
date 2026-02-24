@@ -196,7 +196,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     {
       id: '1',
       role: 'assistant',
-      content: "👋 Hi! I'm your Travel Affordable AI assistant. I can help you find the perfect getaway!\n\n🌍 **Where would you like to go?**\n\n• Hartbeespoort (Harties)\n• Magaliesburg\n• Durban Beachfront\n• Umhlanga\n• Cape Town\n• Sun City\n• Mpumalanga\n• Knysna\n• Vaal River\n• Bela Bela\n• The Blyde (Pretoria)\n• 🌏 Bali, Dubai, Thailand\n\nJust tell me your dream destination! 😊",
+      content: "👋 Hi! I'm **Jenny**, your Travel Affordable assistant! 🌸 I'm here to help you find the perfect getaway quickly and easily.\n\n🌍 **Where would you like to go?**\n\n• Hartbeespoort (Harties)\n• Magaliesburg\n• Durban Beachfront\n• Umhlanga\n• Cape Town\n• Sun City\n• Mpumalanga\n• Knysna\n• Vaal River\n• Bela Bela\n• The Blyde (Pretoria)\n• 🌏 Bali, Dubai, Thailand\n\nJust tell me your dream destination! 😊",
       timestamp: new Date(),
     },
   ]);
@@ -376,6 +376,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
   if (!isOpen) {
     return (
       <Button
+        data-chat-toggle
         onClick={onToggle}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-50 animate-pulse-slow"
         size="icon"
