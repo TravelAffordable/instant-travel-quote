@@ -121,9 +121,16 @@ function parseHotelLink(linkData: string) {
   };
 }
 
+// Pre-process text to rejoin markdown links split across lines
+function rejoинLinks(text: string): string {
+  // Fix cases where [link text]\n(HOTEL_LINK:...) got split across lines
+  return text.replace(/\]\s*\n\s*\(HOTEL_LINK:/g, '](HOTEL_LINK:');
+}
+
 // Render markdown with support for bold, bullets, emojis, and clickable hotel links
 function RenderMarkdown({ text, onHotelClick }: { text: string; onHotelClick: (link: ReturnType<typeof parseHotelLink>) => void }) {
-  const lines = text.split('\n');
+  const fixed = rejoинLinks(text);
+  const lines = fixed.split('\n');
   
   return (
     <>
