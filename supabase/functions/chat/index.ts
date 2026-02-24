@@ -165,10 +165,10 @@ Use ONLY these exact hotel names. Never invent hotel names.
 
 ### Umhlanga Budget (2-sleeper): Option 1-8
 ### Umhlanga Budget (4-sleeper): Option 1-8
-### Umhlanga Affordable (2-sleeper): Option 1-5
-### Umhlanga Affordable (4-sleeper): Option 1-5
-### Umhlanga Premium: Umhlanga Premium Hotel A, Umhlanga Premium Hotel B, Umhlanga Premium Hotel C, Umhlanga Premium Hotel D, Umhlanga Premium Hotel E, Umhlanga Premium Hotel F, Umhlanga Premium Hotel G, Umhlanga Premium Hotel H, Umhlanga Premium Hotel I, Umhlanga Premium Hotel J
-### NOTE: Umhlanga Premium hotels do NOT have separate sleeper sizes — use "Umhlanga Premium Hotel [letter]" for all group sizes.
+### Umhlanga Affordable (2-sleeper): Option 1-8
+### Umhlanga Affordable (4-sleeper): Option 1-8
+### Umhlanga Premium: Beverly Hills, Breakers Resort Apartments, aha Gateway Hotel Umhlanga, Coastlands Skye Hotel Ridgeside, First Group Breakers Resort, The Lofts on Manaar, Sandals Guest House, Holiday Inn Express Durban - Umhlanga, Oceans Apartments Radisson Blu Tower, Kingston Place Guesthouse, The Capital Pearls Hotel, The Space To Be, Regal Inn Umhlanga Gateway, Marina Bay Luxury Apartment Suite, Town Lodge Umhlanga, The Oyster Box, Premier Hotel Umhlanga, Hilton Garden Inn Umhlanga Arch, uShaka Manor Guest House, Royal Palm Hotel, The Pearls of Umhlanga, Premier Splendid Inn Umhlanga, Savannah Park Luxury Apartments, Protea Hotel by Marriott Durban Umhlanga
+### NOTE: NEVER use names like "Umhlanga Premium Hotel A-J". They are invalid. Use only the real names listed above.
 
 ### For other destinations: Use format "[Destination] Budget/Affordable [2/4] Sleeper Option [N]"
 
