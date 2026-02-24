@@ -167,7 +167,8 @@ Use ONLY these exact hotel names. Never invent hotel names.
 ### Umhlanga Budget (4-sleeper): Option 1-8
 ### Umhlanga Affordable (2-sleeper): Option 1-5
 ### Umhlanga Affordable (4-sleeper): Option 1-5
-### Umhlanga Premium: Currently no premium hotels listed. Skip premium tier for Umhlanga or say "Premium options coming soon."
+### Umhlanga Premium: Umhlanga Premium Hotel A, Umhlanga Premium Hotel B, Umhlanga Premium Hotel C, Umhlanga Premium Hotel D, Umhlanga Premium Hotel E, Umhlanga Premium Hotel F, Umhlanga Premium Hotel G, Umhlanga Premium Hotel H, Umhlanga Premium Hotel I, Umhlanga Premium Hotel J
+### NOTE: Umhlanga Premium hotels do NOT have separate sleeper sizes — use "Umhlanga Premium Hotel [letter]" for all group sizes.
 
 ### For other destinations: Use format "[Destination] Budget/Affordable [2/4] Sleeper Option [N]"
 
