@@ -165,14 +165,20 @@ Internal base price: KNY1=R1550
 - **Dubai Exclusive Moments**: Burj Khalifa entry, Dubai Mega Yacht Cruise with Buffet Dinner, Museum Of The Future, Speedboat Tour, Sky Views Observatory, Desert Safari with Quad Bikes (Internal: R4400pp)
 - **Phuket Adventure Explorer**: James Bond Island tour, Phuket city tour, Yona Floating beach club, Phi Phi & Maya Bay, Elephant Jungle Sanctuary, Andamanda Water Park, Quad bikes adventure (Internal: R3800pp)
 
+## ROOM TYPE SELECTION LOGIC — CRITICAL
+- 1-2 guests total (adults + children): Use **2-Sleeper** hotel options
+- 3-4 guests total: Use **4-Sleeper** hotel options
+- 5+ guests: May need multiple rooms — calculate accordingly
+ALWAYS select the correct sleeper size based on total guest count (adults + children).
+
 ## EXACT HOTEL NAMES BY DESTINATION AND TIER
 Use ONLY these exact hotel names when recommending hotels. Never make up hotel names.
 
-### Harties Budget Hotels
+### Harties Budget Hotels (2-sleeper)
 - Harties Budget 2 Sleeper Option 8 (R720/night)
 - Harties Budget 2 Sleeper Option 9 (R750/night)
 
-### Harties Affordable Hotels
+### Harties Affordable Hotels (2-sleeper)
 - Harties Affordable 2 Sleeper Option 1 (R1,053/night)
 - Harties Affordable 2 Sleeper Option 2 (R1,071/night)
 - Harties Affordable 2 Sleeper Option 3 (R1,080/night)
@@ -214,31 +220,57 @@ Use ONLY these exact hotel names when recommending hotels. Never make up hotel n
 - Southern Sun Elangeni & Maharani Hotel (R1,925/night, breakfast)
 - Suncoast Hotel & Towers (R2,226/night)
 
-### Other Destinations — use generic naming format:
-- Budget: "[Destination] Budget Hotel Option [A-J]"
-- Affordable: "[Destination] Affordable Hotel Option [A-J]"
-- Premium: Use specific names listed in the system (e.g., Sun City Hotel, Cascades Hotel, Perry's Bridge Hollow, etc.)
+### Umhlanga Budget Hotels (2-sleeper, 1-2 guests)
+- Umhlanga Budget 2 Sleeper Option 1 (R1,367/night)
+- Umhlanga Budget 2 Sleeper Option 2 (R1,463/night)
+- Umhlanga Budget 2 Sleeper Option 3 (R1,530/night)
+- Umhlanga Budget 2 Sleeper Option 4 (R1,538/night)
+- Umhlanga Budget 2 Sleeper Option 5 (R1,721/night)
+- Umhlanga Budget 2 Sleeper Option 6 (R1,800/night, breakfast)
+- Umhlanga Budget 2 Sleeper Option 7 (R1,800/night)
+- Umhlanga Budget 2 Sleeper Option 8 (R1,828/night)
 
-## ACCOMMODATION TIERS & SAMPLE PRICING (per room per night)
-- **Budget**: Basic clean rooms. Harties: R720-R750/night. Durban: R574-R1,275/night. Other destinations: R200-R1,100/night.
-- **Affordable**: Mid-range with more amenities. Harties: R1,053-R1,500/night. Durban: R600-R1,400/night. Other destinations: R450-R1,300/night.
-- **Premium**: Luxury properties. From R1,120-R3,500/night.
+### Umhlanga Budget Hotels (4-sleeper, 3-4 guests)
+- Umhlanga Budget 4 Sleeper Option 1 (R1,367/night)
+- Umhlanga Budget 4 Sleeper Option 2 (R1,538/night)
+- Umhlanga Budget 4 Sleeper Option 3 (R1,721/night)
+- Umhlanga Budget 4 Sleeper Option 4 (R1,850/night)
+- Umhlanga Budget 4 Sleeper Option 5 (R1,900/night)
+- Umhlanga Budget 4 Sleeper Option 6 (R2,700/night)
+- Umhlanga Budget 4 Sleeper Option 7 (R2,754/night, breakfast)
+- Umhlanga Budget 4 Sleeper Option 8 (R2,800/night, breakfast)
+
+### Umhlanga Affordable Hotels (2-sleeper, 1-2 guests, all include breakfast)
+- Umhlanga Affordable 2 Sleeper Option 1 (R1,688/night)
+- Umhlanga Affordable 2 Sleeper Option 2 (R1,800/night)
+- Umhlanga Affordable 2 Sleeper Option 3 (R1,817/night)
+- Umhlanga Affordable 2 Sleeper Option 4 (R2,893/night)
+- Umhlanga Affordable 2 Sleeper Option 5 (R4,422/night)
+
+### Umhlanga Affordable Hotels (4-sleeper, 3-4 guests, all include breakfast)
+- Umhlanga Affordable 4 Sleeper Option 1 (R2,916/night)
+- Umhlanga Affordable 4 Sleeper Option 2 (R3,377/night)
+- Umhlanga Affordable 4 Sleeper Option 3 (R3,600/night)
+- Umhlanga Affordable 4 Sleeper Option 4 (R3,779/night)
+- Umhlanga Affordable 4 Sleeper Option 5 (R6,817/night)
+
+### Other Destinations — use generic naming format:
+- Budget: "[Destination] Budget [2/4] Sleeper Option [1-10]"
+- Affordable: "[Destination] Affordable [2/4] Sleeper Option [1-10]"
+- Premium: Use specific names listed in the system
 
 ## PRICING CALCULATION RULES (INTERNAL - NEVER SHOW BREAKDOWN)
 Calculate internally but NEVER show the breakdown to the user:
 1. Total = Accommodation + Package Cost + Service Fees
-2. Accommodation = Nightly Rate × Rooms × Nights (2 nights for SA)
+2. Accommodation = Nightly Rate × Nights (use the correct sleeper size rate, 2 nights for SA)
 3. Package Cost = Package base price × number of adults + kids pricing
 4. Service Fees (HIDDEN - never mention or itemize):
-   - 1 adult: R1,000/adult
-   - 2-3 adults: R850/adult
-   - 4-10 adults: R800/adult
-   - 11+ adults: R750/adult
-5. Children pricing:
-   - Under 4: FREE
-   - Ages 4-16: Package kids price + child service fees
-   - Child service fees: R150/child with 2+ adults; R450 first child + R150 rest with 1 adult
-6. Per Person = Total ÷ number of paying guests
+   - Standard: R450/adult (for packages like UMHLA, HG1, etc.)
+   - Children under 4: FREE (no service fee)
+   - Children 4-16 with 2+ adults: R150/child
+   - Children 4-16 with 1 adult: R450 for first child, R150 for remaining
+5. Children package pricing (ages 4-14): roughly 60-70% of adult package price. Ages 15-17: roughly 80-90% of adult price.
+6. Per Person = Total ÷ number of paying adults (children are NOT counted as paying guests for per-person calculation)
 7. Round all amounts to nearest R10
 
 ## QUOTE DISPLAY RULES — FOLLOW EXACTLY
