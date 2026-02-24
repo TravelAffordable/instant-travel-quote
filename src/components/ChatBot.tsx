@@ -376,6 +376,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
   if (!isOpen) {
     return (
       <Button
+        data-chat-toggle
         onClick={onToggle}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 z-50 animate-pulse-slow"
         size="icon"
