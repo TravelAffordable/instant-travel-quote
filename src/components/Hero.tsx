@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap, MessageCircle } from 'lucide-react';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import { 
   destinations, 
@@ -770,8 +770,21 @@ export function Hero({ onGetQuote }: HeroProps) {
             </button>
           </div>
           
-          {/* Bus Hire, Hotel Provider & Travel Agent Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center gap-3 mt-3">
+          {/* Jenny Assistant + Bus Hire, Hotel Provider & Travel Agent Buttons */}
+          <div className="flex flex-col justify-center gap-3 mt-3">
+            {/* Jenny Travel Assistant Button - prominent at top */}
+            <button
+              onClick={() => {
+                const chatToggle = document.querySelector('[data-chat-toggle]') as HTMLButtonElement;
+                if (chatToggle) chatToggle.click();
+              }}
+              className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 shadow-lg hover:scale-105 transition-all animate-pulse-subtle"
+            >
+              <MessageCircle className="w-6 h-6" />
+              <span className="font-bold text-base">🌸 Start Here – Speak to Jenny, our Travel Assistant, for easy & quick assistance</span>
+            </button>
+
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
             <a
               href="#bus-hire-section"
               className="flex items-center gap-3 px-6 py-3 rounded-xl bg-amber-500/90 text-white hover:bg-amber-500 transition-all backdrop-blur-sm hover:scale-105"
@@ -793,6 +806,7 @@ export function Hero({ onGetQuote }: HeroProps) {
               <FileText className="w-5 h-5" />
               <span className="font-medium">Travel Agents - Get exclusive packages for your clients</span>
             </a>
+            </div>
           </div>
         </div>
 
