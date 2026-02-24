@@ -198,6 +198,11 @@ Use ONLY these exact hotel names when recommending hotels. Never make up hotel n
 - Durban Beachfront Budget Option SeaLANC (R1,152/night)
 - Durban Beachfront Budget Option SeaWIND (R1,275/night)
 
+### Durban Affordable Hotels (2-sleeper)
+- Durban Beachfront Affordable Option SeaSOL (R920/night)
+- Durban Beachfront Affordable Option SeaLANC (R1,152/night)
+- Durban Beachfront Affordable Option SeaWIND (R1,275/night)
+
 ### Durban Premium Hotels (2-sleeper)
 - The Balmoral (R1,200/night, breakfast)
 - Belaire Suites Hotel (R1,284/night, breakfast)
