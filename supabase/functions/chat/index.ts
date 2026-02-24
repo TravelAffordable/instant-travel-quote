@@ -259,19 +259,62 @@ Use ONLY these exact hotel names when recommending hotels. Never make up hotel n
 - Affordable: "[Destination] Affordable [2/4] Sleeper Option [1-10]"
 - Premium: Use specific names listed in the system
 
-## PRICING CALCULATION RULES (INTERNAL - NEVER SHOW BREAKDOWN)
-Calculate internally but NEVER show the breakdown to the user:
-1. Total = Accommodation + Package Cost + Service Fees
-2. Accommodation = Nightly Rate × Nights (use the correct sleeper size rate, 2 nights for SA)
-3. Package Cost = Package base price × number of adults + kids pricing
-4. Service Fees (HIDDEN - never mention or itemize):
-   - Standard: R450/adult (for packages like UMHLA, HG1, etc.)
-   - Children under 4: FREE (no service fee)
-   - Children 4-16 with 2+ adults: R150/child
-   - Children 4-16 with 1 adult: R450 for first child, R150 for remaining
-5. Children package pricing (ages 4-14): roughly 60-70% of adult package price. Ages 15-17: roughly 80-90% of adult price.
-6. Per Person = Total ÷ number of paying adults (children are NOT counted as paying guests for per-person calculation)
-7. Round all amounts to nearest R10
+## PRICING CALCULATION RULES — FOLLOW EXACTLY (INTERNAL - NEVER SHOW BREAKDOWN)
+Calculate internally but NEVER show the breakdown to the user. You MUST follow these exact formulas.
+
+### Step 1: Accommodation Cost
+Accommodation = Hotel Nightly Rate × Number of Rooms × Number of Nights
+(All SA packages = 2 nights, 1 room unless specified)
+
+### Step 2: Adult Package Cost
+Adult Package Cost = Package Base Price × Number of Adults
+Use the EXACT base prices listed under "Internal base prices" for each destination.
+
+### Step 3: Children Package Cost (ages 4-16 only, under 4 = FREE)
+Use these EXACT kids prices per package (NOT a percentage):
+- UMHLA1: R180/child, UMHLA2: R900/child, UMHLA3: R800/child, UMHLA4: R900/child
+- HG1: R600/child, HG2: R800/child, HG3: R600/child, HG4: R1450/child, HG5: R940/child
+- HG6: R300/child, HG7: R350/child, HG8: R300/child, HG9: R400/child
+- HG10: R600/child, HG11: R600/child, HG12: R600/child
+- MAG1: R800/child, MAG2: R900/child, MAG3: R1000/child, MAG4: R800/child, MAG5: R900/child, MAG6: R800/child
+- DUR1: R1100/child, DUR2: R800/child, DUR3: R800/child, DUR4: R1000/child
+- DUR5: R500/child, DUR6: R300/child, DUR7: R200/child, DUR8: R350/child
+- CPT1: R900/child, CPT2: R700/child, CPTFW: R1200/child, CPTWTCM: R1400/child
+- SUN1: R900/child, SUN2: R700/child, SUN3: R500/child, SUN4: R900/child
+- SUN5: R1200/child, SUN6: R1000/child, SUN7: R500/child, SUN8: R900/child
+- MP1: R700/child, MP2: R900/child, MP3: R1200/child, MP4: R1500/child
+- EMER1: R800/child, EMER2: R700/child, EMER3: R950/child
+- BELA1: R500/child, BELA2: R550/child, BELA3: R1800/child, BELA4: R1400/child, BELA5: R900/child
+- BLY1: R700/child, KNY1: R900/child
+Children Package Cost = Kids Price × Number of Eligible Children (ages 4-16)
+
+### Step 4: Child Service Fees (HIDDEN - never mention)
+- Children under 4: FREE
+- Children 4-16 with 2+ adults: R150 per child
+- Children 4-16 with 1 adult: R450 for first child, R150 for each additional
+
+### Step 5: Adult Service Fees (HIDDEN - never mention)
+- 1 adult: R1,000
+- 2-3 adults: R850 per adult
+- 4-10 adults: R800 per adult
+- 11+ adults: R750 per adult
+Adult Service Fees = Fee Per Adult × Number of Adults
+
+### Step 6: Grand Total
+Grand Total = Accommodation + Adult Package Cost + Children Package Cost + Child Service Fees + Adult Service Fees
+
+### Step 7: Per Person (for display)
+Per Person = Grand Total ÷ Total People (adults + eligible children)
+Round ALL amounts to nearest R10.
+
+### WORKED EXAMPLE — UMHLA2, 2 adults, 2 kids (12 & 7), Umhlanga Budget 4 Sleeper Option 2 (R1,538/night)
+1. Accommodation: R1,538 × 1 × 2 = R3,076
+2. Adult Package: R1,450 × 2 = R2,900
+3. Kids Package: R900 × 2 = R1,800
+4. Child Service Fees: R150 × 2 = R300 (2+ adults)
+5. Adult Service Fees: R850 × 2 = R1,700
+6. Grand Total: R3,076 + R2,900 + R1,800 + R300 + R1,700 = R9,776 → R9,780 (rounded)
+7. Per Person: R9,780 ÷ 4 = R2,445 → R2,450 (rounded)
 
 ## QUOTE DISPLAY RULES — FOLLOW EXACTLY
 - Adults-only: Show PER PERSON price as main figure, then group total below
@@ -309,7 +352,7 @@ You MUST show EXACTLY 3 hotel options — one per tier:
 3. 🔵 **Premium** — ONE hotel from the Premium tier closest to their budget
 
 Rules:
-- NEVER show 2 hotels from the same tier
+- NEVER show 2 hotels from the same tier. The Premium tier must use a PREMIUM hotel, not an Affordable one.
 - If a tier exceeds their budget, still show it but note "Above budget"
 - If no affordable tier hotels are listed for a destination, use the format "[Destination] Affordable Hotel Option A" with mid-range pricing
 - ALWAYS show all 3 tiers so the user can compare
@@ -341,7 +384,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-pro",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           ...messages,
