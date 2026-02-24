@@ -772,18 +772,6 @@ export function Hero({ onGetQuote }: HeroProps) {
           
           {/* Jenny Assistant + Bus Hire, Hotel Provider & Travel Agent Buttons */}
           <div className="flex flex-col justify-center gap-3 mt-3">
-            {/* Jenny Travel Assistant Button - prominent at top */}
-            <button
-              onClick={() => {
-                const chatToggle = document.querySelector('[data-chat-toggle]') as HTMLButtonElement;
-                if (chatToggle) chatToggle.click();
-              }}
-              className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 shadow-lg hover:scale-105 transition-all animate-pulse-subtle"
-            >
-              <MessageCircle className="w-6 h-6" />
-              <span className="font-bold text-base">🌸 Start Here – Speak to Jenny, our Travel Assistant, for easy & quick assistance</span>
-            </button>
-
             <div className="flex flex-col sm:flex-row justify-center gap-3">
             <a
               href="#bus-hire-section"
@@ -812,8 +800,20 @@ export function Hero({ onGetQuote }: HeroProps) {
 
         {/* Quote Form Card */}
         <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.3s' }}>
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
+          <div id="quote-section" className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
             <div className="space-y-5">
+              {/* Jenny Travel Assistant Button - at top of form */}
+              <button
+                onClick={() => {
+                  const chatToggle = document.querySelector('[data-chat-toggle]') as HTMLButtonElement;
+                  if (chatToggle) chatToggle.click();
+                }}
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-white border-2 border-orange-400 text-orange-500 hover:bg-orange-50 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all"
+              >
+                <MessageCircle className="w-6 h-6" />
+                <span className="font-bold text-base">🌸 Start Here – Speak to Jenny, our Travel Assistant, for easy & quick assistance</span>
+              </button>
+
               {/* Row 1: Destination, Check In, Check Out */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
