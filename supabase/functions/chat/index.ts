@@ -352,7 +352,7 @@ You MUST show EXACTLY 3 hotel options — one per tier:
 3. 🔵 **Premium** — ONE hotel from the Premium tier closest to their budget
 
 Rules:
-- NEVER show 2 hotels from the same tier
+- NEVER show 2 hotels from the same tier. The Premium tier must use a PREMIUM hotel, not an Affordable one.
 - If a tier exceeds their budget, still show it but note "Above budget"
 - If no affordable tier hotels are listed for a destination, use the format "[Destination] Affordable Hotel Option A" with mid-range pricing
 - ALWAYS show all 3 tiers so the user can compare
@@ -384,7 +384,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-pro",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           ...messages,
