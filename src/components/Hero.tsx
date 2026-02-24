@@ -811,7 +811,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-white border-2 border-orange-400 text-orange-500 hover:bg-orange-50 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all"
               >
                 <MessageCircle className="w-6 h-6" />
-                <span className="font-bold text-base">🌸 Start Here – Speak to Jenny, our Travel Assistant, for easy & quick assistance</span>
+                <span className="font-bold text-base">START HERE – Please click here to speak to Jenny, our Travel Assistant, for easy & quick assistance</span>
               </button>
 
               {/* Row 1: Destination, Check In, Check Out */}
