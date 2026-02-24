@@ -300,13 +300,13 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     onToggle(); // Close chatbot
     navigate(`/?${params.toString()}`);
     
-    // Scroll to the quote calculator section
+    // Scroll to the top of the form so user sees it's pre-filled
     setTimeout(() => {
-      const heroEl = document.getElementById('quote-section');
-      if (heroEl) {
-        heroEl.scrollIntoView({ behavior: 'smooth' });
+      const formEl = document.getElementById('quote-section');
+      if (formEl) {
+        formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 300);
+    }, 500);
   }, [navigate, onToggle]);
 
   const handleSend = useCallback(async () => {
