@@ -838,27 +838,27 @@ export function Hero({ onGetQuote }: HeroProps) {
           {/* Jenny Assistant + Bus Hire, Hotel Provider & Travel Agent Buttons */}
           <div className="flex flex-col justify-center gap-3 mt-3">
             <div className="flex flex-col sm:flex-row justify-center gap-3">
-            <a
-              href="#bus-hire-section"
+            <button
+              onClick={() => navigate('/bus-hire')}
               className="flex items-center gap-3 px-6 py-3 rounded-xl bg-amber-500/90 text-white hover:bg-amber-500 transition-all backdrop-blur-sm hover:scale-105"
             >
               <Bus className="w-5 h-5" />
               <span className="font-medium">Bus Hire Companies - Add transport to your quote</span>
-            </a>
-            <a
-              href="#hotel-provider-section"
+            </button>
+            <button
+              onClick={() => navigate('/hotel-provider')}
               className="flex items-center gap-3 px-6 py-3 rounded-xl bg-emerald-600/90 text-white hover:bg-emerald-600 transition-all backdrop-blur-sm hover:scale-105"
             >
               <Hotel className="w-5 h-5" />
               <span className="font-medium">For Hotels - Add our curated Activity Packages to your guest quotation</span>
-            </a>
-            <a
-              href="#travel-agent-section"
+            </button>
+            <button
+              onClick={() => navigate('/travel-agent')}
               className="flex items-center gap-3 px-6 py-3 rounded-xl bg-purple-600/90 text-white hover:bg-purple-600 transition-all backdrop-blur-sm hover:scale-105"
             >
               <FileText className="w-5 h-5" />
               <span className="font-medium">Travel Agents - Get exclusive packages for your clients</span>
-            </a>
+            </button>
             </div>
           </div>
         </div>
