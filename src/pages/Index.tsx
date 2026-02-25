@@ -7,16 +7,13 @@ import { Testimonials } from '@/components/Testimonials';
 import { WhyChooseUs } from '@/components/WhyChooseUs';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
-import { BusHireQuote } from '@/components/BusHireQuote';
-import { AccommodationProviderQuote } from '@/components/AccommodationProviderQuote';
-import { TravelAgentQuote } from '@/components/TravelAgentQuote';
 import CapeTownSocialAds from '@/components/CapeTownSocialAds';
 import { destinations } from '@/data/travelData';
+
 const Index = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleViewPackages = (destinationId: string) => {
-    // Scroll to top to use the hero form
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -52,21 +49,6 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* Bus Hire Quote Section */}
-      <section id="bus-hire-section">
-        <BusHireQuote />
-      </section>
-
-      {/* Hotel Provider Quote Section */}
-      <section id="hotel-provider-section">
-        <AccommodationProviderQuote />
-      </section>
-
-      {/* Travel Agent Quote Section */}
-      <section id="travel-agent-section">
-        <TravelAgentQuote />
       </section>
 
       {/* Cape Town Social Ads */}

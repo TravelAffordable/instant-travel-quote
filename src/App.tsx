@@ -10,6 +10,9 @@ import BuildPackage from "./pages/BuildPackage";
 import RateAdmin from "./pages/RateAdmin";
 import ImageCompare from "./pages/ImageCompare";
 import SchoolTrips from "./pages/SchoolTrips";
+import BusHirePage from "./pages/BusHirePage";
+import HotelProviderPage from "./pages/HotelProviderPage";
+import TravelAgentPage from "./pages/TravelAgentPage";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +29,9 @@ const App = () => (
           <Route path="/rate-admin" element={<RateAdmin />} />
           <Route path="/compare/harties/budget/2-sleeper/8" element={<ImageCompare />} />
           <Route path="/school-trips" element={<SchoolTrips />} />
+          <Route path="/bus-hire" element={<BusHirePage />} />
+          <Route path="/hotel-provider" element={<HotelProviderPage />} />
+          <Route path="/travel-agent" element={<TravelAgentPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
