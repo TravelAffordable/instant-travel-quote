@@ -257,6 +257,9 @@ export function Hero({ onGetQuote }: HeroProps) {
   // Booking type
   const [bookingType, setBookingType] = useState<BookingType>('with-activities');
 
+  // Budget field for with-activities
+  const [budget, setBudget] = useState<string>('');
+
   // Family split mode
   const [showFamilySplitOption, setShowFamilySplitOption] = useState(false);
   const [isFamilySplitMode, setIsFamilySplitMode] = useState(false);
@@ -398,9 +401,14 @@ export function Hero({ onGetQuote }: HeroProps) {
       return;
     }
 
-    // For with-activities, packages are required
+    // For with-activities, packages and budget are required
     if (bookingType === 'with-activities' && packageIds.length === 0) {
       toast.error('Please select at least one package');
+      return;
+    }
+
+    if (bookingType === 'with-activities' && (!budget || parseInt(budget) <= 0)) {
+      toast.error('Please enter your total budget so we can find the best options for you');
       return;
     }
 
@@ -528,40 +536,76 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        const filteredHotels = result.filter(h => h.tier === accommodationType);
+        // Generate quotes for ALL tiers, then filter by budget
+        const allTiers: Array<'budget' | 'affordable' | 'premium'> = ['budget', 'affordable', 'premium'];
+        const budgetAmount = parseInt(budget) || 0;
+        let allRmsQuotes: QuoteResult[] = [];
 
-        if (filteredHotels.length === 0) {
-          const availableTiers = [...new Set(result.map(h => h.tier))];
-          const tierLabels: Record<string, string> = { budget: 'Budget', affordable: 'Affordable', premium: 'Premium' };
-          const availableTierNames = availableTiers.map(t => tierLabels[t] || t).join(', ');
-          toast.info(`No ${tierLabels[accommodationType]} hotels available for ${destination.replace('-', ' ')}. Available tiers: ${availableTierNames}`);
+        for (const tier of allTiers) {
+          const tierHotels = result.filter(h => h.tier === tier);
+          if (tierHotels.length === 0) continue;
+
+          const tierQuotes = convertRMSToQuotes(
+            tierHotels,
+            packages.filter(p => packageIds.includes(p.id)),
+            {
+              checkIn: new Date(checkIn),
+              checkOut: new Date(checkOut),
+              adults,
+              children,
+              childrenAges: ages,
+              rooms,
+              destination,
+            }
+          );
+          allRmsQuotes = [...allRmsQuotes, ...tierQuotes];
+        }
+
+        if (allRmsQuotes.length === 0) {
+          toast.info('No hotels available. Try different dates or destination.');
           setIsCalculating(false);
           return;
         }
 
-        const rmsQuotes = convertRMSToQuotes(
-          filteredHotels,
-          packages.filter(p => packageIds.includes(p.id)),
-          {
-            checkIn: new Date(checkIn),
-            checkOut: new Date(checkOut),
-            adults,
-            children,
-            childrenAges: ages,
-            rooms,
-            destination,
-          }
-        );
+        // Filter: show options within budget + up to 10% over budget
+        const budgetThreshold = budgetAmount * 1.1;
+        let budgetFiltered = allRmsQuotes.filter(q => q.totalForGroup <= budgetThreshold);
 
-        if (rmsQuotes.length > 0) {
-          setQuotes(rmsQuotes);
-          toast.success(`${rmsQuotes.length} quotes found!`);
-          setTimeout(() => {
-            document.getElementById('quote-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 100);
+        // If nothing fits, show the 3 cheapest options across all tiers
+        if (budgetFiltered.length === 0) {
+          allRmsQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
+          budgetFiltered = allRmsQuotes.slice(0, 3);
+          toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()}. Showing the closest options.`);
         } else {
-          toast.info('No hotels available for this tier. Try a different option.');
+          // Sort: closest to budget first (options at/under budget first, then slightly over)
+          budgetFiltered.sort((a, b) => {
+            const aUnder = a.totalForGroup <= budgetAmount;
+            const bUnder = b.totalForGroup <= budgetAmount;
+            if (aUnder && !bUnder) return 1; // Show best-fit (closest under) last → actually show premium-closest first
+            if (!aUnder && bUnder) return -1;
+            // Both under or both over: sort descending so closest to budget is first
+            return b.totalForGroup - a.totalForGroup;
+          });
+          
+          const withinCount = allRmsQuotes.filter(q => q.totalForGroup <= budgetAmount).length;
+          const slightlyOver = budgetFiltered.filter(q => q.totalForGroup > budgetAmount).length;
+          let msg = `${budgetFiltered.length} options found for your budget of R${budgetAmount.toLocaleString()}!`;
+          if (slightlyOver > 0) msg += ` (${slightlyOver} slightly above budget but worth considering)`;
+          toast.success(msg);
         }
+
+        // Auto-select the accommodation type button to match the best result
+        if (budgetFiltered.length > 0) {
+          const bestTier = budgetFiltered[0].hotelTier;
+          if (bestTier === 'budget' || bestTier === 'affordable' || bestTier === 'premium') {
+            setAccommodationType(bestTier);
+          }
+        }
+
+        setQuotes(budgetFiltered);
+        setTimeout(() => {
+          document.getElementById('quote-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Could not fetch hotels';
         toast.error(msg);
@@ -624,36 +668,42 @@ export function Hero({ onGetQuote }: HeroProps) {
         toast.error('Could not calculate quotes. Please check your selections.');
       }
     } else {
-      // Standard booking - calculate quotes for all three tiers
+      // Standard booking - calculate quotes for ALL tiers, then filter by budget
       let allQuotes: QuoteResult[] = [];
-      // Map accommodation type to hotel type
-      const hotelTypeMap: Record<AccommodationType, 'very-affordable' | 'affordable' | 'premium'> = {
-        'budget': 'very-affordable',
-        'affordable': 'affordable',
-        'premium': 'premium'
-      };
-      const selectedHotelType = hotelTypeMap[accommodationType];
+      const hotelTypes: Array<'very-affordable' | 'affordable' | 'premium'> = ['very-affordable', 'affordable', 'premium'];
       
       packageIds.forEach(pkgId => {
-        const results = calculateAllQuotes({
-          destination,
-          packageId: pkgId,
-          checkIn: new Date(checkIn),
-          checkOut: new Date(checkOut),
-          adults,
-          children,
-          childrenAges: ages,
-          rooms,
-          hotelType: selectedHotelType,
+        hotelTypes.forEach(hotelType => {
+          const results = calculateAllQuotes({
+            destination,
+            packageId: pkgId,
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            adults,
+            children,
+            childrenAges: ages,
+            rooms,
+            hotelType,
+          });
+          allQuotes = [...allQuotes, ...results];
         });
-        allQuotes = [...allQuotes, ...results];
       });
 
       if (allQuotes.length > 0) {
-        // Sort by price (cheapest first)
-        allQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
-        setQuotes(allQuotes);
-        toast.success(`${allQuotes.length} quotes generated!`);
+        const budgetAmount = parseInt(budget) || 0;
+        const budgetThreshold = budgetAmount * 1.1;
+        let filtered = allQuotes.filter(q => q.totalForGroup <= budgetThreshold);
+
+        if (filtered.length === 0) {
+          allQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
+          filtered = allQuotes.slice(0, 3);
+          toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()}. Showing closest options.`);
+        } else {
+          filtered.sort((a, b) => b.totalForGroup - a.totalForGroup);
+          toast.success(`${filtered.length} options found for your budget!`);
+        }
+
+        setQuotes(filtered);
       } else {
         toast.error('No quotes available for this destination.');
       }
@@ -866,8 +916,27 @@ export function Hero({ onGetQuote }: HeroProps) {
                   <div className="space-y-2 col-span-2 md:col-span-4">
                     <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
                     <p className="text-xs text-muted-foreground mb-1">
-                      Click "Show Packages" to view available packages for your destination. You may select one or more packages to get a quote.
+                    Click "Show Packages" to view available packages for your destination. You may select one or more packages to get a quote.
                     </p>
+
+                    {/* Budget Field - compulsory for with-activities */}
+                    <div className="mb-3">
+                      <Label className="text-sm font-medium text-gray-700">Your Total Budget (ZAR) *</Label>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Enter your total budget so we can find the best options that fit your pocket.
+                      </p>
+                      <div className="relative max-w-xs">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">R</span>
+                        <Input
+                          type="number"
+                          placeholder="e.g. 13800"
+                          value={budget}
+                          onChange={(e) => setBudget(e.target.value)}
+                          className="h-11 bg-white border-gray-200 pl-8"
+                          min={0}
+                        />
+                      </div>
+                    </div>
                     
                     {/* Show Packages button - only when no packages shown yet */}
                     {!isPackageDropdownOpen && packageIds.length === 0 && (
