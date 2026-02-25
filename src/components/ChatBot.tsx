@@ -107,7 +107,7 @@ async function streamChat({
   onDone();
 }
 
-// Parse HOTEL_LINK format: HOTEL_LINK:destination|packageId|adults|childrenAges|tier|hotelName
+// Parse HOTEL_LINK format: HOTEL_LINK:destination|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget
 function parseHotelLink(linkData: string) {
   const parts = linkData.split('|');
   if (parts.length < 6) return null;
@@ -117,7 +117,10 @@ function parseHotelLink(linkData: string) {
     adults: parts[2],
     childrenAges: parts[3],
     tier: parts[4],
-    hotelName: parts.slice(5).join('|'),
+    hotelName: parts[5],
+    checkIn: parts[6] || '',
+    checkOut: parts[7] || '',
+    budget: parts[8] || '',
   };
 }
 
@@ -289,6 +292,13 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     }
     params.set('budget', tier === 'very-affordable' ? 'budget' : tier);
     params.set('autoSearch', 'true');
+
+    // Pass check-in and check-out dates
+    if (linkData.checkIn) params.set('checkIn', linkData.checkIn);
+    if (linkData.checkOut) params.set('checkOut', linkData.checkOut);
+
+    // Pass total budget amount
+    if (linkData.budget) params.set('totalBudget', linkData.budget);
 
     // Extract and pass contact details from conversation
     const contact = extractContactFromMessages();

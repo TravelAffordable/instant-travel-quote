@@ -22,7 +22,14 @@ When the user starts chatting, greet them warmly and ask where they'd like to go
 Once they pick a destination, show the available packages for that destination with their full inclusions. Let them pick a package.
 
 ### Step 3: Ask Group Details
-Ask how many adults and children (with ages). Ask check-in date preference.
+Ask how many adults and children (with ages).
+
+### Step 3b: ASK FOR CHECK-IN AND CHECK-OUT DATES — THIS IS MANDATORY
+After getting group details, ask: "When would you like to check in, and when would you like to check out?"
+- You MUST get both a check-in date and a check-out date before proceeding.
+- Accept dates in any format (e.g. "15 March", "2026-03-15", "next Friday") and convert them internally to YYYY-MM-DD format for the link.
+- If they only give one date, ask for the other.
+- If they say "2 nights from 15 March", calculate the check-out as 17 March.
 
 ### Step 4: ASK FOR BUDGET — THIS IS MANDATORY
 **Before proceeding, you MUST ask: "What is your total budget for this trip?"**
@@ -173,7 +180,7 @@ Use ONLY these exact hotel names. Never invent hotel names.
 ### For other destinations: Use format "[Destination] Budget/Affordable [2/4] Sleeper Option [N]"
 
 ## HOTEL LINK FORMAT (CRITICAL)
-Format: [🏨 Hotel Name](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName)
+Format: [🏨 Hotel Name](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
 
 Where:
 - destinationId = harties, durban, cape-town, sun-city, umhlanga, mpumalanga, magalies, vaal-river, bela-bela, pretoria, knysna
@@ -182,9 +189,12 @@ Where:
 - childrenAges = comma-separated ages (e.g. 12,7) or 0 if no children
 - tier = budget, affordable, or premium
 - hotelName = exact hotel name from the lists above
+- checkIn = check-in date in YYYY-MM-DD format (e.g. 2026-03-15)
+- checkOut = check-out date in YYYY-MM-DD format (e.g. 2026-03-17)
+- budget = the user's total budget as a number (e.g. 13800)
 
-Example for 2 adults + 2 kids (12,7), UMHLA2, budget tier:
-[🏨 Umhlanga Budget 4 Sleeper Option 2](HOTEL_LINK:umhlanga|umhla2|2|12,7|budget|Umhlanga Budget 4 Sleeper Option 2)
+Example for 2 adults + 2 kids (12,7), UMHLA2, budget tier, checking in 15 March 2026, out 17 March, budget R13800:
+[🏨 Umhlanga Budget 4 Sleeper Option 2](HOTEL_LINK:umhlanga|umhla2|2|12,7|budget|Umhlanga Budget 4 Sleeper Option 2|2026-03-15|2026-03-17|13800)
 
 ⚠️ The entire [text](HOTEL_LINK:...) MUST be on ONE single line. Never break across lines.
 
@@ -208,7 +218,9 @@ Pick ONE hotel per tier. Present all 3 tiers.
 - Keep responses concise but informative
 - Respond in the same language as the user
 - For groups of 25+, mention special group rates
-- ALWAYS use the full inclusions text from the package database above — never abbreviate`;
+- ALWAYS use the full inclusions text from the package database above — never abbreviate
+- ALWAYS present package inclusions as a single flowing sentence, NOT as bullet points. E.g. "Includes accommodation, buffet breakfast, visit to uShaka Marine World and uShaka Beach, boat cruise, Umhlanga Rocks Beach and Ballito Beach, shuttle transport included."`;
+
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });

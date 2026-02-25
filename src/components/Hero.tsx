@@ -280,6 +280,9 @@ export function Hero({ onGetQuote }: HeroProps) {
     const paramChildrenAges = searchParams.get('childrenAges');
     const paramBudget = searchParams.get('budget');
     const paramAutoSearch = searchParams.get('autoSearch');
+    const paramCheckIn = searchParams.get('checkIn');
+    const paramCheckOut = searchParams.get('checkOut');
+    const paramTotalBudget = searchParams.get('totalBudget');
 
     if (paramDest && paramAutoSearch === 'true') {
       setDestination(paramDest);
@@ -300,16 +303,15 @@ export function Hero({ onGetQuote }: HeroProps) {
         setAccommodationType(budgetMap[paramBudget] || 'affordable');
       }
 
-      // Pre-fill contact details from chatbot
-      const paramName = searchParams.get('guestName');
-      const paramTel = searchParams.get('guestTel');
-      const paramEmail = searchParams.get('guestEmail');
-      if (paramName) setGuestName(paramName);
-      if (paramTel) setGuestTel(paramTel);
-      if (paramEmail) setGuestEmail(paramEmail);
-
-      // Set default check-in/out dates if not already set
-      if (!checkIn) {
+      // Pre-fill check-in and check-out dates from chatbot
+      if (paramCheckIn) {
+        setCheckIn(paramCheckIn);
+      }
+      if (paramCheckOut) {
+        setCheckOut(paramCheckOut);
+      }
+      // Fallback default dates if none provided
+      if (!paramCheckIn && !checkIn) {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         const dayAfter = new Date(tomorrow);
@@ -317,6 +319,19 @@ export function Hero({ onGetQuote }: HeroProps) {
         setCheckIn(tomorrow.toISOString().split('T')[0]);
         setCheckOut(dayAfter.toISOString().split('T')[0]);
       }
+
+      // Pre-fill total budget from chatbot
+      if (paramTotalBudget) {
+        setBudget(paramTotalBudget);
+      }
+
+      // Pre-fill contact details from chatbot
+      const paramName = searchParams.get('guestName');
+      const paramTel = searchParams.get('guestTel');
+      const paramEmail = searchParams.get('guestEmail');
+      if (paramName) setGuestName(paramName);
+      if (paramTel) setGuestTel(paramTel);
+      if (paramEmail) setGuestEmail(paramEmail);
 
       // Set package after a brief delay to let destination state propagate
       if (paramPkg) {
