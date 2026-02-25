@@ -209,11 +209,12 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Auto-scroll to bottom whenever messages change OR when typing indicator appears
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -234,15 +235,16 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     const emailMatch = allText.match(/[\w.+-]+@[\w-]+\.[\w.]+/);
     if (emailMatch) email = emailMatch[0];
     
-    // Extract phone (SA format or general)
-    const phoneMatch = allText.match(/(?:0\d{9}|\+27\d{9}|\d{3}[\s-]?\d{3}[\s-]?\d{4})/);
-    if (phoneMatch) phone = phoneMatch[0];
+    // Extract phone (SA format or general - broader matching)
+    const phoneMatch = allText.match(/(?:\+27|0)\s*\d[\d\s-]{7,12}\d/);
+    if (phoneMatch) phone = phoneMatch[0].replace(/[\s-]/g, '');
     
-    // Extract name - look for common patterns
+    // Extract name - look for common patterns across all user messages
     for (const msg of userMessages) {
       const namePatterns = [
-        /(?:my name is|i'?m|name:?\s*)([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
+        /(?:my name is|i'?m|name:?\s*|it'?s\s+)([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
         /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)$/m, // Full name on its own line
+        /(?:name|names?)[\s:]+([A-Za-z]+(?:\s+[A-Za-z]+)+)/i,
       ];
       for (const pattern of namePatterns) {
         const match = msg.match(pattern);
@@ -300,8 +302,9 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     // Pass total budget amount
     if (linkData.budget) params.set('totalBudget', linkData.budget);
 
-    // Extract and pass contact details from conversation
+    // Extract and pass contact details from conversation - always attempt
     const contact = extractContactFromMessages();
+    console.log('Extracted contact from chat:', contact);
     if (contact.name) params.set('guestName', contact.name);
     if (contact.phone) params.set('guestTel', contact.phone);
     if (contact.email) params.set('guestEmail', contact.email);
