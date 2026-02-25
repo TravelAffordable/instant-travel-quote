@@ -236,14 +236,25 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     if (emailMatch) email = emailMatch[0];
     
     // Extract phone (SA format or general - broader matching)
-    const phoneMatch = allText.match(/(?:\+27|0)\s*\d[\d\s-]{7,12}\d/);
-    if (phoneMatch) phone = phoneMatch[0].replace(/[\s-]/g, '');
+    const phonePatterns = [
+      /(?:\+27|0)\s*\d[\d\s-]{7,12}\d/,
+      /\b0[6-8]\d[\d\s-]{6,10}\d\b/,
+      /\b\d{10,11}\b/,
+    ];
+    for (const pattern of phonePatterns) {
+      const match = allText.match(pattern);
+      if (match) {
+        phone = match[0].replace(/[\s-]/g, '');
+        break;
+      }
+    }
     
     // Extract name - look for common patterns across all user messages
+    const destinationNames = ['durban', 'cape town', 'umhlanga', 'harties', 'hartbeespoort', 'sun city', 'mpumalanga', 'knysna', 'magaliesburg', 'bela bela', 'vaal', 'pretoria', 'bali', 'dubai', 'thailand'];
+    
     for (const msg of userMessages) {
       const namePatterns = [
         /(?:my name is|i'?m|name:?\s*|it'?s\s+)([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/i,
-        /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)$/m, // Full name on its own line
         /(?:name|names?)[\s:]+([A-Za-z]+(?:\s+[A-Za-z]+)+)/i,
       ];
       for (const pattern of namePatterns) {
@@ -254,6 +265,18 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
         }
       }
       if (name) break;
+    }
+
+    // Fallback: check for a standalone full name message (first + last name only, not a destination)
+    if (!name) {
+      for (const msg of userMessages) {
+        const trimmed = msg.trim();
+        const simpleNameMatch = trimmed.match(/^([A-Za-z]+(?:\s+[A-Za-z]+){1,3})$/);
+        if (simpleNameMatch && simpleNameMatch[1].length > 3 && simpleNameMatch[1].length < 50 && !simpleNameMatch[1].match(/\d/) && !destinationNames.some(d => simpleNameMatch[1].toLowerCase().includes(d))) {
+          name = simpleNameMatch[1].trim();
+          break;
+        }
+      }
     }
     
     return { name, phone, email };
