@@ -414,8 +414,35 @@ serve(async (req) => {
         travelDetails.budget!, totalGuests
       );
       if (result) perplexityContext = result;
-    } else if (alreadySearched) {
-      console.log("Skipping hotel search - already presented in conversation");
+    } else if (alreadySearched && travelDetails?.destination) {
+      // Re-inject DB hotel names so Jenny doesn't hallucinate from web search
+      console.log("Re-injecting DB hotel names for:", travelDetails.destination);
+      const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+      const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+        try {
+          const destCode = DEST_CODE_MAP[travelDetails.destination] || 'durban';
+          const areaName = DEST_AREA_MAP[travelDetails.destination] || 'Golden Mile';
+          const hotelsRes = await fetch(
+            `${SUPABASE_URL}/rest/v1/hotels?select=name,tier,star_rating,includes_breakfast,room_types(room_rates(base_rate_weekday))&is_active=eq.true&areas!inner(destination,name)&areas.destination=eq.${destCode}&areas.name=eq.${encodeURIComponent(areaName)}`,
+            { headers: { "apikey": SUPABASE_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+          );
+          if (hotelsRes.ok) {
+            const hotels = await hotelsRes.json();
+            if (hotels.length > 0) {
+              perplexityContext = `\n\n[CURRENT DATABASE HOTELS FOR ${travelDetails.destination.toUpperCase()}]\n⚠️ You MUST use ONLY these exact hotel names in your HOTEL_LINK links. Do NOT use any other hotel names from web search results.\n\n`;
+              for (const h of hotels) {
+                const rate = h.room_types?.[0]?.room_rates?.[0]?.base_rate_weekday || 'unknown';
+                perplexityContext += `- ${h.tier.toUpperCase()}: "${h.name}" — ~R${rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
+              }
+              perplexityContext += `\n⚠️ USE THESE EXACT HOTEL NAMES. Do not invent or substitute other names.\n[END OF DATABASE HOTELS]`;
+              console.log("Injected DB hotels:", perplexityContext);
+            }
+          }
+        } catch (e) {
+          console.error("Error fetching DB hotels:", e);
+        }
+      }
     }
 
     const systemMessage = SYSTEM_PROMPT + perplexityContext;
