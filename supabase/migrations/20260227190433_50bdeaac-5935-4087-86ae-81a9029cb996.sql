@@ -1,0 +1,1 @@
+DELETE FROM room_rates; DELETE FROM room_types; DELETE FROM hotels;

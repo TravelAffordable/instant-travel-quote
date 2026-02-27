@@ -270,14 +270,20 @@ async function searchAndPopulateHotels(
 ): Promise<string | null> {
   const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-  const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
   if (!PERPLEXITY_API_KEY || !SUPABASE_URL) return null;
 
   try {
-    const searchQuery = `Find 3 real hotels with current nightly rates in ${destination}, South Africa for ${adults} adults${children && children !== '0' ? ` and ${children} children` : ''}. I need:
-1. One budget hotel (cheapest option, around R500-R900/night)
-2. One mid-range/affordable hotel (around R800-R1500/night)
-3. One premium/luxury hotel (R1500+/night)
+    const budgetNum = parseInt(budget) || 6000;
+    const nights = 2; // estimate
+    const maxNightly = Math.round(budgetNum / nights);
+    
+    const searchQuery = `Find 3 real hotels on the Durban Golden Mile beachfront in South Africa with current nightly rates in ZAR (South African Rand). 
+The guest's total budget is R${budgetNum} for about ${nights} nights. Find hotels with nightly rates that would fit within this budget.
+I need 3 hotels at different price points:
+1. A more affordable option (around R${Math.round(maxNightly * 0.3)}-R${Math.round(maxNightly * 0.5)}/night)
+2. A mid-range option (around R${Math.round(maxNightly * 0.4)}-R${Math.round(maxNightly * 0.6)}/night)  
+3. A premium option (around R${Math.round(maxNightly * 0.5)}-R${Math.round(maxNightly * 0.8)}/night)
+All hotels MUST be on or very near the Durban Golden Mile / Durban Beachfront area.
 For each hotel provide EXACTLY: hotel name, star rating (1-5), nightly rate in ZAR, and whether breakfast is included (yes/no).
 Format each as: HOTEL_NAME | STARS | RATE | BREAKFAST
 Example: Garden Court Marine Parade | 3 | 850 | no`;
@@ -291,7 +297,7 @@ Example: Garden Court Marine Parade | 3 | 850 | no`;
       body: JSON.stringify({
         model: "sonar",
         messages: [
-          { role: "system", content: "You are a hotel rate researcher. Return EXACTLY 3 hotels with current rates. Format each hotel on its own line as: HOTEL_NAME | STARS | RATE | BREAKFAST. RATE must be a number only (no R symbol). BREAKFAST is yes or no. Do not add any other text." },
+          { role: "system", content: "You are a hotel rate researcher specializing in Durban, South Africa. Return EXACTLY 3 hotels on the Durban Golden Mile/Beachfront with current rates. Format each hotel on its own line as: HOTEL_NAME | STARS | RATE | BREAKFAST. RATE must be a number only (no R symbol). BREAKFAST is yes or no. Do not add any other text." },
           { role: "user", content: searchQuery }
         ],
         search_recency_filter: "month",
@@ -310,34 +316,33 @@ Example: Garden Court Marine Parade | 3 | 850 | no`;
 
     const destCode = DEST_CODE_MAP[destination] || 'durban';
     const areaName = DEST_AREA_MAP[destination] || 'Golden Mile';
-    const aliasPrefix = DEST_ALIAS_MAP[destination] || destination;
     const sleeper = totalGuests <= 2 ? "2 Sleeper" : "4 Sleeper";
     const capacityCode = totalGuests <= 2 ? "2_sleeper" : "4_sleeper";
-    const tiers = ["budget", "affordable", "premium"];
+    const tiers: Array<"budget" | "affordable" | "premium"> = ["budget", "affordable", "premium"];
     const parsedHotels: any[] = [];
 
     for (let i = 0; i < Math.min(lines.length, 3); i++) {
       const parts = lines[i].split('|').map((p: string) => p.trim());
       if (parts.length < 4) continue;
-      const realName = parts[0].replace(/^\d+\.\s*/, '').trim();
+      const realName = parts[0].replace(/^\d+\.\s*/, '').replace(/\*+/g, '').trim();
       const stars = parseInt(parts[1]) || 3;
       const rate = parseInt(parts[2].replace(/[^\d]/g, '')) || 800;
       const breakfast = parts[3].toLowerCase().includes('yes');
       const tier = tiers[i];
-      const hotelName = tier === "premium" ? realName : `${aliasPrefix} ${tier.charAt(0).toUpperCase() + tier.slice(1)} ${sleeper} Option 1`;
 
+      // ALL hotels use their REAL names — no aliases
       parsedHotels.push({
-        destination: destCode, area_name: areaName, name: hotelName, tier,
+        destination: destCode, area_name: areaName, name: realName, tier,
         star_rating: stars, includes_breakfast: breakfast,
         room_type: "Standard Room", capacity: capacityCode,
         max_adults: totalGuests <= 2 ? 2 : 4, max_children: totalGuests <= 2 ? 0 : 2,
-        weekday_rate: rate, real_name: realName,
+        weekday_rate: rate,
       });
     }
 
     if (parsedHotels.length === 0) return null;
 
-    // Call populate-hotels edge function using service role key to bypass JWT
+    // Call populate-hotels edge function
     console.log("Populating DB:", JSON.stringify(parsedHotels));
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const populateRes = await fetch(`${SUPABASE_URL}/functions/v1/populate-hotels`, {
@@ -350,9 +355,9 @@ Example: Garden Court Marine Parade | 3 | 850 | no`;
 
     let summary = `\n\n[HOTELS POPULATED INTO DATABASE]\nHotels found and added for ${destination}:\n\n`;
     for (const h of parsedHotels) {
-      summary += `- ${h.tier.toUpperCase()}: "${h.name}" (Real: ${h.real_name}) — ~R${h.weekday_rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
+      summary += `- ${h.tier.toUpperCase()}: "${h.name}" — ~R${h.weekday_rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
     }
-    summary += `\nCapacity: ${capacityCode}\n⚠️ USE THESE EXACT HOTEL NAMES in your HOTEL_LINK links.\n[END OF POPULATED HOTELS]`;
+    summary += `\nCapacity: ${capacityCode}\n⚠️ USE THESE EXACT HOTEL NAMES in your HOTEL_LINK links. All hotels use their real names.\n[END OF POPULATED HOTELS]`;
     return summary;
   } catch (e) {
     console.error("searchAndPopulateHotels error:", e);
