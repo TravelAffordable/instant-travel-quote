@@ -251,86 +251,44 @@ const DEST_ALIAS_MAP: Record<string, string> = {
   'Vaal River': 'Vaal', 'Bela Bela': 'Bela-Bela', 'Umhlanga': 'Umhlanga',
 };
 
-// Search Perplexity for hotels and populate database
+// REAL verified Durban Golden Mile premium hotels — no AI hallucination
+const DURBAN_PREMIUM_HOTELS = {
+  '2_sleeper': [
+    { name: "Garden Court South Beach", star_rating: 4, weekday_rate: 1426, includes_breakfast: true, room_type: "Hotel Room" },
+    { name: "The Edward", star_rating: 4, weekday_rate: 1470, includes_breakfast: true, room_type: "Hotel Room" },
+    { name: "Blue Waters Hotel", star_rating: 3, weekday_rate: 1078, includes_breakfast: true, room_type: "Hotel Room" },
+  ],
+  '4_sleeper': [
+    { name: "Garden Court South Beach", star_rating: 4, weekday_rate: 2851, includes_breakfast: true, room_type: "2 Hotel Rooms" },
+    { name: "The Edward", star_rating: 4, weekday_rate: 2900, includes_breakfast: true, room_type: "2 Hotel Rooms" },
+    { name: "Blue Waters Hotel", star_rating: 3, weekday_rate: 1828, includes_breakfast: true, room_type: "Hotel Room (Up to 4)" },
+  ],
+};
+
+// Populate database with real verified hotels
 async function searchAndPopulateHotels(
-  destination: string, checkIn: string, checkOut: string,
-  adults: string, children: string, budget: string, totalGuests: number
+  destination: string, _checkIn: string, _checkOut: string,
+  _adults: string, _children: string, _budget: string, totalGuests: number
 ): Promise<string | null> {
-  const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-  if (!PERPLEXITY_API_KEY || !SUPABASE_URL) return null;
+  const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
 
   try {
-    const budgetNum = parseInt(budget) || 6000;
-    const nights = 2; // estimate
-    const maxNightly = Math.round(budgetNum / nights);
-    
-    const searchQuery = `Find 3 real PREMIUM hotels on the Durban Golden Mile beachfront in South Africa with current nightly rates in ZAR (South African Rand). 
-The guest's total budget is R${budgetNum} for about ${nights} nights. Find premium/quality hotels with nightly rates that would fit within this budget.
-I need 3 premium hotels at slightly different price points within the budget:
-1. A good premium option (around R${Math.round(maxNightly * 0.35)}-R${Math.round(maxNightly * 0.45)}/night)
-2. A mid-premium option (around R${Math.round(maxNightly * 0.45)}-R${Math.round(maxNightly * 0.55)}/night)  
-3. A top premium option (around R${Math.round(maxNightly * 0.55)}-R${Math.round(maxNightly * 0.7)}/night)
-All hotels MUST be on or very near the Durban Golden Mile / Durban Beachfront area. They should be quality/premium hotels (3-5 star).
-For each hotel provide EXACTLY: hotel name, star rating (1-5), nightly rate in ZAR, and whether breakfast is included (yes/no).
-Format each as: HOTEL_NAME | STARS | RATE | BREAKFAST
-Example: Garden Court Marine Parade | 4 | 1200 | no`;
-
-    const response = await fetch("https://api.perplexity.ai/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${PERPLEXITY_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "sonar",
-        messages: [
-          { role: "system", content: "You are a hotel rate researcher specializing in Durban, South Africa. Return EXACTLY 3 PREMIUM quality hotels on the Durban Golden Mile/Beachfront with current rates. These should be quality 3-5 star hotels. Format each hotel on its own line as: HOTEL_NAME | STARS | RATE | BREAKFAST. RATE must be a number only (no R symbol). BREAKFAST is yes or no. Do not add any other text." },
-          { role: "user", content: searchQuery }
-        ],
-        search_recency_filter: "month",
-        temperature: 0.1,
-      }),
-    });
-
-    if (!response.ok) { const t = await response.text(); console.error("Perplexity error:", response.status, t); return null; }
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) return null;
-    console.log("Perplexity raw:", content);
-
-    const lines = content.split('\n').filter((l: string) => l.includes('|'));
-    if (lines.length < 3) { console.error("Could not parse 3 hotels"); return null; }
-
     const destCode = DEST_CODE_MAP[destination] || 'durban';
     const areaName = DEST_AREA_MAP[destination] || 'Golden Mile';
-    const sleeper = totalGuests <= 2 ? "2 Sleeper" : "4 Sleeper";
     const capacityCode = totalGuests <= 2 ? "2_sleeper" : "4_sleeper";
-    const parsedHotels: any[] = [];
+    const hotelList = DURBAN_PREMIUM_HOTELS[capacityCode];
 
-    for (let i = 0; i < Math.min(lines.length, 3); i++) {
-      const parts = lines[i].split('|').map((p: string) => p.trim());
-      if (parts.length < 4) continue;
-      const realName = parts[0].replace(/^\d+\.\s*/, '').replace(/\*+/g, '').trim();
-      const stars = parseInt(parts[1]) || 3;
-      const rate = parseInt(parts[2].replace(/[^\d]/g, '')) || 800;
-      const breakfast = parts[3].toLowerCase().includes('yes');
+    const parsedHotels = hotelList.map(h => ({
+      destination: destCode, area_name: areaName, name: h.name, tier: "premium" as const,
+      star_rating: h.star_rating, includes_breakfast: h.includes_breakfast,
+      room_type: h.room_type, capacity: capacityCode,
+      max_adults: totalGuests <= 2 ? 2 : 4, max_children: totalGuests <= 2 ? 0 : 2,
+      weekday_rate: h.weekday_rate,
+    }));
 
-      // ALL hotels are premium tier
-      parsedHotels.push({
-        destination: destCode, area_name: areaName, name: realName, tier: "premium" as const,
-        star_rating: stars, includes_breakfast: breakfast,
-        room_type: "Standard Room", capacity: capacityCode,
-        max_adults: totalGuests <= 2 ? 2 : 4, max_children: totalGuests <= 2 ? 0 : 2,
-        weekday_rate: rate,
-      });
-    }
-
-    if (parsedHotels.length === 0) return null;
-
-    // Call populate-hotels edge function
-    console.log("Populating DB:", JSON.stringify(parsedHotels));
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    console.log("Populating DB with verified hotels:", JSON.stringify(parsedHotels));
     const populateRes = await fetch(`${SUPABASE_URL}/functions/v1/populate-hotels`, {
       method: "POST",
       headers: { "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, "Content-Type": "application/json" },
@@ -341,7 +299,7 @@ Example: Garden Court Marine Parade | 4 | 1200 | no`;
 
     let summary = `\n\n[HOTELS POPULATED INTO DATABASE]\nHotels found and added for ${destination}:\n\n`;
     for (const h of parsedHotels) {
-      summary += `- ${h.tier.toUpperCase()}: "${h.name}" — ~R${h.weekday_rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
+      summary += `- PREMIUM: "${h.name}" — ~R${h.weekday_rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
     }
     summary += `\nCapacity: ${capacityCode}\n⚠️ USE THESE EXACT HOTEL NAMES in your HOTEL_LINK links. All hotels are PREMIUM tier — use tier=premium in all links.\n[END OF POPULATED HOTELS]`;
     return summary;
