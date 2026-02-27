@@ -212,11 +212,22 @@ Since you cannot calculate exact prices, use this rough guide to pick hotels clo
 - Higher budget → pick higher-numbered options (Option 5, 6, 7, 8)
 Pick ONE hotel per tier. Present all 3 tiers.
 
+## REAL-TIME HOTEL RATE SEARCH — POWERED BY PERPLEXITY AI
+When you have collected the destination, dates, group size, and budget, you will receive real-time hotel rate data from Perplexity AI search. This data will be injected into the conversation as a system message with the latest hotel prices from the web.
+
+When you receive this data:
+- Use the real hotel names and rates from the search results to inform your hotel selection
+- Cross-reference the Perplexity results with the hotel names in your database above
+- If Perplexity finds rates for hotels in your database, mention the approximate nightly rate to help the user understand pricing
+- If Perplexity finds hotels NOT in your database, you can mention them as "other options available" but still present your 3 clickable links from the database hotels
+- ⚠️ Still present the 3 clickable HOTEL_LINK links using your database hotel names — the Perplexity data is supplementary pricing intelligence only
+- You may say things like "Based on current rates, budget hotels in [destination] start from around R[X] per night" to give context
+
 ## YOUR BEHAVIOR
 - Be warm, enthusiastic and use emojis moderately
 - Always present full package inclusions exactly as listed above
 - INSIST on getting a budget before presenting hotel options
-- ⚠️ NEVER calculate or display any prices, totals, per-person rates, or grand totals
+- ⚠️ NEVER calculate or display any prices, totals, per-person rates, or grand totals for the PACKAGE — but you CAN mention approximate hotel nightly rates from Perplexity search results
 - ⚠️ NEVER mention service fees
 - After collecting all details, present 3 clickable hotel links and tell user to click to see exact pricing
 - After presenting the 3 hotel links, ALWAYS include the full instructional text from Step 6 — never abbreviate or skip it.
@@ -228,6 +239,108 @@ Pick ONE hotel per tier. Present all 3 tiers.
 - ALWAYS use the full inclusions text from the package database above — never abbreviate
 - ALWAYS present package inclusions as a single flowing sentence, NOT as bullet points. E.g. "Includes accommodation, buffet breakfast, visit to uShaka Marine World and uShaka Beach, boat cruise, Umhlanga Rocks Beach and Ballito Beach, shuttle transport included."`;
 
+// Helper: Search hotel rates via Perplexity
+async function searchHotelRates(destination: string, checkIn: string, checkOut: string, adults: string, children: string, budget: string): Promise<string | null> {
+  const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
+  if (!PERPLEXITY_API_KEY) {
+    console.warn("PERPLEXITY_API_KEY not configured, skipping rate search");
+    return null;
+  }
+
+  try {
+    const searchQuery = `Find current hotel room rates and prices in ${destination}, South Africa for ${adults} adults${children && children !== '0' ? ` and ${children} children` : ''} checking in ${checkIn} and checking out ${checkOut}. Budget is around R${budget} total. Show budget, mid-range and premium options with nightly rates in South African Rand (ZAR). Include hotel names, star ratings, and per-night prices.`;
+
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${PERPLEXITY_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "sonar",
+        messages: [
+          {
+            role: "system",
+            content: "You are a hotel rate research assistant. Return current, accurate hotel pricing in South African Rand (ZAR). Always include the hotel name, star rating, nightly rate, and total estimated cost. Be concise and factual."
+          },
+          { role: "user", content: searchQuery }
+        ],
+        search_recency_filter: "month",
+        temperature: 0.1,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Perplexity API error:", response.status, errorText);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || null;
+  } catch (e) {
+    console.error("Perplexity search error:", e);
+    return null;
+  }
+}
+
+// Extract travel details from conversation to trigger Perplexity search
+function extractTravelDetails(messages: Array<{role: string; content: string}>): {destination?: string; checkIn?: string; checkOut?: string; adults?: string; children?: string; budget?: string} | null {
+  const allText = messages.map(m => m.content).join('\n');
+  
+  // Map destination names
+  const destMap: Record<string, string> = {
+    'harties': 'Hartbeespoort',
+    'hartbeespoort': 'Hartbeespoort',
+    'magalies': 'Magaliesburg',
+    'magaliesburg': 'Magaliesburg',
+    'durban': 'Durban Beachfront',
+    'durban beachfront': 'Durban Beachfront',
+    'umhlanga': 'Umhlanga',
+    'cape town': 'Cape Town',
+    'sun city': 'Sun City',
+    'mpumalanga': 'Mpumalanga',
+    'knysna': 'Knysna',
+    'vaal': 'Vaal River',
+    'vaal river': 'Vaal River',
+    'bela bela': 'Bela Bela',
+    'pretoria': 'Pretoria',
+    'the blyde': 'Pretoria',
+  };
+
+  let destination: string | undefined;
+  const lowerText = allText.toLowerCase();
+  for (const [key, value] of Object.entries(destMap)) {
+    if (lowerText.includes(key)) {
+      destination = value;
+      break;
+    }
+  }
+
+  // Extract dates (YYYY-MM-DD format or natural language dates)
+  const dateRegex = /(\d{4}-\d{2}-\d{2})/g;
+  const dates = allText.match(dateRegex) || [];
+  const checkIn = dates[0];
+  const checkOut = dates[1];
+
+  // Extract adults count
+  const adultsMatch = allText.match(/(\d+)\s*adults?/i);
+  const adults = adultsMatch?.[1];
+
+  // Extract children
+  const childrenMatch = allText.match(/(\d+)\s*child(?:ren)?/i);
+  const children = childrenMatch?.[1] || '0';
+
+  // Extract budget (R amount)
+  const budgetMatch = allText.match(/[Rr]\s*(\d[\d,\s]*\d)/);
+  const budget = budgetMatch?.[1]?.replace(/[\s,]/g, '');
+
+  // Only return if we have enough info to search
+  if (destination && checkIn && budget) {
+    return { destination, checkIn, checkOut, adults: adults || '2', children, budget };
+  }
+  return null;
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -236,6 +349,28 @@ serve(async (req) => {
     const { messages } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    // Check if we have enough travel details to trigger a Perplexity search
+    const travelDetails = extractTravelDetails(messages);
+    let perplexityContext = "";
+    
+    if (travelDetails) {
+      console.log("Travel details detected, searching Perplexity:", travelDetails);
+      const rateResults = await searchHotelRates(
+        travelDetails.destination!,
+        travelDetails.checkIn!,
+        travelDetails.checkOut || travelDetails.checkIn!,
+        travelDetails.adults || '2',
+        travelDetails.children || '0',
+        travelDetails.budget!
+      );
+      
+      if (rateResults) {
+        perplexityContext = `\n\n[REAL-TIME HOTEL RATE DATA FROM WEB SEARCH]\nThe following are current hotel rates found online for ${travelDetails.destination} around the user's dates. Use this to inform your hotel selection and provide pricing context:\n\n${rateResults}\n\n[END OF RATE DATA — Remember to still present your 3 clickable HOTEL_LINK links from your database hotels]`;
+      }
+    }
+
+    const systemMessage = SYSTEM_PROMPT + perplexityContext;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -246,7 +381,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-pro",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: systemMessage },
           ...messages,
         ],
         stream: true,
