@@ -212,22 +212,27 @@ Since you cannot calculate exact prices, use this rough guide to pick hotels clo
 - Higher budget → pick higher-numbered options (Option 5, 6, 7, 8)
 Pick ONE hotel per tier. Present all 3 tiers.
 
-## REAL-TIME HOTEL RATE SEARCH — POWERED BY PERPLEXITY AI
-When you have collected the destination, dates, group size, and budget, you will receive real-time hotel rate data from Perplexity AI search. This data will be injected into the conversation as a system message with the latest hotel prices from the web.
+## REAL-TIME HOTEL SEARCH & DATABASE POPULATION — POWERED BY PERPLEXITY AI
+When you have collected the destination, dates, group size, and budget, the system will automatically:
+1. Search Perplexity AI for current hotel rates in that destination
+2. Select 3 hotels (1 budget, 1 affordable, 1 premium) and INSERT them into the database
+3. Provide you with the hotel names and rates that were added
 
-When you receive this data:
-- Use the real hotel names and rates from the search results to inform your hotel selection
-- Cross-reference the Perplexity results with the hotel names in your database above
-- If Perplexity finds rates for hotels in your database, mention the approximate nightly rate to help the user understand pricing
-- If Perplexity finds hotels NOT in your database, you can mention them as "other options available" but still present your 3 clickable links from the database hotels
-- ⚠️ Still present the 3 clickable HOTEL_LINK links using your database hotel names — the Perplexity data is supplementary pricing intelligence only
-- You may say things like "Based on current rates, budget hotels in [destination] start from around R[X] per night" to give context
+When you receive the [HOTELS POPULATED] data:
+- Use the EXACT hotel names that were inserted — these are now in the database and will appear in search results
+- For Budget and Affordable tiers, the system uses alias names like "Durban Budget 2 Sleeper Option 1"
+- For Premium tier, the system uses the REAL hotel name found by Perplexity
+- Present your 3 clickable HOTEL_LINK links using these exact names
+- Mention the approximate nightly rate from the search to give the user pricing context
+- ⚠️ NEVER calculate totals yourself — just mention per-night rates
+
+If no [HOTELS POPULATED] data appears, fall back to the static hotel names from the database above.
 
 ## YOUR BEHAVIOR
 - Be warm, enthusiastic and use emojis moderately
 - Always present full package inclusions exactly as listed above
 - INSIST on getting a budget before presenting hotel options
-- ⚠️ NEVER calculate or display any prices, totals, per-person rates, or grand totals for the PACKAGE — but you CAN mention approximate hotel nightly rates from Perplexity search results
+- ⚠️ NEVER calculate or display any prices, totals, per-person rates, or grand totals for the PACKAGE — but you CAN mention approximate hotel nightly rates from search results
 - ⚠️ NEVER mention service fees
 - After collecting all details, present 3 clickable hotel links and tell user to click to see exact pricing
 - After presenting the 3 hotel links, ALWAYS include the full instructional text from Step 6 — never abbreviate or skip it.
@@ -239,16 +244,43 @@ When you receive this data:
 - ALWAYS use the full inclusions text from the package database above — never abbreviate
 - ALWAYS present package inclusions as a single flowing sentence, NOT as bullet points. E.g. "Includes accommodation, buffet breakfast, visit to uShaka Marine World and uShaka Beach, boat cruise, Umhlanga Rocks Beach and Ballito Beach, shuttle transport included."`;
 
-// Helper: Search hotel rates via Perplexity
-async function searchHotelRates(destination: string, checkIn: string, checkOut: string, adults: string, children: string, budget: string): Promise<string | null> {
+// Destination code mapping for DB
+const DEST_CODE_MAP: Record<string, string> = {
+  'Hartbeespoort': 'hartbeespoort', 'Magaliesburg': 'magaliesburg',
+  'Durban Beachfront': 'durban', 'Umhlanga': 'durban',
+  'Cape Town': 'cape_town', 'Sun City': 'sun_city',
+  'Mpumalanga': 'mpumalanga', 'Vaal River': 'vaal', 'Bela Bela': 'bela_bela',
+};
+const DEST_AREA_MAP: Record<string, string> = {
+  'Hartbeespoort': 'Hartbeespoort Dam', 'Magaliesburg': 'Magaliesburg',
+  'Durban Beachfront': 'Golden Mile', 'Umhlanga': 'Umhlanga',
+  'Cape Town': 'City Bowl', 'Sun City': 'Sun City Resort',
+  'Mpumalanga': 'Hazyview', 'Vaal River': 'Vaal River', 'Bela Bela': 'Bela Bela Town',
+};
+const DEST_ALIAS_MAP: Record<string, string> = {
+  'Durban Beachfront': 'Durban', 'Hartbeespoort': 'Harties', 'Magaliesburg': 'Magalies',
+  'Cape Town': 'Cape Town', 'Sun City': 'Sun City', 'Mpumalanga': 'Mpumalanga',
+  'Vaal River': 'Vaal', 'Bela Bela': 'Bela-Bela', 'Umhlanga': 'Umhlanga',
+};
+
+// Search Perplexity for hotels and populate database
+async function searchAndPopulateHotels(
+  destination: string, checkIn: string, checkOut: string,
+  adults: string, children: string, budget: string, totalGuests: number
+): Promise<string | null> {
   const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
-  if (!PERPLEXITY_API_KEY) {
-    console.warn("PERPLEXITY_API_KEY not configured, skipping rate search");
-    return null;
-  }
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+  const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+  if (!PERPLEXITY_API_KEY || !SUPABASE_URL) return null;
 
   try {
-    const searchQuery = `Find current hotel room rates and prices in ${destination}, South Africa for ${adults} adults${children && children !== '0' ? ` and ${children} children` : ''} checking in ${checkIn} and checking out ${checkOut}. Budget is around R${budget} total. Show budget, mid-range and premium options with nightly rates in South African Rand (ZAR). Include hotel names, star ratings, and per-night prices.`;
+    const searchQuery = `Find 3 real hotels with current nightly rates in ${destination}, South Africa for ${adults} adults${children && children !== '0' ? ` and ${children} children` : ''}. I need:
+1. One budget hotel (cheapest option, around R500-R900/night)
+2. One mid-range/affordable hotel (around R800-R1500/night)
+3. One premium/luxury hotel (R1500+/night)
+For each hotel provide EXACTLY: hotel name, star rating (1-5), nightly rate in ZAR, and whether breakfast is included (yes/no).
+Format each as: HOTEL_NAME | STARS | RATE | BREAKFAST
+Example: Garden Court Marine Parade | 3 | 850 | no`;
 
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
@@ -259,10 +291,7 @@ async function searchHotelRates(destination: string, checkIn: string, checkOut: 
       body: JSON.stringify({
         model: "sonar",
         messages: [
-          {
-            role: "system",
-            content: "You are a hotel rate research assistant. Return current, accurate hotel pricing in South African Rand (ZAR). Always include the hotel name, star rating, nightly rate, and total estimated cost. Be concise and factual."
-          },
+          { role: "system", content: "You are a hotel rate researcher. Return EXACTLY 3 hotels with current rates. Format each hotel on its own line as: HOTEL_NAME | STARS | RATE | BREAKFAST. RATE must be a number only (no R symbol). BREAKFAST is yes or no. Do not add any other text." },
           { role: "user", content: searchQuery }
         ],
         search_recency_filter: "month",
@@ -270,74 +299,92 @@ async function searchHotelRates(destination: string, checkIn: string, checkOut: 
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Perplexity API error:", response.status, errorText);
-      return null;
+    if (!response.ok) { const t = await response.text(); console.error("Perplexity error:", response.status, t); return null; }
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) return null;
+    console.log("Perplexity raw:", content);
+
+    const lines = content.split('\n').filter((l: string) => l.includes('|'));
+    if (lines.length < 3) { console.error("Could not parse 3 hotels"); return null; }
+
+    const destCode = DEST_CODE_MAP[destination] || 'durban';
+    const areaName = DEST_AREA_MAP[destination] || 'Golden Mile';
+    const aliasPrefix = DEST_ALIAS_MAP[destination] || destination;
+    const sleeper = totalGuests <= 2 ? "2 Sleeper" : "4 Sleeper";
+    const capacityCode = totalGuests <= 2 ? "2_sleeper" : "4_sleeper";
+    const tiers = ["budget", "affordable", "premium"];
+    const parsedHotels: any[] = [];
+
+    for (let i = 0; i < Math.min(lines.length, 3); i++) {
+      const parts = lines[i].split('|').map((p: string) => p.trim());
+      if (parts.length < 4) continue;
+      const realName = parts[0].replace(/^\d+\.\s*/, '').trim();
+      const stars = parseInt(parts[1]) || 3;
+      const rate = parseInt(parts[2].replace(/[^\d]/g, '')) || 800;
+      const breakfast = parts[3].toLowerCase().includes('yes');
+      const tier = tiers[i];
+      const hotelName = tier === "premium" ? realName : `${aliasPrefix} ${tier.charAt(0).toUpperCase() + tier.slice(1)} ${sleeper} Option 1`;
+
+      parsedHotels.push({
+        destination: destCode, area_name: areaName, name: hotelName, tier,
+        star_rating: stars, includes_breakfast: breakfast,
+        room_type: "Standard Room", capacity: capacityCode,
+        max_adults: totalGuests <= 2 ? 2 : 4, max_children: totalGuests <= 2 ? 0 : 2,
+        weekday_rate: rate, real_name: realName,
+      });
     }
 
-    const data = await response.json();
-    return data.choices?.[0]?.message?.content || null;
+    if (parsedHotels.length === 0) return null;
+
+    // Call populate-hotels edge function using service role key to bypass JWT
+    console.log("Populating DB:", JSON.stringify(parsedHotels));
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const populateRes = await fetch(`${SUPABASE_URL}/functions/v1/populate-hotels`, {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ hotels: parsedHotels }),
+    });
+    const populateResult = await populateRes.json();
+    console.log("Populate result:", JSON.stringify(populateResult));
+
+    let summary = `\n\n[HOTELS POPULATED INTO DATABASE]\nHotels found and added for ${destination}:\n\n`;
+    for (const h of parsedHotels) {
+      summary += `- ${h.tier.toUpperCase()}: "${h.name}" (Real: ${h.real_name}) — ~R${h.weekday_rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
+    }
+    summary += `\nCapacity: ${capacityCode}\n⚠️ USE THESE EXACT HOTEL NAMES in your HOTEL_LINK links.\n[END OF POPULATED HOTELS]`;
+    return summary;
   } catch (e) {
-    console.error("Perplexity search error:", e);
+    console.error("searchAndPopulateHotels error:", e);
     return null;
   }
 }
 
-// Extract travel details from conversation to trigger Perplexity search
+// Extract travel details from conversation
 function extractTravelDetails(messages: Array<{role: string; content: string}>): {destination?: string; checkIn?: string; checkOut?: string; adults?: string; children?: string; budget?: string} | null {
   const allText = messages.map(m => m.content).join('\n');
-  
-  // Map destination names
   const destMap: Record<string, string> = {
-    'harties': 'Hartbeespoort',
-    'hartbeespoort': 'Hartbeespoort',
-    'magalies': 'Magaliesburg',
-    'magaliesburg': 'Magaliesburg',
-    'durban': 'Durban Beachfront',
-    'durban beachfront': 'Durban Beachfront',
-    'umhlanga': 'Umhlanga',
-    'cape town': 'Cape Town',
-    'sun city': 'Sun City',
-    'mpumalanga': 'Mpumalanga',
-    'knysna': 'Knysna',
-    'vaal': 'Vaal River',
-    'vaal river': 'Vaal River',
-    'bela bela': 'Bela Bela',
-    'pretoria': 'Pretoria',
-    'the blyde': 'Pretoria',
+    'harties': 'Hartbeespoort', 'hartbeespoort': 'Hartbeespoort',
+    'magalies': 'Magaliesburg', 'magaliesburg': 'Magaliesburg',
+    'durban': 'Durban Beachfront', 'durban beachfront': 'Durban Beachfront',
+    'umhlanga': 'Umhlanga', 'cape town': 'Cape Town', 'sun city': 'Sun City',
+    'mpumalanga': 'Mpumalanga', 'knysna': 'Knysna', 'vaal': 'Vaal River',
+    'vaal river': 'Vaal River', 'bela bela': 'Bela Bela',
+    'pretoria': 'Pretoria', 'the blyde': 'Pretoria',
   };
-
   let destination: string | undefined;
   const lowerText = allText.toLowerCase();
   for (const [key, value] of Object.entries(destMap)) {
-    if (lowerText.includes(key)) {
-      destination = value;
-      break;
-    }
+    if (lowerText.includes(key)) { destination = value; break; }
   }
-
-  // Extract dates (YYYY-MM-DD format or natural language dates)
   const dateRegex = /(\d{4}-\d{2}-\d{2})/g;
   const dates = allText.match(dateRegex) || [];
-  const checkIn = dates[0];
-  const checkOut = dates[1];
-
-  // Extract adults count
   const adultsMatch = allText.match(/(\d+)\s*adults?/i);
-  const adults = adultsMatch?.[1];
-
-  // Extract children
   const childrenMatch = allText.match(/(\d+)\s*child(?:ren)?/i);
-  const children = childrenMatch?.[1] || '0';
-
-  // Extract budget (R amount)
   const budgetMatch = allText.match(/[Rr]\s*(\d[\d,\s]*\d)/);
   const budget = budgetMatch?.[1]?.replace(/[\s,]/g, '');
-
-  // Only return if we have enough info to search
-  if (destination && checkIn && budget) {
-    return { destination, checkIn, checkOut, adults: adults || '2', children, budget };
+  if (destination && dates[0] && budget) {
+    return { destination, checkIn: dates[0], checkOut: dates[1], adults: adultsMatch?.[1] || '2', children: childrenMatch?.[1] || '0', budget };
   }
   return null;
 }
@@ -350,24 +397,19 @@ serve(async (req) => {
     const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
     if (!PERPLEXITY_API_KEY) throw new Error("PERPLEXITY_API_KEY is not configured");
 
-    // Check if we have enough travel details to trigger a Perplexity search
     const travelDetails = extractTravelDetails(messages);
     let perplexityContext = "";
     
     if (travelDetails) {
-      console.log("Travel details detected, searching Perplexity:", travelDetails);
-      const rateResults = await searchHotelRates(
-        travelDetails.destination!,
-        travelDetails.checkIn!,
+      console.log("Travel details detected:", travelDetails);
+      const totalGuests = parseInt(travelDetails.adults || '2') + parseInt(travelDetails.children || '0');
+      const result = await searchAndPopulateHotels(
+        travelDetails.destination!, travelDetails.checkIn!,
         travelDetails.checkOut || travelDetails.checkIn!,
-        travelDetails.adults || '2',
-        travelDetails.children || '0',
-        travelDetails.budget!
+        travelDetails.adults || '2', travelDetails.children || '0',
+        travelDetails.budget!, totalGuests
       );
-      
-      if (rateResults) {
-        perplexityContext = `\n\n[REAL-TIME HOTEL RATE DATA FROM WEB SEARCH]\nThe following are current hotel rates found online for ${travelDetails.destination} around the user's dates. Use this to inform your hotel selection and provide pricing context:\n\n${rateResults}\n\n[END OF RATE DATA — Remember to still present your 3 clickable HOTEL_LINK links from your database hotels]`;
-      }
+      if (result) perplexityContext = result;
     }
 
     const systemMessage = SYSTEM_PROMPT + perplexityContext;
