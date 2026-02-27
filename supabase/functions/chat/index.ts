@@ -400,7 +400,11 @@ serve(async (req) => {
     const travelDetails = extractTravelDetails(messages);
     let perplexityContext = "";
     
-    if (travelDetails) {
+    // Only search if we haven't already presented hotel links in this conversation
+    const allAssistantText = messages.filter((m: any) => m.role === 'assistant').map((m: any) => m.content).join('\n');
+    const alreadySearched = allAssistantText.includes('HOTEL_LINK:') || allAssistantText.includes('Hotel options loaded') || allAssistantText.includes('clickable link');
+    
+    if (travelDetails && !alreadySearched) {
       console.log("Travel details detected:", travelDetails);
       const totalGuests = parseInt(travelDetails.adults || '2') + parseInt(travelDetails.children || '0');
       const result = await searchAndPopulateHotels(
@@ -410,6 +414,8 @@ serve(async (req) => {
         travelDetails.budget!, totalGuests
       );
       if (result) perplexityContext = result;
+    } else if (alreadySearched) {
+      console.log("Skipping hotel search - already presented in conversation");
     }
 
     const systemMessage = SYSTEM_PROMPT + perplexityContext;
