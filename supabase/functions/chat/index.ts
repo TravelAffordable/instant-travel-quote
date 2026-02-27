@@ -164,27 +164,18 @@ IMPORTANT: NEVER show any prices next to package names. No base prices, no per-p
 - 5+ guests: May need multiple rooms — calculate accordingly
 ALWAYS select the correct sleeper size based on total guest count (adults + children).
 
-## HOTEL NAMES BY DESTINATION AND TIER
-Use ONLY these exact hotel names. Never invent hotel names.
+## HOTEL NAMES — REAL-TIME SEARCH
+For Durban Beachfront: Jenny searches for 3 REAL hotels on the Golden Mile that fit the user's budget. All 3 use their real hotel names (no aliases). The system populates them into the database as budget, affordable, and premium tiers.
+
+For other destinations: Use format "[Destination] Budget/Affordable [2/4] Sleeper Option [N]" for budget/affordable tiers, and real names for premium tier.
 
 ### Harties Budget (2-sleeper): Option 1-9 (e.g. "Harties Budget 2 Sleeper Option 8")
-### Harties Budget (4-sleeper): Option 1-8 (e.g. "Harties Budget 4 Sleeper Option 1")
+### Harties Budget (4-sleeper): Option 1-8
 ### Harties Affordable (2-sleeper): Option 1-9
 ### Harties Affordable (4-sleeper): Option 1-5
 ### Harties Premium: Indlovukazi Guesthouse, Villa Paradiso Hotel, Cocomo Boutique Hotel, The Riverleaf Hotel, Kosmos Manor
 
-### Durban Budget (2-sleeper): Options SeaIMP, SeaNOMA, SeaESC, SeaShaka2B, SeaBV, SeaSOL, SeaLANC, SeaWIND
-### Durban Affordable (2-sleeper): Options SeaSOL, SeaLANC, SeaWIND
-### Durban Premium (2-sleeper): The Balmoral, Belaire Suites Hotel, Blue Waters Hotel, Gooderson Tropicana Hotel, Southern Sun Garden Court South Beach, Southern Sun The Edward, Southern Sun Garden Court Marine Parade, Southern Sun Elangeni & Maharani Hotel, Suncoast Hotel & Towers
-
-### Umhlanga Budget (2-sleeper): Option 1-8
-### Umhlanga Budget (4-sleeper): Option 1-8
-### Umhlanga Affordable (2-sleeper): Option 1-8
-### Umhlanga Affordable (4-sleeper): Option 1-8
-### Umhlanga Premium: Beverly Hills, Breakers Resort Apartments, aha Gateway Hotel Umhlanga, Coastlands Skye Hotel Ridgeside, First Group Breakers Resort, The Lofts on Manaar, Sandals Guest House, Holiday Inn Express Durban - Umhlanga, Oceans Apartments Radisson Blu Tower, Kingston Place Guesthouse, The Capital Pearls Hotel, The Space To Be, Regal Inn Umhlanga Gateway, Marina Bay Luxury Apartment Suite, Town Lodge Umhlanga, The Oyster Box, Premier Hotel Umhlanga, Hilton Garden Inn Umhlanga Arch, uShaka Manor Guest House, Royal Palm Hotel, The Pearls of Umhlanga, Premier Splendid Inn Umhlanga, Savannah Park Luxury Apartments, Protea Hotel by Marriott Durban Umhlanga
-### NOTE: NEVER use names like "Umhlanga Premium Hotel A-J". They are invalid. Use only the real names listed above.
-
-### For other destinations: Use format "[Destination] Budget/Affordable [2/4] Sleeper Option [N]"
+⚠️ For Durban: NEVER use alias names like "Durban Budget 2 Sleeper Option 1". ALWAYS wait for the [HOTELS POPULATED] data and use the exact real hotel names provided.
 
 ## HOTEL LINK FORMAT (CRITICAL)
 Format: [🏨 Hotel Name](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
