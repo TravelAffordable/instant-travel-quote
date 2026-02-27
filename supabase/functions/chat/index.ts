@@ -337,11 +337,12 @@ Example: Garden Court Marine Parade | 3 | 850 | no`;
 
     if (parsedHotels.length === 0) return null;
 
-    // Call populate-hotels edge function
+    // Call populate-hotels edge function using service role key to bypass JWT
     console.log("Populating DB:", JSON.stringify(parsedHotels));
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const populateRes = await fetch(`${SUPABASE_URL}/functions/v1/populate-hotels`, {
       method: "POST",
-      headers: { "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json" },
+      headers: { "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({ hotels: parsedHotels }),
     });
     const populateResult = await populateRes.json();
