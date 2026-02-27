@@ -48,22 +48,22 @@ Once they give a budget, ask them to provide their:
 - Phone number
 - Email address
 
-### Step 6: Present 3 Clickable Hotel Links (ONE per tier)
+### Step 6: Present 3 Clickable Hotel Links (3 Premium Options)
 ⚠️ CRITICAL: YOU MUST NEVER CALCULATE PRICES YOURSELF. You are an AI and cannot do reliable arithmetic.
-Instead, present 3 clickable hotel links — one Budget, one Affordable, one Premium — and tell the user to click to see their exact personalised quote with accurate pricing.
+Instead, present 3 clickable hotel links — all premium tier — and tell the user to click to see their exact personalised quote with accurate pricing.
 
-For each tier, pick the hotel whose nightly rate × nights × rooms is closest to the user's budget (use rough estimation only for hotel SELECTION, never show a calculated total).
+Pick 3 hotels from the [HOTELS POPULATED] data. Present all 3 as premium options at different price points.
 
 Format each as:
 
-🟢 **Budget Friendly**
-[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
+🔵 **Option 1 — [Hotel Name]**
+[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|premium|hotelName|checkIn|checkOut|budget)
 
-🟡 **Affordable**  
-[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
+🔵 **Option 2 — [Hotel Name]**
+[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|premium|hotelName|checkIn|checkOut|budget)
 
-🔵 **Premium**
-[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
+🔵 **Option 3 — [Hotel Name]**
+[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|premium|hotelName|checkIn|checkOut|budget)
 
 Then say EXACTLY this text (do not modify or abbreviate):
 "You are close to your quote! Please click on any of the links above (Fun Activities with Accommodation Search) to be taken to the search form which I have already filled out for you.
@@ -165,7 +165,7 @@ IMPORTANT: NEVER show any prices next to package names. No base prices, no per-p
 ALWAYS select the correct sleeper size based on total guest count (adults + children).
 
 ## HOTEL NAMES — REAL-TIME SEARCH
-For Durban Beachfront: Jenny searches for 3 REAL hotels on the Golden Mile that fit the user's budget. All 3 use their real hotel names (no aliases). The system populates them into the database as budget, affordable, and premium tiers.
+For Durban Beachfront: Jenny searches for 3 REAL premium hotels on the Golden Mile that fit the user's budget. All 3 use their real hotel names and are stored as premium tier.
 
 For other destinations: Use format "[Destination] Budget/Affordable [2/4] Sleeper Option [N]" for budget/affordable tiers, and real names for premium tier.
 
@@ -197,16 +197,14 @@ Example for 2 adults + 2 kids (12,7), UMHLA2, budget tier, checking in 15 March 
 ⚠️ The entire [text](HOTEL_LINK:...) MUST be on ONE single line. Never break across lines.
 
 ## BUDGET MATCHING — HOW TO SELECT HOTELS
-Since you cannot calculate exact prices, use this rough guide to pick hotels closest to budget:
-- Lower budget → pick lower-numbered options (Option 1, 2, 3)
-- Mid budget → pick mid-numbered options (Option 3, 4, 5) 
-- Higher budget → pick higher-numbered options (Option 5, 6, 7, 8)
-Pick ONE hotel per tier. Present all 3 tiers.
+For Durban: All 3 hotels from the search are premium tier at different price points within the user's budget. Present all 3 options.
+For other destinations with aliases: Use the alias naming format for budget/affordable tiers.
+Pick ONE hotel per tier where applicable, or present all 3 premium options for Durban.
 
 ## REAL-TIME HOTEL SEARCH & DATABASE POPULATION — POWERED BY PERPLEXITY AI
 When you have collected the destination, dates, group size, and budget, the system will automatically:
-1. Search Perplexity AI for current hotel rates in that destination that fit the user's budget
-2. Select 3 REAL hotels (all using real names) and INSERT them into the database as budget, affordable, and premium tiers
+1. Search Perplexity AI for current premium hotel rates in that destination that fit the user's budget
+2. Select 3 REAL premium hotels (all using real names) and INSERT them into the database as premium tier
 3. Provide you with the hotel names and rates that were added
 
 When you receive the [HOTELS POPULATED] data:
@@ -267,16 +265,16 @@ async function searchAndPopulateHotels(
     const nights = 2; // estimate
     const maxNightly = Math.round(budgetNum / nights);
     
-    const searchQuery = `Find 3 real hotels on the Durban Golden Mile beachfront in South Africa with current nightly rates in ZAR (South African Rand). 
-The guest's total budget is R${budgetNum} for about ${nights} nights. Find hotels with nightly rates that would fit within this budget.
-I need 3 hotels at different price points:
-1. A more affordable option (around R${Math.round(maxNightly * 0.3)}-R${Math.round(maxNightly * 0.5)}/night)
-2. A mid-range option (around R${Math.round(maxNightly * 0.4)}-R${Math.round(maxNightly * 0.6)}/night)  
-3. A premium option (around R${Math.round(maxNightly * 0.5)}-R${Math.round(maxNightly * 0.8)}/night)
-All hotels MUST be on or very near the Durban Golden Mile / Durban Beachfront area.
+    const searchQuery = `Find 3 real PREMIUM hotels on the Durban Golden Mile beachfront in South Africa with current nightly rates in ZAR (South African Rand). 
+The guest's total budget is R${budgetNum} for about ${nights} nights. Find premium/quality hotels with nightly rates that would fit within this budget.
+I need 3 premium hotels at slightly different price points within the budget:
+1. A good premium option (around R${Math.round(maxNightly * 0.35)}-R${Math.round(maxNightly * 0.45)}/night)
+2. A mid-premium option (around R${Math.round(maxNightly * 0.45)}-R${Math.round(maxNightly * 0.55)}/night)  
+3. A top premium option (around R${Math.round(maxNightly * 0.55)}-R${Math.round(maxNightly * 0.7)}/night)
+All hotels MUST be on or very near the Durban Golden Mile / Durban Beachfront area. They should be quality/premium hotels (3-5 star).
 For each hotel provide EXACTLY: hotel name, star rating (1-5), nightly rate in ZAR, and whether breakfast is included (yes/no).
 Format each as: HOTEL_NAME | STARS | RATE | BREAKFAST
-Example: Garden Court Marine Parade | 3 | 850 | no`;
+Example: Garden Court Marine Parade | 4 | 1200 | no`;
 
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
@@ -287,7 +285,7 @@ Example: Garden Court Marine Parade | 3 | 850 | no`;
       body: JSON.stringify({
         model: "sonar",
         messages: [
-          { role: "system", content: "You are a hotel rate researcher specializing in Durban, South Africa. Return EXACTLY 3 hotels on the Durban Golden Mile/Beachfront with current rates. Format each hotel on its own line as: HOTEL_NAME | STARS | RATE | BREAKFAST. RATE must be a number only (no R symbol). BREAKFAST is yes or no. Do not add any other text." },
+          { role: "system", content: "You are a hotel rate researcher specializing in Durban, South Africa. Return EXACTLY 3 PREMIUM quality hotels on the Durban Golden Mile/Beachfront with current rates. These should be quality 3-5 star hotels. Format each hotel on its own line as: HOTEL_NAME | STARS | RATE | BREAKFAST. RATE must be a number only (no R symbol). BREAKFAST is yes or no. Do not add any other text." },
           { role: "user", content: searchQuery }
         ],
         search_recency_filter: "month",
@@ -308,7 +306,6 @@ Example: Garden Court Marine Parade | 3 | 850 | no`;
     const areaName = DEST_AREA_MAP[destination] || 'Golden Mile';
     const sleeper = totalGuests <= 2 ? "2 Sleeper" : "4 Sleeper";
     const capacityCode = totalGuests <= 2 ? "2_sleeper" : "4_sleeper";
-    const tiers: Array<"budget" | "affordable" | "premium"> = ["budget", "affordable", "premium"];
     const parsedHotels: any[] = [];
 
     for (let i = 0; i < Math.min(lines.length, 3); i++) {
@@ -318,11 +315,10 @@ Example: Garden Court Marine Parade | 3 | 850 | no`;
       const stars = parseInt(parts[1]) || 3;
       const rate = parseInt(parts[2].replace(/[^\d]/g, '')) || 800;
       const breakfast = parts[3].toLowerCase().includes('yes');
-      const tier = tiers[i];
 
-      // ALL hotels use their REAL names — no aliases
+      // ALL hotels are premium tier
       parsedHotels.push({
-        destination: destCode, area_name: areaName, name: realName, tier,
+        destination: destCode, area_name: areaName, name: realName, tier: "premium" as const,
         star_rating: stars, includes_breakfast: breakfast,
         room_type: "Standard Room", capacity: capacityCode,
         max_adults: totalGuests <= 2 ? 2 : 4, max_children: totalGuests <= 2 ? 0 : 2,
@@ -347,7 +343,7 @@ Example: Garden Court Marine Parade | 3 | 850 | no`;
     for (const h of parsedHotels) {
       summary += `- ${h.tier.toUpperCase()}: "${h.name}" — ~R${h.weekday_rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
     }
-    summary += `\nCapacity: ${capacityCode}\n⚠️ USE THESE EXACT HOTEL NAMES in your HOTEL_LINK links. All hotels use their real names.\n[END OF POPULATED HOTELS]`;
+    summary += `\nCapacity: ${capacityCode}\n⚠️ USE THESE EXACT HOTEL NAMES in your HOTEL_LINK links. All hotels are PREMIUM tier — use tier=premium in all links.\n[END OF POPULATED HOTELS]`;
     return summary;
   } catch (e) {
     console.error("searchAndPopulateHotels error:", e);
