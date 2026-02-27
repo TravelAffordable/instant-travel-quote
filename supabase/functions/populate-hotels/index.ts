@@ -15,11 +15,6 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     const { hotels } = await req.json();
-    // hotels is an array of:
-    // { destination: string, area_name: string, name: string, tier: "budget"|"affordable"|"premium",
-    //   star_rating: number, includes_breakfast: boolean, 
-    //   room_type: string, capacity: "2_sleeper"|"4_sleeper", max_adults: number, max_children: number,
-    //   weekday_rate: number, weekend_rate: number }
 
     if (!hotels || !Array.isArray(hotels) || hotels.length === 0) {
       throw new Error("hotels array is required");
@@ -58,7 +53,6 @@ serve(async (req) => {
         hotelId = existingHotel.id;
         console.log(`Hotel already exists: ${h.name} (${hotelId})`);
       } else {
-        // 3. Insert hotel
         const { data: newHotel, error: hotelErr } = await supabase
           .from("hotels")
           .insert({
@@ -80,7 +74,7 @@ serve(async (req) => {
         hotelId = newHotel.id;
       }
 
-      // 4. Insert room type
+      // 3. Insert room type
       const { data: roomType, error: rtErr } = await supabase
         .from("room_types")
         .insert({
@@ -100,7 +94,7 @@ serve(async (req) => {
         continue;
       }
 
-      // 5. Insert room rate
+      // 4. Insert room rate
       const { error: rateErr } = await supabase
         .from("room_rates")
         .insert({
