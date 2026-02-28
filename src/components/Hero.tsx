@@ -583,23 +583,22 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
+        // Budget = total group budget. Allow first option up to R600 over, then scale down.
         const budgetAmount = parseInt(budget) || 0;
-        const budgetThreshold = budgetAmount * 1.1;
-        let budgetFiltered = selectedTierQuotes.filter(q => q.totalForGroup <= budgetThreshold);
+        const maxOverBudget = 600;
+        const budgetCeiling = budgetAmount + maxOverBudget;
 
-        // If nothing fits, show the 3 cheapest options in the selected tier
+        // Include all options at or below the ceiling (budget + R600)
+        let budgetFiltered = selectedTierQuotes.filter(q => q.totalForGroup <= budgetCeiling);
+
         if (budgetFiltered.length === 0) {
+          // Nothing fits even with R600 buffer — show 3 cheapest in this tier
           selectedTierQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
           budgetFiltered = selectedTierQuotes.slice(0, 3);
           toast.info(`No ${accommodationType} options fit your budget of R${budgetAmount.toLocaleString()}. Showing the closest ${accommodationType} options.`);
         } else {
-          // Sort closest-to-budget first (within selected tier)
-          budgetFiltered.sort((a, b) => {
-            const aDiff = Math.abs(budgetAmount - a.totalForGroup);
-            const bDiff = Math.abs(budgetAmount - b.totalForGroup);
-            return aDiff - bDiff;
-          });
-
+          // Sort highest total first (closest to budget ceiling), scaling down
+          budgetFiltered.sort((a, b) => b.totalForGroup - a.totalForGroup);
           toast.success(`${budgetFiltered.length} ${accommodationType} option${budgetFiltered.length > 1 ? 's' : ''} found for your budget of R${budgetAmount.toLocaleString()}!`);
         }
 
