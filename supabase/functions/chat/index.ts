@@ -48,22 +48,22 @@ Once they give a budget, ask them to provide their:
 - Phone number
 - Email address
 
-### Step 6: Present 3 Clickable Hotel Links (3 Premium Options)
+### Step 6: Present 3 Clickable Hotel Links
 ⚠️ CRITICAL: YOU MUST NEVER CALCULATE PRICES YOURSELF. You are an AI and cannot do reliable arithmetic.
-Instead, present 3 clickable hotel links — all premium tier — and tell the user to click to see their exact personalised quote with accurate pricing.
+Instead, present 3 clickable hotel links and tell the user to click to see their exact personalised quote with accurate pricing.
 
-Pick 3 hotels from the [HOTELS POPULATED] data. Present all 3 as premium options at different price points.
+Pick 3 hotels from the database data provided. Present options from different tiers (budget, affordable, premium) where available.
 
 Format each as:
 
 🔵 **Option 1 — [Hotel Name]**
-[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|premium|hotelName|checkIn|checkOut|budget)
+[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
 
 🔵 **Option 2 — [Hotel Name]**
-[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|premium|hotelName|checkIn|checkOut|budget)
+[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
 
 🔵 **Option 3 — [Hotel Name]**
-[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|premium|hotelName|checkIn|checkOut|budget)
+[🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
 
 Then say EXACTLY this text (do not modify or abbreviate):
 "You are close to your quote! Please click on any of the links above (Fun Activities with Accommodation Search) to be taken to the search form which I have already filled out for you.
@@ -164,18 +164,47 @@ IMPORTANT: NEVER show any prices next to package names. No base prices, no per-p
 - 5+ guests: May need multiple rooms — calculate accordingly
 ALWAYS select the correct sleeper size based on total guest count (adults + children).
 
-## HOTEL NAMES — REAL-TIME SEARCH
-For Durban Beachfront: Jenny searches for 3 REAL premium hotels on the Golden Mile that fit the user's budget. All 3 use their real hotel names and are stored as premium tier.
+## HOTEL NAMES
+For all destinations, use the alias naming format for budget/affordable tiers:
+- Format: "[Destination] Budget/Affordable [2/4] Sleeper Option [N]"
+- Example: "Harties Budget 2 Sleeper Option 1", "Durban Affordable 4 Sleeper Option 3"
 
-For other destinations: Use format "[Destination] Budget/Affordable [2/4] Sleeper Option [N]" for budget/affordable tiers, and real names for premium tier.
+For premium tier, use real hotel names.
 
-### Harties Budget (2-sleeper): Option 1-9 (e.g. "Harties Budget 2 Sleeper Option 8")
-### Harties Budget (4-sleeper): Option 1-8
+### Harties Budget (2-sleeper): Option 1-9
+### Harties Budget (4-sleeper): Option 1-9
 ### Harties Affordable (2-sleeper): Option 1-9
-### Harties Affordable (4-sleeper): Option 1-5
-### Harties Premium: Indlovukazi Guesthouse, Villa Paradiso Hotel, Cocomo Boutique Hotel, The Riverleaf Hotel, Kosmos Manor
+### Harties Affordable (4-sleeper): Option 1-9
 
-⚠️ For Durban: NEVER use alias names like "Durban Budget 2 Sleeper Option 1". ALWAYS wait for the [HOTELS POPULATED] data and use the exact real hotel names provided.
+### Durban Budget (2-sleeper): Option 1-8
+### Durban Budget (4-sleeper): Option 1-8
+### Durban Affordable (2-sleeper): Option 1-8
+### Durban Affordable (4-sleeper): Option 1-8
+
+### Umhlanga Budget (2-sleeper): Option 1-8
+### Umhlanga Budget (4-sleeper): Option 1-8
+### Umhlanga Affordable (2-sleeper): Option 1-8
+### Umhlanga Affordable (4-sleeper): Option 1-8
+
+### Cape Town Budget (2-sleeper): Option 1-8
+### Cape Town Budget (4-sleeper): Option 1-7
+### Cape Town Affordable (2-sleeper): Option 1-7
+### Cape Town Affordable (4-sleeper): Option 1-4
+
+### Mpumalanga Budget (2-sleeper): Option 1-15
+### Mpumalanga Budget (4-sleeper): Option 1-12
+### Mpumalanga Affordable (2-sleeper): Option 1-15
+### Mpumalanga Affordable (4-sleeper): Option 1-14
+
+### Magalies Budget (2-sleeper): Option 1-8
+### Magalies Budget (4-sleeper): Option 1-8
+### Magalies Affordable (2-sleeper): Option 1-8
+### Magalies Affordable (4-sleeper): Option 1-8
+
+### Bela-Bela Budget (2-sleeper): Option 1-9
+### Bela-Bela Budget (4-sleeper): Option 1-9
+### Bela-Bela Affordable (2-sleeper): Option 1-9
+### Bela-Bela Affordable (4-sleeper): Option 1-6
 
 ## HOTEL LINK FORMAT (CRITICAL)
 Format: [🏨 Hotel Name](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
@@ -197,30 +226,14 @@ Example for 2 adults + 2 kids (12,7), UMHLA2, budget tier, checking in 15 March 
 ⚠️ The entire [text](HOTEL_LINK:...) MUST be on ONE single line. Never break across lines.
 
 ## BUDGET MATCHING — HOW TO SELECT HOTELS
-For Durban: All 3 hotels from the search are premium tier at different price points within the user's budget. Present all 3 options.
-For other destinations with aliases: Use the alias naming format for budget/affordable tiers.
-Pick ONE hotel per tier where applicable, or present all 3 premium options for Durban.
-
-## REAL-TIME HOTEL SEARCH & DATABASE POPULATION — POWERED BY PERPLEXITY AI
-When you have collected the destination, dates, group size, and budget, the system will automatically:
-1. Search Perplexity AI for current premium hotel rates in that destination that fit the user's budget
-2. Select 3 REAL premium hotels (all using real names) and INSERT them into the database as premium tier
-3. Provide you with the hotel names and rates that were added
-
-When you receive the [HOTELS POPULATED] data:
-- Use the EXACT hotel names that were inserted — these are now in the database and will appear in search results
-- ALL hotels use their REAL names (no aliases for any tier)
-- Present your 3 clickable HOTEL_LINK links using these exact names
-- Mention the approximate nightly rate from the search to give the user pricing context
-- ⚠️ NEVER calculate totals yourself — just mention per-night rates
-
-If no [HOTELS POPULATED] data appears, tell the user you're still searching and ask them to try again in a moment.
+Present one hotel from each tier (budget, affordable, premium) where available.
+Pick hotels where the nightly rate × nights is within the user's budget.
 
 ## YOUR BEHAVIOR
 - Be warm, enthusiastic and use emojis moderately
 - Always present full package inclusions exactly as listed above
 - INSIST on getting a budget before presenting hotel options
-- ⚠️ NEVER calculate or display any prices, totals, per-person rates, or grand totals for the PACKAGE — but you CAN mention approximate hotel nightly rates from search results
+- ⚠️ NEVER calculate or display any prices, totals, per-person rates, or grand totals
 - ⚠️ NEVER mention service fees
 - After collecting all details, present 3 clickable hotel links and tell user to click to see exact pricing
 - After presenting the 3 hotel links, ALWAYS include the full instructional text from Step 6 — never abbreviate or skip it.
@@ -230,84 +243,15 @@ If no [HOTELS POPULATED] data appears, tell the user you're still searching and 
 - Respond in the same language as the user
 - For groups of 25+, mention special group rates
 - ALWAYS use the full inclusions text from the package database above — never abbreviate
-- ALWAYS present package inclusions as a single flowing sentence, NOT as bullet points. E.g. "Includes accommodation, buffet breakfast, visit to uShaka Marine World and uShaka Beach, boat cruise, Umhlanga Rocks Beach and Ballito Beach, shuttle transport included."`;
+- ALWAYS present package inclusions as a single flowing sentence, NOT as bullet points.`;
 
-// Destination code mapping for DB
+// Destination code mapping for DB lookups
 const DEST_CODE_MAP: Record<string, string> = {
   'Hartbeespoort': 'hartbeespoort', 'Magaliesburg': 'magaliesburg',
   'Durban Beachfront': 'durban', 'Umhlanga': 'durban',
   'Cape Town': 'cape_town', 'Sun City': 'sun_city',
   'Mpumalanga': 'mpumalanga', 'Vaal River': 'vaal', 'Bela Bela': 'bela_bela',
 };
-const DEST_AREA_MAP: Record<string, string> = {
-  'Hartbeespoort': 'Hartbeespoort Dam', 'Magaliesburg': 'Magaliesburg',
-  'Durban Beachfront': 'Golden Mile', 'Umhlanga': 'Umhlanga',
-  'Cape Town': 'City Bowl', 'Sun City': 'Sun City Resort',
-  'Mpumalanga': 'Hazyview', 'Vaal River': 'Vaal River', 'Bela Bela': 'Bela Bela Town',
-};
-const DEST_ALIAS_MAP: Record<string, string> = {
-  'Durban Beachfront': 'Durban', 'Hartbeespoort': 'Harties', 'Magaliesburg': 'Magalies',
-  'Cape Town': 'Cape Town', 'Sun City': 'Sun City', 'Mpumalanga': 'Mpumalanga',
-  'Vaal River': 'Vaal', 'Bela Bela': 'Bela-Bela', 'Umhlanga': 'Umhlanga',
-};
-
-// REAL verified Durban Golden Mile premium hotels — no AI hallucination
-const DURBAN_PREMIUM_HOTELS = {
-  '2_sleeper': [
-    { name: "Garden Court South Beach", star_rating: 4, weekday_rate: 1426, includes_breakfast: true, room_type: "Hotel Room" },
-    { name: "The Edward", star_rating: 4, weekday_rate: 1470, includes_breakfast: true, room_type: "Hotel Room" },
-    { name: "Blue Waters Hotel", star_rating: 3, weekday_rate: 1078, includes_breakfast: true, room_type: "Hotel Room" },
-  ],
-  '4_sleeper': [
-    { name: "Garden Court South Beach", star_rating: 4, weekday_rate: 2851, includes_breakfast: true, room_type: "2 Hotel Rooms" },
-    { name: "The Edward", star_rating: 4, weekday_rate: 2900, includes_breakfast: true, room_type: "2 Hotel Rooms" },
-    { name: "Blue Waters Hotel", star_rating: 3, weekday_rate: 1828, includes_breakfast: true, room_type: "Hotel Room (Up to 4)" },
-  ],
-};
-
-// Populate database with real verified hotels
-async function searchAndPopulateHotels(
-  destination: string, _checkIn: string, _checkOut: string,
-  _adults: string, _children: string, _budget: string, totalGuests: number
-): Promise<string | null> {
-  const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-  const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
-
-  try {
-    const destCode = DEST_CODE_MAP[destination] || 'durban';
-    const areaName = DEST_AREA_MAP[destination] || 'Golden Mile';
-    const capacityCode = totalGuests <= 2 ? "2_sleeper" : "4_sleeper";
-    const hotelList = DURBAN_PREMIUM_HOTELS[capacityCode];
-
-    const parsedHotels = hotelList.map(h => ({
-      destination: destCode, area_name: areaName, name: h.name, tier: "premium" as const,
-      star_rating: h.star_rating, includes_breakfast: h.includes_breakfast,
-      room_type: h.room_type, capacity: capacityCode,
-      max_adults: totalGuests <= 2 ? 2 : 4, max_children: totalGuests <= 2 ? 0 : 2,
-      weekday_rate: h.weekday_rate,
-    }));
-
-    console.log("Populating DB with verified hotels:", JSON.stringify(parsedHotels));
-    const populateRes = await fetch(`${SUPABASE_URL}/functions/v1/populate-hotels`, {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ hotels: parsedHotels }),
-    });
-    const populateResult = await populateRes.json();
-    console.log("Populate result:", JSON.stringify(populateResult));
-
-    let summary = `\n\n[HOTELS POPULATED INTO DATABASE]\nHotels found and added for ${destination}:\n\n`;
-    for (const h of parsedHotels) {
-      summary += `- PREMIUM: "${h.name}" — ~R${h.weekday_rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
-    }
-    summary += `\nCapacity: ${capacityCode}\n⚠️ USE THESE EXACT HOTEL NAMES in your HOTEL_LINK links. All hotels are PREMIUM tier — use tier=premium in all links.\n[END OF POPULATED HOTELS]`;
-    return summary;
-  } catch (e) {
-    console.error("searchAndPopulateHotels error:", e);
-    return null;
-  }
-}
 
 // Extract travel details from conversation
 function extractTravelDetails(messages: Array<{role: string; content: string}>): {destination?: string; checkIn?: string; checkOut?: string; adults?: string; children?: string; budget?: string} | null {
@@ -343,49 +287,35 @@ serve(async (req) => {
 
   try {
     const { messages } = await req.json();
-    const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
-    if (!PERPLEXITY_API_KEY) throw new Error("PERPLEXITY_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const travelDetails = extractTravelDetails(messages);
-    let perplexityContext = "";
+    let dbContext = "";
     
-    // Only search if we haven't already presented hotel links in this conversation
-    const allAssistantText = messages.filter((m: any) => m.role === 'assistant').map((m: any) => m.content).join('\n');
-    const alreadySearched = allAssistantText.includes('HOTEL_LINK:') || allAssistantText.includes('Hotel options loaded') || allAssistantText.includes('clickable link');
-    
-    if (travelDetails && !alreadySearched) {
-      console.log("Travel details detected:", travelDetails);
-      const totalGuests = parseInt(travelDetails.adults || '2') + parseInt(travelDetails.children || '0');
-      const result = await searchAndPopulateHotels(
-        travelDetails.destination!, travelDetails.checkIn!,
-        travelDetails.checkOut || travelDetails.checkIn!,
-        travelDetails.adults || '2', travelDetails.children || '0',
-        travelDetails.budget!, totalGuests
-      );
-      if (result) perplexityContext = result;
-    } else if (alreadySearched && travelDetails?.destination) {
-      // Re-inject DB hotel names so Jenny doesn't hallucinate from web search
-      console.log("Re-injecting DB hotel names for:", travelDetails.destination);
+    // Look up hotels from DB (read-only) to provide context
+    if (travelDetails?.destination) {
       const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
       const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
       if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
         try {
-          const destCode = DEST_CODE_MAP[travelDetails.destination] || 'durban';
-          const areaName = DEST_AREA_MAP[travelDetails.destination] || 'Golden Mile';
-          const hotelsRes = await fetch(
-            `${SUPABASE_URL}/rest/v1/hotels?select=name,tier,star_rating,includes_breakfast,room_types(room_rates(base_rate_weekday))&is_active=eq.true&areas!inner(destination,name)&areas.destination=eq.${destCode}&areas.name=eq.${encodeURIComponent(areaName)}`,
-            { headers: { "apikey": SUPABASE_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-          );
-          if (hotelsRes.ok) {
-            const hotels = await hotelsRes.json();
-            if (hotels.length > 0) {
-              perplexityContext = `\n\n[CURRENT DATABASE HOTELS FOR ${travelDetails.destination.toUpperCase()}]\n⚠️ You MUST use ONLY these exact hotel names in your HOTEL_LINK links. Do NOT use any other hotel names from web search results.\n\n`;
-              for (const h of hotels) {
-                const rate = h.room_types?.[0]?.room_rates?.[0]?.base_rate_weekday || 'unknown';
-                perplexityContext += `- ${h.tier.toUpperCase()}: "${h.name}" — ~R${rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
+          const destCode = DEST_CODE_MAP[travelDetails.destination] || '';
+          if (destCode) {
+            const hotelsRes = await fetch(
+              `${SUPABASE_URL}/rest/v1/hotels?select=name,tier,star_rating,includes_breakfast,room_types(name,capacity,room_rates(base_rate_weekday))&is_active=eq.true&area_id=in.(select id from areas where destination=eq.${destCode})`,
+              { headers: { "apikey": SUPABASE_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+            );
+            if (hotelsRes.ok) {
+              const hotels = await hotelsRes.json();
+              if (hotels.length > 0) {
+                dbContext = `\n\n[AVAILABLE HOTELS IN DATABASE FOR ${travelDetails.destination.toUpperCase()}]\nUse these exact hotel names in your HOTEL_LINK links:\n`;
+                for (const h of hotels) {
+                  const rate = h.room_types?.[0]?.room_rates?.[0]?.base_rate_weekday || 'N/A';
+                  const cap = h.room_types?.[0]?.capacity || 'unknown';
+                  dbContext += `- ${h.tier.toUpperCase()} (${cap}): "${h.name}" ~R${rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
+                }
+                dbContext += `[END OF DATABASE HOTELS]`;
               }
-              perplexityContext += `\n⚠️ USE THESE EXACT HOTEL NAMES. Do not invent or substitute other names.\n[END OF DATABASE HOTELS]`;
-              console.log("Injected DB hotels:", perplexityContext);
             }
           }
         } catch (e) {
@@ -394,16 +324,16 @@ serve(async (req) => {
       }
     }
 
-    const systemMessage = SYSTEM_PROMPT + perplexityContext;
+    const systemMessage = SYSTEM_PROMPT + dbContext;
 
-    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "sonar-pro",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemMessage },
           ...messages,
@@ -415,21 +345,13 @@ serve(async (req) => {
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limited, please try again shortly." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please try again later." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI service error" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return new Response(JSON.stringify({ error: "AI service temporarily unavailable. Please try again." }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -439,8 +361,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("chat error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
