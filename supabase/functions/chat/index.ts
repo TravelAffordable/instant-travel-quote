@@ -48,21 +48,21 @@ Once they give a budget, ask them to provide their:
 - Phone number
 - Email address
 
-### Step 6: Present 3 Clickable Hotel Links
+### Step 6: Present 3 Clickable Hotel Links (ONE per tier)
 ⚠️ CRITICAL: YOU MUST NEVER CALCULATE PRICES YOURSELF. You are an AI and cannot do reliable arithmetic.
-Instead, present 3 clickable hotel links and tell the user to click to see their exact personalised quote with accurate pricing.
+Instead, present 3 clickable hotel links — one Budget, one Affordable, one Premium — and tell the user to click to see their exact personalised quote with accurate pricing.
 
-Pick 3 hotels from the database data provided. Present options from different tiers (budget, affordable, premium) where available.
+For each tier, pick the hotel whose nightly rate × nights × rooms is closest to the user's budget (use rough estimation only for hotel SELECTION, never show a calculated total).
 
 Format each as:
 
-🔵 **Option 1 — [Hotel Name]**
+🟢 **Budget Friendly**
 [🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
 
-🔵 **Option 2 — [Hotel Name]**
+🟡 **Affordable**  
 [🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
 
-🔵 **Option 3 — [Hotel Name]**
+🔵 **Premium**
 [🏨 Hotel Name - Fun Activities with Accommodation Search](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
 
 Then say EXACTLY this text (do not modify or abbreviate):
@@ -164,47 +164,27 @@ IMPORTANT: NEVER show any prices next to package names. No base prices, no per-p
 - 5+ guests: May need multiple rooms — calculate accordingly
 ALWAYS select the correct sleeper size based on total guest count (adults + children).
 
-## HOTEL NAMES
-For all destinations, use the alias naming format for budget/affordable tiers:
-- Format: "[Destination] Budget/Affordable [2/4] Sleeper Option [N]"
-- Example: "Harties Budget 2 Sleeper Option 1", "Durban Affordable 4 Sleeper Option 3"
+## HOTEL NAMES BY DESTINATION AND TIER
+Use ONLY these exact hotel names. Never invent hotel names.
 
-For premium tier, use real hotel names.
-
-### Harties Budget (2-sleeper): Option 1-9
-### Harties Budget (4-sleeper): Option 1-9
+### Harties Budget (2-sleeper): Option 1-9 (e.g. "Harties Budget 2 Sleeper Option 8")
+### Harties Budget (4-sleeper): Option 1-8 (e.g. "Harties Budget 4 Sleeper Option 1")
 ### Harties Affordable (2-sleeper): Option 1-9
-### Harties Affordable (4-sleeper): Option 1-9
+### Harties Affordable (4-sleeper): Option 1-5
+### Harties Premium: Indlovukazi Guesthouse, Villa Paradiso Hotel, Cocomo Boutique Hotel, The Riverleaf Hotel, Kosmos Manor
 
-### Durban Budget (2-sleeper): Option 1-8
-### Durban Budget (4-sleeper): Option 1-8
-### Durban Affordable (2-sleeper): Option 1-8
-### Durban Affordable (4-sleeper): Option 1-8
+### Durban Budget (2-sleeper): Options SeaIMP, SeaNOMA, SeaESC, SeaShaka2B, SeaBV, SeaSOL, SeaLANC, SeaWIND
+### Durban Affordable (2-sleeper): Options SeaSOL, SeaLANC, SeaWIND
+### Durban Premium (2-sleeper): The Balmoral, Belaire Suites Hotel, Blue Waters Hotel, Gooderson Tropicana Hotel, Southern Sun Garden Court South Beach, Southern Sun The Edward, Southern Sun Garden Court Marine Parade, Southern Sun Elangeni & Maharani Hotel, Suncoast Hotel & Towers
 
 ### Umhlanga Budget (2-sleeper): Option 1-8
 ### Umhlanga Budget (4-sleeper): Option 1-8
 ### Umhlanga Affordable (2-sleeper): Option 1-8
 ### Umhlanga Affordable (4-sleeper): Option 1-8
+### Umhlanga Premium: Beverly Hills, Breakers Resort Apartments, aha Gateway Hotel Umhlanga, Coastlands Skye Hotel Ridgeside, First Group Breakers Resort, The Lofts on Manaar, Sandals Guest House, Holiday Inn Express Durban - Umhlanga, Oceans Apartments Radisson Blu Tower, Kingston Place Guesthouse, The Capital Pearls Hotel, The Space To Be, Regal Inn Umhlanga Gateway, Marina Bay Luxury Apartment Suite, Town Lodge Umhlanga, The Oyster Box, Premier Hotel Umhlanga, Hilton Garden Inn Umhlanga Arch, uShaka Manor Guest House, Royal Palm Hotel, The Pearls of Umhlanga, Premier Splendid Inn Umhlanga, Savannah Park Luxury Apartments, Protea Hotel by Marriott Durban Umhlanga
+### NOTE: NEVER use names like "Umhlanga Premium Hotel A-J". They are invalid. Use only the real names listed above.
 
-### Cape Town Budget (2-sleeper): Option 1-8
-### Cape Town Budget (4-sleeper): Option 1-7
-### Cape Town Affordable (2-sleeper): Option 1-7
-### Cape Town Affordable (4-sleeper): Option 1-4
-
-### Mpumalanga Budget (2-sleeper): Option 1-15
-### Mpumalanga Budget (4-sleeper): Option 1-12
-### Mpumalanga Affordable (2-sleeper): Option 1-15
-### Mpumalanga Affordable (4-sleeper): Option 1-14
-
-### Magalies Budget (2-sleeper): Option 1-8
-### Magalies Budget (4-sleeper): Option 1-8
-### Magalies Affordable (2-sleeper): Option 1-8
-### Magalies Affordable (4-sleeper): Option 1-8
-
-### Bela-Bela Budget (2-sleeper): Option 1-9
-### Bela-Bela Budget (4-sleeper): Option 1-9
-### Bela-Bela Affordable (2-sleeper): Option 1-9
-### Bela-Bela Affordable (4-sleeper): Option 1-6
+### For other destinations: Use format "[Destination] Budget/Affordable [2/4] Sleeper Option [N]"
 
 ## HOTEL LINK FORMAT (CRITICAL)
 Format: [🏨 Hotel Name](HOTEL_LINK:destinationId|packageId|adults|childrenAges|tier|hotelName|checkIn|checkOut|budget)
@@ -226,8 +206,11 @@ Example for 2 adults + 2 kids (12,7), UMHLA2, budget tier, checking in 15 March 
 ⚠️ The entire [text](HOTEL_LINK:...) MUST be on ONE single line. Never break across lines.
 
 ## BUDGET MATCHING — HOW TO SELECT HOTELS
-Present one hotel from each tier (budget, affordable, premium) where available.
-Pick hotels where the nightly rate × nights is within the user's budget.
+Since you cannot calculate exact prices, use this rough guide to pick hotels closest to budget:
+- Lower budget → pick lower-numbered options (Option 1, 2, 3)
+- Mid budget → pick mid-numbered options (Option 3, 4, 5) 
+- Higher budget → pick higher-numbered options (Option 5, 6, 7, 8)
+Pick ONE hotel per tier. Present all 3 tiers.
 
 ## YOUR BEHAVIOR
 - Be warm, enthusiastic and use emojis moderately
@@ -243,44 +226,8 @@ Pick hotels where the nightly rate × nights is within the user's budget.
 - Respond in the same language as the user
 - For groups of 25+, mention special group rates
 - ALWAYS use the full inclusions text from the package database above — never abbreviate
-- ALWAYS present package inclusions as a single flowing sentence, NOT as bullet points.`;
+- ALWAYS present package inclusions as a single flowing sentence, NOT as bullet points. E.g. "Includes accommodation, buffet breakfast, visit to uShaka Marine World and uShaka Beach, boat cruise, Umhlanga Rocks Beach and Ballito Beach, shuttle transport included."`;
 
-// Destination code mapping for DB lookups
-const DEST_CODE_MAP: Record<string, string> = {
-  'Hartbeespoort': 'hartbeespoort', 'Magaliesburg': 'magaliesburg',
-  'Durban Beachfront': 'durban', 'Umhlanga': 'durban',
-  'Cape Town': 'cape_town', 'Sun City': 'sun_city',
-  'Mpumalanga': 'mpumalanga', 'Vaal River': 'vaal', 'Bela Bela': 'bela_bela',
-};
-
-// Extract travel details from conversation
-function extractTravelDetails(messages: Array<{role: string; content: string}>): {destination?: string; checkIn?: string; checkOut?: string; adults?: string; children?: string; budget?: string} | null {
-  const allText = messages.map(m => m.content).join('\n');
-  const destMap: Record<string, string> = {
-    'harties': 'Hartbeespoort', 'hartbeespoort': 'Hartbeespoort',
-    'magalies': 'Magaliesburg', 'magaliesburg': 'Magaliesburg',
-    'durban': 'Durban Beachfront', 'durban beachfront': 'Durban Beachfront',
-    'umhlanga': 'Umhlanga', 'cape town': 'Cape Town', 'sun city': 'Sun City',
-    'mpumalanga': 'Mpumalanga', 'knysna': 'Knysna', 'vaal': 'Vaal River',
-    'vaal river': 'Vaal River', 'bela bela': 'Bela Bela',
-    'pretoria': 'Pretoria', 'the blyde': 'Pretoria',
-  };
-  let destination: string | undefined;
-  const lowerText = allText.toLowerCase();
-  for (const [key, value] of Object.entries(destMap)) {
-    if (lowerText.includes(key)) { destination = value; break; }
-  }
-  const dateRegex = /(\d{4}-\d{2}-\d{2})/g;
-  const dates = allText.match(dateRegex) || [];
-  const adultsMatch = allText.match(/(\d+)\s*adults?/i);
-  const childrenMatch = allText.match(/(\d+)\s*child(?:ren)?/i);
-  const budgetMatch = allText.match(/[Rr]\s*(\d[\d,\s]*\d)/);
-  const budget = budgetMatch?.[1]?.replace(/[\s,]/g, '');
-  if (destination && dates[0] && budget) {
-    return { destination, checkIn: dates[0], checkOut: dates[1], adults: adultsMatch?.[1] || '2', children: childrenMatch?.[1] || '0', budget };
-  }
-  return null;
-}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -290,52 +237,16 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const travelDetails = extractTravelDetails(messages);
-    let dbContext = "";
-    
-    // Look up hotels from DB (read-only) to provide context
-    if (travelDetails?.destination) {
-      const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-      const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-      if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
-        try {
-          const destCode = DEST_CODE_MAP[travelDetails.destination] || '';
-          if (destCode) {
-            const hotelsRes = await fetch(
-              `${SUPABASE_URL}/rest/v1/hotels?select=name,tier,star_rating,includes_breakfast,room_types(name,capacity,room_rates(base_rate_weekday))&is_active=eq.true&area_id=in.(select id from areas where destination=eq.${destCode})`,
-              { headers: { "apikey": SUPABASE_SERVICE_ROLE_KEY, "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
-            );
-            if (hotelsRes.ok) {
-              const hotels = await hotelsRes.json();
-              if (hotels.length > 0) {
-                dbContext = `\n\n[AVAILABLE HOTELS IN DATABASE FOR ${travelDetails.destination.toUpperCase()}]\nUse these exact hotel names in your HOTEL_LINK links:\n`;
-                for (const h of hotels) {
-                  const rate = h.room_types?.[0]?.room_rates?.[0]?.base_rate_weekday || 'N/A';
-                  const cap = h.room_types?.[0]?.capacity || 'unknown';
-                  dbContext += `- ${h.tier.toUpperCase()} (${cap}): "${h.name}" ~R${rate}/night, ${h.star_rating}★, Breakfast: ${h.includes_breakfast ? 'Yes' : 'No'}\n`;
-                }
-                dbContext += `[END OF DATABASE HOTELS]`;
-              }
-            }
-          }
-        } catch (e) {
-          console.error("Error fetching DB hotels:", e);
-        }
-      }
-    }
-
-    const systemMessage = SYSTEM_PROMPT + dbContext;
-
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.5-pro",
         messages: [
-          { role: "system", content: systemMessage },
+          { role: "system", content: SYSTEM_PROMPT },
           ...messages,
         ],
         stream: true,
@@ -345,13 +256,21 @@ serve(async (req) => {
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limited, please try again shortly." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please try again later." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI service temporarily unavailable. Please try again." }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return new Response(JSON.stringify({ error: "AI service error" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -361,7 +280,8 @@ serve(async (req) => {
   } catch (e) {
     console.error("chat error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
