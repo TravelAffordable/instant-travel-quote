@@ -551,70 +551,56 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        // Generate quotes for ALL tiers, then filter by budget
-        const allTiers: Array<'budget' | 'affordable' | 'premium'> = ['budget', 'affordable', 'premium'];
-        const budgetAmount = parseInt(budget) || 0;
-        let allRmsQuotes: QuoteResult[] = [];
-
-        for (const tier of allTiers) {
-          const tierHotels = result.filter(h => h.tier === tier);
-          if (tierHotels.length === 0) continue;
-
-          const tierQuotes = convertRMSToQuotes(
-            tierHotels,
-            packages.filter(p => packageIds.includes(p.id)),
-            {
-              checkIn: new Date(checkIn),
-              checkOut: new Date(checkOut),
-              adults,
-              children,
-              childrenAges: ages,
-              rooms,
-              destination,
-            }
-          );
-          allRmsQuotes = [...allRmsQuotes, ...tierQuotes];
+        // Filter by the selected accommodation tier first (strict tier selection)
+        const tierHotels = result.filter(h => h.tier === accommodationType);
+        if (tierHotels.length === 0) {
+          const availableTiers = [...new Set(result.map(h => h.tier))];
+          const tierLabels: Record<string, string> = { budget: 'Budget', affordable: 'Affordable', premium: 'Premium' };
+          const availableTierNames = availableTiers.map(t => tierLabels[t] || t).join(', ');
+          toast.info(`No ${tierLabels[accommodationType]} hotels available. Available: ${availableTierNames}`);
+          setIsCalculating(false);
+          return;
         }
 
-        if (allRmsQuotes.length === 0) {
+        const tierQuotes = convertRMSToQuotes(
+          tierHotels,
+          packages.filter(p => packageIds.includes(p.id)),
+          {
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            adults,
+            children,
+            childrenAges: ages,
+            rooms,
+            destination,
+          }
+        );
+
+        if (tierQuotes.length === 0) {
           toast.info('No hotels available. Try different dates or destination.');
           setIsCalculating(false);
           return;
         }
 
-        // Filter: show options within budget + up to 10% over budget
-        const budgetThreshold = budgetAmount * 1.1;
-        let budgetFiltered = allRmsQuotes.filter(q => q.totalForGroup <= budgetThreshold);
+        const budgetAmount = parseInt(budget) || 0;
+        const budgetThreshold = budgetAmount + 600;
+        const tierLabel = accommodationType === 'budget' ? 'Budget' : accommodationType === 'affordable' ? 'Affordable' : 'Premium';
 
-        // If nothing fits, show the 3 cheapest options across all tiers
+        let budgetFiltered = tierQuotes.filter(q => q.totalForGroup <= budgetThreshold);
+
+        // If nothing fits within the selected tier + R600 buffer, show the 3 cheapest in that tier
         if (budgetFiltered.length === 0) {
-          allRmsQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
-          budgetFiltered = allRmsQuotes.slice(0, 3);
-          toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()}. Showing the closest options.`);
+          tierQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
+          budgetFiltered = tierQuotes.slice(0, 3);
+          toast.info(`No ${tierLabel.toLowerCase()} options fit your budget of R${budgetAmount.toLocaleString()} (max R600 over). Showing the closest ${tierLabel.toLowerCase()} options.`);
         } else {
-          // Sort: closest to budget first (options at/under budget first, then slightly over)
-          budgetFiltered.sort((a, b) => {
-            const aUnder = a.totalForGroup <= budgetAmount;
-            const bUnder = b.totalForGroup <= budgetAmount;
-            if (aUnder && !bUnder) return 1; // Show best-fit (closest under) last → actually show premium-closest first
-            if (!aUnder && bUnder) return -1;
-            // Both under or both over: sort descending so closest to budget is first
-            return b.totalForGroup - a.totalForGroup;
-          });
-          
-          const withinCount = allRmsQuotes.filter(q => q.totalForGroup <= budgetAmount).length;
-          const slightlyOver = budgetFiltered.filter(q => q.totalForGroup > budgetAmount).length;
-          let msg = `${budgetFiltered.length} options found for your budget of R${budgetAmount.toLocaleString()}!`;
-          if (slightlyOver > 0) msg += ` (${slightlyOver} slightly above budget but worth considering)`;
-          toast.success(msg);
-        }
+          // Closest to budget first (within selected tier)
+          budgetFiltered.sort((a, b) => b.totalForGroup - a.totalForGroup);
 
-        // Auto-select the accommodation type button to match the best result
-        if (budgetFiltered.length > 0) {
-          const bestTier = budgetFiltered[0].hotelTier;
-          if (bestTier === 'budget' || bestTier === 'affordable' || bestTier === 'premium') {
-            setAccommodationType(bestTier);
-          }
+          const slightlyOver = budgetFiltered.filter(q => q.totalForGroup > budgetAmount).length;
+          let msg = `${budgetFiltered.length} ${tierLabel.toLowerCase()} option${budgetFiltered.length > 1 ? 's' : ''} found for your budget of R${budgetAmount.toLocaleString()}!`;
+          if (slightlyOver > 0) msg += ` (${slightlyOver} up to R600 over budget)`;
+          toast.success(msg);
         }
 
         setQuotes(budgetFiltered);
