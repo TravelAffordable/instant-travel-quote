@@ -77,8 +77,8 @@ export const destinationActivityImages: Record<string, string[]> = {
   // Hartbeespoort: boat cruise, cableway, horse riding, animal/safari park
   'harties': [hartiesBoatCruise, hartiesCableway, hartiesHorseRiding, hartiesSafariPark],
   
-  // Magaliesburg: Sterkfontein Caves, Rhino Park game drive, horse riding, boat cruise
-  'magalies': [magaliesSterkfontein, magaliesGameDrive, hartiesHorseRiding, hartiesBoatCruise],
+  // Magaliesburg: cultural village, elephant experience, ziplining, cheetah centre, spa, braai, game drive, horse riding, boat cruise
+  'magalies': [culturalVillage, elephantExperience, zipliningAdventure, cheetahCentre, fullBodyMassageSpa, braaiFacilities, magaliesGameDrive, hartiesHorseRiding, hartiesBoatCruise],
   
   // Cape Town: Table Mountain, Robben Island, canal cruise, wine route
   'cape-town': [capetownTableMountain, capetownRobbenIsland, capetownCanalCruise, capetownWineRoute],
