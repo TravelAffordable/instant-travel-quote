@@ -20,9 +20,14 @@ import hartiesCableway from '@/assets/activities/harties-cableway.jpg';
 import hartiesHorseRiding from '@/assets/activities/harties-horse-riding.jpg';
 import hartiesSafariPark from '@/assets/activities/harties-safari-park.jpg';
 
-// Magaliesburg-specific Activities (Sterkfontein Caves, Rhino Park game drive, horse riding, boat cruise)
-import magaliesSterkfontein from '@/assets/activities/magalies-sterkfontein.jpg';
+// Magaliesburg-specific Activities
 import magaliesGameDrive from '@/assets/activities/magalies-game-drive.jpg';
+import culturalVillage from '@/assets/activities/cultural-village.jpg';
+import elephantExperience from '@/assets/activities/elephant-experience.jpg';
+import zipliningAdventure from '@/assets/activities/ziplining-adventure.jpg';
+import cheetahCentre from '@/assets/activities/cheetah-centre.jpg';
+import fullBodyMassageSpa from '@/assets/activities/full-body-massage-spa.jpg';
+import braaiFacilities from '@/assets/activities/braai-facilities.jpg';
 
 // Cape Town Activities (Table Mountain, Robben Island, canal cruise, wine route)
 import capetownTableMountain from '@/assets/activities/capetown-table-mountain.jpg';
@@ -72,8 +77,8 @@ export const destinationActivityImages: Record<string, string[]> = {
   // Hartbeespoort: boat cruise, cableway, horse riding, animal/safari park
   'harties': [hartiesBoatCruise, hartiesCableway, hartiesHorseRiding, hartiesSafariPark],
   
-  // Magaliesburg: Sterkfontein Caves, Rhino Park game drive, horse riding, boat cruise
-  'magalies': [magaliesSterkfontein, magaliesGameDrive, hartiesHorseRiding, hartiesBoatCruise],
+  // Magaliesburg: cultural village, elephant experience, ziplining, cheetah centre, spa, braai, game drive, horse riding, boat cruise
+  'magalies': [culturalVillage, elephantExperience, zipliningAdventure, cheetahCentre, fullBodyMassageSpa, braaiFacilities, magaliesGameDrive, hartiesHorseRiding, hartiesBoatCruise],
   
   // Cape Town: Table Mountain, Robben Island, canal cruise, wine route
   'cape-town': [capetownTableMountain, capetownRobbenIsland, capetownCanalCruise, capetownWineRoute],
