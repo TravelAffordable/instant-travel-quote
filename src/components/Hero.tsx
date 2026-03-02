@@ -669,34 +669,36 @@ export function Hero({ onGetQuote }: HeroProps) {
         toast.error('Could not calculate quotes. Please check your selections.');
       }
     } else {
-      // Standard booking - filter by selected tier
+      // Standard booking - calculate quotes for ALL tiers, then filter by budget
       let allQuotes: QuoteResult[] = [];
-      const selectedHotelType = accommodationType === 'budget' ? 'very-affordable' : accommodationType;
+      const hotelTypes: Array<'very-affordable' | 'affordable' | 'premium'> = ['very-affordable', 'affordable', 'premium'];
       
       packageIds.forEach(pkgId => {
-        const results = calculateAllQuotes({
-          destination,
-          packageId: pkgId,
-          checkIn: new Date(checkIn),
-          checkOut: new Date(checkOut),
-          adults,
-          children,
-          childrenAges: ages,
-          rooms,
-          hotelType: selectedHotelType as 'very-affordable' | 'affordable' | 'premium',
+        hotelTypes.forEach(hotelType => {
+          const results = calculateAllQuotes({
+            destination,
+            packageId: pkgId,
+            checkIn: new Date(checkIn),
+            checkOut: new Date(checkOut),
+            adults,
+            children,
+            childrenAges: ages,
+            rooms,
+            hotelType,
+          });
+          allQuotes = [...allQuotes, ...results];
         });
-        allQuotes = [...allQuotes, ...results];
       });
 
       if (allQuotes.length > 0) {
         const budgetAmount = parseInt(budget) || 0;
-        const budgetThreshold = budgetAmount + 600;
+        const budgetThreshold = budgetAmount * 1.1;
         let filtered = allQuotes.filter(q => q.totalForGroup <= budgetThreshold);
 
         if (filtered.length === 0) {
           allQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
           filtered = allQuotes.slice(0, 3);
-          toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()} (max R600 over). Showing closest options.`);
+          toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()}. Showing closest options.`);
         } else {
           filtered.sort((a, b) => b.totalForGroup - a.totalForGroup);
           toast.success(`${filtered.length} options found for your budget!`);
