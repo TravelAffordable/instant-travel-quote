@@ -1,11 +1,21 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { hartiesIndlovukaziImages, hartiesKosmosManorImages } from '@/data/hartiesHotelImages';
+import hartiesPremiumCopperwood from '@/assets/hotels/harties-premium-copperwood.jpg';
+import hartiesPremiumLaBastide from '@/assets/hotels/harties-premium-labastide.jpg';
+import hartiesPremiumMagaliesPark from '@/assets/hotels/harties-premium-magalies-park.jpg';
 
 // Map hotel names to their real photo arrays
 const hotelImageMap: Record<string, string[]> = {
   'Indlovukazi Guesthouse': hartiesIndlovukaziImages,
   'Kosmos Manor Guest House': hartiesKosmosManorImages,
+  'Kosmos Manor': hartiesKosmosManorImages,
+  'La Bastide Guest House': [hartiesPremiumLaBastide],
+  'La Bastide': [hartiesPremiumLaBastide],
+  'Copperwood Hotel': [hartiesPremiumCopperwood],
+  'Copperwood': [hartiesPremiumCopperwood],
+  'Magalies Park Resort': [hartiesPremiumMagaliesPark],
+  'Magalies Park': [hartiesPremiumMagaliesPark],
 };
 
 export interface RMSHotel {
