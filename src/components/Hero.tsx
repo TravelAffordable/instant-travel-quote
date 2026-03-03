@@ -343,8 +343,12 @@ export function Hero({ onGetQuote }: HeroProps) {
       if (paramTel) setGuestTel(paramTel);
       if (paramEmail) setGuestEmail(paramEmail);
 
-      // Set package after a brief delay to let destination state propagate
-      if (paramPkg) {
+      // Set booking type from URL param
+      const paramBookingType = searchParams.get('bookingType');
+      if (paramBookingType === 'accommodation-only') {
+        setBookingType('accommodation-only');
+      } else if (paramPkg) {
+        // Set package after a brief delay to let destination state propagate
         setTimeout(() => {
           setPackageIds([paramPkg]);
           setBookingType('with-activities');
