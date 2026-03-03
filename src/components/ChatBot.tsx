@@ -121,13 +121,30 @@ function parseHotelLink(linkData: string) {
     checkIn: parts[6] || '',
     checkOut: parts[7] || '',
     budget: parts[8] || '',
+    type: 'hotel' as const,
   };
 }
 
+// Parse ACCOM_LINK format: ACCOM_LINK:destination|adults|childrenAges|checkIn|checkOut
+function parseAccomLink(linkData: string) {
+  const parts = linkData.split('|');
+  if (parts.length < 3) return null;
+  return {
+    destination: parts[0],
+    adults: parts[1],
+    childrenAges: parts[2],
+    checkIn: parts[3] || '',
+    checkOut: parts[4] || '',
+    type: 'accom' as const,
+  };
+}
+
+type ParsedLink = ReturnType<typeof parseHotelLink> | ReturnType<typeof parseAccomLink>;
+
 // Pre-process text to rejoin markdown links split across lines
-function rejoинLinks(text: string): string {
-  // Fix cases where [link text]\n(HOTEL_LINK:...) got split across lines
-  return text.replace(/\]\s*\n\s*\(HOTEL_LINK:/g, '](HOTEL_LINK:');
+function rejoinLinks(text: string): string {
+  // Fix cases where [link text]\n(HOTEL_LINK:...) or [link text]\n(ACCOM_LINK:...) got split across lines
+  return text.replace(/\]\s*\n\s*\((HOTEL_LINK|ACCOM_LINK):/g, ']($1:');
 }
 
 // Render markdown with support for bold, bullets, emojis, and clickable hotel links
