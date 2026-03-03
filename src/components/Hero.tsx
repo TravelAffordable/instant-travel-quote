@@ -129,7 +129,9 @@ function convertRMSToQuotes(
   return results;
 }
 
-// Convert RMS hotels to accommodation-only QuoteResult format (no activities, no service fees, 25% commission)
+// Convert RMS hotels to accommodation-only QuoteResult format
+// Pricing: base rate + R50/person/night (if ≤R1000/night) or R60/person/night (if >R1000/night)
+// Children ages 4-17: +R20/child/night regardless of hotel rate
 function convertRMSToAccommodationOnlyQuotes(
   hotels: RMSHotel[],
   params: {
@@ -137,6 +139,7 @@ function convertRMSToAccommodationOnlyQuotes(
     checkOut: Date;
     adults: number;
     children: number;
+    childrenAges: number[];
     rooms: number;
     destination: string;
   }
@@ -151,11 +154,18 @@ function convertRMSToAccommodationOnlyQuotes(
     'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800',
   ];
 
+  // Count eligible children (ages 4-17)
+  const eligibleChildren = params.childrenAges.filter(age => age >= 4 && age <= 17).length;
+
   for (let i = 0; i < hotels.length; i++) {
     const hotel = hotels[i];
-    const accommodationCost = hotel.totalRate * params.rooms;
-    const commission = accommodationCost * 0.25;
-    const totalForGroup = roundToNearest10(accommodationCost + commission);
+    // Per-night rate for the room
+    const perNightRate = hotel.totalRate / nights;
+    // Adult markup: R50/person/night if rate ≤ R1000, R60 if > R1000
+    const adultMarkupPerNight = perNightRate <= 1000 ? 50 : 60;
+    // Total per night = base room rate + (adult markup × adults) + (R20 × eligible children)
+    const totalPerNight = perNightRate + (adultMarkupPerNight * params.adults) + (20 * eligibleChildren);
+    const totalForGroup = roundToNearest10(totalPerNight * nights * params.rooms);
     const totalPeople = params.adults + params.children;
     const totalPerPerson = roundToNearest10(totalForGroup / totalPeople);
 
@@ -493,6 +503,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           checkOut: new Date(checkOut),
           adults,
           children,
+          childrenAges: ages,
           rooms,
           destination,
         });
