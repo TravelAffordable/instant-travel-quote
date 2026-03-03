@@ -296,7 +296,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     return { name, phone, email };
   }, [messages]);
 
-  const handleHotelClick = useCallback((linkData: ReturnType<typeof parseHotelLink>) => {
+  const handleLinkClick = useCallback((linkData: ParsedLink) => {
     if (!linkData) return;
     
     // Map chatbot destination IDs to the main form's destination IDs
@@ -316,30 +316,30 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
     };
 
     const destination = destMap[linkData.destination] || linkData.destination;
-    const packageId = linkData.packageId;
-    const adults = linkData.adults;
-    const childrenAges = linkData.childrenAges;
-    const tier = linkData.tier;
-
-    // Build URL params to pre-fill the hero form
     const params = new URLSearchParams();
     params.set('destination', destination);
-    params.set('package', packageId);
-    params.set('adults', adults);
-    if (childrenAges && childrenAges !== '0') {
-      params.set('childrenAges', childrenAges);
+    params.set('adults', linkData.adults);
+    if (linkData.childrenAges && linkData.childrenAges !== '0') {
+      params.set('childrenAges', linkData.childrenAges);
     }
-    params.set('budget', tier === 'very-affordable' ? 'budget' : tier);
     params.set('autoSearch', 'true');
 
     // Pass check-in and check-out dates
     if (linkData.checkIn) params.set('checkIn', linkData.checkIn);
     if (linkData.checkOut) params.set('checkOut', linkData.checkOut);
 
-    // Pass total budget amount
-    if (linkData.budget) params.set('totalBudget', linkData.budget);
+    if (linkData.type === 'accom') {
+      // Accommodation-only flow
+      params.set('bookingType', 'accommodation-only');
+    } else if (linkData.type === 'hotel') {
+      // Activities + accommodation flow
+      params.set('bookingType', 'with-activities');
+      params.set('package', linkData.packageId);
+      params.set('budget', linkData.tier === 'very-affordable' ? 'budget' : linkData.tier);
+      if (linkData.budget) params.set('totalBudget', linkData.budget);
+    }
 
-    // Extract and pass contact details from conversation - always attempt
+    // Extract and pass contact details from conversation
     const contact = extractContactFromMessages();
     console.log('Extracted contact from chat:', contact);
     if (contact.name) params.set('guestName', contact.name);
@@ -357,7 +357,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
         formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 500);
-  }, [navigate, onToggle]);
+  }, [navigate, onToggle, extractContactFromMessages]);
 
   const handleSend = useCallback(async () => {
     if (!input.trim() || isTyping) return;
@@ -478,7 +478,7 @@ export function ChatBot({ isOpen, onToggle }: ChatBotProps) {
                       : 'bg-muted rounded-bl-sm'
                   }`}>
                     <div className="text-sm whitespace-pre-line leading-relaxed">
-                      <RenderMarkdown text={message.content} onHotelClick={handleHotelClick} />
+                      <RenderMarkdown text={message.content} onLinkClick={handleLinkClick} />
                     </div>
                   </div>
                 </div>
