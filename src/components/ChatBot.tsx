@@ -147,9 +147,9 @@ function rejoinLinks(text: string): string {
   return text.replace(/\]\s*\n\s*\((HOTEL_LINK|ACCOM_LINK):/g, ']($1:');
 }
 
-// Render markdown with support for bold, bullets, emojis, and clickable hotel links
-function RenderMarkdown({ text, onHotelClick }: { text: string; onHotelClick: (link: ReturnType<typeof parseHotelLink>) => void }) {
-  const fixed = rejoинLinks(text);
+// Render markdown with support for bold, bullets, emojis, and clickable hotel/accom links
+function RenderMarkdown({ text, onLinkClick }: { text: string; onLinkClick: (link: ParsedLink) => void }) {
+  const fixed = rejoinLinks(text);
   const lines = fixed.split('\n');
   
   return (
@@ -158,8 +158,7 @@ function RenderMarkdown({ text, onHotelClick }: { text: string; onHotelClick: (l
         const isBullet = line.match(/^[•\-\*]\s/);
         const content = isBullet ? line.slice(2) : line;
 
-        // Parse inline content with bold and hotel links
-        const parts = parseInlineContent(content, onHotelClick);
+        const parts = parseInlineContent(content, onLinkClick);
 
         if (isBullet) {
           return <div key={lineIdx} className="flex gap-1.5 ml-1"><span>•</span><span>{parts}</span></div>;
@@ -170,34 +169,32 @@ function RenderMarkdown({ text, onHotelClick }: { text: string; onHotelClick: (l
   );
 }
 
-function parseInlineContent(text: string, onHotelClick: (link: ReturnType<typeof parseHotelLink>) => void): React.ReactNode[] {
+function parseInlineContent(text: string, onLinkClick: (link: ParsedLink) => void): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
-  // Match markdown links: [text](HOTEL_LINK:...) and **bold**
-  const regex = /(\[([^\]]+)\]\(HOTEL_LINK:([^)]+)\)|\*\*([^*]+)\*\*)/g;
+  // Match markdown links: [text](HOTEL_LINK:...) or [text](ACCOM_LINK:...) and **bold**
+  const regex = /(\[([^\]]+)\]\((HOTEL_LINK|ACCOM_LINK):([^)]+)\)|\*\*([^*]+)\*\*)/g;
   let lastIndex = 0;
   let match;
 
   while ((match = regex.exec(text)) !== null) {
-    // Add text before match
     if (match.index > lastIndex) {
       nodes.push(text.slice(lastIndex, match.index));
     }
 
-    if (match[2] && match[3]) {
-      // Hotel link
-      const linkData = parseHotelLink(match[3]);
+    if (match[2] && match[4]) {
+      const linkType = match[3];
+      const linkData = linkType === 'ACCOM_LINK' ? parseAccomLink(match[4]) : parseHotelLink(match[4]);
       nodes.push(
         <button
           key={`link-${match.index}`}
-          onClick={() => onHotelClick(linkData)}
+          onClick={() => onLinkClick(linkData)}
           className="text-primary underline font-semibold hover:text-primary/80 cursor-pointer text-left inline"
         >
           {match[2]}
         </button>
       );
-    } else if (match[4]) {
-      // Bold
-      nodes.push(<strong key={`bold-${match.index}`}>{match[4]}</strong>);
+    } else if (match[5]) {
+      nodes.push(<strong key={`bold-${match.index}`}>{match[5]}</strong>);
     }
 
     lastIndex = match.index + match[0].length;
