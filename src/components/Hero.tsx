@@ -503,6 +503,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           checkOut: new Date(checkOut),
           adults,
           children,
+          childrenAges: ages,
           rooms,
           destination,
         });
