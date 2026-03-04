@@ -8,16 +8,14 @@ import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, Par
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import { 
   destinations, 
-  packages, 
+  packages,
+  hotels,
   calculateAllQuotes,
-  getPackagesByDestination, 
-  type QuoteResult 
+  getPackagesByDestination,
+  type QuoteResult,
+  type Package,
 } from '@/data/travelData';
-import { QuoteList } from './QuoteList';
-import { toast } from 'sonner';
-import { useRMSHotels, type RMSHotel } from '@/hooks/useRMSHotels';
-import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
-import { roundToNearest10 } from '@/lib/utils';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 type BookingType = 'accommodation-only' | 'with-activities';
 
