@@ -198,8 +198,10 @@ const DurbanPremiumCalendars = () => {
       }
 
       const typed = response as CalendarResponse | { error?: string } | null;
-      if (!typed || ('error' in typed && typed.error)) {
-        setError(('error' in (typed || {}) ? typed?.error : undefined) || 'Failed to load Booking.com weekend calendar.');
+      const responseError = typed && 'error' in typed ? typed.error : undefined;
+
+      if (!typed || responseError) {
+        setError(responseError || 'Failed to load Booking.com weekend calendar.');
         setData(null);
         setLoading(false);
         return;
