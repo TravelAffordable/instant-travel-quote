@@ -51,6 +51,7 @@ const HOTEL_CONFIGS: Record<HotelKey, { bookingUrl: string; name: string }> = {
 
 const CURRENCY_CODE = 'ZAR';
 const NIGHTS = 2;
+const SCRAPE_TIMEOUT_MS = 15000;
 const RANGE_END = new Date('2027-02-26T00:00:00Z');
 
 function jsonResponse(body: unknown, status = 200) {
@@ -210,20 +211,31 @@ async function scrapeMarkdown(url: string) {
     throw new Error('FIRECRAWL_API_KEY is not configured');
   }
 
-  const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      formats: ['markdown'],
-      location: { country: 'ZA', languages: ['en'] },
-      onlyMainContent: true,
-      url,
-      waitFor: 1500,
-    }),
-  });
+  let response: Response;
+
+  try {
+    response = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        formats: ['markdown'],
+        location: { country: 'ZA', languages: ['en'] },
+        onlyMainContent: true,
+        url,
+        waitFor: 1500,
+      }),
+      signal: AbortSignal.timeout(SCRAPE_TIMEOUT_MS),
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      throw new Error(`Scrape timed out after ${SCRAPE_TIMEOUT_MS / 1000}s`);
+    }
+
+    throw error;
+  }
 
   const data = await response.json();
   if (!response.ok) {
@@ -326,13 +338,16 @@ Deno.serve(async (req) => {
     }
 
     const weekends = getWeekendStartsForMonth(month);
-    const twoSleeper: WeekendRate[] = [];
-    const fourSleeper: WeekendRate[] = [];
+    const weekendPairs = await Promise.all(
+      weekends.map(async (weekendStart) => {
+        const [twoSleeperRate, fourSleeperRate] = await Promise.all([
+          scrapeWeekend(hotelKey, weekendStart, '2_sleeper'),
+          scrapeWeekend(hotelKey, weekendStart, '4_sleeper'),
+        ]);
 
-    for (const weekendStart of weekends) {
-      twoSleeper.push(await scrapeWeekend(hotelKey, weekendStart, '2_sleeper'));
-      fourSleeper.push(await scrapeWeekend(hotelKey, weekendStart, '4_sleeper'));
-    }
+        return { fourSleeperRate, twoSleeperRate };
+      }),
+    );
 
     return jsonResponse({
       generatedAt: new Date().toISOString(),
@@ -340,8 +355,8 @@ Deno.serve(async (req) => {
       hotelName: HOTEL_CONFIGS[hotelKey].name,
       month,
       weekendsByOccupancy: {
-        '2_sleeper': twoSleeper,
-        '4_sleeper': fourSleeper,
+        '2_sleeper': weekendPairs.map((pair) => pair.twoSleeperRate),
+        '4_sleeper': weekendPairs.map((pair) => pair.fourSleeperRate),
       },
     });
   } catch (error) {
