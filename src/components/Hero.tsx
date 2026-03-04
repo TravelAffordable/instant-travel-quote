@@ -17,6 +17,7 @@ import {
 } from '@/data/travelData';
 import { QuoteList } from './QuoteList';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import { useRMSHotels, type RMSHotel } from '@/hooks/useRMSHotels';
 import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
@@ -30,6 +31,66 @@ const RMS_DESTINATIONS = ['harties', 'magalies', 'durban', 'umhlanga', 'cape-tow
 
 // Mpumalanga package IDs that require Graskop-only hotels (near Blyde River Canyon)
 const GRASKOP_ONLY_PACKAGES = ['mp1']; // MP1 - In Style Getaway with Blyde River Canyon
+
+type AccommodationPricingMode = 'catalog_markup' | 'live_booking_total';
+type LiveBookingHotelKey = 'blue-waters' | 'garden-court-south-beach' | 'the-edward';
+type AccommodationPricingHotel = RMSHotel & { pricingMode?: AccommodationPricingMode };
+
+type LiveBookingRateResponse = {
+  available: boolean;
+  displayNightlyRate: number | null;
+  displayTotalPrice: number | null;
+};
+
+const DURBAN_PREMIUM_HOTEL_KEYS: Record<string, LiveBookingHotelKey> = {
+  'Blue Waters Hotel': 'blue-waters',
+  'Garden Court South Beach': 'garden-court-south-beach',
+  'Southern Sun Garden Court South Beach': 'garden-court-south-beach',
+  'The Edward': 'the-edward',
+  'Southern Sun The Edward': 'the-edward',
+};
+
+async function applyLiveDurbanPremiumRates(
+  hotels: RMSHotel[],
+  params: { checkIn: string; checkOut: string; rooms: number },
+): Promise<AccommodationPricingHotel[]> {
+  const liveHotels = await Promise.all(
+    hotels.map(async (hotel) => {
+      const hotelKey = DURBAN_PREMIUM_HOTEL_KEYS[hotel.name];
+      if (!hotelKey) return hotel;
+
+      const occupancy = hotel.capacity === '4_sleeper' ? '4_sleeper' : '2_sleeper';
+      const { data, error } = await supabase.functions.invoke('booking-live-rate', {
+        body: {
+          hotelKey,
+          checkIn: params.checkIn,
+          checkOut: params.checkOut,
+          occupancy,
+          rooms: params.rooms,
+        },
+      });
+
+      if (error) {
+        console.error(`booking-live-rate failed for ${hotel.name}:`, error.message);
+        return hotel;
+      }
+
+      const liveRate = data as LiveBookingRateResponse | null;
+      if (!liveRate?.available || liveRate.displayTotalPrice === null) {
+        return hotel;
+      }
+
+      return {
+        ...hotel,
+        minRate: liveRate.displayNightlyRate ?? hotel.minRate,
+        totalRate: liveRate.displayTotalPrice,
+        pricingMode: 'live_booking_total',
+      } satisfies AccommodationPricingHotel;
+    }),
+  );
+
+  return liveHotels;
+}
 
 // Service fee calculation
 function calculateServiceFees(adults: number, childrenAges: number[]): number {
@@ -153,10 +214,10 @@ function convertRMSToQuotes(
 }
 
 // Convert RMS hotels to accommodation-only QuoteResult format
-// Pricing: base rate + R50/person/night (if ≤R1000/night) or R60/person/night (if >R1000/night)
-// Children ages 4-17: +R20/child/night regardless of hotel rate
+// Static hotel rows keep the existing catalog + markup pricing.
+// Live Durban premium rows use the exact Booking.com total returned by the scraper.
 function convertRMSToAccommodationOnlyQuotes(
-  hotels: RMSHotel[],
+  hotels: AccommodationPricingHotel[],
   params: {
     checkIn: Date;
     checkOut: Date;
@@ -177,20 +238,28 @@ function convertRMSToAccommodationOnlyQuotes(
     'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800',
   ];
 
-  // Count eligible children (ages 4-17)
   const eligibleChildren = params.childrenAges.filter(age => age >= 4 && age <= 17).length;
 
   for (let i = 0; i < hotels.length; i++) {
     const hotel = hotels[i];
-    // Per-night rate for the room
-    const perNightRate = hotel.totalRate / nights;
-    // Adult markup: R50/person/night if rate ≤ R1000, R60 if > R1000
-    const adultMarkupPerNight = perNightRate <= 1000 ? 50 : 60;
-    // Total per night = base room rate + (adult markup × adults) + (R20 × eligible children)
-    const totalPerNight = perNightRate + (adultMarkupPerNight * params.adults) + (20 * eligibleChildren);
-    const totalForGroup = roundToNearest10(totalPerNight * nights * params.rooms);
     const totalPeople = params.adults + params.children;
-    const totalPerPerson = roundToNearest10(totalForGroup / totalPeople);
+    const pricingMode = hotel.pricingMode ?? 'catalog_markup';
+
+    let totalForGroup: number;
+    if (pricingMode === 'live_booking_total') {
+      totalForGroup = Math.round(hotel.totalRate);
+    } else {
+      const perNightRate = hotel.totalRate / nights;
+      const adultMarkupPerNight = perNightRate <= 1000 ? 50 : 60;
+      const totalPerNight = perNightRate + (adultMarkupPerNight * params.adults) + (20 * eligibleChildren);
+      totalForGroup = roundToNearest10(totalPerNight * nights * params.rooms);
+    }
+
+    const totalPerPerson = totalPeople > 0
+      ? (pricingMode === 'live_booking_total'
+          ? Math.round(totalForGroup / totalPeople)
+          : roundToNearest10(totalForGroup / totalPeople))
+      : 0;
 
     const hotelNameDisplay = hotel.includesBreakfast
       ? `${hotel.name} (includes breakfast)`
@@ -209,7 +278,7 @@ function convertRMSToAccommodationOnlyQuotes(
       hotelImage: hotelImages[i % hotelImages.length],
       destination: params.destination,
       nights,
-      accommodationCost: totalForGroup, // Total including commission
+      accommodationCost: totalForGroup,
       packageCost: 0,
       activitiesCost: 0,
       childDiscount: 0,
@@ -232,7 +301,6 @@ function convertRMSToAccommodationOnlyQuotes(
     });
   }
 
-  // Sort by price
   results.sort((a, b) => a.totalForGroup - b.totalForGroup);
   return results;
 }
@@ -525,7 +593,17 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        const accomQuotes = convertRMSToAccommodationOnlyQuotes(filteredHotels, {
+        let pricedHotels: AccommodationPricingHotel[] = filteredHotels;
+
+        if (destination === 'durban' && accommodationType === 'premium') {
+          pricedHotels = await applyLiveDurbanPremiumRates(filteredHotels, {
+            checkIn,
+            checkOut,
+            rooms,
+          });
+        }
+
+        const accomQuotes = convertRMSToAccommodationOnlyQuotes(pricedHotels, {
           checkIn: new Date(checkIn),
           checkOut: new Date(checkOut),
           adults,
