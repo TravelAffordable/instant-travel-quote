@@ -1011,6 +1011,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 </button>
                                 <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg))} per person</p>
                               </div>
                             ))}
                         </div>
@@ -1043,6 +1044,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                               >
                                 <h4 className="text-sm font-bold text-primary uppercase leading-tight">{pkg.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg))} per person</p>
                                 <Button
                                   type="button"
                                   size="sm"
