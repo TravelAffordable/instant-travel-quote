@@ -6,8 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap, MessageCircle } from 'lucide-react';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
-import { 
-  destinations, 
+import {
+  destinations,
   packages,
   hotels,
   calculateAllQuotes,
@@ -15,6 +15,10 @@ import {
   type QuoteResult,
   type Package,
 } from '@/data/travelData';
+import { QuoteList } from './QuoteList';
+import { toast } from 'sonner';
+import { useRMSHotels, type RMSHotel } from '@/hooks/useRMSHotels';
+import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 type BookingType = 'accommodation-only' | 'with-activities';
