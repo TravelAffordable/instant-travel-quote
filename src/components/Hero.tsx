@@ -46,6 +46,27 @@ function calculateServiceFees(adults: number, childrenAges: number[]): number {
   return totalAdultFees + childFees;
 }
 
+function getPackageFromPrice(pkg: Package): number {
+  const cheapestBudgetHotel = hotels
+    .filter((hotel) => hotel.destination === pkg.destination && hotel.type === 'very-affordable')
+    .sort((a, b) => {
+      const aPriority = a.capacity === 2 ? 0 : 1;
+      const bPriority = b.capacity === 2 ? 0 : 1;
+
+      if (aPriority !== bPriority) return aPriority - bPriority;
+      return a.pricePerNight - b.pricePerNight;
+    })[0];
+
+  const stayNights = Number.parseInt(pkg.duration, 10) || 2;
+
+  if (!cheapestBudgetHotel) {
+    return roundToNearest10(pkg.basePrice);
+  }
+
+  const accommodationPerPerson = (cheapestBudgetHotel.pricePerNight * stayNights) / 2;
+  return roundToNearest10(pkg.basePrice + accommodationPerPerson);
+}
+
 // Convert RMS hotels to QuoteResult format for QuoteList display
 function convertRMSToQuotes(
   hotels: RMSHotel[],
