@@ -6,18 +6,20 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap, MessageCircle } from 'lucide-react';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
-import { 
-  destinations, 
-  packages, 
+import {
+  destinations,
+  packages,
+  hotels,
   calculateAllQuotes,
-  getPackagesByDestination, 
-  type QuoteResult 
+  getPackagesByDestination,
+  type QuoteResult,
+  type Package,
 } from '@/data/travelData';
 import { QuoteList } from './QuoteList';
 import { toast } from 'sonner';
 import { useRMSHotels, type RMSHotel } from '@/hooks/useRMSHotels';
 import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
-import { roundToNearest10 } from '@/lib/utils';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 type BookingType = 'accommodation-only' | 'with-activities';
 
@@ -42,6 +44,27 @@ function calculateServiceFees(adults: number, childrenAges: number[]): number {
   const childFees = calculateChildServiceFeesUtil(adults, childrenAges);
 
   return totalAdultFees + childFees;
+}
+
+function getPackageFromPrice(pkg: Package): number {
+  const cheapestBudgetHotel = hotels
+    .filter((hotel) => hotel.destination === pkg.destination && hotel.type === 'very-affordable')
+    .sort((a, b) => {
+      const aPriority = a.capacity === 2 ? 0 : 1;
+      const bPriority = b.capacity === 2 ? 0 : 1;
+
+      if (aPriority !== bPriority) return aPriority - bPriority;
+      return a.pricePerNight - b.pricePerNight;
+    })[0];
+
+  const stayNights = Number.parseInt(pkg.duration, 10) || 2;
+
+  if (!cheapestBudgetHotel) {
+    return roundToNearest10(pkg.basePrice);
+  }
+
+  const accommodationPerPerson = (cheapestBudgetHotel.pricePerNight * stayNights) / 2;
+  return roundToNearest10(pkg.basePrice + accommodationPerPerson);
 }
 
 // Convert RMS hotels to QuoteResult format for QuoteList display
@@ -988,6 +1011,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 </button>
                                 <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg))} per person</p>
                               </div>
                             ))}
                         </div>
@@ -1020,6 +1044,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                               >
                                 <h4 className="text-sm font-bold text-primary uppercase leading-tight">{pkg.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg))} per person</p>
                                 <Button
                                   type="button"
                                   size="sm"
