@@ -1,57 +1,16 @@
+import {
+  getPremiumHotelConfig,
+  type HotelKey,
+  type OccupancyKey,
+  scrapeLiveBookingRate,
+} from '../_shared/premium-live-booking.ts';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-type HotelKey = 'blue-waters' | 'garden-court-south-beach' | 'the-edward';
-type OccupancyKey = '2_sleeper' | '4_sleeper';
-
-type WeekendRate = {
-  available: boolean;
-  checkIn: string;
-  checkOut: string;
-  currency: string;
-  displayNightlyRate: number | null;
-  maxPeople: number | null;
-  note: string | null;
-  partyNightlyRate: number | null;
-  ratePerNight: number | null;
-  requiredRooms: number;
-  roomMode: 'single_room' | 'multiple_rooms' | null;
-  roomName: string | null;
-  sourceUrl: string;
-  totalPrice: number | null;
-};
-
-type ParsedRoomOption = {
-  maxPeople: number | null;
-  partyNightlyRate: number;
-  ratePerNight: number;
-  raw: string;
-  requiredRooms: number;
-  roomMode: 'single_room' | 'multiple_rooms';
-  roomName: string;
-  totalPrice: number;
-};
-
-const HOTEL_CONFIGS: Record<HotelKey, { bookingUrl: string; name: string }> = {
-  'blue-waters': {
-    bookingUrl: 'https://www.booking.com/hotel/za/blue-waters.en-gb.html',
-    name: 'Blue Waters Hotel',
-  },
-  'garden-court-south-beach': {
-    bookingUrl: 'https://www.booking.com/hotel/za/garden-court-south-beach-durban1.en-gb.html',
-    name: 'Garden Court South Beach',
-  },
-  'the-edward': {
-    bookingUrl: 'https://www.booking.com/hotel/za/the-edward-durban.html',
-    name: 'The Edward',
-  },
-};
-
-const CURRENCY_CODE = 'ZAR';
 const NIGHTS = 2;
-const SCRAPE_TIMEOUT_MS = 15000;
 const RANGE_END = new Date('2027-02-26T00:00:00Z');
 
 function jsonResponse(body: unknown, status = 200) {
@@ -120,203 +79,14 @@ function getWeekendStartsForMonth(month: string) {
   return weekends;
 }
 
-function buildBookingUrl(hotelKey: HotelKey, checkIn: string, checkOut: string, adults: number) {
-  const url = new URL(HOTEL_CONFIGS[hotelKey].bookingUrl);
-  url.searchParams.set('checkin', checkIn);
-  url.searchParams.set('checkout', checkOut);
-  url.searchParams.set('group_adults', String(adults));
-  url.searchParams.set('group_children', '0');
-  url.searchParams.set('no_rooms', '1');
-  url.searchParams.set('sb_price_type', 'total');
-  url.searchParams.set('selected_currency', CURRENCY_CODE);
-  url.searchParams.set('type', 'total');
-  return url.toString();
-}
-
-function parseMoney(raw: string | undefined | null) {
-  if (!raw) return null;
-  const normalized = raw.replace(/,/g, '').trim();
-  const value = Number(normalized);
-  return Number.isFinite(value) ? value : null;
-}
-
-function parseRoomOptions(markdown: string) {
-  const lines = markdown
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith('|'));
-
-  const options: ParsedRoomOption[] = [];
-  let currentRoomName: string | null = null;
-
-  for (const line of lines) {
-    const roomMatch = line.match(/^\|\s*\[([^\]]+)\]/);
-    if (roomMatch) {
-      currentRoomName = roomMatch[1];
-    }
-
-    if (!currentRoomName) continue;
-    if (!line.includes('per night') || !line.includes('Price')) continue;
-
-    const rateMatch = line.match(/(?:ZAR|R)\s*([\d,]+)<br>per night/i);
-    const totalMatch = line.match(/<br>(?:ZAR|R)\s*([\d,]+)<br>Price/i);
-    const maxPeopleMatch = line.match(/Max\. people:\s*(\d+)/i);
-    const requiredRoomsMatch = line.match(/To fit\s+4\s+adults,\s+you'll need to select\s+(\d+)\s+of these/i);
-
-    const ratePerNight = parseMoney(rateMatch?.[1]);
-    const totalPrice = parseMoney(totalMatch?.[1]);
-    if (ratePerNight === null || totalPrice === null) continue;
-
-    const requiredRooms = Number(requiredRoomsMatch?.[1] || '1');
-    const partyNightlyRate = Number(((totalPrice * requiredRooms) / NIGHTS).toFixed(2));
-
-    options.push({
-      maxPeople: maxPeopleMatch ? Number(maxPeopleMatch[1]) : null,
-      partyNightlyRate,
-      ratePerNight: Number((totalPrice / NIGHTS).toFixed(2)),
-      raw: line,
-      requiredRooms,
-      roomMode: requiredRooms > 1 ? 'multiple_rooms' : 'single_room',
-      roomName: currentRoomName,
-      totalPrice,
-    });
-  }
-
-  return options;
-}
-
-function pickBestOption(options: ParsedRoomOption[], occupancy: OccupancyKey) {
-  if (occupancy === '2_sleeper') {
-    const exactTwo = options
-      .filter((option) => option.requiredRooms === 1 && option.maxPeople === 2)
-      .sort((a, b) => a.partyNightlyRate - b.partyNightlyRate);
-
-    if (exactTwo[0]) return exactTwo[0];
-
-    return options
-      .filter((option) => option.requiredRooms === 1 && (option.maxPeople === null || option.maxPeople >= 2))
-      .sort((a, b) => a.partyNightlyRate - b.partyNightlyRate)[0] || null;
-  }
-
-  const fourAdultOptions = options
-    .filter((option) => option.requiredRooms > 1 || (option.maxPeople !== null && option.maxPeople >= 4) || /Recommended for 4 adults/i.test(option.raw))
-    .sort((a, b) => a.partyNightlyRate - b.partyNightlyRate);
-
-  return fourAdultOptions[0] || null;
-}
-
-async function scrapeMarkdown(url: string) {
-  const apiKey = Deno.env.get('FIRECRAWL_API_KEY');
-  if (!apiKey) {
-    throw new Error('FIRECRAWL_API_KEY is not configured');
-  }
-
-  let response: Response;
-
-  try {
-    response = await fetch('https://api.firecrawl.dev/v1/scrape', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        formats: ['markdown'],
-        location: { country: 'ZA', languages: ['en'] },
-        onlyMainContent: true,
-        url,
-        waitFor: 1500,
-      }),
-      signal: AbortSignal.timeout(SCRAPE_TIMEOUT_MS),
-    });
-  } catch (error) {
-    if (error instanceof Error && error.name === 'TimeoutError') {
-      throw new Error(`Scrape timed out after ${SCRAPE_TIMEOUT_MS / 1000}s`);
-    }
-
-    throw error;
-  }
-
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(`Firecrawl scrape failed [${response.status}]: ${JSON.stringify(data)}`);
-  }
-
-  const markdown = data?.data?.markdown || data?.markdown;
-  if (!markdown || typeof markdown !== 'string') {
-    throw new Error('Firecrawl scrape returned no markdown');
-  }
-
-  return markdown;
-}
-
-async function scrapeWeekend(hotelKey: HotelKey, weekendStart: Date, occupancy: OccupancyKey): Promise<WeekendRate> {
-  const checkIn = toDateOnly(weekendStart);
-  const checkOut = toDateOnly(addDays(weekendStart, NIGHTS));
-  const adults = occupancy === '2_sleeper' ? 2 : 4;
-  const sourceUrl = buildBookingUrl(hotelKey, checkIn, checkOut, adults);
-
-  try {
-    const markdown = await scrapeMarkdown(sourceUrl);
-    const options = parseRoomOptions(markdown);
-    const bestOption = pickBestOption(options, occupancy);
-
-    if (!bestOption) {
-      return {
-        available: false,
-        checkIn,
-        checkOut,
-        currency: CURRENCY_CODE,
-        displayNightlyRate: null,
-        maxPeople: null,
-        note: 'No matching weekend room option was found for this occupancy.',
-        partyNightlyRate: null,
-        ratePerNight: null,
-        requiredRooms: 0,
-        roomMode: null,
-        roomName: null,
-        sourceUrl,
-        totalPrice: null,
-      };
-    }
-
-    return {
-      available: true,
-      checkIn,
-      checkOut,
-      currency: CURRENCY_CODE,
-      displayNightlyRate: occupancy === '2_sleeper' ? bestOption.ratePerNight : bestOption.partyNightlyRate,
-      maxPeople: bestOption.maxPeople,
-      note: bestOption.requiredRooms > 1
-        ? `${bestOption.requiredRooms} rooms required to fit 4 adults.`
-        : null,
-      partyNightlyRate: bestOption.partyNightlyRate,
-      ratePerNight: bestOption.ratePerNight,
-      requiredRooms: bestOption.requiredRooms,
-      roomMode: bestOption.roomMode,
-      roomName: bestOption.roomName,
-      sourceUrl,
-      totalPrice: bestOption.totalPrice,
-    };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown scrape error';
-    return {
-      available: false,
-      checkIn,
-      checkOut,
-      currency: CURRENCY_CODE,
-      displayNightlyRate: null,
-      maxPeople: null,
-      note: message,
-      partyNightlyRate: null,
-      ratePerNight: null,
-      requiredRooms: 0,
-      roomMode: null,
-      roomName: null,
-      sourceUrl,
-      totalPrice: null,
-    };
-  }
+async function scrapeWeekend(hotelKey: HotelKey, weekendStart: Date, occupancy: OccupancyKey) {
+  return scrapeLiveBookingRate({
+    checkIn: toDateOnly(weekendStart),
+    checkOut: toDateOnly(addDays(weekendStart, NIGHTS)),
+    hotelKey,
+    occupancy,
+    rooms: 1,
+  });
 }
 
 Deno.serve(async (req) => {
@@ -328,8 +98,9 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const hotelKey = body?.hotelKey as HotelKey | undefined;
     const month = body?.month as string | undefined;
+    const hotelConfig = hotelKey ? getPremiumHotelConfig(hotelKey) : null;
 
-    if (!hotelKey || !(hotelKey in HOTEL_CONFIGS)) {
+    if (!hotelKey || !hotelConfig) {
       return jsonResponse({ error: 'A valid hotelKey is required.' }, 400);
     }
 
@@ -352,7 +123,7 @@ Deno.serve(async (req) => {
     return jsonResponse({
       generatedAt: new Date().toISOString(),
       hotelKey,
-      hotelName: HOTEL_CONFIGS[hotelKey].name,
+      hotelName: hotelConfig.name,
       month,
       weekendsByOccupancy: {
         '2_sleeper': weekendPairs.map((pair) => pair.twoSleeperRate),

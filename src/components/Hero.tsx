@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useRMSHotels, type RMSHotel } from '@/hooks/useRMSHotels';
 import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
+import { getPremiumLiveHotelKeyByName } from '@/lib/premiumLiveHotels';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 type BookingType = 'accommodation-only' | 'with-activities';
@@ -42,21 +43,13 @@ type LiveBookingRateResponse = {
   displayTotalPrice: number | null;
 };
 
-const DURBAN_PREMIUM_HOTEL_KEYS: Record<string, LiveBookingHotelKey> = {
-  'Blue Waters Hotel': 'blue-waters',
-  'Garden Court South Beach': 'garden-court-south-beach',
-  'Southern Sun Garden Court South Beach': 'garden-court-south-beach',
-  'The Edward': 'the-edward',
-  'Southern Sun The Edward': 'the-edward',
-};
-
-async function applyLiveDurbanPremiumRates(
+async function applyLivePremiumRates(
   hotels: RMSHotel[],
   params: { checkIn: string; checkOut: string; rooms: number },
 ): Promise<AccommodationPricingHotel[]> {
   const liveHotels = await Promise.all(
     hotels.map(async (hotel) => {
-      const hotelKey = DURBAN_PREMIUM_HOTEL_KEYS[hotel.name];
+      const hotelKey = getPremiumLiveHotelKeyByName(hotel.name);
       if (!hotelKey) return hotel;
 
       const occupancy = hotel.capacity === '4_sleeper' ? '4_sleeper' : '2_sleeper';
@@ -595,8 +588,8 @@ export function Hero({ onGetQuote }: HeroProps) {
 
         let pricedHotels: AccommodationPricingHotel[] = filteredHotels;
 
-        if (destination === 'durban' && accommodationType === 'premium') {
-          pricedHotels = await applyLiveDurbanPremiumRates(filteredHotels, {
+        if (accommodationType === 'premium') {
+          pricedHotels = await applyLivePremiumRates(filteredHotels, {
             checkIn,
             checkOut,
             rooms,

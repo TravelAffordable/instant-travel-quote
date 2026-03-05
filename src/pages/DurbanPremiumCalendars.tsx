@@ -5,14 +5,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
-const HOTEL_OPTIONS = [
-  { key: 'blue-waters', label: 'Blue Waters Hotel' },
-  { key: 'garden-court-south-beach', label: 'Garden Court South Beach' },
-  { key: 'the-edward', label: 'The Edward' },
-] as const;
-
-type HotelKey = (typeof HOTEL_OPTIONS)[number]['key'];
+import {
+  PREMIUM_LIVE_HOTELS,
+  getPremiumLiveHotelsByDestination,
+  type PremiumLiveHotelKey,
+} from '@/lib/premiumLiveHotels';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type WeekendRate = {
   available: boolean;
@@ -20,20 +24,14 @@ type WeekendRate = {
   checkOut: string;
   currency: string;
   displayNightlyRate: number | null;
-  maxPeople: number | null;
   note: string | null;
-  partyNightlyRate: number | null;
-  ratePerNight: number | null;
-  requiredRooms: number;
-  roomMode: 'single_room' | 'multiple_rooms' | null;
   roomName: string | null;
   sourceUrl: string;
-  totalPrice: number | null;
 };
 
 type CalendarResponse = {
   generatedAt: string;
-  hotelKey: HotelKey;
+  hotelKey: PremiumLiveHotelKey;
   hotelName: string;
   month: string;
   weekendsByOccupancy: {
@@ -42,9 +40,15 @@ type CalendarResponse = {
   };
 };
 
+const DESTINATION_OPTIONS = Array.from(
+  new Map(PREMIUM_LIVE_HOTELS.map((hotel) => [hotel.destination, hotel.destinationLabel])).entries(),
+).map(([value, label]) => ({ label, value }));
+
 const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const minMonth = '2026-03';
 const maxMonth = '2027-02';
+const defaultDestination = DESTINATION_OPTIONS[0]?.value ?? 'durban';
+const defaultHotel = getPremiumLiveHotelsByDestination(defaultDestination)[0]?.key ?? PREMIUM_LIVE_HOTELS[0].key;
 
 function getDefaultMonth() {
   return '2026-03';
@@ -97,7 +101,7 @@ function WeekendCalendar({
       <CardHeader className="pb-4">
         <CardTitle className="text-xl font-display">{title}</CardTitle>
         <CardDescription>
-          Friday cells show live Booking.com weekend results for {format(monthDate, 'MMMM yyyy')}.
+          Friday cells show live crawler results for {format(monthDate, 'MMMM yyyy')}.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -168,11 +172,24 @@ function WeekendCalendar({
 }
 
 const DurbanPremiumCalendars = () => {
-  const [selectedHotel, setSelectedHotel] = useState<HotelKey>('blue-waters');
+  const [selectedDestination, setSelectedDestination] = useState(defaultDestination);
+  const [selectedHotel, setSelectedHotel] = useState<PremiumLiveHotelKey>(defaultHotel);
   const [selectedMonth, setSelectedMonth] = useState(getDefaultMonth());
   const [data, setData] = useState<CalendarResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const hotelOptions = useMemo(
+    () => getPremiumLiveHotelsByDestination(selectedDestination),
+    [selectedDestination],
+  );
+
+  useEffect(() => {
+    if (hotelOptions.some((hotel) => hotel.key === selectedHotel)) return;
+    if (hotelOptions[0]) {
+      setSelectedHotel(hotelOptions[0].key);
+    }
+  }, [hotelOptions, selectedHotel]);
 
   useEffect(() => {
     let active = true;
@@ -201,7 +218,7 @@ const DurbanPremiumCalendars = () => {
       const responseError = typed && 'error' in typed ? typed.error : undefined;
 
       if (!typed || responseError) {
-        setError(responseError || 'Failed to load Booking.com weekend calendar.');
+        setError(responseError || 'Failed to load live premium weekend calendar.');
         setData(null);
         setLoading(false);
         return;
@@ -221,12 +238,12 @@ const DurbanPremiumCalendars = () => {
     <main className="min-h-screen bg-background">
       <section className="border-b border-border/70 bg-muted/30">
         <div className="container mx-auto px-4 py-10">
-          <p className="text-sm font-medium uppercase tracking-[0.3em] text-primary">Live Booking.com scrape</p>
+          <p className="text-sm font-medium uppercase tracking-[0.3em] text-primary">Live premium rate crawler</p>
           <h1 className="mt-3 text-4xl font-display font-bold text-foreground md:text-5xl">
-            Durban Premium Weekend Rate Calendars
+            Premium Hotel Live Rate Calendars
           </h1>
           <p className="mt-4 max-w-3xl text-base text-muted-foreground md:text-lg">
-            View live weekend availability and nightly rates for Durban beachfront premium hotels from the coming weekend through February 2027.
+            Browse live weekend availability and nightly rates for every real-named premium property currently surfaced on the platform.
           </p>
         </div>
       </section>
@@ -236,32 +253,49 @@ const DurbanPremiumCalendars = () => {
           <CardHeader className="gap-4">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <CardTitle className="text-2xl font-display">Premium beachfront hotels</CardTitle>
+                <CardTitle className="text-2xl font-display">Real-named premium properties</CardTitle>
                 <CardDescription>
-                  Tabs switch hotels; the month picker lets you browse every weekend through Feb 2027.
+                  Switch destination and hotel, then browse monthly weekend rates through Feb 2027.
                 </CardDescription>
               </div>
-              <div className="w-full max-w-xs space-y-2">
-                <label className="text-sm font-medium text-foreground" htmlFor="calendar-month">
-                  Month
-                </label>
-                <Input
-                  id="calendar-month"
-                  max={maxMonth}
-                  min={minMonth}
-                  type="month"
-                  value={selectedMonth}
-                  onChange={(event) => setSelectedMonth(event.target.value)}
-                />
+              <div className="grid w-full gap-4 md:grid-cols-2 lg:max-w-2xl">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground" htmlFor="calendar-month">
+                    Month
+                  </label>
+                  <Input
+                    id="calendar-month"
+                    max={maxMonth}
+                    min={minMonth}
+                    type="month"
+                    value={selectedMonth}
+                    onChange={(event) => setSelectedMonth(event.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Hotel</label>
+                  <Select value={selectedHotel} onValueChange={(value) => setSelectedHotel(value as PremiumLiveHotelKey)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select hotel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {hotelOptions.map((hotel) => (
+                        <SelectItem key={hotel.key} value={hotel.key}>
+                          {hotel.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
-            <Tabs value={selectedHotel} onValueChange={(value) => setSelectedHotel(value as HotelKey)}>
+            <Tabs value={selectedDestination} onValueChange={(value) => setSelectedDestination(value as typeof defaultDestination)}>
               <ScrollArea className="w-full whitespace-nowrap">
                 <TabsList className="inline-flex h-auto w-max gap-2 bg-muted/70 p-1">
-                  {HOTEL_OPTIONS.map((hotel) => (
-                    <TabsTrigger key={hotel.key} value={hotel.key} className="px-4 py-2">
-                      {hotel.label}
+                  {DESTINATION_OPTIONS.map((destination) => (
+                    <TabsTrigger key={destination.value} value={destination.value} className="px-4 py-2">
+                      {destination.label}
                     </TabsTrigger>
                   ))}
                 </TabsList>
@@ -272,7 +306,7 @@ const DurbanPremiumCalendars = () => {
           <CardContent className="space-y-6">
             {loading ? (
               <div className="rounded-lg border border-border bg-muted/40 p-6 text-sm text-muted-foreground">
-                Scraping Booking.com weekend data for {HOTEL_OPTIONS.find((hotel) => hotel.key === selectedHotel)?.label}…
+                Scraping live weekend data for {hotelOptions.find((hotel) => hotel.key === selectedHotel)?.label}…
               </div>
             ) : error ? (
               <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
@@ -285,7 +319,7 @@ const DurbanPremiumCalendars = () => {
                     Last refreshed: <span className="font-medium text-foreground">{new Date(data.generatedAt).toLocaleString()}</span>
                   </p>
                   <p className="mt-1">
-                    2-sleeper cards show the best single-room nightly rate for 2 adults. 4-sleeper cards show the best nightly rate for fitting 4 adults, even when Booking.com requires multiple rooms.
+                    2-sleeper cards show the best single-room nightly rate for 2 adults. 4-sleeper cards show the best nightly rate for fitting 4 adults, even when multiple rooms are required.
                   </p>
                 </div>
 
