@@ -290,7 +290,7 @@ const DurbanPremiumCalendars = () => {
               </div>
             </div>
 
-            <Tabs value={selectedDestination} onValueChange={setSelectedDestination}>
+            <Tabs value={selectedDestination} onValueChange={(value) => setSelectedDestination(value as typeof defaultDestination)}>
               <ScrollArea className="w-full whitespace-nowrap">
                 <TabsList className="inline-flex h-auto w-max gap-2 bg-muted/70 p-1">
                   {DESTINATION_OPTIONS.map((destination) => (
