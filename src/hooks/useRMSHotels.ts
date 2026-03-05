@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { hotels as staticHotels, type Hotel } from '@/data/travelData';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface RMSHotel {
   code: string;
@@ -163,6 +164,51 @@ export function useRMSHotels() {
 
           return a.minRate - b.minRate;
         });
+
+      // Fetch cached live rates for budget/affordable tiers
+      try {
+        const capacityFilter = totalGuests > 2 ? '4_sleeper' : '2_sleeper';
+        const { data: cachedRates } = await supabase
+          .from('cached_hotel_rates')
+          .select('hotel_alias, real_hotel_name, crawled_rate, tier, capacity, room_type, includes_breakfast, crawled_at')
+          .eq('destination', mappedDestination)
+          .eq('capacity', capacityFilter)
+          .eq('is_available', true);
+
+        if (cachedRates && cachedRates.length > 0) {
+          // Build cached hotel entries that replace static budget/affordable hotels
+          const cachedHotels: RMSHotel[] = cachedRates.map((cr, idx) => ({
+            code: `cached-${cr.tier}-${capacityFilter}-${idx}`,
+            name: cr.hotel_alias,
+            starRating: null,
+            tier: cr.tier as 'budget' | 'affordable',
+            includesBreakfast: cr.includes_breakfast ?? false,
+            minRate: Math.round(Number(cr.crawled_rate)),
+            totalRate: Math.round(Number(cr.crawled_rate) * nights),
+            roomTypeId: `cached-${cr.tier}-${capacityFilter}-${idx}`,
+            roomTypeName: cr.room_type || 'Standard Room',
+            capacity: cr.capacity as '2_sleeper' | '4_sleeper',
+            areaName: params.areaName || destinationLabelMap[mappedDestination] || mappedDestination,
+            destination: mappedDestination,
+            images: [],
+          }));
+
+          // Keep only premium from static, replace budget/affordable with cached
+          const staticPremium = rmsHotels.filter(h => h.tier === 'premium');
+          const merged = [...cachedHotels, ...staticPremium].sort((a, b) => {
+            const tierOrder = { budget: 1, affordable: 2, premium: 3 };
+            if (tierOrder[a.tier] !== tierOrder[b.tier]) {
+              return tierOrder[a.tier] - tierOrder[b.tier];
+            }
+            return a.minRate - b.minRate;
+          });
+
+          setHotels(merged);
+          return merged;
+        }
+      } catch (cacheErr) {
+        console.warn('Failed to fetch cached rates, using static data:', cacheErr);
+      }
 
       setHotels(rmsHotels);
       return rmsHotels;
