@@ -44,6 +44,54 @@ export type Database = {
         }
         Relationships: []
       }
+      cached_hotel_rates: {
+        Row: {
+          capacity: string
+          crawled_at: string | null
+          crawled_rate: number | null
+          created_at: string
+          destination: string
+          hotel_alias: string
+          id: string
+          includes_breakfast: boolean | null
+          is_available: boolean | null
+          real_hotel_name: string
+          room_type: string | null
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          capacity: string
+          crawled_at?: string | null
+          crawled_rate?: number | null
+          created_at?: string
+          destination: string
+          hotel_alias: string
+          id?: string
+          includes_breakfast?: boolean | null
+          is_available?: boolean | null
+          real_hotel_name: string
+          room_type?: string | null
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: string
+          crawled_at?: string | null
+          crawled_rate?: number | null
+          created_at?: string
+          destination?: string
+          hotel_alias?: string
+          id?: string
+          includes_breakfast?: boolean | null
+          is_available?: boolean | null
+          real_hotel_name?: string
+          room_type?: string | null
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hotels: {
         Row: {
           address: string | null
