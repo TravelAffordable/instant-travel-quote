@@ -166,6 +166,13 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Cocomo Boutique Hotel' },
     { name: 'The Riverleaf Hotel', includesBreakfast: true },
     { name: 'Kosmos Manor' },
+    { name: 'Palm Swift Luxury', includesBreakfast: true },
+    { name: 'The Venue Country Hotel and Spa', includesBreakfast: true },
+    { name: 'Waterfront Guesthouse' },
+    { name: 'MetsingAt Harties', includesBreakfast: true },
+    { name: 'Marina View Guesthouse' },
+    { name: 'Cozy Kosmos', includesBreakfast: true },
+    { name: 'Serenity Guesthouse' },
   ],
   'magalies': [
     { name: 'Cocomo Boutique Hotel' },

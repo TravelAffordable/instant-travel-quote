@@ -21,6 +21,13 @@ export type HotelKey =
   | 'cocomo-boutique-hotel'
   | 'the-riverleaf-hotel'
   | 'kosmos-manor'
+  | 'palm-swift-luxury'
+  | 'the-venue-country-hotel-and-spa'
+  | 'waterfront-guesthouse'
+  | 'metsingat-harties'
+  | 'marina-view-guesthouse'
+  | 'cozy-kosmos'
+  | 'serenity-guesthouse'
   | 'mint-hotel-the-blyde'
   | 'blyde-penthouse-apartments';
 
@@ -204,6 +211,55 @@ export const PREMIUM_HOTEL_CONFIGS: Record<HotelKey, PremiumHotelConfig> = {
     key: 'kosmos-manor',
     name: 'Kosmos Manor',
     searchQuery: 'Kosmos Manor Hartbeespoort South Africa site:booking.com',
+  },
+  'palm-swift-luxury': {
+    aliases: ['Palm Swift Luxury'],
+    destinationLabel: 'Hartbeespoort',
+    key: 'palm-swift-luxury',
+    name: 'Palm Swift Luxury',
+    searchQuery: 'Palm Swift Luxury Hartbeespoort South Africa site:booking.com',
+  },
+  'the-venue-country-hotel-and-spa': {
+    aliases: ['The Venue Country Hotel and Spa'],
+    destinationLabel: 'Hartbeespoort',
+    key: 'the-venue-country-hotel-and-spa',
+    name: 'The Venue Country Hotel and Spa',
+    searchQuery: 'The Venue Country Hotel and Spa Hartbeespoort South Africa site:booking.com',
+  },
+  'waterfront-guesthouse': {
+    aliases: ['Waterfront Guesthouse'],
+    destinationLabel: 'Hartbeespoort',
+    key: 'waterfront-guesthouse',
+    name: 'Waterfront Guesthouse',
+    searchQuery: 'Waterfront Guesthouse Hartbeespoort South Africa site:booking.com',
+  },
+  'metsingat-harties': {
+    aliases: ['MetsingAt Harties'],
+    destinationLabel: 'Hartbeespoort',
+    key: 'metsingat-harties',
+    name: 'MetsingAt Harties',
+    searchQuery: 'MetsingAt Harties Hartbeespoort South Africa site:booking.com',
+  },
+  'marina-view-guesthouse': {
+    aliases: ['Marina View Guesthouse'],
+    destinationLabel: 'Hartbeespoort',
+    key: 'marina-view-guesthouse',
+    name: 'Marina View Guesthouse',
+    searchQuery: 'Marina View Guesthouse Hartbeespoort South Africa site:booking.com',
+  },
+  'cozy-kosmos': {
+    aliases: ['Cozy Kosmos'],
+    destinationLabel: 'Hartbeespoort',
+    key: 'cozy-kosmos',
+    name: 'Cozy Kosmos',
+    searchQuery: 'Cozy Kosmos Hartbeespoort South Africa site:booking.com',
+  },
+  'serenity-guesthouse': {
+    aliases: ['Serenity Guesthouse'],
+    destinationLabel: 'Hartbeespoort',
+    key: 'serenity-guesthouse',
+    name: 'Serenity Guesthouse',
+    searchQuery: 'Serenity Guesthouse Hartbeespoort South Africa site:booking.com',
   },
   'mint-hotel-the-blyde': {
     aliases: ['Mint Hotel The Blyde'],
