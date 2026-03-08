@@ -16,6 +16,7 @@ export interface RMSHotel {
   areaName: string;
   destination: string;
   images?: string[];
+  isCachedRate?: boolean;
 }
 
 interface SearchParams {
