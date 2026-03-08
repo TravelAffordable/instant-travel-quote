@@ -16,6 +16,7 @@ export interface RMSHotel {
   areaName: string;
   destination: string;
   images?: string[];
+  isCachedRate?: boolean;
 }
 
 interface SearchParams {
@@ -191,6 +192,7 @@ export function useRMSHotels() {
             areaName: params.areaName || destinationLabelMap[mappedDestination] || mappedDestination,
             destination: mappedDestination,
             images: [],
+            isCachedRate: true,
           }));
 
           // Keep only premium from static, replace budget/affordable with cached
