@@ -593,8 +593,14 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        // Apply live premium rates for premium tier (shared across both flows)
-        let pricedHotels: AccommodationPricingHotel[] = tierHotels;
+        // Apply live pricing mode for all tiers with real/cached rates
+        let pricedHotels: AccommodationPricingHotel[] = tierHotels.map(h => ({
+          ...h,
+          // Cached budget/affordable rates from Booking.com crawler use live mode (no markups)
+          pricingMode: h.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
+        }));
+
+        // For premium tier, also fetch real-time rates from Booking.com scraper
         if (accommodationType === 'premium') {
           pricedHotels = await applyLivePremiumRates(tierHotels, {
             checkIn,
