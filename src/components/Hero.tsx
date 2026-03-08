@@ -546,95 +546,17 @@ export function Hero({ onGetQuote }: HeroProps) {
 
     const useRMS = RMS_DESTINATIONS.includes(destination);
 
-    // ── Accommodation-Only flow ──
-    if (bookingType === 'accommodation-only' && useRMS && !isFamilySplitMode) {
-      try {
-        // Determine area filter (same logic as with-activities)
-        const requiresUmhlangaArea = destination === 'umhlanga';
-        const requiresGoldenMileArea = destination === 'durban';
-        let areaFilter: string | undefined;
-        if (requiresUmhlangaArea) {
-          areaFilter = 'Umhlanga';
-        } else if (requiresGoldenMileArea) {
-          areaFilter = 'Golden Mile';
-        }
-
-        const result = await searchRMSHotels({
-          destination,
-          checkIn,
-          checkOut,
-          adults,
-          children,
-          rooms,
-          areaName: areaFilter,
-        });
-
-        if (result.length === 0) {
-          toast.info('No hotels available for this search. Please try different dates.');
-          setIsCalculating(false);
-          return;
-        }
-
-        // Filter by tier
-        const filteredHotels = result.filter(h => h.tier === accommodationType);
-        if (filteredHotels.length === 0) {
-          const availableTiers = [...new Set(result.map(h => h.tier))];
-          const tierLabels: Record<string, string> = { budget: 'Budget', affordable: 'Affordable', premium: 'Premium' };
-          const availableTierNames = availableTiers.map(t => tierLabels[t] || t).join(', ');
-          toast.info(`No ${tierLabels[accommodationType]} hotels available. Available: ${availableTierNames}`);
-          setIsCalculating(false);
-          return;
-        }
-
-        let pricedHotels: AccommodationPricingHotel[] = filteredHotels;
-
-        if (accommodationType === 'premium') {
-          pricedHotels = await applyLivePremiumRates(filteredHotels, {
-            checkIn,
-            checkOut,
-            rooms,
-          });
-        }
-
-        const accomQuotes = convertRMSToAccommodationOnlyQuotes(pricedHotels, {
-          checkIn: new Date(checkIn),
-          checkOut: new Date(checkOut),
-          adults,
-          children,
-          childrenAges: ages,
-          rooms,
-          destination,
-        });
-
-        if (accomQuotes.length > 0) {
-          setQuotes(accomQuotes);
-          toast.success(`${accomQuotes.length} accommodation options found!`);
-          setTimeout(() => {
-            document.getElementById('quote-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 100);
-        } else {
-          toast.info('No accommodation options available for this tier.');
-        }
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : 'Could not fetch hotels';
-        toast.error(msg);
-      } finally {
-        setIsCalculating(false);
-      }
-      return;
-    }
-
-    // ── With-Activities RMS flow ──
-    // RMS path (homepage quote flow) — this is what powers the real hotel names.
-    // We only use it for the standard (non-family-split) flow.
+    // ── Shared RMS hotel fetch for both Accommodation-Only and With-Activities ──
+    // Hotels are fetched once here and reused by both flows so any additions/changes
+    // to accommodation data propagate automatically.
     if (useRMS && !isFamilySplitMode) {
       try {
-        // Determine if we need to filter by area
-        const requiresGraskopOnly = destination === 'mpumalanga' && 
+        // Determine area filter (shared logic)
+        const requiresGraskopOnly = bookingType === 'with-activities' && destination === 'mpumalanga' &&
           packageIds.some(id => GRASKOP_ONLY_PACKAGES.includes(id));
         const requiresUmhlangaArea = destination === 'umhlanga';
         const requiresGoldenMileArea = destination === 'durban';
-        
+
         let areaFilter: string | undefined;
         if (requiresGraskopOnly) {
           areaFilter = 'Graskop';
@@ -643,7 +565,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         } else if (requiresGoldenMileArea) {
           areaFilter = 'Golden Mile';
         }
-        
+
         const result = await searchRMSHotels({
           destination,
           checkIn,
@@ -660,7 +582,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        // Filter by the selected accommodation tier first (strict tier selection)
+        // Filter by selected tier
         const tierHotels = result.filter(h => h.tier === accommodationType);
         if (tierHotels.length === 0) {
           const availableTiers = [...new Set(result.map(h => h.tier))];
@@ -671,51 +593,80 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        const tierQuotes = convertRMSToQuotes(
-          tierHotels,
-          packages.filter(p => packageIds.includes(p.id)),
-          {
-            checkIn: new Date(checkIn),
-            checkOut: new Date(checkOut),
-            adults,
-            children,
-            childrenAges: ages,
+        // Apply live premium rates for premium tier (shared across both flows)
+        let pricedHotels: AccommodationPricingHotel[] = tierHotels;
+        if (accommodationType === 'premium') {
+          pricedHotels = await applyLivePremiumRates(tierHotels, {
+            checkIn,
+            checkOut,
             rooms,
-            destination,
+          });
+        }
+
+        const sharedParams = {
+          checkIn: new Date(checkIn),
+          checkOut: new Date(checkOut),
+          adults,
+          children,
+          childrenAges: ages,
+          rooms,
+          destination,
+        };
+
+        // ── Branch: Accommodation-Only ──
+        if (bookingType === 'accommodation-only') {
+          const accomQuotes = convertRMSToAccommodationOnlyQuotes(pricedHotels, sharedParams);
+
+          if (accomQuotes.length > 0) {
+            setQuotes(accomQuotes);
+            toast.success(`${accomQuotes.length} accommodation options found!`);
+            setTimeout(() => {
+              document.getElementById('quote-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          } else {
+            toast.info('No accommodation options available for this tier.');
           }
-        );
-
-        if (tierQuotes.length === 0) {
-          toast.info('No hotels available. Try different dates or destination.');
-          setIsCalculating(false);
-          return;
         }
 
-        const budgetAmount = parseInt(budget) || 0;
-        const budgetThreshold = budgetAmount + 600;
-        const tierLabel = accommodationType === 'budget' ? 'Budget' : accommodationType === 'affordable' ? 'Affordable' : 'Premium';
+        // ── Branch: With-Activities (packages) ──
+        // Uses the SAME hotel data but with RAW accommodation cost (no markups)
+        if (bookingType === 'with-activities') {
+          const tierQuotes = convertRMSToQuotes(
+            pricedHotels,
+            packages.filter(p => packageIds.includes(p.id)),
+            sharedParams,
+          );
 
-        let budgetFiltered = tierQuotes.filter(q => q.totalForGroup <= budgetThreshold);
+          if (tierQuotes.length === 0) {
+            toast.info('No hotels available. Try different dates or destination.');
+            setIsCalculating(false);
+            return;
+          }
 
-        // If nothing fits within the selected tier + R600 buffer, show the 3 cheapest in that tier
-        if (budgetFiltered.length === 0) {
-          tierQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
-          budgetFiltered = tierQuotes.slice(0, 3);
-          toast.info(`No ${tierLabel.toLowerCase()} options fit your budget of R${budgetAmount.toLocaleString()} (max R600 over). Showing the closest ${tierLabel.toLowerCase()} options.`);
-        } else {
-          // Closest to budget first (within selected tier)
-          budgetFiltered.sort((a, b) => b.totalForGroup - a.totalForGroup);
+          const budgetAmount = parseInt(budget) || 0;
+          const budgetThreshold = budgetAmount + 600;
+          const tierLabel = accommodationType === 'budget' ? 'Budget' : accommodationType === 'affordable' ? 'Affordable' : 'Premium';
 
-          const slightlyOver = budgetFiltered.filter(q => q.totalForGroup > budgetAmount).length;
-          let msg = `${budgetFiltered.length} ${tierLabel.toLowerCase()} option${budgetFiltered.length > 1 ? 's' : ''} found for your budget of R${budgetAmount.toLocaleString()}!`;
-          if (slightlyOver > 0) msg += ` (${slightlyOver} up to R600 over budget)`;
-          toast.success(msg);
+          let budgetFiltered = tierQuotes.filter(q => q.totalForGroup <= budgetThreshold);
+
+          if (budgetFiltered.length === 0) {
+            tierQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
+            budgetFiltered = tierQuotes.slice(0, 3);
+            toast.info(`No ${tierLabel.toLowerCase()} options fit your budget of R${budgetAmount.toLocaleString()} (max R600 over). Showing the closest ${tierLabel.toLowerCase()} options.`);
+          } else {
+            budgetFiltered.sort((a, b) => b.totalForGroup - a.totalForGroup);
+
+            const slightlyOver = budgetFiltered.filter(q => q.totalForGroup > budgetAmount).length;
+            let msg = `${budgetFiltered.length} ${tierLabel.toLowerCase()} option${budgetFiltered.length > 1 ? 's' : ''} found for your budget of R${budgetAmount.toLocaleString()}!`;
+            if (slightlyOver > 0) msg += ` (${slightlyOver} up to R600 over budget)`;
+            toast.success(msg);
+          }
+
+          setQuotes(budgetFiltered);
+          setTimeout(() => {
+            document.getElementById('quote-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
         }
-
-        setQuotes(budgetFiltered);
-        setTimeout(() => {
-          document.getElementById('quote-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Could not fetch hotels';
         toast.error(msg);
