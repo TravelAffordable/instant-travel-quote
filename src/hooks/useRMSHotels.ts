@@ -192,6 +192,7 @@ export function useRMSHotels() {
             areaName: params.areaName || destinationLabelMap[mappedDestination] || mappedDestination,
             destination: mappedDestination,
             images: [],
+            isCachedRate: true,
           }));
 
           // Keep only premium from static, replace budget/affordable with cached
