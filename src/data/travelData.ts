@@ -6,6 +6,7 @@ import {
   hartiesAffordable2SleeperPrimaryImages,
   hartiesIndlovukaziImages
 } from './hartiesHotelImages';
+import { hartiesPremiumImageMap } from './hartiesPremiumImages';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
 export interface Hotel {
