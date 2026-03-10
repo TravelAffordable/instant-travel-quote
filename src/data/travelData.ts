@@ -6,6 +6,7 @@ import {
   hartiesAffordable2SleeperPrimaryImages,
   hartiesIndlovukaziImages
 } from './hartiesHotelImages';
+import { hartiesPremiumImageMap } from './hartiesPremiumImages';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
 export interface Hotel {
@@ -578,8 +579,11 @@ function generateHotels(): Hotel[] {
       const hartiesHotels = premiumHotelNames['harties'] || [];
       hartiesHotels.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
-        // Indlovukazi Guesthouse (first entry) uses real photos
         const isIndlovukazi = hotel.name === 'Indlovukazi Guesthouse';
+        const premiumImg = hartiesPremiumImageMap[hotel.name] || premiumImages[index % premiumImages.length];
+        const hotelImages = isIndlovukazi 
+          ? [premiumImg, ...hartiesIndlovukaziImages.filter(img => img !== premiumImg)]
+          : [premiumImg];
         allHotels.push({
           id: `${destId}-premium-${letter.toLowerCase()}`,
           name: hotel.name,
@@ -588,8 +592,8 @@ function generateHotels(): Hotel[] {
           rating: 4.5 + (Math.random() * 0.5),
           type: 'premium',
           amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining', 'Dam Views'],
-          image: isIndlovukazi ? hartiesIndlovukaziImages[0] : premiumImages[index % premiumImages.length],
-          images: isIndlovukazi ? hartiesIndlovukaziImages : undefined,
+          image: premiumImg,
+          images: hotelImages,
           capacity: 2,
           roomType: '2 Sleeper Room',
           includesBreakfast: hotel.includesBreakfast,
