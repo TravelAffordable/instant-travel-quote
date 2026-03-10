@@ -76,7 +76,17 @@ export type HotelKey =
   | 'breakers-resort-232'
   | 'oceans-apartments-radisson-blu'
   | 'town-lodge-umhlanga'
-  | '71-sea-lodge-beachfront';
+  | '71-sea-lodge-beachfront'
+  | 'bakubung-bush-lodge'
+  | 'the-kingdom-resort'
+  | 'kwa-maritane-lodge'
+  | 'sundown-country-estate'
+  | 'gettys-bed-and-breakfast'
+  | 'valley-view-guest-house'
+  | 'ivory-tree-game-lodge'
+  | 'pilanesberg-hotel'
+  | 'kedar-heritage-lodge'
+  | 'royal-marang-hotel';
 
 export type OccupancyKey = '2_sleeper' | '4_sleeper';
 
@@ -650,6 +660,76 @@ export const PREMIUM_HOTEL_CONFIGS: Record<HotelKey, PremiumHotelConfig> = {
     key: '71-sea-lodge-beachfront',
     name: '71 Sea Lodge Beachfront Apartment',
     searchQuery: '71 Sea Lodge Beachfront Apartment Umhlanga site:booking.com',
+  },
+  'bakubung-bush-lodge': {
+    aliases: ['Bakubung Bush Lodge'],
+    destinationLabel: 'Sun City',
+    key: 'bakubung-bush-lodge',
+    name: 'Bakubung Bush Lodge',
+    searchQuery: 'Bakubung Bush Lodge Pilanesberg site:booking.com',
+  },
+  'the-kingdom-resort': {
+    aliases: ['The Kingdom Resort'],
+    destinationLabel: 'Sun City',
+    key: 'the-kingdom-resort',
+    name: 'The Kingdom Resort',
+    searchQuery: 'The Kingdom Resort Pilanesberg site:booking.com',
+  },
+  'kwa-maritane-lodge': {
+    aliases: ['Kwa Maritane Lodge'],
+    destinationLabel: 'Sun City',
+    key: 'kwa-maritane-lodge',
+    name: 'Kwa Maritane Lodge',
+    searchQuery: 'Kwa Maritane Lodge Pilanesberg site:booking.com',
+  },
+  'sundown-country-estate': {
+    aliases: ['Sundown Country Estate'],
+    destinationLabel: 'Sun City',
+    key: 'sundown-country-estate',
+    name: 'Sundown Country Estate',
+    searchQuery: 'Sundown Country Estate Sun City site:booking.com',
+  },
+  'gettys-bed-and-breakfast': {
+    aliases: ["Getty's Bed and Breakfast"],
+    destinationLabel: 'Sun City',
+    key: 'gettys-bed-and-breakfast',
+    name: "Getty's Bed and Breakfast",
+    searchQuery: "Getty's Bed and Breakfast Sun City Pilanesberg site:booking.com",
+  },
+  'valley-view-guest-house': {
+    aliases: ['Valley View Guest House'],
+    destinationLabel: 'Sun City',
+    key: 'valley-view-guest-house',
+    name: 'Valley View Guest House',
+    searchQuery: 'Valley View Guest House Sun City Pilanesberg site:booking.com',
+  },
+  'ivory-tree-game-lodge': {
+    aliases: ['Ivory Tree Game Lodge'],
+    destinationLabel: 'Sun City',
+    key: 'ivory-tree-game-lodge',
+    name: 'Ivory Tree Game Lodge',
+    searchQuery: 'Ivory Tree Game Lodge Pilanesberg site:booking.com',
+  },
+  'pilanesberg-hotel': {
+    aliases: ['Pilanesberg Hotel'],
+    destinationLabel: 'Sun City',
+    key: 'pilanesberg-hotel',
+    name: 'Pilanesberg Hotel',
+    searchQuery: 'Pilanesberg Hotel site:booking.com',
+  },
+  'kedar-heritage-lodge': {
+    aliases: ['Kedar Heritage Lodge Conference Centre & Spa', 'Kedar Heritage Lodge, Conference Centre & Spa'],
+    destinationLabel: 'Sun City',
+    key: 'kedar-heritage-lodge',
+    name: 'Kedar Heritage Lodge Conference Centre & Spa',
+    searchQuery: 'Kedar Heritage Lodge Conference Centre Spa Pilanesberg site:booking.com',
+  },
+  'royal-marang-hotel': {
+    aliases: ['Royal Marang Hotel'],
+    destinationLabel: 'Sun City',
+    key: 'royal-marang-hotel',
+    name: 'Royal Marang Hotel',
+    searchQuery: 'Royal Marang Hotel Rustenburg site:booking.com',
   },
 };
 
