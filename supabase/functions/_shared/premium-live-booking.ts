@@ -76,7 +76,17 @@ export type HotelKey =
   | 'breakers-resort-232'
   | 'oceans-apartments-radisson-blu'
   | 'town-lodge-umhlanga'
-  | '71-sea-lodge-beachfront';
+  | '71-sea-lodge-beachfront'
+  | 'bakubung-bush-lodge'
+  | 'the-kingdom-resort'
+  | 'kwa-maritane-lodge'
+  | 'sundown-country-estate'
+  | 'gettys-bed-and-breakfast'
+  | 'valley-view-guest-house'
+  | 'ivory-tree-game-lodge'
+  | 'pilanesberg-hotel'
+  | 'kedar-heritage-lodge'
+  | 'royal-marang-hotel';
 
 export type OccupancyKey = '2_sleeper' | '4_sleeper';
 
