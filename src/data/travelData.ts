@@ -7,6 +7,8 @@ import {
   hartiesIndlovukaziImages
 } from './hartiesHotelImages';
 import { hartiesPremiumImageMap } from './hartiesPremiumImages';
+import { durbanPremiumImageMap } from './durbanPremiumImages';
+import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
 export interface Hotel {
