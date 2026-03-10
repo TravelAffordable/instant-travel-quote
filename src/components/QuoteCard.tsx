@@ -47,9 +47,11 @@ export function QuoteCard({
     }
   }, [emblaApi]);
 
-  // Use real hotel photos if available, otherwise fall back to AI activity images
-  const carouselImages = (quote.hotelImages && quote.hotelImages.length > 0)
-    ? quote.hotelImages
+  // Use real hotel photos (local imports) if available, otherwise fall back to activity images
+  // Filter out generic Unsplash URLs — only use actual property photos
+  const realHotelImages = quote.hotelImages?.filter(img => !img.includes('unsplash.com'));
+  const carouselImages = (realHotelImages && realHotelImages.length > 0)
+    ? realHotelImages
     : getCarouselImages(quote.destination);
 
   return (
