@@ -59,7 +59,24 @@ export type HotelKey =
   | 'the-bay-hotel'
   | 'twelve-apostles-hotel-spa'
   | 'protea-hotel-sea-point'
-  | 'the-marly-cape-town';
+  | 'the-marly-cape-town'
+  | 'breakers-resort-apartments'
+  | 'aha-gateway-hotel-umhlanga'
+  | 'the-villa-umhlanga'
+  | 'protea-hotel-durban-umhlanga'
+  | 'holiday-inn-express-umhlanga'
+  | 'hilton-garden-inn-umhlanga'
+  | 'premier-splendid-inn-umhlanga'
+  | 'first-group-breakers-resort'
+  | 'royal-palm-hotel-umhlanga'
+  | 'regal-inn-umhlanga-gateway'
+  | 'premier-hotel-umhlanga'
+  | 'radisson-blu-durban-umhlanga'
+  | 'the-millennial-umhlanga'
+  | 'breakers-resort-232'
+  | 'oceans-apartments-radisson-blu'
+  | 'town-lodge-umhlanga'
+  | '71-sea-lodge-beachfront';
 
 export type OccupancyKey = '2_sleeper' | '4_sleeper';
 
