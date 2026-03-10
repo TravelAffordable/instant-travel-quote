@@ -7,6 +7,8 @@ import {
   hartiesIndlovukaziImages
 } from './hartiesHotelImages';
 import { hartiesPremiumImageMap } from './hartiesPremiumImages';
+import { durbanPremiumImageMap } from './durbanPremiumImages';
+import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
 export interface Hotel {
@@ -602,8 +604,14 @@ function generateHotels(): Hotel[] {
     } else if (premiumHotelNames[destId] && premiumHotelNames[destId].length > 0) {
       // Use real premium hotel names from premiumHotelNames registry
       const destPremiumHotels = premiumHotelNames[destId];
+      // Destination-specific image maps
+      const destImageMap: Record<string, string> = {
+        ...(destId === 'durban' ? durbanPremiumImageMap : {}),
+        ...(destId === 'umhlanga' ? umhlangaPremiumImageMap : {}),
+      };
       destPremiumHotels.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        const premiumImg = destImageMap[hotel.name] || premiumImages[index % premiumImages.length];
         allHotels.push({
           id: `${destId}-premium-${letter.toLowerCase()}`,
           name: hotel.name,
@@ -612,7 +620,8 @@ function generateHotels(): Hotel[] {
           rating: 4.5 + (Math.random() * 0.5),
           type: 'premium',
           amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
-          image: premiumImages[index % premiumImages.length],
+          image: premiumImg,
+          images: [premiumImg],
           capacity: hotel.capacity === '4_sleeper' ? 4 : 2,
           roomType: hotel.capacity === '4_sleeper' ? '4 Sleeper Room' : '2 Sleeper Room',
           includesBreakfast: hotel.includesBreakfast,
