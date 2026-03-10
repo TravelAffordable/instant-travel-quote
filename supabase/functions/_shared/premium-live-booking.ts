@@ -59,7 +59,24 @@ export type HotelKey =
   | 'the-bay-hotel'
   | 'twelve-apostles-hotel-spa'
   | 'protea-hotel-sea-point'
-  | 'the-marly-cape-town';
+  | 'the-marly-cape-town'
+  | 'breakers-resort-apartments'
+  | 'aha-gateway-hotel-umhlanga'
+  | 'the-villa-umhlanga'
+  | 'protea-hotel-durban-umhlanga'
+  | 'holiday-inn-express-umhlanga'
+  | 'hilton-garden-inn-umhlanga'
+  | 'premier-splendid-inn-umhlanga'
+  | 'first-group-breakers-resort'
+  | 'royal-palm-hotel-umhlanga'
+  | 'regal-inn-umhlanga-gateway'
+  | 'premier-hotel-umhlanga'
+  | 'radisson-blu-durban-umhlanga'
+  | 'the-millennial-umhlanga'
+  | 'breakers-resort-232'
+  | 'oceans-apartments-radisson-blu'
+  | 'town-lodge-umhlanga'
+  | '71-sea-lodge-beachfront';
 
 export type OccupancyKey = '2_sleeper' | '4_sleeper';
 
@@ -514,6 +531,125 @@ export const PREMIUM_HOTEL_CONFIGS: Record<HotelKey, PremiumHotelConfig> = {
     key: 'the-marly-cape-town',
     name: 'The Marly',
     searchQuery: 'The Marly Camps Bay Cape Town site:booking.com',
+  },
+  'breakers-resort-apartments': {
+    aliases: ['Breakers Resort Apartments'],
+    destinationLabel: 'Umhlanga',
+    key: 'breakers-resort-apartments',
+    name: 'Breakers Resort Apartments',
+    searchQuery: 'Breakers Resort Apartments Umhlanga site:booking.com',
+  },
+  'aha-gateway-hotel-umhlanga': {
+    aliases: ['aha Gateway Hotel Umhlanga'],
+    destinationLabel: 'Umhlanga',
+    key: 'aha-gateway-hotel-umhlanga',
+    name: 'aha Gateway Hotel Umhlanga',
+    searchQuery: 'aha Gateway Hotel Umhlanga site:booking.com',
+  },
+  'the-villa-umhlanga': {
+    aliases: ['The Villa Umhlanga'],
+    destinationLabel: 'Umhlanga',
+    key: 'the-villa-umhlanga',
+    name: 'The Villa Umhlanga',
+    searchQuery: 'The Villa Umhlanga site:booking.com',
+  },
+  'protea-hotel-durban-umhlanga': {
+    aliases: ['Protea Hotel by Marriott Durban Umhlanga'],
+    destinationLabel: 'Umhlanga',
+    key: 'protea-hotel-durban-umhlanga',
+    name: 'Protea Hotel by Marriott Durban Umhlanga',
+    searchQuery: 'Protea Hotel Marriott Durban Umhlanga site:booking.com',
+  },
+  'holiday-inn-express-umhlanga': {
+    aliases: ['Holiday Inn Express Durban Umhlanga', 'Holiday Inn Express Durban - Umhlanga by IHG'],
+    destinationLabel: 'Umhlanga',
+    key: 'holiday-inn-express-umhlanga',
+    name: 'Holiday Inn Express Durban Umhlanga',
+    searchQuery: 'Holiday Inn Express Durban Umhlanga site:booking.com',
+  },
+  'hilton-garden-inn-umhlanga': {
+    aliases: ['Hilton Garden Inn Umhlanga Arch'],
+    destinationLabel: 'Umhlanga',
+    key: 'hilton-garden-inn-umhlanga',
+    name: 'Hilton Garden Inn Umhlanga Arch',
+    searchQuery: 'Hilton Garden Inn Umhlanga Arch site:booking.com',
+  },
+  'premier-splendid-inn-umhlanga': {
+    aliases: ['Premier Splendid Inn Umhlanga'],
+    destinationLabel: 'Umhlanga',
+    key: 'premier-splendid-inn-umhlanga',
+    name: 'Premier Splendid Inn Umhlanga',
+    searchQuery: 'Premier Splendid Inn Umhlanga site:booking.com',
+  },
+  'first-group-breakers-resort': {
+    aliases: ['First Group Breakers Resort', 'First Group Breakers Resort - Official'],
+    destinationLabel: 'Umhlanga',
+    key: 'first-group-breakers-resort',
+    name: 'First Group Breakers Resort',
+    searchQuery: 'First Group Breakers Resort Umhlanga site:booking.com',
+  },
+  'royal-palm-hotel-umhlanga': {
+    aliases: ['Royal Palm Hotel'],
+    destinationLabel: 'Umhlanga',
+    key: 'royal-palm-hotel-umhlanga',
+    name: 'Royal Palm Hotel',
+    searchQuery: 'Royal Palm Hotel Umhlanga Durban site:booking.com',
+  },
+  'regal-inn-umhlanga-gateway': {
+    aliases: ['Regal Inn Umhlanga Gateway'],
+    destinationLabel: 'Umhlanga',
+    key: 'regal-inn-umhlanga-gateway',
+    name: 'Regal Inn Umhlanga Gateway',
+    searchQuery: 'Regal Inn Umhlanga Gateway site:booking.com',
+  },
+  'premier-hotel-umhlanga': {
+    aliases: ['Premier Hotel Umhlanga'],
+    destinationLabel: 'Umhlanga',
+    key: 'premier-hotel-umhlanga',
+    name: 'Premier Hotel Umhlanga',
+    searchQuery: 'Premier Hotel Umhlanga site:booking.com',
+  },
+  'radisson-blu-durban-umhlanga': {
+    aliases: ['Radisson Blu Hotel Durban Umhlanga', 'Radisson Blu Hotel, Durban Umhlanga'],
+    destinationLabel: 'Umhlanga',
+    key: 'radisson-blu-durban-umhlanga',
+    name: 'Radisson Blu Hotel Durban Umhlanga',
+    searchQuery: 'Radisson Blu Hotel Durban Umhlanga site:booking.com',
+  },
+  'the-millennial-umhlanga': {
+    aliases: ['The Millennial Umhlanga'],
+    destinationLabel: 'Umhlanga',
+    key: 'the-millennial-umhlanga',
+    name: 'The Millennial Umhlanga',
+    searchQuery: 'The Millennial Umhlanga site:booking.com',
+  },
+  'breakers-resort-232': {
+    aliases: ['Breakers Resort 232', 'Breakers Resort, Umhlanga, 232'],
+    destinationLabel: 'Umhlanga',
+    key: 'breakers-resort-232',
+    name: 'Breakers Resort 232',
+    searchQuery: 'Breakers Resort Umhlanga 232 site:booking.com',
+  },
+  'oceans-apartments-radisson-blu': {
+    aliases: ['Oceans Apartments Balcony Suites Radisson Blu'],
+    destinationLabel: 'Umhlanga',
+    key: 'oceans-apartments-radisson-blu',
+    name: 'Oceans Apartments Balcony Suites Radisson Blu',
+    searchQuery: 'Oceans Apartments Balcony Suites Radisson Blu Umhlanga site:booking.com',
+  },
+  'town-lodge-umhlanga': {
+    aliases: ['Town Lodge Umhlanga'],
+    destinationLabel: 'Umhlanga',
+    key: 'town-lodge-umhlanga',
+    name: 'Town Lodge Umhlanga',
+    searchQuery: 'Town Lodge Umhlanga site:booking.com',
+  },
+  '71-sea-lodge-beachfront': {
+    aliases: ['71 Sea Lodge Beachfront Apartment'],
+    destinationLabel: 'Umhlanga',
+    key: '71-sea-lodge-beachfront',
+    name: '71 Sea Lodge Beachfront Apartment',
+    searchQuery: '71 Sea Lodge Beachfront Apartment Umhlanga site:booking.com',
   },
 };
 
