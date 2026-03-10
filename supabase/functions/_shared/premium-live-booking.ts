@@ -86,7 +86,23 @@ export type HotelKey =
   | 'ivory-tree-game-lodge'
   | 'pilanesberg-hotel'
   | 'kedar-heritage-lodge'
-  | 'royal-marang-hotel';
+  | 'royal-marang-hotel'
+  | 'the-russel-hotel'
+  | 'knysna-log-inn-hotel'
+  | 'aha-the-rex-hotel'
+  | 'protea-hotel-knysna-quays'
+  | 'th39-thesen-islands'
+  | 'belle-view-knysna-quays'
+  | 'knysna-inn'
+  | 'gem-quays-waterfront'
+  | 'amazing-views-knysna'
+  | 'knysna-quays-4'
+  | 'waterfront-apartment-knysna'
+  | 'knysna-houseboats'
+  | 'spinnaker-quays-waterfront-villa'
+  | 'phoenix-lodge-waterside'
+  | 'pezula-golf-estate-knysna'
+  | 'issaquena-heights-boutique-hotel';
 
 export type OccupancyKey = '2_sleeper' | '4_sleeper';
 
