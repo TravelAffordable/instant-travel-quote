@@ -526,6 +526,7 @@ function generateHotels(): Hotel[] {
       // Add 4-sleeper premium hotels for adults-only groups
       durbanPremiumHotels4SleeperAdults.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
+        const hotelImg = durbanPremiumImageMap[hotel.name] || premiumImages[index % premiumImages.length];
         allHotels.push({
           id: `${destId}-premium-4sa-${letter.toLowerCase()}`,
           name: hotel.name,
@@ -534,7 +535,8 @@ function generateHotels(): Hotel[] {
           rating: 4.5 + (Math.random() * 0.5),
           type: 'premium',
           amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining', 'Beachfront'],
-          image: premiumImages[index % premiumImages.length],
+          image: hotelImg,
+          images: [hotelImg],
           capacity: 4,
           roomType: hotel.roomType,
           includesBreakfast: hotel.includesBreakfast,
