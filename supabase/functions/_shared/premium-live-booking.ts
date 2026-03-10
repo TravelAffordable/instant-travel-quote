@@ -86,7 +86,23 @@ export type HotelKey =
   | 'ivory-tree-game-lodge'
   | 'pilanesberg-hotel'
   | 'kedar-heritage-lodge'
-  | 'royal-marang-hotel';
+  | 'royal-marang-hotel'
+  | 'the-russel-hotel'
+  | 'knysna-log-inn-hotel'
+  | 'aha-the-rex-hotel'
+  | 'protea-hotel-knysna-quays'
+  | 'th39-thesen-islands'
+  | 'belle-view-knysna-quays'
+  | 'knysna-inn'
+  | 'gem-quays-waterfront'
+  | 'amazing-views-knysna'
+  | 'knysna-quays-4'
+  | 'waterfront-apartment-knysna'
+  | 'knysna-houseboats'
+  | 'spinnaker-quays-waterfront-villa'
+  | 'phoenix-lodge-waterside'
+  | 'pezula-golf-estate-knysna'
+  | 'issaquena-heights-boutique-hotel';
 
 export type OccupancyKey = '2_sleeper' | '4_sleeper';
 
@@ -730,6 +746,118 @@ export const PREMIUM_HOTEL_CONFIGS: Record<HotelKey, PremiumHotelConfig> = {
     key: 'royal-marang-hotel',
     name: 'Royal Marang Hotel',
     searchQuery: 'Royal Marang Hotel Rustenburg site:booking.com',
+  },
+  'the-russel-hotel': {
+    aliases: ['The Russel Hotel'],
+    destinationLabel: 'Knysna',
+    key: 'the-russel-hotel',
+    name: 'The Russel Hotel',
+    searchQuery: 'The Russel Hotel Knysna site:booking.com',
+  },
+  'knysna-log-inn-hotel': {
+    aliases: ['Knysna Log-Inn Hotel'],
+    destinationLabel: 'Knysna',
+    key: 'knysna-log-inn-hotel',
+    name: 'Knysna Log-Inn Hotel',
+    searchQuery: 'Knysna Log-Inn Hotel site:booking.com',
+  },
+  'aha-the-rex-hotel': {
+    aliases: ['aha The Rex Hotel'],
+    destinationLabel: 'Knysna',
+    key: 'aha-the-rex-hotel',
+    name: 'aha The Rex Hotel',
+    searchQuery: 'aha The Rex Hotel Knysna site:booking.com',
+  },
+  'protea-hotel-knysna-quays': {
+    aliases: ['Protea Hotel by Marriott Knysna Quays'],
+    destinationLabel: 'Knysna',
+    key: 'protea-hotel-knysna-quays',
+    name: 'Protea Hotel by Marriott Knysna Quays',
+    searchQuery: 'Protea Hotel Marriott Knysna Quays site:booking.com',
+  },
+  'th39-thesen-islands': {
+    aliases: ['TH39 Thesen Islands'],
+    destinationLabel: 'Knysna',
+    key: 'th39-thesen-islands',
+    name: 'TH39 Thesen Islands',
+    searchQuery: 'TH39 Thesen Islands Knysna site:booking.com',
+  },
+  'belle-view-knysna-quays': {
+    aliases: ['Belle View @ Knysna Quays'],
+    destinationLabel: 'Knysna',
+    key: 'belle-view-knysna-quays',
+    name: 'Belle View @ Knysna Quays',
+    searchQuery: 'Belle View Knysna Quays site:booking.com',
+  },
+  'knysna-inn': {
+    aliases: ['Knysna Inn'],
+    destinationLabel: 'Knysna',
+    key: 'knysna-inn',
+    name: 'Knysna Inn',
+    searchQuery: 'Knysna Inn site:booking.com',
+  },
+  'gem-quays-waterfront': {
+    aliases: ['Gem Quays Waterfront'],
+    destinationLabel: 'Knysna',
+    key: 'gem-quays-waterfront',
+    name: 'Gem Quays Waterfront',
+    searchQuery: 'Gem Quays Waterfront Knysna site:booking.com',
+  },
+  'amazing-views-knysna': {
+    aliases: ['Amazing Views, Comfortable living space, Knysna'],
+    destinationLabel: 'Knysna',
+    key: 'amazing-views-knysna',
+    name: 'Amazing Views, Comfortable living space, Knysna',
+    searchQuery: 'Amazing Views Comfortable living space Knysna site:booking.com',
+  },
+  'knysna-quays-4': {
+    aliases: ['KnysnaQuays 4'],
+    destinationLabel: 'Knysna',
+    key: 'knysna-quays-4',
+    name: 'KnysnaQuays 4',
+    searchQuery: 'KnysnaQuays 4 Knysna site:booking.com',
+  },
+  'waterfront-apartment-knysna': {
+    aliases: ['Waterfront Apartment, Waterfront'],
+    destinationLabel: 'Knysna',
+    key: 'waterfront-apartment-knysna',
+    name: 'Waterfront Apartment, Waterfront',
+    searchQuery: 'Waterfront Apartment Knysna Waterfront site:booking.com',
+  },
+  'knysna-houseboats': {
+    aliases: ['Knysna Houseboats'],
+    destinationLabel: 'Knysna',
+    key: 'knysna-houseboats',
+    name: 'Knysna Houseboats',
+    searchQuery: 'Knysna Houseboats site:booking.com',
+  },
+  'spinnaker-quays-waterfront-villa': {
+    aliases: ['Spinnaker Quays Waterfront Villa'],
+    destinationLabel: 'Knysna',
+    key: 'spinnaker-quays-waterfront-villa',
+    name: 'Spinnaker Quays Waterfront Villa',
+    searchQuery: 'Spinnaker Quays Waterfront Villa Knysna site:booking.com',
+  },
+  'phoenix-lodge-waterside': {
+    aliases: ['Phoenix Lodge and Waterside Accommodation'],
+    destinationLabel: 'Knysna',
+    key: 'phoenix-lodge-waterside',
+    name: 'Phoenix Lodge and Waterside Accommodation',
+    searchQuery: 'Phoenix Lodge Waterside Accommodation Knysna site:booking.com',
+  },
+  'pezula-golf-estate-knysna': {
+    aliases: ['Knysna, Pezula Golf Estate'],
+    destinationLabel: 'Knysna',
+    key: 'pezula-golf-estate-knysna',
+    name: 'Knysna, Pezula Golf Estate',
+    searchQuery: 'Pezula Golf Estate Knysna site:booking.com',
+  },
+  'issaquena-heights-boutique-hotel': {
+    aliases: ['Issaquena Heights Boutique Hotel'],
+    destinationLabel: 'Knysna',
+    key: 'issaquena-heights-boutique-hotel',
+    name: 'Issaquena Heights Boutique Hotel',
+    searchQuery: 'Issaquena Heights Boutique Hotel Knysna site:booking.com',
   },
 };
 
