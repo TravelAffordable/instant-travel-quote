@@ -50,7 +50,10 @@ async function applyLivePremiumRates(
   const liveHotels = await Promise.all(
     hotels.map(async (hotel) => {
       const hotelKey = getPremiumLiveHotelKeyByName(hotel.name);
-      if (!hotelKey) return hotel;
+      if (!hotelKey) {
+        console.warn(`[premium-live] Missing hotel key mapping for "${hotel.name}"`);
+        return null;
+      }
 
       const occupancy = hotel.capacity === '4_sleeper' ? '4_sleeper' : '2_sleeper';
       const { data, error } = await supabase.functions.invoke('booking-live-rate', {
@@ -65,12 +68,12 @@ async function applyLivePremiumRates(
 
       if (error) {
         console.error(`booking-live-rate failed for ${hotel.name}:`, error.message);
-        return hotel;
+        return null;
       }
 
       const liveRate = data as LiveBookingRateResponse | null;
       if (!liveRate?.available || liveRate.displayTotalPrice === null) {
-        return hotel;
+        return null;
       }
 
       return {
@@ -82,7 +85,7 @@ async function applyLivePremiumRates(
     }),
   );
 
-  return liveHotels;
+  return liveHotels.filter((hotel): hotel is AccommodationPricingHotel => Boolean(hotel));
 }
 
 // Service fee calculation
