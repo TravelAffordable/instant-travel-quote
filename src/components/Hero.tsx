@@ -50,7 +50,10 @@ async function applyLivePremiumRates(
   const liveHotels = await Promise.all(
     hotels.map(async (hotel) => {
       const hotelKey = getPremiumLiveHotelKeyByName(hotel.name);
-      if (!hotelKey) return hotel;
+      if (!hotelKey) {
+        console.warn(`[premium-live] Missing hotel key mapping for "${hotel.name}"`);
+        return null;
+      }
 
       const occupancy = hotel.capacity === '4_sleeper' ? '4_sleeper' : '2_sleeper';
       const { data, error } = await supabase.functions.invoke('booking-live-rate', {
@@ -65,12 +68,12 @@ async function applyLivePremiumRates(
 
       if (error) {
         console.error(`booking-live-rate failed for ${hotel.name}:`, error.message);
-        return hotel;
+        return null;
       }
 
       const liveRate = data as LiveBookingRateResponse | null;
       if (!liveRate?.available || liveRate.displayTotalPrice === null) {
-        return hotel;
+        return null;
       }
 
       return {
@@ -82,7 +85,7 @@ async function applyLivePremiumRates(
     }),
   );
 
-  return liveHotels;
+  return liveHotels.filter(Boolean) as AccommodationPricingHotel[];
 }
 
 // Service fee calculation
@@ -207,8 +210,7 @@ function convertRMSToQuotes(
 }
 
 // Convert RMS hotels to accommodation-only QuoteResult format
-// Static hotel rows keep the existing catalog + markup pricing.
-// Live Durban premium rows use the exact Booking.com total returned by the scraper.
+// Applies required accommodation add-ons on top of base hotel totals.
 function convertRMSToAccommodationOnlyQuotes(
   hotels: AccommodationPricingHotel[],
   params: {
@@ -236,22 +238,14 @@ function convertRMSToAccommodationOnlyQuotes(
   for (let i = 0; i < hotels.length; i++) {
     const hotel = hotels[i];
     const totalPeople = params.adults + params.children;
-    const pricingMode = hotel.pricingMode ?? 'catalog_markup';
 
-    let totalForGroup: number;
-    if (pricingMode === 'live_booking_total') {
-      totalForGroup = Math.round(hotel.totalRate);
-    } else {
-      const perNightRate = hotel.totalRate / nights;
-      const adultMarkupPerNight = perNightRate <= 1000 ? 50 : 60;
-      const totalPerNight = perNightRate + (adultMarkupPerNight * params.adults) + (20 * eligibleChildren);
-      totalForGroup = roundToNearest10(totalPerNight * nights * params.rooms);
-    }
+    const perNightRate = hotel.totalRate / nights;
+    const adultMarkupPerNight = perNightRate <= 1000 ? 50 : 60;
+    const totalPerNight = perNightRate + (adultMarkupPerNight * params.adults) + (20 * eligibleChildren);
+    const totalForGroup = roundToNearest10(totalPerNight * nights * params.rooms);
 
     const totalPerPerson = totalPeople > 0
-      ? (pricingMode === 'live_booking_total'
-          ? Math.round(totalForGroup / totalPeople)
-          : roundToNearest10(totalForGroup / totalPeople))
+      ? roundToNearest10(totalForGroup / totalPeople)
       : 0;
 
     const hotelNameDisplay = hotel.includesBreakfast
@@ -593,20 +587,24 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        // Apply live pricing mode for all tiers with real/cached rates
+        // Mark rows that came from live/cached crawler sources
         let pricedHotels: AccommodationPricingHotel[] = tierHotels.map(h => ({
           ...h,
-          // Cached budget/affordable rates from Booking.com crawler use live mode (no markups)
           pricingMode: h.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
         }));
 
-        // For premium tier, also fetch real-time rates from Booking.com scraper
+        // For premium tier, enforce real-time availability and pricing from Booking.com scraper
         if (accommodationType === 'premium') {
           pricedHotels = await applyLivePremiumRates(tierHotels, {
             checkIn,
             checkOut,
             rooms,
           });
+
+          if (pricedHotels.length === 0) {
+            toast.info('No premium hotels are currently available for the selected dates. Please try different dates.');
+            return;
+          }
         }
 
         const sharedParams = {
