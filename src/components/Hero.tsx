@@ -85,7 +85,7 @@ async function applyLivePremiumRates(
     }),
   );
 
-  return liveHotels.filter((hotel): hotel is AccommodationPricingHotel => Boolean(hotel));
+  return liveHotels.filter(Boolean) as AccommodationPricingHotel[];
 }
 
 // Service fee calculation
