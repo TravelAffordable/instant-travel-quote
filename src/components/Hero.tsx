@@ -594,13 +594,18 @@ export function Hero({ onGetQuote }: HeroProps) {
           pricingMode: h.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
         }));
 
-        // For premium tier, also fetch real-time rates from Booking.com scraper
+        // For premium tier, enforce real-time availability and pricing from Booking.com scraper
         if (accommodationType === 'premium') {
           pricedHotels = await applyLivePremiumRates(tierHotels, {
             checkIn,
             checkOut,
             rooms,
           });
+
+          if (pricedHotels.length === 0) {
+            toast.info('No premium hotels are currently available for the selected dates. Please try different dates.');
+            return;
+          }
         }
 
         const sharedParams = {
