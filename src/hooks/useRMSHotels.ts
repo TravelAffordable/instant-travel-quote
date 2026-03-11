@@ -166,7 +166,7 @@ export function useRMSHotels() {
           return a.minRate - b.minRate;
         });
 
-      // Fetch cached live rates for budget/affordable tiers
+      // Fetch cached live rates for all tiers
       try {
         const capacityFilter = totalGuests > 2 ? '4_sleeper' : '2_sleeper';
         const { data: cachedRates } = await supabase
@@ -177,12 +177,12 @@ export function useRMSHotels() {
           .eq('is_available', true);
 
         if (cachedRates && cachedRates.length > 0) {
-          // Build cached hotel entries that replace static budget/affordable hotels
+          // Build cached hotel entries
           const cachedHotels: RMSHotel[] = cachedRates.map((cr, idx) => ({
             code: `cached-${cr.tier}-${capacityFilter}-${idx}`,
             name: cr.hotel_alias,
             starRating: null,
-            tier: cr.tier as 'budget' | 'affordable',
+            tier: cr.tier as 'budget' | 'affordable' | 'premium',
             includesBreakfast: cr.includes_breakfast ?? false,
             minRate: Math.round(Number(cr.crawled_rate)),
             totalRate: Math.round(Number(cr.crawled_rate) * nights),
@@ -195,9 +195,26 @@ export function useRMSHotels() {
             isCachedRate: true,
           }));
 
-          // Keep only premium from static, replace budget/affordable with cached
-          const staticPremium = rmsHotels.filter(h => h.tier === 'premium');
-          const merged = [...cachedHotels, ...staticPremium].sort((a, b) => {
+          // Group cached by tier to know which tiers have cached data
+          const cachedTiers = new Set(cachedRates.map(cr => cr.tier));
+          
+          // Keep static hotels only for tiers that have NO cached data
+          const staticKept = rmsHotels.filter(h => !cachedTiers.has(h.tier));
+          
+          // For premium cached hotels, try to restore images from static data
+          const premiumCachedWithImages = cachedHotels.map(ch => {
+            if (ch.tier === 'premium') {
+              const staticMatch = rmsHotels.find(sh => 
+                sh.tier === 'premium' && sh.name.toLowerCase() === ch.name.toLowerCase()
+              );
+              if (staticMatch && staticMatch.images && staticMatch.images.length > 0) {
+                return { ...ch, images: staticMatch.images };
+              }
+            }
+            return ch;
+          });
+
+          const merged = [...premiumCachedWithImages, ...staticKept].sort((a, b) => {
             const tierOrder = { budget: 1, affordable: 2, premium: 3 };
             if (tierOrder[a.tier] !== tierOrder[b.tier]) {
               return tierOrder[a.tier] - tierOrder[b.tier];
