@@ -17,9 +17,13 @@ interface QuoteCardProps {
   onWhatsApp: () => void;
 }
 
-// Get activity images based on destination
-const getCarouselImages = (destination: string): string[] => {
-  return getActivityImagesForDestination(destination);
+// Get activity images based on destination, staggered by card index
+const getCarouselImages = (destination: string, cardIndex: number = 0): string[] => {
+  const images = getActivityImagesForDestination(destination);
+  if (images.length <= 1) return images;
+  // Rotate the array so each card starts on a different image
+  const offset = cardIndex % images.length;
+  return [...images.slice(offset), ...images.slice(0, offset)];
 };
 
 export function QuoteCard({ 
