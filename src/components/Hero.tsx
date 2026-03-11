@@ -238,22 +238,14 @@ function convertRMSToAccommodationOnlyQuotes(
   for (let i = 0; i < hotels.length; i++) {
     const hotel = hotels[i];
     const totalPeople = params.adults + params.children;
-    const pricingMode = hotel.pricingMode ?? 'catalog_markup';
 
-    let totalForGroup: number;
-    if (pricingMode === 'live_booking_total') {
-      totalForGroup = Math.round(hotel.totalRate);
-    } else {
-      const perNightRate = hotel.totalRate / nights;
-      const adultMarkupPerNight = perNightRate <= 1000 ? 50 : 60;
-      const totalPerNight = perNightRate + (adultMarkupPerNight * params.adults) + (20 * eligibleChildren);
-      totalForGroup = roundToNearest10(totalPerNight * nights * params.rooms);
-    }
+    const perNightRate = hotel.totalRate / nights;
+    const adultMarkupPerNight = perNightRate <= 1000 ? 50 : 60;
+    const totalPerNight = perNightRate + (adultMarkupPerNight * params.adults) + (20 * eligibleChildren);
+    const totalForGroup = roundToNearest10(totalPerNight * nights * params.rooms);
 
     const totalPerPerson = totalPeople > 0
-      ? (pricingMode === 'live_booking_total'
-          ? Math.round(totalForGroup / totalPeople)
-          : roundToNearest10(totalForGroup / totalPeople))
+      ? roundToNearest10(totalForGroup / totalPeople)
       : 0;
 
     const hotelNameDisplay = hotel.includesBreakfast
