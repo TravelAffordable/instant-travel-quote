@@ -8,6 +8,7 @@ import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getActivitiesForDestination, findActivityByName, type Activity } from '@/data/activitiesData';
+import { getActivityImagesForDestination } from '@/data/destinationActivityImages';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import useEmblaCarousel from 'embla-carousel-react';
 
