@@ -1,11 +1,11 @@
-// Complete reference of all budget & affordable hotels across all destinations
+// Complete reference of all budget, affordable & premium hotels across all destinations
 // Data sourced from reference documentation (Booking.com rates)
 
 export type BudgetHotelEntry = {
   alias: string;
   realName: string;
   dest: string;
-  tier: 'budget' | 'affordable';
+  tier: 'budget' | 'affordable' | 'premium';
   cap: '2_sleeper' | '4_sleeper';
   refRate: number;
   city: string;
