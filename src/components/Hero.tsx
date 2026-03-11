@@ -210,8 +210,7 @@ function convertRMSToQuotes(
 }
 
 // Convert RMS hotels to accommodation-only QuoteResult format
-// Static hotel rows keep the existing catalog + markup pricing.
-// Live Durban premium rows use the exact Booking.com total returned by the scraper.
+// Applies required accommodation add-ons on top of base hotel totals.
 function convertRMSToAccommodationOnlyQuotes(
   hotels: AccommodationPricingHotel[],
   params: {
