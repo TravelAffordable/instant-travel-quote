@@ -8,6 +8,7 @@ import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getActivitiesForDestination, findActivityByName, type Activity } from '@/data/activitiesData';
+import { getActivityImagesForDestination } from '@/data/destinationActivityImages';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import useEmblaCarousel from 'embla-carousel-react';
 
@@ -324,7 +325,7 @@ export function RMSHotelQuotes({
 
             {/* Hotel Cards for Active Tier */}
             <div className="space-y-4">
-              {tierHotels.map(hotel => {
+              {tierHotels.map((hotel, hotelIdx) => {
                 const accommodationCost = hotel.totalRate * rooms;
                 let grandTotal = roundToNearest10(accommodationCost + activitiesCost + serviceFees);
                 
@@ -341,12 +342,21 @@ export function RMSHotelQuotes({
                 const emailSubject = `Booking Request: ${hotel.name} - ${pkg.name}`;
                 const emailBody = `Dear Travel Affordable,\n\nI would like to request a booking:\n\nHotel: ${hotel.name}\nPackage: ${pkg.name}\nNights: ${nights}\nGuests: ${adults} adults${children > 0 ? `, ${children} children` : ''}\nRooms: ${rooms} x ${hotel.roomTypeName}${busQuoteAmount > 0 ? `\nBus Transport: ${formatCurrency(busQuoteAmount)}` : ''}\nTotal: ${formatCurrency(grandTotal)}\n\nGuest Details:\nName: ${guestName || 'Not provided'}\nTel: ${guestTel || 'Not provided'}\nEmail: ${guestEmail || 'Not provided'}\n\nPlease confirm availability.\n\nThank you!`;
 
+                // Determine carousel images: real photos or staggered activity images
+                const realPhotos = hotel.images && hotel.images.length > 0 ? hotel.images : null;
+                const carouselImages = realPhotos || (() => {
+                  const activityImgs = getActivityImagesForDestination(hotel.destination);
+                  if (activityImgs.length <= 1) return activityImgs;
+                  const offset = hotelIdx % activityImgs.length;
+                  return [...activityImgs.slice(offset), ...activityImgs.slice(0, offset)];
+                })();
+
                 return (
                   <Card key={hotel.code} className="border shadow-sm overflow-hidden">
                     <CardContent className="p-4">
-                      {/* Hotel image carousel if real photos are available */}
-                      {hotel.images && hotel.images.length > 0 && (
-                        <HotelImageCarousel images={hotel.images} hotelName={hotel.name} />
+                      {/* Hotel image carousel - real photos or staggered activity images */}
+                      {carouselImages.length > 0 && (
+                        <HotelImageCarousel images={carouselImages} hotelName={hotel.name} />
                       )}
                       <div className="flex flex-col md:flex-row md:items-start gap-4">
                         {/* Hotel Info */}
