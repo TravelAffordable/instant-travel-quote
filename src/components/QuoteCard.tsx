@@ -56,7 +56,7 @@ export function QuoteCard({
   const realHotelImages = quote.hotelImages?.filter(img => !img.includes('unsplash.com'));
   const carouselImages = (realHotelImages && realHotelImages.length > 0)
     ? realHotelImages
-    : getCarouselImages(quote.destination);
+    : getCarouselImages(quote.destination, index);
 
   return (
     <Card 
