@@ -587,10 +587,9 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        // Apply live pricing mode for all tiers with real/cached rates
+        // Mark rows that came from live/cached crawler sources
         let pricedHotels: AccommodationPricingHotel[] = tierHotels.map(h => ({
           ...h,
-          // Cached budget/affordable rates from Booking.com crawler use live mode (no markups)
           pricingMode: h.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
         }));
 
