@@ -219,7 +219,7 @@ Deno.serve(async (req) => {
           const rate = await searchHotelRate(h.realName, h.city, apiKey);
           return { realName: h.realName, rate };
         },
-        5, // 5 concurrent searches
+        3, // 3 concurrent searches to avoid rate limits
       );
 
       for (const result of results) {
