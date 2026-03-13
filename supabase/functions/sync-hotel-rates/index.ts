@@ -21,58 +21,138 @@ function jsonResponse(body: unknown, status = 200) {
  * Search Firecrawl for a hotel's current rate on Booking.com.
  * Returns the extracted nightly rate or null if not found.
  */
+/**
+ * Extract ZAR prices from text using multiple patterns.
+ * Returns the first valid price found (R200–R50,000 range).
+ */
+function extractZARPrice(text: string): number | null {
+  const patterns = [
+    /(?:from\s+)?R\s?([\d,]+(?:\.\d{2})?)/gi,
+    /ZAR\s?([\d,]+(?:\.\d{2})?)/gi,
+    /(?:price|rate|from|total|per\s*night)[:\s]+R\s?([\d,]+)/gi,
+    /R\s?([\d]{3,5})\s*(?:per|\/)\s*night/gi,
+    /(?:price|rate)\s*[:\s]*(?:ZAR|R)\s*([\d,]+)/gi,
+  ];
+
+  const prices: number[] = [];
+  for (const pattern of patterns) {
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      const price = parseFloat(match[1].replace(/,/g, ''));
+      if (price >= 200 && price <= 50000) {
+        prices.push(price);
+      }
+    }
+  }
+
+  // Return the lowest valid price (most likely the base nightly rate)
+  return prices.length > 0 ? Math.min(...prices) : null;
+}
+
+/**
+ * Phase 1: Search Firecrawl for hotel info and try to extract rate from search results.
+ * Phase 2: If a Booking.com URL is found, scrape it directly for more reliable pricing.
+ */
 async function searchHotelRate(
   realName: string,
   city: string,
   apiKey: string,
 ): Promise<number | null> {
-  const query = `${realName} ${city} South Africa site:booking.com`;
+  // Try multiple search queries for better coverage
+  const queries = [
+    `${realName} ${city} site:booking.com price per night`,
+    `"${realName}" ${city} South Africa booking.com`,
+  ];
 
-  try {
-    const response = await fetch('https://api.firecrawl.dev/v1/search', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query, limit: 3 }),
-    });
+  let bookingUrl: string | null = null;
+  let searchPrice: number | null = null;
 
-    if (!response.ok) {
-      console.warn(`Firecrawl search failed for "${realName}": ${response.status}`);
-      return null;
-    }
+  for (const query of queries) {
+    if (searchPrice !== null) break;
 
-    const data = await response.json();
-    const results = data?.data ?? data?.results ?? [];
+    try {
+      const response = await fetch('https://api.firecrawl.dev/v1/search', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query, limit: 5 }),
+      });
 
-    for (const result of results) {
-      const text = `${result.title || ''} ${result.description || ''} ${result.markdown || ''}`;
+      if (!response.ok) {
+        console.warn(`Firecrawl search failed for "${realName}" (${response.status})`);
+        continue;
+      }
 
-      // Try to extract ZAR price patterns: R1,234 or R 1234 or ZAR 1,234
-      const patterns = [
-        /(?:from\s+)?R\s?([\d,]+(?:\.\d{2})?)/gi,
-        /ZAR\s?([\d,]+(?:\.\d{2})?)/gi,
-        /(?:price|rate|from)[:\s]+R\s?([\d,]+)/gi,
-      ];
+      const data = await response.json();
+      const results = data?.data ?? data?.results ?? [];
 
-      for (const pattern of patterns) {
-        let match;
-        while ((match = pattern.exec(text)) !== null) {
-          const price = parseFloat(match[1].replace(/,/g, ''));
-          // Sanity check: hotel rates typically between R200 and R50,000 per night
-          if (price >= 200 && price <= 50000) {
-            return price;
-          }
+      for (const result of results) {
+        const url = result.url || result.sourceURL || '';
+        const text = `${result.title || ''} ${result.description || ''} ${result.markdown || ''}`;
+
+        // Capture Booking.com URL for phase 2
+        if (!bookingUrl && url.includes('booking.com/hotel')) {
+          bookingUrl = url;
+        }
+
+        // Try to extract price from search result
+        const price = extractZARPrice(text);
+        if (price !== null) {
+          searchPrice = price;
+          break;
         }
       }
+    } catch (error) {
+      console.error(`Search error for "${realName}":`, error);
     }
-
-    return null;
-  } catch (error) {
-    console.error(`Error searching rate for "${realName}":`, error);
-    return null;
   }
+
+  // Phase 1 success
+  if (searchPrice !== null) {
+    return searchPrice;
+  }
+
+  // Phase 2: Scrape the Booking.com URL directly for pricing
+  if (bookingUrl) {
+    try {
+      // Add South African locale params to get ZAR pricing
+      const url = new URL(bookingUrl);
+      if (!url.searchParams.has('selected_currency')) {
+        url.searchParams.set('selected_currency', 'ZAR');
+      }
+
+      const scrapeResponse = await fetch('https://api.firecrawl.dev/v1/scrape', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: url.toString(),
+          formats: ['markdown'],
+          onlyMainContent: true,
+          waitFor: 3000,
+          location: { country: 'ZA', languages: ['en'] },
+        }),
+      });
+
+      if (scrapeResponse.ok) {
+        const scrapeData = await scrapeResponse.json();
+        const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || '';
+        const scraped = extractZARPrice(markdown);
+        if (scraped !== null) {
+          console.log(`  → Scraped rate for "${realName}": R${scraped}`);
+          return scraped;
+        }
+      }
+    } catch (err) {
+      console.warn(`Scrape failed for "${realName}":`, err);
+    }
+  }
+
+  return null;
 }
 
 /**
