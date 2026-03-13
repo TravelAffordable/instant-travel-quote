@@ -18,19 +18,15 @@ function jsonResponse(body: unknown, status = 200) {
 }
 
 /**
- * Search Firecrawl for a hotel's current rate on Booking.com.
- * Returns the extracted nightly rate or null if not found.
- */
-/**
  * Extract ZAR prices from text using multiple patterns.
- * Returns the first valid price found (R200–R50,000 range).
+ * Returns the lowest valid price found (R200–R50,000 range).
  */
 function extractZARPrice(text: string): number | null {
   const patterns = [
+    /R\s?([\d,]+(?:\.\d{2})?)\s*(?:per|\/)\s*night/gi,
     /(?:from\s+)?R\s?([\d,]+(?:\.\d{2})?)/gi,
     /ZAR\s?([\d,]+(?:\.\d{2})?)/gi,
-    /(?:price|rate|from|total|per\s*night)[:\s]+R\s?([\d,]+)/gi,
-    /R\s?([\d]{3,5})\s*(?:per|\/)\s*night/gi,
+    /(?:price|rate|from|total)[:\s]+R\s?([\d,]+)/gi,
     /(?:price|rate)\s*[:\s]*(?:ZAR|R)\s*([\d,]+)/gi,
   ];
 
@@ -45,111 +41,101 @@ function extractZARPrice(text: string): number | null {
     }
   }
 
-  // Return the lowest valid price (most likely the base nightly rate)
   return prices.length > 0 ? Math.min(...prices) : null;
 }
 
 /**
- * Phase 1: Search Firecrawl for hotel info and try to extract rate from search results.
- * Phase 2: If a Booking.com URL is found, scrape it directly for more reliable pricing.
+ * Build a Booking.com search URL for a hotel in ZAR currency.
+ */
+function buildBookingSearchUrl(hotelName: string, city: string): string {
+  const ss = encodeURIComponent(`${hotelName} ${city}`);
+  return `https://www.booking.com/searchresults.en-gb.html?ss=${ss}&selected_currency=ZAR&lang=en-gb`;
+}
+
+/**
+ * Delay helper to avoid rate limits.
+ */
+function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Strategy 1: Directly scrape Booking.com search results page for ZAR pricing.
+ * Strategy 2: Fall back to Firecrawl web search if scrape fails.
  */
 async function searchHotelRate(
   realName: string,
   city: string,
   apiKey: string,
 ): Promise<number | null> {
-  // Try multiple search queries for better coverage
-  const queries = [
-    `${realName} ${city} site:booking.com price per night`,
-    `"${realName}" ${city} South Africa booking.com`,
-  ];
+  // Strategy 1: Direct Booking.com search page scrape
+  try {
+    const searchUrl = buildBookingSearchUrl(realName, city);
+    
+    const scrapeResponse = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: searchUrl,
+        formats: ['markdown'],
+        onlyMainContent: true,
+        waitFor: 5000,
+        location: { country: 'ZA', languages: ['en'] },
+      }),
+    });
 
-  let bookingUrl: string | null = null;
-  let searchPrice: number | null = null;
-
-  for (const query of queries) {
-    if (searchPrice !== null) break;
-
-    try {
-      const response = await fetch('https://api.firecrawl.dev/v1/search', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query, limit: 5 }),
-      });
-
-      if (!response.ok) {
-        console.warn(`Firecrawl search failed for "${realName}" (${response.status})`);
-        continue;
+    if (scrapeResponse.ok) {
+      const scrapeData = await scrapeResponse.json();
+      const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || '';
+      
+      // Check if the hotel name appears in results (relevance check)
+      const nameParts = realName.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+      const mdLower = markdown.toLowerCase();
+      const nameMatch = nameParts.some(part => mdLower.includes(part));
+      
+      if (nameMatch) {
+        const price = extractZARPrice(markdown);
+        if (price !== null) {
+          return price;
+        }
       }
+    } else if (scrapeResponse.status === 429) {
+      console.warn(`Rate limited scraping for "${realName}", waiting...`);
+      await delay(2000);
+    }
+  } catch (err) {
+    console.warn(`Scrape error for "${realName}":`, err);
+  }
 
+  // Strategy 2: Firecrawl web search as fallback
+  try {
+    const query = `${realName} ${city} South Africa booking.com price per night ZAR`;
+    const response = await fetch('https://api.firecrawl.dev/v1/search', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query, limit: 5 }),
+    });
+
+    if (response.ok) {
       const data = await response.json();
       const results = data?.data ?? data?.results ?? [];
 
       for (const result of results) {
-        const url = result.url || result.sourceURL || '';
         const text = `${result.title || ''} ${result.description || ''} ${result.markdown || ''}`;
-
-        // Capture Booking.com URL for phase 2
-        if (!bookingUrl && url.includes('booking.com/hotel')) {
-          bookingUrl = url;
-        }
-
-        // Try to extract price from search result
         const price = extractZARPrice(text);
         if (price !== null) {
-          searchPrice = price;
-          break;
+          return price;
         }
       }
-    } catch (error) {
-      console.error(`Search error for "${realName}":`, error);
     }
-  }
-
-  // Phase 1 success
-  if (searchPrice !== null) {
-    return searchPrice;
-  }
-
-  // Phase 2: Scrape the Booking.com URL directly for pricing
-  if (bookingUrl) {
-    try {
-      // Add South African locale params to get ZAR pricing
-      const url = new URL(bookingUrl);
-      if (!url.searchParams.has('selected_currency')) {
-        url.searchParams.set('selected_currency', 'ZAR');
-      }
-
-      const scrapeResponse = await fetch('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: url.toString(),
-          formats: ['markdown'],
-          onlyMainContent: true,
-          waitFor: 3000,
-          location: { country: 'ZA', languages: ['en'] },
-        }),
-      });
-
-      if (scrapeResponse.ok) {
-        const scrapeData = await scrapeResponse.json();
-        const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || '';
-        const scraped = extractZARPrice(markdown);
-        if (scraped !== null) {
-          console.log(`  → Scraped rate for "${realName}": R${scraped}`);
-          return scraped;
-        }
-      }
-    } catch (err) {
-      console.warn(`Scrape failed for "${realName}":`, err);
-    }
+  } catch (error) {
+    console.error(`Search fallback error for "${realName}":`, error);
   }
 
   return null;
