@@ -147,7 +147,7 @@ async function searchHotelRate(
 async function processBatch<T, R>(
   items: T[],
   fn: (item: T) => Promise<R>,
-  concurrency = 5,
+  concurrency = 2,
 ): Promise<PromiseSettledResult<R>[]> {
   const results: PromiseSettledResult<R>[] = [];
 
@@ -155,6 +155,10 @@ async function processBatch<T, R>(
     const batch = items.slice(i, i + concurrency);
     const batchResults = await Promise.allSettled(batch.map(fn));
     results.push(...batchResults);
+    // Small delay between batches to avoid rate limits
+    if (i + concurrency < items.length) {
+      await delay(500);
+    }
   }
 
   return results;
