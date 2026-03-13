@@ -51,51 +51,53 @@ async function searchHotelRate(
   city: string,
   apiKey: string,
 ): Promise<number | null> {
-  const query = `${realName} ${city} South Africa booking.com price per night`;
+  // Use multiple targeted queries
+  const queries = [
+    `"${realName}" ${city} price per night ZAR`,
+    `${realName} ${city} booking.com accommodation rate`,
+  ];
 
-  try {
-    const response = await fetch('https://api.firecrawl.dev/v1/search', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query,
-        limit: 3,
-        lang: 'en',
-        country: 'za',
-        scrapeOptions: {
-          formats: ['markdown'],
+  for (const query of queries) {
+    try {
+      const response = await fetch('https://api.firecrawl.dev/v1/search', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
         },
-      }),
-    });
+        body: JSON.stringify({
+          query,
+          limit: 5,
+          lang: 'en',
+          country: 'za',
+        }),
+      });
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        console.warn(`Rate limited for "${realName}", skipping`);
-      } else {
-        console.warn(`Firecrawl search failed for "${realName}": ${response.status}`);
+      if (!response.ok) {
+        if (response.status === 429) {
+          console.warn(`Rate limited for "${realName}", waiting...`);
+          await new Promise(r => setTimeout(r, 2000));
+        }
+        continue;
       }
-      return null;
-    }
 
-    const data = await response.json();
-    const results = data?.data ?? data?.results ?? [];
+      const data = await response.json();
+      const results = data?.data ?? data?.results ?? [];
 
-    for (const result of results) {
-      const text = `${result.title || ''} ${result.description || ''} ${result.markdown || ''}`;
-      const price = extractZARPrice(text);
-      if (price !== null) {
-        return price;
+      for (const result of results) {
+        const text = `${result.title || ''} ${result.description || ''} ${result.markdown || ''}`;
+        const price = extractZARPrice(text);
+        if (price !== null) {
+          return price;
+        }
       }
+    } catch (error) {
+      console.error(`Search error for "${realName}":`, error);
     }
-
-    return null;
-  } catch (error) {
-    console.error(`Error searching rate for "${realName}":`, error);
-    return null;
   }
+
+  return null;
+}
 }
 
 /**
