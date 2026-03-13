@@ -98,7 +98,6 @@ async function searchHotelRate(
 
   return null;
 }
-}
 
 /**
  * Process hotels sequentially with a delay between each to avoid rate limits.
