@@ -18,8 +18,7 @@ function jsonResponse(body: unknown, status = 200) {
 }
 
 /**
- * Extract ZAR prices from text using multiple patterns.
- * Returns the lowest valid price found (R200–R50,000 range).
+ * Extract ZAR prices from text. Returns lowest valid price (R200–R50,000).
  */
 function extractZARPrice(text: string): number | null {
   const patterns = [
@@ -27,7 +26,6 @@ function extractZARPrice(text: string): number | null {
     /(?:from\s+)?R\s?([\d,]+(?:\.\d{2})?)/gi,
     /ZAR\s?([\d,]+(?:\.\d{2})?)/gi,
     /(?:price|rate|from|total)[:\s]+R\s?([\d,]+)/gi,
-    /(?:price|rate)\s*[:\s]*(?:ZAR|R)\s*([\d,]+)/gi,
   ];
 
   const prices: number[] = [];
@@ -45,123 +43,88 @@ function extractZARPrice(text: string): number | null {
 }
 
 /**
- * Build a Booking.com search URL for a hotel in ZAR currency.
- */
-function buildBookingSearchUrl(hotelName: string, city: string): string {
-  const ss = encodeURIComponent(`${hotelName} ${city}`);
-  return `https://www.booking.com/searchresults.en-gb.html?ss=${ss}&selected_currency=ZAR&lang=en-gb`;
-}
-
-/**
- * Delay helper to avoid rate limits.
- */
-function delay(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/**
- * Strategy 1: Directly scrape Booking.com search results page for ZAR pricing.
- * Strategy 2: Fall back to Firecrawl web search if scrape fails.
+ * Search for a hotel's nightly rate using Firecrawl search with scrapeOptions
+ * to get full page content (including JS-rendered prices) from search results.
  */
 async function searchHotelRate(
   realName: string,
   city: string,
   apiKey: string,
 ): Promise<number | null> {
-  // Strategy 1: Direct Booking.com search page scrape
-  try {
-    const searchUrl = buildBookingSearchUrl(realName, city);
-    
-    const scrapeResponse = await fetch('https://api.firecrawl.dev/v1/scrape', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: searchUrl,
-        formats: ['markdown'],
-        onlyMainContent: true,
-        waitFor: 5000,
-        location: { country: 'ZA', languages: ['en'] },
-      }),
-    });
+  const query = `${realName} ${city} South Africa booking.com price per night`;
 
-    if (scrapeResponse.ok) {
-      const scrapeData = await scrapeResponse.json();
-      const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || '';
-      
-      // Check if the hotel name appears in results (relevance check)
-      const nameParts = realName.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-      const mdLower = markdown.toLowerCase();
-      const nameMatch = nameParts.some(part => mdLower.includes(part));
-      
-      if (nameMatch) {
-        const price = extractZARPrice(markdown);
-        if (price !== null) {
-          return price;
-        }
-      }
-    } else if (scrapeResponse.status === 429) {
-      console.warn(`Rate limited scraping for "${realName}", waiting...`);
-      await delay(2000);
-    }
-  } catch (err) {
-    console.warn(`Scrape error for "${realName}":`, err);
-  }
-
-  // Strategy 2: Firecrawl web search as fallback
   try {
-    const query = `${realName} ${city} South Africa booking.com price per night ZAR`;
     const response = await fetch('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ query, limit: 5 }),
+      body: JSON.stringify({
+        query,
+        limit: 3,
+        lang: 'en',
+        country: 'za',
+        scrapeOptions: {
+          formats: ['markdown'],
+        },
+      }),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      const results = data?.data ?? data?.results ?? [];
+    if (!response.ok) {
+      if (response.status === 429) {
+        console.warn(`Rate limited for "${realName}", skipping`);
+      } else {
+        console.warn(`Firecrawl search failed for "${realName}": ${response.status}`);
+      }
+      return null;
+    }
 
-      for (const result of results) {
-        const text = `${result.title || ''} ${result.description || ''} ${result.markdown || ''}`;
-        const price = extractZARPrice(text);
-        if (price !== null) {
-          return price;
-        }
+    const data = await response.json();
+    const results = data?.data ?? data?.results ?? [];
+
+    for (const result of results) {
+      const text = `${result.title || ''} ${result.description || ''} ${result.markdown || ''}`;
+      const price = extractZARPrice(text);
+      if (price !== null) {
+        return price;
       }
     }
-  } catch (error) {
-    console.error(`Search fallback error for "${realName}":`, error);
-  }
 
-  return null;
+    return null;
+  } catch (error) {
+    console.error(`Error searching rate for "${realName}":`, error);
+    return null;
+  }
 }
 
 /**
- * Process hotels in batches with concurrency control.
+ * Process hotels sequentially with a delay between each to avoid rate limits.
  */
-async function processBatch<T, R>(
-  items: T[],
-  fn: (item: T) => Promise<R>,
-  concurrency = 2,
-): Promise<PromiseSettledResult<R>[]> {
-  const results: PromiseSettledResult<R>[] = [];
+async function processSequentially(
+  items: { realName: string; city: string }[],
+  apiKey: string,
+): Promise<Map<string, number>> {
+  const rateMap = new Map<string, number>();
 
-  for (let i = 0; i < items.length; i += concurrency) {
-    const batch = items.slice(i, i + concurrency);
-    const batchResults = await Promise.allSettled(batch.map(fn));
-    results.push(...batchResults);
-    // Small delay between batches to avoid rate limits
-    if (i + concurrency < items.length) {
-      await delay(500);
+  for (let i = 0; i < items.length; i++) {
+    const h = items[i];
+    const rate = await searchHotelRate(h.realName, h.city, apiKey);
+
+    if (rate !== null) {
+      rateMap.set(h.realName, rate);
+      console.log(`  ✓ ${h.realName}: R${rate}`);
+    } else {
+      console.log(`  ✗ ${h.realName}: no rate found`);
+    }
+
+    // Small delay to avoid rate limits (skip after last item)
+    if (i < items.length - 1) {
+      await new Promise(r => setTimeout(r, 300));
     }
   }
 
-  return results;
+  return rateMap;
 }
 
 Deno.serve(async (req) => {
@@ -173,7 +136,8 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const destination = body?.destination as string | undefined;
 
-    // If no destination specified, sync all destinations
+    // IMPORTANT: When syncing all destinations, only process one at a time
+    // The cron job should call this function per-destination to avoid timeouts
     const destinations = destination ? [destination] : SYNC_DESTINATIONS;
 
     // Validate destinations
@@ -200,26 +164,8 @@ Deno.serve(async (req) => {
 
       console.log(`Processing ${dest}: ${uniqueHotels.length} unique hotels, ${hotels.length} entries`);
 
-      // Search for rates for unique hotels
-      const rateMap = new Map<string, number>();
-
-      const results = await processBatch(
-        uniqueHotels,
-        async (h) => {
-          const rate = await searchHotelRate(h.realName, h.city, apiKey);
-          return { realName: h.realName, rate };
-        },
-        2, // 2 concurrent to avoid Firecrawl rate limits
-      );
-
-      for (const result of results) {
-        if (result.status === 'fulfilled' && result.value.rate !== null) {
-          rateMap.set(result.value.realName, result.value.rate);
-          console.log(`  ✓ ${result.value.realName}: R${result.value.rate}`);
-        } else if (result.status === 'fulfilled') {
-          console.log(`  ✗ ${result.value.realName}: no rate found`);
-        }
-      }
+      // Process hotels sequentially to manage rate limits and timeouts
+      const rateMap = await processSequentially(uniqueHotels, apiKey);
 
       // Build upsert data
       const upserts = hotels.map(h => ({
