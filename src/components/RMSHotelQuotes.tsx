@@ -74,6 +74,28 @@ function calculateServiceFees(adults: number, children: number, childrenAges: nu
   return totalAdultFees + childFees;
 }
 
+function sortTierHotelsForBudget(
+  hotels: RMSHotel[],
+  getTotalForHotel: (hotel: RMSHotel) => number,
+  budgetAmount: number,
+): RMSHotel[] {
+  const sortedAscending = [...hotels].sort((a, b) => getTotalForHotel(a) - getTotalForHotel(b));
+
+  if (budgetAmount <= 0) {
+    return sortedAscending;
+  }
+
+  const firstAtOrAboveBudgetIndex = sortedAscending.findIndex(
+    (hotel) => getTotalForHotel(hotel) >= budgetAmount,
+  );
+
+  if (firstAtOrAboveBudgetIndex === -1) {
+    return sortedAscending.reverse();
+  }
+
+  return sortedAscending.slice(firstAtOrAboveBudgetIndex);
+}
+
 type TierKey = 'budget' | 'affordable' | 'premium';
 
 // Small image carousel for hotel cards
