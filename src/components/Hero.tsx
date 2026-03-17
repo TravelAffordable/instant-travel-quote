@@ -50,9 +50,19 @@ async function applyLivePremiumRates(
   const liveHotels = await Promise.all(
     hotels.map(async (hotel) => {
       const hotelKey = getPremiumLiveHotelKeyByName(hotel.name);
+
+      // If no live scraping config exists, keep the hotel with its cached/static rate
       if (!hotelKey) {
-        console.warn(`[premium-live] Missing hotel key mapping for "${hotel.name}"`);
-        return null;
+        if (hotel.isCachedRate) {
+          return {
+            ...hotel,
+            pricingMode: 'live_booking_total' as AccommodationPricingMode,
+          } satisfies AccommodationPricingHotel;
+        }
+        // Static fallback — still show the hotel
+        return {
+          ...hotel,
+        } satisfies AccommodationPricingHotel;
       }
 
       const occupancy = hotel.capacity === '4_sleeper' ? '4_sleeper' : '2_sleeper';
@@ -68,7 +78,11 @@ async function applyLivePremiumRates(
 
       if (error) {
         console.error(`booking-live-rate failed for ${hotel.name}:`, error.message);
-        return null;
+        // Fall back to cached/static rate instead of hiding the hotel
+        return {
+          ...hotel,
+          pricingMode: hotel.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
+        } satisfies AccommodationPricingHotel;
       }
 
       const liveRate = data as LiveBookingRateResponse | null;
