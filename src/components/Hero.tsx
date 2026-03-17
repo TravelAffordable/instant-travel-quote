@@ -139,34 +139,21 @@ function getPackageFromPrice(pkg: Package): number {
 }
 
 function sortQuotesForBudgetDisplay(quotes: QuoteResult[], budgetAmount: number): QuoteResult[] {
+  const sortedAscending = [...quotes].sort((a, b) => a.totalForGroup - b.totalForGroup);
+
   if (budgetAmount <= 0) {
-    return [...quotes].sort((a, b) => a.totalForGroup - b.totalForGroup);
+    return sortedAscending;
   }
 
-  const atOrAboveBudget = quotes
-    .filter((quote) => quote.totalForGroup >= budgetAmount)
-    .sort((a, b) => a.totalForGroup - b.totalForGroup);
+  const firstAtOrAboveBudgetIndex = sortedAscending.findIndex(
+    (quote) => quote.totalForGroup >= budgetAmount,
+  );
 
-  const belowBudget = quotes
-    .filter((quote) => quote.totalForGroup < budgetAmount)
-    .sort((a, b) => b.totalForGroup - a.totalForGroup);
-
-  if (atOrAboveBudget.length === 0) {
-    return belowBudget;
+  if (firstAtOrAboveBudgetIndex === -1) {
+    return sortedAscending.reverse();
   }
 
-  if (belowBudget.length === 0) {
-    return atOrAboveBudget;
-  }
-
-  const closestAbove = atOrAboveBudget[0];
-  const closestBelow = belowBudget[0];
-
-  if (Math.abs(closestBelow.totalForGroup - budgetAmount) < Math.abs(closestAbove.totalForGroup - budgetAmount)) {
-    return [closestBelow, ...atOrAboveBudget, ...belowBudget.slice(1)];
-  }
-
-  return [...atOrAboveBudget, ...belowBudget];
+  return sortedAscending.slice(firstAtOrAboveBudgetIndex);
 }
 
 // Convert RMS hotels to QuoteResult format for QuoteList display

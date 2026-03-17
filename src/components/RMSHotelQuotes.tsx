@@ -74,6 +74,28 @@ function calculateServiceFees(adults: number, children: number, childrenAges: nu
   return totalAdultFees + childFees;
 }
 
+function sortTierHotelsForBudget(
+  hotels: RMSHotel[],
+  getTotalForHotel: (hotel: RMSHotel) => number,
+  budgetAmount: number,
+): RMSHotel[] {
+  const sortedAscending = [...hotels].sort((a, b) => getTotalForHotel(a) - getTotalForHotel(b));
+
+  if (budgetAmount <= 0) {
+    return sortedAscending;
+  }
+
+  const firstAtOrAboveBudgetIndex = sortedAscending.findIndex(
+    (hotel) => getTotalForHotel(hotel) >= budgetAmount,
+  );
+
+  if (firstAtOrAboveBudgetIndex === -1) {
+    return sortedAscending.reverse();
+  }
+
+  return sortedAscending.slice(firstAtOrAboveBudgetIndex);
+}
+
 type TierKey = 'budget' | 'affordable' | 'premium';
 
 // Small image carousel for hotel cards
@@ -281,19 +303,13 @@ export function RMSHotelQuotes({
 
         const serviceFees = calculateServiceFees(adults, children, childrenAges);
 
-        // Get hotels for active tier, sorted by proximity to budget
+        // Get hotels for active tier, starting from the closest option at/above budget and scaling upward
         const budgetAmount = parseInt(budget) || 0;
-        const tierHotels = [...hotelsByTier[activeTier]].sort((a, b) => {
-          if (budgetAmount > 0) {
-            const totalA = roundToNearest10((a.totalRate * rooms) + activitiesCost + serviceFees + (busQuoteAmount > 0 ? busQuoteAmount : 0));
-            const totalB = roundToNearest10((b.totalRate * rooms) + activitiesCost + serviceFees + (busQuoteAmount > 0 ? busQuoteAmount : 0));
-            const distA = Math.abs(totalA - budgetAmount);
-            const distB = Math.abs(totalB - budgetAmount);
-            if (distA !== distB) return distA - distB;
-            return totalA - totalB;
-          }
-          return a.minRate - b.minRate;
-        });
+        const tierHotels = sortTierHotelsForBudget(
+          hotelsByTier[activeTier],
+          (hotel) => roundToNearest10((hotel.totalRate * rooms) + activitiesCost + serviceFees + (busQuoteAmount > 0 ? busQuoteAmount : 0)),
+          budgetAmount,
+        );
 
         return (
           <div key={pkg.id} className="space-y-6">
