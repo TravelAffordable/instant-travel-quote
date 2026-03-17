@@ -862,6 +862,27 @@ export const PREMIUM_HOTEL_CONFIGS: Record<HotelKey, PremiumHotelConfig> = {
     name: 'Issaquena Heights Boutique Hotel',
     searchQuery: 'Issaquena Heights Boutique Hotel Knysna site:booking.com',
   },
+  'blyde-canyon-forever-resort': {
+    aliases: ['Blyde Canyon Forever Resort', 'Forever Resort Blyde Canyon'],
+    destinationLabel: 'Mpumalanga',
+    key: 'blyde-canyon-forever-resort',
+    name: 'Blyde Canyon, A Forever Resort',
+    searchQuery: 'Blyde Canyon A Forever Resort site:booking.com',
+  },
+  'angels-view-hotel': {
+    aliases: ['Angels View Hotel', 'Angel\'s View Hotel'],
+    destinationLabel: 'Mpumalanga',
+    key: 'angels-view-hotel',
+    name: 'Angels View Hotel',
+    searchQuery: 'Angels View Hotel Graskop site:booking.com',
+  },
+  'panorama-chalets-rest-camp': {
+    aliases: ['Panorama Chalets and Rest Camp', 'Panorama Chalets'],
+    destinationLabel: 'Mpumalanga',
+    key: 'panorama-chalets-rest-camp',
+    name: 'Panorama Chalets and Rest Camp',
+    searchQuery: 'Panorama Chalets and Rest Camp Graskop site:booking.com',
+  },
 };
 
 export function getPremiumHotelConfig(hotelKey: HotelKey) {
