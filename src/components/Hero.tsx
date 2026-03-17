@@ -43,63 +43,103 @@ type LiveBookingRateResponse = {
   displayTotalPrice: number | null;
 };
 
-async function applyLivePremiumRates(
+type GenericLiveRateResponse = {
+  rates?: Array<{
+    name: string;
+    nightlyRate: number | null;
+    totalRate: number | null;
+  }>;
+};
+
+async function applyLiveRatesForSelectedDates(
   hotels: RMSHotel[],
   params: { checkIn: string; checkOut: string; rooms: number },
 ): Promise<AccommodationPricingHotel[]> {
-  const liveHotels = await Promise.all(
-    hotels.map(async (hotel) => {
-      const hotelKey = getPremiumLiveHotelKeyByName(hotel.name);
+  if (hotels.length === 0) return [];
 
-      // If no live scraping config exists, keep the hotel with its cached/static rate
-      if (!hotelKey) {
-        if (hotel.isCachedRate) {
+  const premiumConfiguredHotels = hotels.filter((hotel) => getPremiumLiveHotelKeyByName(hotel.name));
+  const genericHotels = hotels.filter((hotel) => !getPremiumLiveHotelKeyByName(hotel.name));
+
+  const [premiumResults, genericResponse] = await Promise.all([
+    Promise.all(
+      premiumConfiguredHotels.map(async (hotel) => {
+        const hotelKey = getPremiumLiveHotelKeyByName(hotel.name);
+        const occupancy = hotel.capacity === '4_sleeper' ? '4_sleeper' : '2_sleeper';
+        const { data, error } = await supabase.functions.invoke('booking-live-rate', {
+          body: {
+            hotelKey,
+            checkIn: params.checkIn,
+            checkOut: params.checkOut,
+            occupancy,
+            rooms: params.rooms,
+          },
+        });
+
+        if (error) {
+          console.error(`booking-live-rate failed for ${hotel.name}:`, error.message);
           return {
             ...hotel,
-            pricingMode: 'live_booking_total' as AccommodationPricingMode,
+            pricingMode: hotel.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
           } satisfies AccommodationPricingHotel;
         }
-        // Static fallback — still show the hotel
+
+        const liveRate = data as LiveBookingRateResponse | null;
+        if (!liveRate?.available || liveRate.displayTotalPrice === null) {
+          return null;
+        }
+
         return {
           ...hotel,
+          minRate: liveRate.displayNightlyRate ?? hotel.minRate,
+          totalRate: liveRate.displayTotalPrice,
+          pricingMode: 'live_booking_total',
         } satisfies AccommodationPricingHotel;
-      }
+      }),
+    ),
+    genericHotels.length > 0
+      ? supabase.functions.invoke('hotel-live-rates', {
+          body: {
+            destination: hotels[0].destination,
+            checkIn: params.checkIn,
+            checkOut: params.checkOut,
+            rooms: params.rooms,
+            hotels: genericHotels.map((hotel) => ({
+              name: hotel.name,
+              capacity: hotel.capacity,
+              tier: hotel.tier,
+            })),
+          },
+        })
+      : Promise.resolve({ data: { rates: [] }, error: null }),
+  ]);
 
-      const occupancy = hotel.capacity === '4_sleeper' ? '4_sleeper' : '2_sleeper';
-      const { data, error } = await supabase.functions.invoke('booking-live-rate', {
-        body: {
-          hotelKey,
-          checkIn: params.checkIn,
-          checkOut: params.checkOut,
-          occupancy,
-          rooms: params.rooms,
-        },
-      });
+  if (genericResponse.error) {
+    console.error('hotel-live-rates failed:', genericResponse.error.message);
+  }
 
-      if (error) {
-        console.error(`booking-live-rate failed for ${hotel.name}:`, error.message);
-        // Fall back to cached/static rate instead of hiding the hotel
-        return {
-          ...hotel,
-          pricingMode: hotel.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
-        } satisfies AccommodationPricingHotel;
-      }
-
-      const liveRate = data as LiveBookingRateResponse | null;
-      if (!liveRate?.available || liveRate.displayTotalPrice === null) {
-        return null;
-      }
-
-      return {
-        ...hotel,
-        minRate: liveRate.displayNightlyRate ?? hotel.minRate,
-        totalRate: liveRate.displayTotalPrice,
-        pricingMode: 'live_booking_total',
-      } satisfies AccommodationPricingHotel;
-    }),
+  const genericLiveRates = ((genericResponse.data as GenericLiveRateResponse | null)?.rates ?? []).reduce(
+    (map, entry) => map.set(entry.name.toLowerCase(), entry),
+    new Map<string, { name: string; nightlyRate: number | null; totalRate: number | null }>(),
   );
 
-  return liveHotels.filter(Boolean) as AccommodationPricingHotel[];
+  const genericResults = genericHotels.map((hotel) => {
+    const liveRate = genericLiveRates.get(hotel.name.toLowerCase());
+    if (!liveRate?.totalRate || !liveRate.nightlyRate) {
+      return {
+        ...hotel,
+        pricingMode: hotel.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
+      } satisfies AccommodationPricingHotel;
+    }
+
+    return {
+      ...hotel,
+      minRate: liveRate.nightlyRate,
+      totalRate: liveRate.totalRate,
+      pricingMode: 'live_booking_total',
+    } satisfies AccommodationPricingHotel;
+  });
+
+  return [...premiumResults.filter(Boolean), ...genericResults] as AccommodationPricingHotel[];
 }
 
 // Service fee calculation
