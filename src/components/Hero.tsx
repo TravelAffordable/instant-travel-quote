@@ -645,24 +645,15 @@ export function Hero({ onGetQuote }: HeroProps) {
           return;
         }
 
-        // Mark rows that came from live/cached crawler sources
-        let pricedHotels: AccommodationPricingHotel[] = tierHotels.map(h => ({
-          ...h,
-          pricingMode: h.isCachedRate ? 'live_booking_total' as AccommodationPricingMode : undefined,
-        }));
+        let pricedHotels = await applyLiveRatesForSelectedDates(tierHotels, {
+          checkIn,
+          checkOut,
+          rooms,
+        });
 
-        // For premium tier, enforce real-time availability and pricing from Booking.com scraper
-        if (accommodationType === 'premium') {
-          pricedHotels = await applyLivePremiumRates(tierHotels, {
-            checkIn,
-            checkOut,
-            rooms,
-          });
-
-          if (pricedHotels.length === 0) {
-            toast.info('No premium hotels are currently available for the selected dates. Please try different dates.');
-            return;
-          }
+        if (pricedHotels.length === 0) {
+          toast.info('No hotels are currently available for the selected dates. Please try different dates.');
+          return;
         }
 
         const sharedParams = {

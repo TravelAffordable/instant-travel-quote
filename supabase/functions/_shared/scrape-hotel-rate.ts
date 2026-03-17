@@ -156,6 +156,13 @@ function extractNightlyRate(markdown: string, nights: number): number | null {
   return Math.min(...rates);
 }
 
+function getNightCount(checkIn: string, checkOut: string): number {
+  const start = new Date(`${checkIn}T00:00:00Z`);
+  const end = new Date(`${checkOut}T00:00:00Z`);
+  const diff = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+  return diff > 0 ? diff : 1;
+}
+
 /**
  * Full pipeline: find Booking URL → scrape with dates → extract rate.
  */
@@ -163,6 +170,7 @@ export async function scrapeHotelRate(
   realName: string,
   city: string,
   apiKey: string,
+  options?: { checkIn?: string; checkOut?: string },
 ): Promise<number | null> {
   // Step 1: Find the hotel's Booking.com listing URL
   const bookingUrl = await findBookingUrl(realName, city, apiKey);
@@ -172,9 +180,11 @@ export async function scrapeHotelRate(
   }
 
   // Step 2: Add dates and scrape the hotel page
-  const { checkIn, checkOut } = getDefaultDates();
-  const nights = 2;
-  const datedUrl = buildDatedUrl(bookingUrl, checkIn, checkOut);
+  const dates = options?.checkIn && options?.checkOut
+    ? { checkIn: options.checkIn, checkOut: options.checkOut }
+    : getDefaultDates();
+  const nights = getNightCount(dates.checkIn, dates.checkOut);
+  const datedUrl = buildDatedUrl(bookingUrl, dates.checkIn, dates.checkOut);
   const markdown = await firecrawlScrape(datedUrl, apiKey);
   if (!markdown) {
     console.log(`  ✗ ${realName}: scrape returned no markdown`);
@@ -184,7 +194,7 @@ export async function scrapeHotelRate(
   // Step 3: Extract the nightly rate
   const rate = extractNightlyRate(markdown, nights);
   if (rate !== null) {
-    console.log(`  ✓ ${realName}: R${rate}/night`);
+    console.log(`  ✓ ${realName}: R${rate}/night for ${dates.checkIn} → ${dates.checkOut}`);
   } else {
     console.log(`  ✗ ${realName}: no rate found on listing page`);
   }
