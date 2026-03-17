@@ -160,39 +160,12 @@ export function RMSHotelQuotes({
   // Active tier tab - default to 'budget' (cheapest)
   const [activeTier, setActiveTier] = useState<TierKey>('budget');
 
-  // Shared activity selection state
-  const [sharedActivitySelections, setSharedActivitySelections] = useState<Record<string, string[]>>({});
-
   const childrenAges = useMemo(() => {
     return childrenAgesString
       .split(',')
       .map(a => parseInt(a.trim()))
       .filter(a => !isNaN(a) && a >= 3 && a <= 17);
   }, [childrenAgesString]);
-
-  // Initialize activity selections for each package
-  useEffect(() => {
-    const newSelections: Record<string, string[]> = {};
-    selectedPackages.forEach(pkg => {
-      const availableActivities = getActivitiesForDestination(pkg.destination);
-      const initialActivities = pkg.activitiesIncluded
-        .filter(a => !a.toLowerCase().includes('accommodation') && !a.toLowerCase().includes('breakfast at selected'))
-        .map(label => findActivityByName(label, availableActivities)?.name)
-        .filter((v): v is string => Boolean(v));
-      newSelections[pkg.id] = Array.from(new Set(initialActivities));
-    });
-    setSharedActivitySelections(prev => ({ ...prev, ...newSelections }));
-  }, [selectedPackages]);
-
-  const handleActivityToggle = useCallback((packageId: string, activityName: string) => {
-    setSharedActivitySelections(prev => {
-      const current = prev[packageId] || [];
-      const updated = current.includes(activityName)
-        ? current.filter(a => a !== activityName)
-        : [...current, activityName];
-      return { ...prev, [packageId]: updated };
-    });
-  }, []);
 
   // Group hotels by tier
   const hotelsByTier = useMemo(() => {
