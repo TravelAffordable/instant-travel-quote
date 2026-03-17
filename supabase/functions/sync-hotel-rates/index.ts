@@ -4,6 +4,7 @@ import {
   getUniqueRealNames,
   SYNC_DESTINATIONS,
 } from '../_shared/budget-affordable-hotels.ts';
+import { processHotelsSequentially } from '../_shared/scrape-hotel-rate.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,117 +18,6 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-/**
- * Extract ZAR prices from text. Returns lowest valid price (R200–R50,000).
- */
-function extractZARPrice(text: string): number | null {
-  const patterns = [
-    /R\s?([\d,]+(?:\.\d{2})?)\s*(?:per|\/)\s*night/gi,
-    /(?:from\s+)?R\s?([\d,]+(?:\.\d{2})?)/gi,
-    /ZAR\s?([\d,]+(?:\.\d{2})?)/gi,
-    /(?:price|rate|from|total)[:\s]+R\s?([\d,]+)/gi,
-  ];
-
-  const prices: number[] = [];
-  for (const pattern of patterns) {
-    let match;
-    while ((match = pattern.exec(text)) !== null) {
-      const price = parseFloat(match[1].replace(/,/g, ''));
-      if (price >= 200 && price <= 50000) {
-        prices.push(price);
-      }
-    }
-  }
-
-  return prices.length > 0 ? Math.min(...prices) : null;
-}
-
-/**
- * Search for a hotel's nightly rate using Firecrawl search with scrapeOptions
- * to get full page content (including JS-rendered prices) from search results.
- */
-async function searchHotelRate(
-  realName: string,
-  city: string,
-  apiKey: string,
-): Promise<number | null> {
-  // Use multiple targeted queries
-  const queries = [
-    `"${realName}" ${city} price per night ZAR`,
-    `${realName} ${city} booking.com accommodation rate`,
-  ];
-
-  for (const query of queries) {
-    try {
-      const response = await fetch('https://api.firecrawl.dev/v1/search', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          limit: 5,
-          lang: 'en',
-          country: 'za',
-        }),
-      });
-
-      if (!response.ok) {
-        if (response.status === 429) {
-          console.warn(`Rate limited for "${realName}", waiting...`);
-          await new Promise(r => setTimeout(r, 2000));
-        }
-        continue;
-      }
-
-      const data = await response.json();
-      const results = data?.data ?? data?.results ?? [];
-
-      for (const result of results) {
-        const text = `${result.title || ''} ${result.description || ''} ${result.markdown || ''}`;
-        const price = extractZARPrice(text);
-        if (price !== null) {
-          return price;
-        }
-      }
-    } catch (error) {
-      console.error(`Search error for "${realName}":`, error);
-    }
-  }
-
-  return null;
-}
-
-/**
- * Process hotels sequentially with a delay between each to avoid rate limits.
- */
-async function processSequentially(
-  items: { realName: string; city: string }[],
-  apiKey: string,
-): Promise<Map<string, number>> {
-  const rateMap = new Map<string, number>();
-
-  for (let i = 0; i < items.length; i++) {
-    const h = items[i];
-    const rate = await searchHotelRate(h.realName, h.city, apiKey);
-
-    if (rate !== null) {
-      rateMap.set(h.realName, rate);
-      console.log(`  ✓ ${h.realName}: R${rate}`);
-    } else {
-      console.log(`  ✗ ${h.realName}: no rate found`);
-    }
-
-    // Small delay to avoid rate limits (skip after last item)
-    if (i < items.length - 1) {
-      await new Promise(r => setTimeout(r, 300));
-    }
-  }
-
-  return rateMap;
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -137,11 +27,8 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const destination = body?.destination as string | undefined;
 
-    // IMPORTANT: When syncing all destinations, only process one at a time
-    // The cron job should call this function per-destination to avoid timeouts
     const destinations = destination ? [destination] : SYNC_DESTINATIONS;
 
-    // Validate destinations
     for (const dest of destinations) {
       if (!SYNC_DESTINATIONS.includes(dest)) {
         return jsonResponse({ error: `Invalid destination: ${dest}. Valid: ${SYNC_DESTINATIONS.join(', ')}` }, 400);
@@ -165,10 +52,9 @@ Deno.serve(async (req) => {
 
       console.log(`Processing ${dest}: ${uniqueHotels.length} unique hotels, ${hotels.length} entries`);
 
-      // Process hotels sequentially to manage rate limits and timeouts
-      const rateMap = await processSequentially(uniqueHotels, apiKey);
+      // Use Firecrawl SCRAPE (not search) — same proven approach as premium-live-booking
+      const rateMap = await processHotelsSequentially(uniqueHotels, apiKey);
 
-      // Build upsert data
       const upserts = hotels.map(h => ({
         hotel_alias: h.alias,
         real_hotel_name: h.realName,
@@ -183,7 +69,6 @@ Deno.serve(async (req) => {
         updated_at: new Date().toISOString(),
       }));
 
-      // Upsert in batches of 50
       for (let i = 0; i < upserts.length; i += 50) {
         const batch = upserts.slice(i, i + 50);
         const { error } = await supabase
