@@ -138,6 +138,37 @@ function getPackageFromPrice(pkg: Package): number {
   return roundToNearest10(pkg.basePrice + accommodationPerPerson);
 }
 
+function sortQuotesForBudgetDisplay(quotes: QuoteResult[], budgetAmount: number): QuoteResult[] {
+  if (budgetAmount <= 0) {
+    return [...quotes].sort((a, b) => a.totalForGroup - b.totalForGroup);
+  }
+
+  const atOrAboveBudget = quotes
+    .filter((quote) => quote.totalForGroup >= budgetAmount)
+    .sort((a, b) => a.totalForGroup - b.totalForGroup);
+
+  const belowBudget = quotes
+    .filter((quote) => quote.totalForGroup < budgetAmount)
+    .sort((a, b) => b.totalForGroup - a.totalForGroup);
+
+  if (atOrAboveBudget.length === 0) {
+    return belowBudget;
+  }
+
+  if (belowBudget.length === 0) {
+    return atOrAboveBudget;
+  }
+
+  const closestAbove = atOrAboveBudget[0];
+  const closestBelow = belowBudget[0];
+
+  if (Math.abs(closestBelow.totalForGroup - budgetAmount) < Math.abs(closestAbove.totalForGroup - budgetAmount)) {
+    return [closestBelow, ...atOrAboveBudget, ...belowBudget.slice(1)];
+  }
+
+  return [...atOrAboveBudget, ...belowBudget];
+}
+
 // Convert RMS hotels to QuoteResult format for QuoteList display
 function convertRMSToQuotes(
   hotels: RMSHotel[],
