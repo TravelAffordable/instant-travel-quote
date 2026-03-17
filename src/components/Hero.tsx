@@ -806,22 +806,17 @@ export function Hero({ onGetQuote }: HeroProps) {
 
       if (allQuotes.length > 0) {
         const budgetAmount = parseInt(budget) || 0;
-        const budgetThreshold = budgetAmount * 1.1;
-        let filtered = allQuotes.filter(q => q.totalForGroup <= budgetThreshold);
+        const filtered = sortQuotesForBudgetDisplay(allQuotes, budgetAmount);
 
         if (filtered.length === 0) {
-          allQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
-          filtered = allQuotes.slice(0, 3);
-          toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()}. Showing closest options.`);
+          toast.info('No options are currently available.');
+        } else if (budgetAmount > 0) {
+          const closestOption = filtered[0];
+          const difference = Math.abs(closestOption.totalForGroup - budgetAmount);
+          const direction = closestOption.totalForGroup > budgetAmount ? 'above' : 'below';
+          toast.success(`${filtered.length} options found. Closest starts R${difference.toLocaleString()} ${direction} your budget.`);
         } else {
-          // Sort by proximity to budget (closest first), then ascending for ties
-          filtered.sort((a, b) => {
-            const distA = Math.abs(a.totalForGroup - budgetAmount);
-            const distB = Math.abs(b.totalForGroup - budgetAmount);
-            if (distA !== distB) return distA - distB;
-            return a.totalForGroup - b.totalForGroup;
-          });
-          toast.success(`${filtered.length} options found for your budget!`);
+          toast.success(`${filtered.length} options found.`);
         }
 
         setQuotes(filtered);
