@@ -871,6 +871,7 @@ export const PREMIUM_HOTEL_CONFIGS: Record<HotelKey, PremiumHotelConfig> = {
   },
   'angels-view-hotel': {
     aliases: ['Angels View Hotel', 'Angel\'s View Hotel'],
+    bookingUrl: 'https://www.booking.com/hotel/za/angels-view.html',
     destinationLabel: 'Mpumalanga',
     key: 'angels-view-hotel',
     name: 'Angels View Hotel',
