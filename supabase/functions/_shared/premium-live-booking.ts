@@ -102,7 +102,10 @@ export type HotelKey =
   | 'spinnaker-quays-waterfront-villa'
   | 'phoenix-lodge-waterside'
   | 'pezula-golf-estate-knysna'
-  | 'issaquena-heights-boutique-hotel';
+  | 'issaquena-heights-boutique-hotel'
+  | 'blyde-canyon-forever-resort'
+  | 'angels-view-hotel'
+  | 'panorama-chalets-rest-camp';
 
 export type OccupancyKey = '2_sleeper' | '4_sleeper';
 
