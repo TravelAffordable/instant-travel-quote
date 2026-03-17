@@ -651,6 +651,8 @@ export function Hero({ onGetQuote }: HeroProps) {
           const budgetThreshold = budgetAmount + 600;
           const tierLabel = accommodationType === 'budget' ? 'Budget' : accommodationType === 'affordable' ? 'Affordable' : 'Premium';
 
+          // Show all options at or above the budget amount, sorted closest-to-budget first
+          // Also include options slightly under budget (within R600 threshold)
           let budgetFiltered = tierQuotes.filter(q => q.totalForGroup <= budgetThreshold);
 
           if (budgetFiltered.length === 0) {
@@ -658,7 +660,13 @@ export function Hero({ onGetQuote }: HeroProps) {
             budgetFiltered = tierQuotes.slice(0, 3);
             toast.info(`No ${tierLabel.toLowerCase()} options fit your budget of R${budgetAmount.toLocaleString()} (max R600 over). Showing the closest ${tierLabel.toLowerCase()} options.`);
           } else {
-            budgetFiltered.sort((a, b) => b.totalForGroup - a.totalForGroup);
+            // Sort by proximity to budget (closest first), then ascending for ties
+            budgetFiltered.sort((a, b) => {
+              const distA = Math.abs(a.totalForGroup - budgetAmount);
+              const distB = Math.abs(b.totalForGroup - budgetAmount);
+              if (distA !== distB) return distA - distB;
+              return a.totalForGroup - b.totalForGroup;
+            });
 
             const slightlyOver = budgetFiltered.filter(q => q.totalForGroup > budgetAmount).length;
             let msg = `${budgetFiltered.length} ${tierLabel.toLowerCase()} option${budgetFiltered.length > 1 ? 's' : ''} found for your budget of R${budgetAmount.toLocaleString()}!`;
@@ -764,7 +772,13 @@ export function Hero({ onGetQuote }: HeroProps) {
           filtered = allQuotes.slice(0, 3);
           toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()}. Showing closest options.`);
         } else {
-          filtered.sort((a, b) => b.totalForGroup - a.totalForGroup);
+          // Sort by proximity to budget (closest first), then ascending for ties
+          filtered.sort((a, b) => {
+            const distA = Math.abs(a.totalForGroup - budgetAmount);
+            const distB = Math.abs(b.totalForGroup - budgetAmount);
+            if (distA !== distB) return distA - distB;
+            return a.totalForGroup - b.totalForGroup;
+          });
           toast.success(`${filtered.length} options found for your budget!`);
         }
 
