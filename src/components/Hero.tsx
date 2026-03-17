@@ -138,6 +138,37 @@ function getPackageFromPrice(pkg: Package): number {
   return roundToNearest10(pkg.basePrice + accommodationPerPerson);
 }
 
+function sortQuotesForBudgetDisplay(quotes: QuoteResult[], budgetAmount: number): QuoteResult[] {
+  if (budgetAmount <= 0) {
+    return [...quotes].sort((a, b) => a.totalForGroup - b.totalForGroup);
+  }
+
+  const atOrAboveBudget = quotes
+    .filter((quote) => quote.totalForGroup >= budgetAmount)
+    .sort((a, b) => a.totalForGroup - b.totalForGroup);
+
+  const belowBudget = quotes
+    .filter((quote) => quote.totalForGroup < budgetAmount)
+    .sort((a, b) => b.totalForGroup - a.totalForGroup);
+
+  if (atOrAboveBudget.length === 0) {
+    return belowBudget;
+  }
+
+  if (belowBudget.length === 0) {
+    return atOrAboveBudget;
+  }
+
+  const closestAbove = atOrAboveBudget[0];
+  const closestBelow = belowBudget[0];
+
+  if (Math.abs(closestBelow.totalForGroup - budgetAmount) < Math.abs(closestAbove.totalForGroup - budgetAmount)) {
+    return [closestBelow, ...atOrAboveBudget, ...belowBudget.slice(1)];
+  }
+
+  return [...atOrAboveBudget, ...belowBudget];
+}
+
 // Convert RMS hotels to QuoteResult format for QuoteList display
 function convertRMSToQuotes(
   hotels: RMSHotel[],
@@ -662,33 +693,30 @@ export function Hero({ onGetQuote }: HeroProps) {
           }
 
           const budgetAmount = parseInt(budget) || 0;
-          const budgetThreshold = budgetAmount + 600;
           const tierLabel = accommodationType === 'budget' ? 'Budget' : accommodationType === 'affordable' ? 'Affordable' : 'Premium';
+          const budgetSorted = sortQuotesForBudgetDisplay(tierQuotes, budgetAmount);
 
-          // Show all options at or above the budget amount, sorted closest-to-budget first
-          // Also include options slightly under budget (within R600 threshold)
-          let budgetFiltered = tierQuotes.filter(q => q.totalForGroup <= budgetThreshold);
-
-          if (budgetFiltered.length === 0) {
-            tierQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
-            budgetFiltered = tierQuotes.slice(0, 3);
-            toast.info(`No ${tierLabel.toLowerCase()} options fit your budget of R${budgetAmount.toLocaleString()} (max R600 over). Showing the closest ${tierLabel.toLowerCase()} options.`);
-          } else {
-            // Sort by proximity to budget (closest first), then ascending for ties
-            budgetFiltered.sort((a, b) => {
-              const distA = Math.abs(a.totalForGroup - budgetAmount);
-              const distB = Math.abs(b.totalForGroup - budgetAmount);
-              if (distA !== distB) return distA - distB;
-              return a.totalForGroup - b.totalForGroup;
-            });
-
-            const slightlyOver = budgetFiltered.filter(q => q.totalForGroup > budgetAmount).length;
-            let msg = `${budgetFiltered.length} ${tierLabel.toLowerCase()} option${budgetFiltered.length > 1 ? 's' : ''} found for your budget of R${budgetAmount.toLocaleString()}!`;
-            if (slightlyOver > 0) msg += ` (${slightlyOver} up to R600 over budget)`;
-            toast.success(msg);
+          if (budgetSorted.length === 0) {
+            toast.info(`No ${tierLabel.toLowerCase()} options are currently available.`);
+            setIsCalculating(false);
+            return;
           }
 
-          setQuotes(budgetFiltered);
+          const closestOption = budgetSorted[0];
+          const isAboveBudget = budgetAmount > 0 && closestOption.totalForGroup > budgetAmount;
+          const difference = budgetAmount > 0 ? Math.abs(closestOption.totalForGroup - budgetAmount) : 0;
+
+          if (budgetAmount > 0) {
+            toast.success(
+              isAboveBudget
+                ? `${budgetSorted.length} ${tierLabel.toLowerCase()} options found. Closest starts R${difference.toLocaleString()} above your budget.`
+                : `${budgetSorted.length} ${tierLabel.toLowerCase()} options found. Closest starts R${difference.toLocaleString()} below your budget.`
+            );
+          } else {
+            toast.success(`${budgetSorted.length} ${tierLabel.toLowerCase()} options found.`);
+          }
+
+          setQuotes(budgetSorted);
           setTimeout(() => {
             document.getElementById('quote-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }, 100);
@@ -778,22 +806,17 @@ export function Hero({ onGetQuote }: HeroProps) {
 
       if (allQuotes.length > 0) {
         const budgetAmount = parseInt(budget) || 0;
-        const budgetThreshold = budgetAmount * 1.1;
-        let filtered = allQuotes.filter(q => q.totalForGroup <= budgetThreshold);
+        const filtered = sortQuotesForBudgetDisplay(allQuotes, budgetAmount);
 
         if (filtered.length === 0) {
-          allQuotes.sort((a, b) => a.totalForGroup - b.totalForGroup);
-          filtered = allQuotes.slice(0, 3);
-          toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()}. Showing closest options.`);
+          toast.info('No options are currently available.');
+        } else if (budgetAmount > 0) {
+          const closestOption = filtered[0];
+          const difference = Math.abs(closestOption.totalForGroup - budgetAmount);
+          const direction = closestOption.totalForGroup > budgetAmount ? 'above' : 'below';
+          toast.success(`${filtered.length} options found. Closest starts R${difference.toLocaleString()} ${direction} your budget.`);
         } else {
-          // Sort by proximity to budget (closest first), then ascending for ties
-          filtered.sort((a, b) => {
-            const distA = Math.abs(a.totalForGroup - budgetAmount);
-            const distB = Math.abs(b.totalForGroup - budgetAmount);
-            if (distA !== distB) return distA - distB;
-            return a.totalForGroup - b.totalForGroup;
-          });
-          toast.success(`${filtered.length} options found for your budget!`);
+          toast.success(`${filtered.length} options found.`);
         }
 
         setQuotes(filtered);
