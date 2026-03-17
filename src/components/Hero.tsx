@@ -19,7 +19,7 @@ import { QuoteList } from './QuoteList';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useRMSHotels, type RMSHotel } from '@/hooks/useRMSHotels';
-import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
+
 import { getPremiumLiveHotelKeyByName } from '@/lib/premiumLiveHotels';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
