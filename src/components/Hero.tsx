@@ -19,8 +19,8 @@ import { QuoteList } from './QuoteList';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useRMSHotels, type RMSHotel } from '@/hooks/useRMSHotels';
-import { getActivitiesForDestination, findActivityByName } from '@/data/activitiesData';
 import { getPremiumLiveHotelKeyByName } from '@/lib/premiumLiveHotels';
+import { calculatePackageBaseCost } from '@/lib/packagePricing';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 
 type BookingType = 'accommodation-only' | 'with-activities';
@@ -174,27 +174,13 @@ function convertRMSToQuotes(
   const nights = Math.ceil((params.checkOut.getTime() - params.checkIn.getTime()) / (1000 * 60 * 60 * 24));
   const serviceFees = calculateServiceFees(params.adults, params.childrenAges);
 
-  // Get activities for this destination
-  const availableActivities = getActivitiesForDestination(params.destination);
-
   for (const pkg of selectedPackages) {
-    // Calculate activities cost from package
-    let activitiesCost = 0;
-    const activitiesForPackage = pkg.activitiesIncluded
-      .filter(a => !a.toLowerCase().includes('accommodation') && !a.toLowerCase().includes('breakfast'))
-      .map(label => findActivityByName(label, availableActivities))
-      .filter(Boolean);
-
-    activitiesForPackage.forEach(activity => {
-      if (activity) {
-        activitiesCost += (activity.rates.adult * params.adults) + (activity.rates.child * params.children);
-      }
-    });
+    const packageCost = calculatePackageBaseCost(pkg, params.adults, params.childrenAges, params.children);
 
     for (let i = 0; i < hotels.length; i++) {
       const hotel = hotels[i];
       const accommodationCost = hotel.totalRate * params.rooms;
-      const totalForGroup = roundToNearest10(accommodationCost + activitiesCost + serviceFees);
+      const totalForGroup = roundToNearest10(accommodationCost + packageCost + serviceFees);
       const totalPeople = params.adults + params.children;
       const totalPerPerson = roundToNearest10(totalForGroup / totalPeople);
 
@@ -212,8 +198,8 @@ function convertRMSToQuotes(
         destination: params.destination,
         nights,
         accommodationCost,
-        packageCost: activitiesCost,
-        activitiesCost,
+        packageCost,
+        activitiesCost: packageCost,
         childDiscount: 0,
         totalPerPerson,
         totalForGroup,
@@ -231,7 +217,7 @@ function convertRMSToQuotes(
         hotelTier: hotel.tier,
         breakdown: [
           { label: `Accommodation (${nights} nights × ${params.rooms} rooms)`, amount: accommodationCost },
-          { label: 'Activities', amount: activitiesCost },
+          { label: 'Package', amount: packageCost },
           { label: 'Service Fees', amount: serviceFees },
         ],
       });

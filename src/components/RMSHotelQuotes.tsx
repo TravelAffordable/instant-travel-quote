@@ -6,10 +6,9 @@ import { type RMSHotel } from '@/hooks/useRMSHotels';
 import { type Package } from '@/data/travelData';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { getActivitiesForDestination, findActivityByName, type Activity } from '@/data/activitiesData';
 import { getActivityImagesForDestination } from '@/data/destinationActivityImages';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
+import { calculatePackageBaseCost } from '@/lib/packagePricing';
 import useEmblaCarousel from 'embla-carousel-react';
 
 interface RMSHotelQuotesProps {
@@ -161,39 +160,12 @@ export function RMSHotelQuotes({
   // Active tier tab - default to 'budget' (cheapest)
   const [activeTier, setActiveTier] = useState<TierKey>('budget');
 
-  // Shared activity selection state
-  const [sharedActivitySelections, setSharedActivitySelections] = useState<Record<string, string[]>>({});
-
   const childrenAges = useMemo(() => {
     return childrenAgesString
       .split(',')
       .map(a => parseInt(a.trim()))
       .filter(a => !isNaN(a) && a >= 3 && a <= 17);
   }, [childrenAgesString]);
-
-  // Initialize activity selections for each package
-  useEffect(() => {
-    const newSelections: Record<string, string[]> = {};
-    selectedPackages.forEach(pkg => {
-      const availableActivities = getActivitiesForDestination(pkg.destination);
-      const initialActivities = pkg.activitiesIncluded
-        .filter(a => !a.toLowerCase().includes('accommodation') && !a.toLowerCase().includes('breakfast at selected'))
-        .map(label => findActivityByName(label, availableActivities)?.name)
-        .filter((v): v is string => Boolean(v));
-      newSelections[pkg.id] = Array.from(new Set(initialActivities));
-    });
-    setSharedActivitySelections(prev => ({ ...prev, ...newSelections }));
-  }, [selectedPackages]);
-
-  const handleActivityToggle = useCallback((packageId: string, activityName: string) => {
-    setSharedActivitySelections(prev => {
-      const current = prev[packageId] || [];
-      const updated = current.includes(activityName)
-        ? current.filter(a => a !== activityName)
-        : [...current, activityName];
-      return { ...prev, [packageId]: updated };
-    });
-  }, []);
 
   // Group hotels by tier
   const hotelsByTier = useMemo(() => {
@@ -289,25 +261,14 @@ export function RMSHotelQuotes({
 
       {/* Package Sections */}
       {selectedPackages.map((pkg) => {
-        const availableActivities = getActivitiesForDestination(pkg.destination);
-        const selectedActivities = sharedActivitySelections[pkg.id] || [];
-
-        // Calculate activities cost
-        let activitiesCost = 0;
-        selectedActivities.forEach(actName => {
-          const activity = availableActivities.find(a => a.name === actName);
-          if (activity) {
-            activitiesCost += (activity.rates.adult * adults) + (activity.rates.child * children);
-          }
-        });
-
+        const packageCost = calculatePackageBaseCost(pkg, adults, childrenAges, children);
         const serviceFees = calculateServiceFees(adults, children, childrenAges);
 
         // Get hotels for active tier, starting from the closest option at/above budget and scaling upward
         const budgetAmount = parseInt(budget) || 0;
         const tierHotels = sortTierHotelsForBudget(
           hotelsByTier[activeTier],
-          (hotel) => roundToNearest10((hotel.totalRate * rooms) + activitiesCost + serviceFees + (busQuoteAmount > 0 ? busQuoteAmount : 0)),
+          (hotel) => roundToNearest10((hotel.totalRate * rooms) + packageCost + serviceFees + (busQuoteAmount > 0 ? busQuoteAmount : 0)),
           budgetAmount,
         );
 
@@ -323,39 +284,12 @@ export function RMSHotelQuotes({
               </p>
             </div>
 
-            {/* Activity Selection */}
-            <div className="bg-muted/30 border border-border rounded-lg p-4">
-              <h4 className="font-semibold mb-3">Select Activities</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {availableActivities
-                  .filter(a => !a.name.toLowerCase().includes('accommodation'))
-                  .map(activity => (
-                    <div key={activity.name} className="flex items-center gap-2">
-                      <Checkbox
-                        id={`${pkg.id}-${activity.name}`}
-                        checked={selectedActivities.includes(activity.name)}
-                        onCheckedChange={() => handleActivityToggle(pkg.id, activity.name)}
-                      />
-                      <label 
-                        htmlFor={`${pkg.id}-${activity.name}`} 
-                        className="text-sm cursor-pointer flex-1"
-                      >
-                        {activity.name} 
-                        <span className="text-muted-foreground ml-1">
-                          ({formatCurrency(activity.rates.adult)}/adult)
-                        </span>
-                      </label>
-                    </div>
-                  ))}
-              </div>
-            </div>
-
             {/* Hotel Cards for Active Tier */}
             <div className="space-y-4">
               {tierHotels.map((hotel, hotelIdx) => {
                 const accommodationCost = hotel.totalRate * rooms;
-                let grandTotal = roundToNearest10(accommodationCost + activitiesCost + serviceFees);
-                
+                let grandTotal = roundToNearest10(accommodationCost + packageCost + serviceFees);
+
                 // Add bus quote if present
                 if (busQuoteAmount > 0) {
                   grandTotal = roundToNearest10(grandTotal + busQuoteAmount);
