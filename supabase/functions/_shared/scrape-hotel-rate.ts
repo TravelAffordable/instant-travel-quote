@@ -1,16 +1,15 @@
 /**
  * Scrape-based hotel rate extraction using Firecrawl scrape (not search).
  * Builds a Booking.com search URL for a hotel name + city, scrapes the page,
- * and extracts ZAR nightly rates from the rendered markdown.
+ * and finds the specific hotel's rate in the search results markdown.
  *
- * This is the same proven approach used in premium-live-booking.ts.
+ * This uses the same Firecrawl scrape approach as premium-live-booking.ts.
  */
 
 const SCRAPE_TIMEOUT_MS = 15_000;
 
 /**
- * Build a Booking.com search URL for a given hotel name, city, check-in/out dates.
- * Uses generic dates (next Friday → Sunday) if none provided.
+ * Build a Booking.com search URL for a given hotel name and city.
  */
 function buildBookingSearchUrl(
   hotelName: string,
@@ -36,7 +35,7 @@ function buildBookingSearchUrl(
 function getDefaultDates(): { checkIn: string; checkOut: string } {
   const now = new Date();
   const day = now.getUTCDay();
-  const daysToFriday = (5 - day + 7) % 7 || 7; // next Friday, not today
+  const daysToFriday = (5 - day + 7) % 7 || 7;
   const friday = new Date(now);
   friday.setUTCDate(friday.getUTCDate() + daysToFriday);
   const sunday = new Date(friday);
@@ -47,42 +46,127 @@ function getDefaultDates(): { checkIn: string; checkOut: string } {
 }
 
 /**
- * Extract ZAR nightly rates from Booking.com markdown.
- * Looks for patterns like "ZAR X,XXX" or "R X,XXX" near "per night".
+ * Normalize a hotel name for fuzzy matching.
  */
-function extractRatesFromMarkdown(markdown: string): number[] {
-  const rates: number[] = [];
-
-  // Pattern 1: "ZAR 1,234" per night style (Booking.com table format)
-  const tablePattern = /(?:ZAR|R)\s*([\d,]+)\s*(?:<br>|\n)?\s*per\s*night/gi;
-  let match;
-  while ((match = tablePattern.exec(markdown)) !== null) {
-    const price = parseFloat(match[1].replace(/,/g, ''));
-    if (price >= 200 && price <= 50_000) rates.push(price);
-  }
-
-  // Pattern 2: "Price for X nights" with total, then divide
-  // "ZAR 2,468" for 2 nights → 1,234/night
-  const totalPattern = /(?:ZAR|R)\s*([\d,]+)\s*(?:<br>|\n)?\s*(?:Price|Total)\s*(?:for\s*(\d+)\s*nights?)?/gi;
-  while ((match = totalPattern.exec(markdown)) !== null) {
-    const total = parseFloat(match[1].replace(/,/g, ''));
-    const nights = match[2] ? parseInt(match[2]) : 2;
-    const perNight = total / nights;
-    if (perNight >= 200 && perNight <= 50_000) rates.push(Math.round(perNight));
-  }
-
-  // Pattern 3: General "R 1,234" or "ZAR 1,234" near accommodation context
-  const generalPattern = /(?:ZAR|R)\s*([\d,]+(?:\.\d{2})?)/gi;
-  while ((match = generalPattern.exec(markdown)) !== null) {
-    const price = parseFloat(match[1].replace(/,/g, ''));
-    if (price >= 200 && price <= 50_000) rates.push(price);
-  }
-
-  return [...new Set(rates)];
+function normalizeName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 /**
- * Scrape a Booking.com URL using Firecrawl and return markdown.
+ * Check if two hotel names are a fuzzy match.
+ * Returns true if the target name is substantially contained in the candidate.
+ */
+function isNameMatch(candidate: string, target: string): boolean {
+  const normCandidate = normalizeName(candidate);
+  const normTarget = normalizeName(target);
+
+  // Exact match
+  if (normCandidate === normTarget) return true;
+
+  // One contains the other
+  if (normCandidate.includes(normTarget) || normTarget.includes(normCandidate)) return true;
+
+  // Word overlap: at least 60% of target words appear in candidate
+  const targetWords = normTarget.split(' ').filter(w => w.length > 2);
+  const candidateStr = normCandidate;
+  const matchingWords = targetWords.filter(w => candidateStr.includes(w));
+  if (targetWords.length > 0 && matchingWords.length / targetWords.length >= 0.6) return true;
+
+  return false;
+}
+
+/**
+ * Extract the rate for a specific hotel from Booking.com search results markdown.
+ * The markdown contains multiple hotel listings — we find the one matching our target name.
+ *
+ * Booking.com search results markdown typically has sections per hotel like:
+ * [Hotel Name](url)
+ * ...
+ * ZAR X,XXX per night / Price for 2 nights: ZAR Y,YYY
+ */
+function extractHotelRateFromSearchResults(
+  markdown: string,
+  targetName: string,
+  nights: number,
+): number | null {
+  // Split markdown into sections by hotel listing headers (links)
+  // Booking.com markdown typically has: [Hotel Name](booking.com/hotel/...)
+  const sections = markdown.split(/(?=\[(?:[^\]]+)\]\(https?:\/\/[^\)]*booking\.com)/);
+
+  for (const section of sections) {
+    // Extract the hotel name from the section header
+    const headerMatch = section.match(/^\[([^\]]+)\]/);
+    if (!headerMatch) continue;
+
+    const sectionHotelName = headerMatch[1];
+
+    // Check if this section matches our target hotel
+    if (!isNameMatch(sectionHotelName, targetName)) continue;
+
+    // Found the right hotel section — extract its rate
+    const ratePatterns = [
+      // "ZAR 1,234<br>per night" or "ZAR 1,234 per night"
+      /(?:ZAR|R)\s*([\d,]+)\s*(?:<br>|\n)?\s*per\s*night/gi,
+      // Total price divided by nights
+      /(?:ZAR|R)\s*([\d,]+)\s*(?:<br>|\n)?\s*(?:Price|Total)/gi,
+    ];
+
+    const rates: number[] = [];
+    for (const pattern of ratePatterns) {
+      let match;
+      while ((match = pattern.exec(section)) !== null) {
+        const price = parseFloat(match[1].replace(/,/g, ''));
+        if (price >= 200 && price <= 50_000) {
+          rates.push(price);
+        }
+      }
+    }
+
+    // Also try: any ZAR amount in the section (as fallback)
+    if (rates.length === 0) {
+      const generalPattern = /(?:ZAR|R)\s*([\d,]+(?:\.\d{2})?)/gi;
+      let match;
+      while ((match = generalPattern.exec(section)) !== null) {
+        const price = parseFloat(match[1].replace(/,/g, ''));
+        // For total prices (2 nights), divide by nights
+        if (price >= 400 && price <= 100_000) {
+          // Check if this looks like a total (higher than typical nightly)
+          const asNightly = price / nights;
+          if (asNightly >= 200 && asNightly <= 50_000) {
+            rates.push(Math.round(asNightly));
+          }
+          if (price >= 200 && price <= 50_000) {
+            rates.push(price);
+          }
+        } else if (price >= 200 && price <= 50_000) {
+          rates.push(price);
+        }
+      }
+    }
+
+    if (rates.length > 0) {
+      // Return the lowest rate found for this specific hotel
+      return Math.min(...rates);
+    }
+  }
+
+  // Fallback: if we couldn't match by hotel name sections,
+  // try the first hotel result (Booking.com often returns the exact match first)
+  const firstRateMatch = markdown.match(/(?:ZAR|R)\s*([\d,]+)\s*(?:<br>|\n)?\s*per\s*night/i);
+  if (firstRateMatch) {
+    const price = parseFloat(firstRateMatch[1].replace(/,/g, ''));
+    if (price >= 200 && price <= 50_000) return price;
+  }
+
+  return null;
+}
+
+/**
+ * Scrape a URL using Firecrawl and return markdown.
  */
 async function firecrawlScrape(url: string, apiKey: string): Promise<string | null> {
   try {
@@ -114,7 +198,7 @@ async function firecrawlScrape(url: string, apiKey: string): Promise<string | nu
     return data?.data?.markdown || data?.markdown || null;
   } catch (error) {
     if (error instanceof Error && error.name === 'TimeoutError') {
-      console.warn(`Scrape timed out for ${url}`);
+      console.warn(`Scrape timed out for URL`);
     } else {
       console.error('Firecrawl scrape error:', error);
     }
@@ -123,8 +207,8 @@ async function firecrawlScrape(url: string, apiKey: string): Promise<string | nu
 }
 
 /**
- * Scrape the nightly rate for a hotel from Booking.com.
- * Returns the lowest valid nightly rate found, or null.
+ * Scrape the nightly rate for a specific hotel from Booking.com.
+ * Returns the hotel's nightly rate, or null if not found.
  */
 export async function scrapeHotelRate(
   realName: string,
@@ -132,9 +216,8 @@ export async function scrapeHotelRate(
   apiKey: string,
 ): Promise<number | null> {
   const { checkIn, checkOut } = getDefaultDates();
+  const nights = 2; // Friday to Sunday
   const searchUrl = buildBookingSearchUrl(realName, city, checkIn, checkOut);
-
-  console.log(`  Scraping: ${realName} (${city}) → ${searchUrl.slice(0, 80)}...`);
 
   const markdown = await firecrawlScrape(searchUrl, apiKey);
   if (!markdown) {
@@ -142,17 +225,15 @@ export async function scrapeHotelRate(
     return null;
   }
 
-  const rates = extractRatesFromMarkdown(markdown);
+  const rate = extractHotelRateFromSearchResults(markdown, realName, nights);
 
-  if (rates.length === 0) {
-    console.log(`  ✗ ${realName}: no ZAR rates found in markdown`);
-    return null;
+  if (rate !== null) {
+    console.log(`  ✓ ${realName}: R${rate}/night`);
+  } else {
+    console.log(`  ✗ ${realName}: no matching rate found in search results`);
   }
 
-  // Use the lowest valid rate (most likely the base room rate)
-  const lowestRate = Math.min(...rates);
-  console.log(`  ✓ ${realName}: R${lowestRate} (from ${rates.length} rates found)`);
-  return lowestRate;
+  return rate;
 }
 
 /**
@@ -172,7 +253,7 @@ export async function processHotelsSequentially(
       rateMap.set(h.realName, rate);
     }
 
-    // Delay between scrapes to avoid rate limits (skip after last)
+    // Delay between scrapes to avoid rate limits
     if (i < items.length - 1) {
       await new Promise((r) => setTimeout(r, 500));
     }
