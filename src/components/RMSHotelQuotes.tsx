@@ -281,8 +281,19 @@ export function RMSHotelQuotes({
 
         const serviceFees = calculateServiceFees(adults, children, childrenAges);
 
-        // Get hotels for active tier
-        const tierHotels = hotelsByTier[activeTier];
+        // Get hotels for active tier, sorted by proximity to budget
+        const budgetAmount = parseInt(budget) || 0;
+        const tierHotels = [...hotelsByTier[activeTier]].sort((a, b) => {
+          if (budgetAmount > 0) {
+            const totalA = roundToNearest10((a.totalRate * rooms) + activitiesCost + serviceFees + (busQuoteAmount > 0 ? busQuoteAmount : 0));
+            const totalB = roundToNearest10((b.totalRate * rooms) + activitiesCost + serviceFees + (busQuoteAmount > 0 ? busQuoteAmount : 0));
+            const distA = Math.abs(totalA - budgetAmount);
+            const distB = Math.abs(totalB - budgetAmount);
+            if (distA !== distB) return distA - distB;
+            return totalA - totalB;
+          }
+          return a.minRate - b.minRate;
+        });
 
         return (
           <div key={pkg.id} className="space-y-6">
