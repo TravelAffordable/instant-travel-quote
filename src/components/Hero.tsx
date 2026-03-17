@@ -772,7 +772,13 @@ export function Hero({ onGetQuote }: HeroProps) {
           filtered = allQuotes.slice(0, 3);
           toast.info(`No options fit your budget of R${budgetAmount.toLocaleString()}. Showing closest options.`);
         } else {
-          filtered.sort((a, b) => b.totalForGroup - a.totalForGroup);
+          // Sort by proximity to budget (closest first), then ascending for ties
+          filtered.sort((a, b) => {
+            const distA = Math.abs(a.totalForGroup - budgetAmount);
+            const distB = Math.abs(b.totalForGroup - budgetAmount);
+            if (distA !== distB) return distA - distB;
+            return a.totalForGroup - b.totalForGroup;
+          });
           toast.success(`${filtered.length} options found for your budget!`);
         }
 
