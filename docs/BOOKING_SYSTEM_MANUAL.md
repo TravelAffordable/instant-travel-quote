@@ -84,7 +84,23 @@ rate_overrides     → Date-specific price overrides
 rate_history       → Historical rate tracking
 ```
 
-### Rate Calculation Flow
+### Rate Calculation Flow (Public Searches)
+
+```
+1. User submits search with specific dates
+   ↓
+2. Invoke hotel-live-rates edge function
+   ↓
+3. For each hotel: Firecrawl search → find Booking.com URL → scrape page → extract ZAR rate
+   ↓
+4. If live scrape fails: fall back to cached_hotel_rates table
+   ↓
+5. If no cached rate: fall back to hardcoded refRate
+   ↓
+6. Return final nightly rate for display
+```
+
+### Rate Calculation Flow (RMS/Admin)
 
 ```
 1. Check for date-specific override (rate_overrides table)
@@ -352,13 +368,51 @@ Password: `admin123`
 
 ## External Integrations
 
+### Live Hotel Rate Scraping (Firecrawl)
+
+**Primary rate source for all public searches.** When a user searches for specific dates, the system performs on-demand scraping of Booking.com listing pages via the Firecrawl API to return real-time, date-specific pricing.
+
+#### Architecture
+
+```
+User searches dates → hotel-live-rates edge function
+  → For each hotel:
+     1. Firecrawl Search: site:booking.com "Hotel Name" City → finds direct listing URL
+     2. Firecrawl Scrape: listing page with check-in/check-out params → extracts ZAR nightly rate
+  → Returns live rates per hotel
+```
+
+#### Edge Functions
+
+| Function | Purpose |
+|----------|---------|
+| `hotel-live-rates` | On-demand batch live rate lookup for user searches (all tiers) |
+| `booking-live-rate` | Single hotel live rate lookup |
+| `booking-weekend-calendar` | Weekend rate calendar for premium hotels |
+| `sync-hotel-rates` | Background crawler that refreshes `cached_hotel_rates` table |
+
+#### Rate Priority
+
+1. **Live scrape** (primary) — real-time Firecrawl lookup for user's selected dates
+2. **Cached rates** (fallback) — `cached_hotel_rates` table, refreshed by `sync-hotel-rates` cron
+3. **Reference rates** (last resort) — hardcoded `refRate` values in static hotel data
+
+#### Shared Helper: `_shared/scrape-hotel-rate.ts`
+
+| Function | Purpose |
+|----------|---------|
+| `findBookingUrl(name, city, apiKey)` | Discovers direct Booking.com listing URL via Firecrawl search |
+| `scrapeHotelRate(name, city, apiKey, options?)` | Full pipeline: find URL → scrape → extract ZAR rate |
+| `processHotelsSequentially(items, apiKey)` | Sequential processing with rate-limit delays |
+| `extractNightlyRate(markdown, nights)` | Parses scraped markdown for lowest valid ZAR nightly rate |
+
 ### Hotelbeds API
 
 **Usage Policy**: Restricted to specific flows only.
 
 | Flow | Hotelbeds Used |
 |------|----------------|
-| Public tier searches | ❌ Uses internal RMS |
+| Public tier searches | ❌ Uses Firecrawl live scraping |
 | "Accommodation only" booking | ✅ Live search |
 | Certification testing (/hotelbeds-test) | ✅ Live search |
 
@@ -366,7 +420,8 @@ Password: `admin123`
 
 ### Amadeus API
 
-Available but secondary to internal RMS. Used for specific search scenarios when enabled.
+Available but secondary. Used for specific search scenarios when enabled.
+
 
 ---
 
@@ -596,6 +651,7 @@ rate_overrides
 | Date | Change |
 |------|--------|
 | 2025-01-26 | Initial documentation created |
+| 2026-03-19 | Added Firecrawl live rate scraping architecture, updated rate calculation flow to reflect live→cached→refRate priority, documented edge functions and shared helpers |
 
 ---
 
