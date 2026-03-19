@@ -352,13 +352,51 @@ Password: `admin123`
 
 ## External Integrations
 
+### Live Hotel Rate Scraping (Firecrawl)
+
+**Primary rate source for all public searches.** When a user searches for specific dates, the system performs on-demand scraping of Booking.com listing pages via the Firecrawl API to return real-time, date-specific pricing.
+
+#### Architecture
+
+```
+User searches dates → hotel-live-rates edge function
+  → For each hotel:
+     1. Firecrawl Search: site:booking.com "Hotel Name" City → finds direct listing URL
+     2. Firecrawl Scrape: listing page with check-in/check-out params → extracts ZAR nightly rate
+  → Returns live rates per hotel
+```
+
+#### Edge Functions
+
+| Function | Purpose |
+|----------|---------|
+| `hotel-live-rates` | On-demand batch live rate lookup for user searches (all tiers) |
+| `booking-live-rate` | Single hotel live rate lookup |
+| `booking-weekend-calendar` | Weekend rate calendar for premium hotels |
+| `sync-hotel-rates` | Background crawler that refreshes `cached_hotel_rates` table |
+
+#### Rate Priority
+
+1. **Live scrape** (primary) — real-time Firecrawl lookup for user's selected dates
+2. **Cached rates** (fallback) — `cached_hotel_rates` table, refreshed by `sync-hotel-rates` cron
+3. **Reference rates** (last resort) — hardcoded `refRate` values in static hotel data
+
+#### Shared Helper: `_shared/scrape-hotel-rate.ts`
+
+| Function | Purpose |
+|----------|---------|
+| `findBookingUrl(name, city, apiKey)` | Discovers direct Booking.com listing URL via Firecrawl search |
+| `scrapeHotelRate(name, city, apiKey, options?)` | Full pipeline: find URL → scrape → extract ZAR rate |
+| `processHotelsSequentially(items, apiKey)` | Sequential processing with rate-limit delays |
+| `extractNightlyRate(markdown, nights)` | Parses scraped markdown for lowest valid ZAR nightly rate |
+
 ### Hotelbeds API
 
 **Usage Policy**: Restricted to specific flows only.
 
 | Flow | Hotelbeds Used |
 |------|----------------|
-| Public tier searches | ❌ Uses internal RMS |
+| Public tier searches | ❌ Uses Firecrawl live scraping |
 | "Accommodation only" booking | ✅ Live search |
 | Certification testing (/hotelbeds-test) | ✅ Live search |
 
@@ -366,7 +404,8 @@ Password: `admin123`
 
 ### Amadeus API
 
-Available but secondary to internal RMS. Used for specific search scenarios when enabled.
+Available but secondary. Used for specific search scenarios when enabled.
+
 
 ---
 
