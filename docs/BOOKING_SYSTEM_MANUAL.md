@@ -651,6 +651,7 @@ rate_overrides
 | Date | Change |
 |------|--------|
 | 2025-01-26 | Initial documentation created |
+| 2026-03-19 | Added Firecrawl live rate scraping architecture, updated rate calculation flow to reflect live→cached→refRate priority, documented edge functions and shared helpers |
 
 ---
 
