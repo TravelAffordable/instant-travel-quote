@@ -84,7 +84,23 @@ rate_overrides     → Date-specific price overrides
 rate_history       → Historical rate tracking
 ```
 
-### Rate Calculation Flow
+### Rate Calculation Flow (Public Searches)
+
+```
+1. User submits search with specific dates
+   ↓
+2. Invoke hotel-live-rates edge function
+   ↓
+3. For each hotel: Firecrawl search → find Booking.com URL → scrape page → extract ZAR rate
+   ↓
+4. If live scrape fails: fall back to cached_hotel_rates table
+   ↓
+5. If no cached rate: fall back to hardcoded refRate
+   ↓
+6. Return final nightly rate for display
+```
+
+### Rate Calculation Flow (RMS/Admin)
 
 ```
 1. Check for date-specific override (rate_overrides table)
