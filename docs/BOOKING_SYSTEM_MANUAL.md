@@ -646,12 +646,164 @@ rate_overrides
 
 ---
 
+## Destinations & Packages Reference
+
+### South African Destinations
+
+| ID | Destination | Starting Price | Popular |
+|----|-------------|---------------|---------|
+| `harties` | Hartbeespoort | R1,580 pp | ✅ |
+| `magalies` | Magaliesburg | R2,100 pp | ✅ |
+| `durban` | Durban Beachfront | R1,600 pp | ✅ |
+| `umhlanga` | Umhlanga | R1,700 pp | ✅ |
+| `cape-town` | Cape Town | R2,400 pp | ✅ |
+| `sun-city` | Sun City | R2,000 pp | ✅ |
+| `mpumalanga` | Mpumalanga | R2,520 pp | ✅ |
+| `knysna` | Knysna (Garden Route) | R2,750 pp | ❌ |
+| `vaal-river` | Vaal River | R2,250 pp | ❌ |
+| `bela-bela` | Bela Bela | R2,600 pp | ❌ |
+| `pretoria` | The Blyde FUNtastic Resort | R2,200 pp | ❌ |
+
+### International Destinations
+
+| ID | Destination | Country | Starting Price |
+|----|-------------|---------|---------------|
+| `bali` | Bali | Indonesia | R4,600 pp |
+| `dubai` | Dubai | UAE | R5,600 pp |
+| `thailand` | Thailand | Thailand | R5,000 pp |
+
+---
+
+### Hartbeespoort Packages (12 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| HG1 | Leisuretime Getaway | R1,010 | 4-14: R690, 15-17: R1,010 | 2hr sunset champagne cruise with buffet, Harties Cableway |
+| HG2 | Funtime Getaway | R1,650 | 6-12: R1,220, 13-17: R1,430 | 1hr horse riding, quad biking OR massage, 2hr sunset cruise |
+| HG3 | Family Fun Weekender | R1,450 | R600 | Quad biking, Harties Zoo & Snake Park, Sunday lunch cruise |
+| HG4 | Elephant Sanctuary Adventure | R2,480 | R1,450 (4+) | Elephant Sanctuary, horse riding OR quad biking, Cableway |
+| HG5 | Upside Down House | R1,330 | R940 | Upside Down House, Little Paris, Cableway, quad biking |
+| HG6 | Cableway Experience | R380 | R300 | Full day Harties Cableway |
+| HG7 | Couple Cruise Getaway | R700 | R350 | 2hr sunset boat cruise with buffet |
+| HG8 | Couple Quad Adventure | R550 | R300 | 1hr quad biking |
+| HG9 | Romance in the Air | R810 | R400 | 1hr horse ride, full day Cableway |
+| HG10 | Jet Ski Fun | R1,280 | R600 | Jet Ski, Cableway, massage OR sunset cruise |
+| HG11 | Wake Snake & Cruise | R1,180 | R600 | Wake Snake Ski slide, 2hr sunset cruise |
+| HG12 | Tube Ride & Massage | R1,400 | R600 | Tube ride ski, 60min full body massage |
+
+### Magaliesburg Packages (6 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| MAG1 | Explorer Getaway | R900 | R800 | Cradle of Mankind, Sterkfontein Caves, game drive, reptile show |
+| MAG2 | Ultimate Lux | R2,130 | R800 | Buffet cruise, Cradle of Mankind, massage, game drive |
+| MAG3 | Deluxe Spa Weekender | R1,950 | R800 | Half-day spa, game drive, sunset cruise |
+| MAG4 | Budget Game Drive | R1,200 | R800 | Rhino and Lion Park, game drive, massage |
+| MAG5 | Perfect Date | R2,330 | R900 | Horse riding, quad biking, private romantic picnic |
+| MAG6 | Horse, Spa & Picnic | R1,600 | R700 | Horse trail, massage, romantic picnic |
+
+### Durban Packages (8 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| DUR1 | Fun on the Beach | R1,800 | R600 | uShaka Marine World, Isle of Capri cruise, massage, shuttle |
+| DUR2 | Smiles & Sea Shells | R1,300 | R600 | uShaka, 3hr open bus tour, Isle of Capri cruise, shuttle |
+| DUR3 | Beach & Spa Ease | R1,550 | R600 | Half-day spa, luxury canal boat cruise, shuttle |
+| DUR4 | Party Vibes | R2,000 | R600 | Nightlife, uShaka, luxury canal cruise, massage |
+| DUR5 | Beach Couple uShaka | R850 | R400 | uShaka, Suncoast Casino, shuttle |
+| DUR6 | Beach Couple Cruise | R550 | R300 | Isle of Capri cruise, Suncoast Casino, shuttle |
+| DUR7 | Beach & Nightlife | R400 | R200 | Florida Road Cubana, Suncoast Casino, shuttle |
+| DUR8 | Open Top Bus Tour | R600 | R350 | 3hr open top bus tour, Suncoast Casino, shuttle |
+
+### Umhlanga Packages (4 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| UMHLA1 | Beach & Leisure | R500 | R180 | Breakfast, Gateway Theatre of Dreams, Umhlanga Beach, Oceans Mall, shuttle |
+| UMHLA2 | Beach Lifestyle | R1,450 | R900 | Breakfast, uShaka Marine World, luxury canal cruise, Umhlanga Beach, shuttle |
+| UMHLA3 | Three Beaches | R1,850 | R800 | Buffet breakfast, uShaka, boat cruise, Umhlanga Beach, Ballito Beach, shuttle |
+| UMHLA4 | Romance Package | R2,400 | R900 | Breakfast, romantic dinner, room decor, uShaka, gondola cruise with picnic, shuttle |
+
+### Cape Town Packages (4 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Duration | Inclusions |
+|------|-----------|-----------------|------------|----------|------------|
+| CPT1 | Iconic Tour | R1,800 | R850 | 3 nights | Sightseeing bus, Robben Island, Table Mountain Cableway, canal cruise |
+| CPT2 | Sunset Explorer | R1,200 | R800 | 2 nights | 2-day sightseeing bus, Table Mountain, canal cruise, Signal Hill sunset |
+| CPTFW | Wine Tram Getaway | R2,300 | — | 2 nights | Franschoek Wine Tram, city tour, massage, canal cruise |
+| CPTWTCM | Wine & Mountain | R2,600 | — | 2-3 nights | Wine route tour, canal cruise, Table Mountain, Swedish massage |
+
+### Sun City Packages (8 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| SUN1 | Sun City & Cruise Combo | R1,550 | R600 | Sun City entrance, Valley of Waves, lunch, Sunday lunch cruise in Harties |
+| SUN2 | Valley & Quads | R1,250 | R850 | Sun City, Valley of Waves, quad biking, lunch, shuttle |
+| SUN3 | Valley Getaway | R850 | R550 | Sun City, Valley of Waves, lunch, shuttle |
+| SUN4 | Safari Weekender | R1,550 | R750 | Sun City, Valley of Waves, Pilanesberg game drive, lunch, shuttle |
+| SUN5 | Spa & Safari | R2,150 | R900 | Sun City, Valley of Waves, half-day spa, lunch, game drive, shuttle |
+| SUN6 | Valley & Segway | R1,700 | R800 | Sun City, Valley of Waves, segway glides, lunch, shuttle |
+| SUN7 | Valley & Maze | R800 | R700 | Sun City, Valley of Waves, maze adventure, lunch, shuttle |
+| SUN8 | Valley & Zipline | R1,600 | R800 | Sun City, Valley of Waves, zip lining, lunch, shuttle |
+
+### Mpumalanga Packages (4 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| MP1 | InStyle Getaway | R1,320 | R800 | Blyde River Canyon boat cruise, Graskop Gorge Lift & suspension bridge |
+| MP2 | Fun Adventure | R1,750 | R900 | Graskop Lift, suspension bridge, quad biking, zip lining |
+| MP3 | Kruger Experience | R2,100 | R600 | Graskop Gorge Lift, suspension bridge, Kruger game drive |
+| MP4 | Weekender | R2,800 | R1,200 | Kruger game drive, full day Panorama Route tour |
+
+### Vaal River Packages (3 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| EMER1 | Aquadome & Cruise | R1,100 | R800 | Aquadome waterpark, game drive, Animal World, Sunday lunch cruise |
+| EMER2 | Family Fun Getaway | R1,050 | R700 | Emerald Casino, Aquadome, 1hr leisure cruise, game drive, Sunday lunch |
+| EMER3 | Leisure & Spa | R1,700 | R950 | Emerald Casino, full body massage, game drive, lunch cruise |
+
+### Knysna Package (1 package)
+
+| Code | Short Name | Base Price/Adult | Inclusions |
+|------|-----------|-----------------|------------|
+| KNY1 | Boats & Quads Adventure | R1,550 | Wine & oyster sunset cruise, forest quad biking, shuttle |
+
+### Bela Bela Packages (5 packages)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| BELA1 | Waterpark & Game Drive | R800 | R600 (4+) | Resort waterpark, safari game drive |
+| BELA2 | Mabalingwe & Waterpark | R850 | R700 (4+) | Mabalingwe Nature Reserve, waterpark, horseback safari OR game drive |
+| BELA3 | Mabula Safari | R3,200 | R1,600 (8+) | Mabula Game Lodge, Big 5 game drives, bush walks, all meals |
+| BELA4 | Zebra Lodge Spa Retreat | R2,600 | R1,300 | Zebra Country Lodge, spa, nature walks, gourmet meals |
+| BELA5 | Adventure & Hot Springs | R1,600 | R800 (12+) | Quad biking, hot springs, breakfast |
+
+### The Blyde Package (1 package)
+
+| Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
+|------|-----------|-----------------|------------|------------|
+| BLY1 | Blyde Spa Getaway | R1,200 | R600 | Crystal Lagoon accommodation, 60min hot stone massage, full resort access |
+
+> **Note**: BLY1 Budget tier is disabled. Only Affordable (outside resort) and Premium (inside resort) available.
+
+### International Packages
+
+| Code | Short Name | Destination | Base Price/Adult | Duration | Inclusions |
+|------|-----------|-------------|-----------------|----------|------------|
+| BALI-UBUD | 6-Day Ubud Explorer | Bali | R3,400 | 6 nights | Monkey Forest, rice terraces, temple, quad biking, sunset cruise |
+| DUBAI-1 | Exclusive Moments | Dubai | R4,400 | 5 nights | Burj Khalifa, yacht cruise, Museum of Future, desert safari |
+| PHUKET-1 | Adventure Explorer | Thailand | R3,800 | 5 nights | James Bond Island, Phi Phi Islands, waterpark, quad biking |
+
+---
+
 ## Changelog
 
 | Date | Change |
 |------|--------|
 | 2025-01-26 | Initial documentation created |
 | 2026-03-19 | Added Firecrawl live rate scraping architecture, updated rate calculation flow to reflect live→cached→refRate priority, documented edge functions and shared helpers |
+| 2026-03-19 | Added comprehensive Destinations & Packages Reference section with all 56 packages across 14 destinations |
 
 ---
 
