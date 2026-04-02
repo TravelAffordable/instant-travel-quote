@@ -885,7 +885,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center overflow-hidden pt-20 pb-12">
+    <section className="relative min-h-screen flex flex-col items-center pt-20 pb-12">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
@@ -967,78 +967,78 @@ export function Hero({ onGetQuote }: HeroProps) {
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Form + Buttons - only show when destination is selected */}
-        {destination && (
-        <div ref={formRef}>
-        <div className="max-w-4xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: '0.28s' }}>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          {/* Booking type buttons - always visible */}
+          <div className="max-w-4xl mx-auto mt-8 relative z-10">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <button
-              onClick={() => setBookingType('accommodation-only')}
-              className={`flex items-center gap-3 px-6 py-4 rounded-xl transition-all ${
-                bookingType === 'accommodation-only'
+              onClick={() => { setBookingType('accommodation-only'); if (!destination) { toast.error('Please select a destination first'); return; } formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+              className={`flex flex-col items-center justify-center gap-2 px-4 py-4 rounded-xl transition-all text-center ${
+                bookingType === 'accommodation-only' && destination
                   ? 'bg-white text-primary shadow-lg scale-105'
-                  : 'bg-white/30 text-white hover:bg-white/40 backdrop-blur-sm'
+                  : 'bg-teal-700 text-white hover:bg-teal-600'
               }`}
             >
               <Hotel className="w-5 h-5" />
-              <span className="font-medium">I would like to book accommodation only</span>
+              <span className="font-medium text-sm">I would like to book accommodation only</span>
             </button>
             <button
-              onClick={() => setBookingType('with-activities')}
-              className={`flex items-center gap-3 px-6 py-4 rounded-xl transition-all ${
-                bookingType === 'with-activities'
+              onClick={() => { setBookingType('with-activities'); if (!destination) { toast.error('Please select a destination first'); return; } formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+              className={`flex flex-col items-center justify-center gap-2 px-4 py-4 rounded-xl transition-all text-center ${
+                bookingType === 'with-activities' && destination
                   ? 'bg-white text-primary shadow-lg scale-105'
-                  : 'bg-white/30 text-white hover:bg-white/40 backdrop-blur-sm'
+                  : 'bg-white/95 text-primary hover:bg-white'
               }`}
             >
               <PartyPopper className="w-5 h-5" />
-              <span className="font-medium">I would like accommodation with fun activities included</span>
+              <span className="font-medium text-sm">I would like accommodation with fun activities included</span>
             </button>
             <button
               onClick={() => navigate('/build-package')}
-              className="flex items-center gap-3 px-6 py-4 rounded-xl transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-lg hover:scale-105"
+              className="flex flex-col items-center justify-center gap-2 px-4 py-4 rounded-xl transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-lg hover:scale-105 text-center"
             >
               <Puzzle className="w-5 h-5" />
-              <span className="font-medium">I'd like to build my own package according to my budget</span>
+              <span className="font-medium text-sm">I'd like to build my own package according to my budget</span>
             </button>
             <button
               onClick={() => navigate('/school-trips')}
-              className="flex items-center gap-3 px-6 py-4 rounded-xl transition-all bg-gradient-to-r from-teal-500 to-emerald-500 text-white hover:from-teal-600 hover:to-emerald-600 shadow-lg hover:scale-105"
+              className="flex flex-col items-center justify-center gap-2 px-4 py-4 rounded-xl transition-all bg-gradient-to-r from-teal-500 to-emerald-500 text-white hover:from-teal-600 hover:to-emerald-600 shadow-lg hover:scale-105 text-center"
             >
               <GraduationCap className="w-5 h-5" />
-              <span className="font-medium">School Trips</span>
+              <span className="font-medium text-sm">School Trips</span>
             </button>
           </div>
           
-          {/* Jenny Assistant + Bus Hire, Hotel Provider & Travel Agent Buttons */}
+          {/* Bus Hire, Hotel Provider & Travel Agent Buttons */}
           <div className="flex flex-col justify-center gap-3 mt-3">
-            <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button
               onClick={() => navigate('/bus-hire')}
-              className="flex items-center gap-3 px-6 py-3 rounded-xl bg-amber-500/90 text-white hover:bg-amber-500 transition-all backdrop-blur-sm hover:scale-105"
+              className="flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-amber-500/90 text-white hover:bg-amber-500 transition-all backdrop-blur-sm hover:scale-105"
             >
               <Bus className="w-5 h-5" />
-              <span className="font-medium">Bus Hire Companies - Add transport to your quote</span>
+              <span className="font-medium text-sm">Bus Hire Companies - Add transport to your quote</span>
             </button>
             <button
               onClick={() => navigate('/hotel-provider')}
-              className="flex items-center gap-3 px-6 py-3 rounded-xl bg-emerald-600/90 text-white hover:bg-emerald-600 transition-all backdrop-blur-sm hover:scale-105"
+              className="flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-emerald-600/90 text-white hover:bg-emerald-600 transition-all backdrop-blur-sm hover:scale-105"
             >
               <Hotel className="w-5 h-5" />
-              <span className="font-medium">For Hotels - Add our curated Activity Packages to your guest quotation</span>
+              <span className="font-medium text-sm">For Hotels - Add our curated Activity Packages to your guest quotation</span>
             </button>
             <button
               onClick={() => navigate('/travel-agent')}
-              className="flex items-center gap-3 px-6 py-3 rounded-xl bg-purple-600/90 text-white hover:bg-purple-600 transition-all backdrop-blur-sm hover:scale-105"
+              className="flex items-center justify-center gap-3 px-6 py-3 rounded-xl bg-purple-600/90 text-white hover:bg-purple-600 transition-all backdrop-blur-sm hover:scale-105"
             >
               <FileText className="w-5 h-5" />
-              <span className="font-medium">Travel Agents - Get exclusive packages for your clients</span>
+              <span className="font-medium text-sm">Travel Agents - Get exclusive packages for your clients</span>
             </button>
             </div>
           </div>
-        </div>
+
+        {/* Form - only show when destination is selected */}
+        {destination && (
+        <div ref={formRef}>
 
         {/* Quote Form Card */}
         <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.3s' }}>
@@ -1608,6 +1608,8 @@ export function Hero({ onGetQuote }: HeroProps) {
         )}
         </div>
         )}
+        </div>
+        </div>
         </div>
     </section>
   );
