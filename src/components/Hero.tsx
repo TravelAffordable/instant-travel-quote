@@ -885,7 +885,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <section className="relative flex flex-col items-center overflow-hidden pt-20 pb-0" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <section className="relative flex flex-col items-center overflow-hidden pt-20" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
