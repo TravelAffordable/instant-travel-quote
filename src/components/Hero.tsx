@@ -398,6 +398,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
 
+  const formRef = useRef<HTMLDivElement>(null);
+
   // RMS hotel search (database-backed)
   const {
     searchHotels: searchRMSHotels,
@@ -405,6 +407,31 @@ export function Hero({ onGetQuote }: HeroProps) {
     isLoading: isSearchingRMS,
     clearHotels: clearRMSHotels,
   } = useRMSHotels();
+
+  // Genie-style destination grid data
+  const genieDestinations = [
+    { id: 'vaal-river', name: 'Vaal River', image: vaalRiverImg },
+    { id: 'umhlanga', name: 'Umhlanga', image: umhlangaImg },
+    { id: 'knysna', name: 'Knysna', image: knysnaImg },
+    { id: 'harties', name: 'Hartbeespoort', image: hartiesImg },
+    { id: 'magalies', name: 'Magaliesberg', image: magaliesImg },
+    { id: 'durban', name: 'Durban', image: durbanImg },
+    { id: 'mpumalanga', name: 'Mpumalanga', image: mpumalangaImg },
+    { id: 'sun-city', name: 'Sun City', image: sunCityImg },
+    { id: 'cape-town', name: 'Cape Town', image: capeTownImg },
+    { id: 'pretoria', name: 'Pretoria', image: pretoriaImg },
+    { id: 'thailand', name: 'Thailand (Phuket)', image: thailandImg },
+    { id: 'dubai', name: 'Dubai', image: dubaiImg },
+    { id: 'bali', name: 'Bali', image: baliImg },
+  ];
+
+  const handleDestinationSelect = (destId: string) => {
+    setDestination(destId);
+    // Scroll to the form after selecting
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
   
   // Accommodation type filter
   type AccommodationType = 'budget' | 'affordable' | 'premium';
