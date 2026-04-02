@@ -1035,7 +1035,6 @@ export function Hero({ onGetQuote }: HeroProps) {
             </button>
             </div>
           </div>
-        </div>
 
         {/* Form - only show when destination is selected */}
         {destination && (
