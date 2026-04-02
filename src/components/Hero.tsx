@@ -969,7 +969,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
 
           {/* Booking type buttons - always visible */}
-          <div className="max-w-4xl mx-auto mt-8">
+          <div className="max-w-4xl mx-auto mt-8 relative z-10">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <button
               onClick={() => { setBookingType('accommodation-only'); if (!destination) { toast.error('Please select a destination first'); return; } formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
