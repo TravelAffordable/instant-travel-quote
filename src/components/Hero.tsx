@@ -1054,30 +1054,30 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <span className="font-bold text-base">START HERE – Please click here to speak to Jenny, our Travel Assistant, for easy & quick assistance</span>
               </button>
 
-              {/* Row 1: Destination, Check In, Check Out */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Where would you like to go? *</Label>
-                  <Select value={destination} onValueChange={setDestination}>
-                    <SelectTrigger className="h-11 bg-white border-gray-200">
-                      <SelectValue placeholder="Select Destination" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">South Africa</div>
-                      {destinations.filter(d => !d.international).map(d => (
-                        <SelectItem key={d.id} value={d.id}>
-                          {d.name}
-                        </SelectItem>
-                      ))}
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">International</div>
-                      {destinations.filter(d => d.international).map(d => (
-                        <SelectItem key={d.id} value={d.id}>
-                          {d.name}, {d.country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {/* Selected destination indicator */}
+              <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-gray-700">
+                    Destination: {genieDestinations.find(d => d.id === destination)?.name || destination}
+                  </span>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setDestination('');
+                    setQuotes([]);
+                    setFamilyQuotes([]);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Change
+                </Button>
+              </div>
+
+              {/* Row 1: Check In, Check Out */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Check In *</Label>
                   <Input
