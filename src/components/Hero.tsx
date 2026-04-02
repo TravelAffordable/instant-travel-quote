@@ -897,7 +897,7 @@ export function Hero({ onGetQuote }: HeroProps) {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 relative z-10 pb-8">
         {/* Header Content */}
         <div className="text-center mb-6">
           {/* Heading */}
