@@ -901,7 +901,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         {/* Header Content */}
         <div className="text-center mb-6">
           {/* Heading */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4 leading-tight animate-slide-up">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight animate-slide-up">
             Discover Your
             <span className="block text-gradient-sunset bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
               Dream Vacation
@@ -941,10 +941,11 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
+        </div>{/* close container */}
         {/* Our Destinations Grid - Genie style */}
-        <div className="w-full rounded-2xl" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
-        <div id="destinations" className="max-w-6xl mx-auto py-8 px-4">
-          <h2 className="text-3xl font-bold text-center mb-8 text-white font-display">Our Destinations</h2>
+        <div className="w-full" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
+        <div id="destinations" className="max-w-6xl mx-auto py-12 px-4">
+          <h2 className="text-3xl font-bold text-center mb-10 text-white">Our Destinations</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {genieDestinations.map((dest) => (
               <div
@@ -1597,7 +1598,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           <div className="max-w-4xl mx-auto mt-8 space-y-6 animate-fade-in">
             {familyQuotes.map((familyData) => (
               <div key={familyData.familyIndex} className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
-                <h3 className="text-xl font-display font-semibold text-primary mb-4">
+                <h3 className="text-xl font-semibold text-primary mb-4">
                   {familyData.parentName}'s Quote
                 </h3>
                 <QuoteList quotes={familyData.quotes} />
@@ -1608,7 +1609,6 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
         )}
         </div>
-      </div>
     </section>
   );
 }
