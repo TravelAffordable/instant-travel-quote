@@ -941,7 +941,35 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
-        {/* Booking Type Selection - Outside the white form */}
+        {/* Our Destinations Grid - Genie style */}
+        <div id="destinations" className="max-w-6xl mx-auto py-8 px-4">
+          <h2 className="text-3xl font-bold text-center mb-8 text-white font-display">Our Destinations</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {genieDestinations.map((dest) => (
+              <div
+                key={dest.id}
+                onClick={() => handleDestinationSelect(dest.id)}
+                className={`genie-destination-card ${destination === dest.id ? 'ring-4 ring-secondary' : ''}`}
+                style={{ backgroundImage: `url(${dest.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+              >
+                <div className="genie-destination-overlay">
+                  <h3 className="text-xl font-bold text-white">{dest.name}</h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-2 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                  >
+                    {destination === dest.id ? '✓ Selected' : 'Select Destination'}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Form + Buttons - only show when destination is selected */}
+        {destination && (
+        <div ref={formRef}>
         <div className="max-w-4xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: '0.28s' }}>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
