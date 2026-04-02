@@ -885,7 +885,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <section className="relative flex flex-col items-center overflow-hidden pt-20" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <>
+    <div className="relative flex flex-col items-center overflow-hidden pt-20 pb-8" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
@@ -897,11 +898,11 @@ export function Hero({ onGetQuote }: HeroProps) {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 relative z-10 pb-8">
+      <div className="container mx-auto px-4 relative z-10">
         {/* Header Content */}
         <div className="text-center mb-6">
           {/* Heading */}
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight animate-slide-up" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight animate-slide-up">
             Discover Your
             <span className="block bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Dream Vacation
@@ -940,8 +941,8 @@ export function Hero({ onGetQuote }: HeroProps) {
             <span className="text-sm font-semibold">LIMITED TIME: Up to 30% OFF Selected Packages!</span>
           </div>
         </div>
-
-        </div>{/* close container */}
+      </div>
+    </div>
         {/* Our Destinations Grid - Genie style */}
         <div className="w-full" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
         <div id="destinations" className="max-w-6xl mx-auto py-12 px-4">
