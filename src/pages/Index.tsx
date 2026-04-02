@@ -11,11 +11,6 @@ import CapeTownSocialAds from '@/components/CapeTownSocialAds';
 const Index = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  const handleViewPackages = (destinationId: string) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const popularDestinations = destinations.filter(d => d.popular);
 
   return (
     <div className="min-h-screen bg-background">
