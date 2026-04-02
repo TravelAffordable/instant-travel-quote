@@ -6,7 +6,7 @@ import { Testimonials } from '@/components/Testimonials';
 import { WhyChooseUs } from '@/components/WhyChooseUs';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
-import CapeTownSocialAds from '@/components/CapeTownSocialAds';
+
 
 const Index = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -20,11 +20,6 @@ const Index = () => {
       <Hero onGetQuote={() => {}} />
 
       {/* Destinations section removed - now integrated into Hero */}
-
-      {/* Cape Town Social Ads */}
-      <section id="cape-town-ads" className="bg-muted/30">
-        <CapeTownSocialAds />
-      </section>
 
       {/* Group Tours */}
       <GroupTours />

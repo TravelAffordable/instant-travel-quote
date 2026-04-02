@@ -942,6 +942,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
 
         {/* Our Destinations Grid - Genie style */}
+        <div className="w-full rounded-2xl" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
         <div id="destinations" className="max-w-6xl mx-auto py-8 px-4">
           <h2 className="text-3xl font-bold text-center mb-8 text-white font-display">Our Destinations</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1606,6 +1607,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         )}
         </div>
         )}
+        </div>
       </div>
     </section>
   );
