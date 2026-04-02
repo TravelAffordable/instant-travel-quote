@@ -1559,11 +1559,10 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
-              {/* Search Button */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <div className="pt-2">
                 <Button
                   onClick={handleCalculate}
-                  className="flex-1 h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
+                  className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
                   disabled={isCalculating || isSearchingRMS}
                 >
                   {isCalculating || isSearchingRMS ? (
@@ -1577,14 +1576,6 @@ export function Hero({ onGetQuote }: HeroProps) {
                       Get Quotes
                     </>
                   )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-12 px-6 text-base font-semibold border-gray-300 text-gray-700 hover:bg-gray-50"
-                  onClick={() => document.querySelector('#destinations')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  Explore Destinations
-                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </div>
