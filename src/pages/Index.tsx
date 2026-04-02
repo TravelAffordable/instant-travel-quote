@@ -21,11 +21,6 @@ const Index = () => {
 
       {/* Destinations section removed - now integrated into Hero */}
 
-      {/* Cape Town Social Ads */}
-      <section id="cape-town-ads" className="bg-muted/30">
-        <CapeTownSocialAds />
-      </section>
-
       {/* Group Tours */}
       <GroupTours />
 
