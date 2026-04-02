@@ -6,7 +6,7 @@ import { Testimonials } from '@/components/Testimonials';
 import { WhyChooseUs } from '@/components/WhyChooseUs';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
-import CapeTownSocialAds from '@/components/CapeTownSocialAds';
+
 
 const Index = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
