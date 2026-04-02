@@ -885,7 +885,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center overflow-hidden pt-20 pb-12">
+    <>
+    <div className="relative flex flex-col items-center overflow-hidden pt-20 pb-8" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
@@ -903,7 +904,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           {/* Heading */}
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight animate-slide-up">
             Discover Your
-            <span className="block text-gradient-sunset bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent" style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Dream Vacation
             </span>
           </h1>
@@ -940,12 +941,12 @@ export function Hero({ onGetQuote }: HeroProps) {
             <span className="text-sm font-semibold">LIMITED TIME: Up to 30% OFF Selected Packages!</span>
           </div>
         </div>
-
-        </div>{/* close container */}
+      </div>
+    </div>
         {/* Our Destinations Grid - Genie style */}
         <div className="w-full" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
         <div id="destinations" className="max-w-6xl mx-auto py-12 px-4">
-          <h2 className="text-3xl font-bold text-center mb-10 text-white">Our Destinations</h2>
+          <h2 className="text-3xl font-bold text-center mb-10 text-white" style={{ fontFamily: 'Inter, sans-serif' }}>Our Destinations</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {genieDestinations.map((dest) => (
               <div
@@ -1609,6 +1610,6 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
         )}
         </div>
-    </section>
+    </>
   );
 }
