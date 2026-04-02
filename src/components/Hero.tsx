@@ -1598,7 +1598,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           <div className="max-w-4xl mx-auto mt-8 space-y-6 animate-fade-in">
             {familyQuotes.map((familyData) => (
               <div key={familyData.familyIndex} className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
-                <h3 className="text-xl font-display font-semibold text-primary mb-4">
+                <h3 className="text-xl font-semibold text-primary mb-4">
                   {familyData.parentName}'s Quote
                 </h3>
                 <QuoteList quotes={familyData.quotes} />
