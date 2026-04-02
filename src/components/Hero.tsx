@@ -1609,6 +1609,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         </div>
         )}
         </div>
+        </div>
     </section>
   );
 }
