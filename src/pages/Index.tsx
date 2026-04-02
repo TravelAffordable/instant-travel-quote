@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
-import { DestinationCard } from '@/components/DestinationCard';
 import { GroupTours } from '@/components/GroupTours';
 import { Testimonials } from '@/components/Testimonials';
 import { WhyChooseUs } from '@/components/WhyChooseUs';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
 import CapeTownSocialAds from '@/components/CapeTownSocialAds';
-import { destinations } from '@/data/travelData';
 
 const Index = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
