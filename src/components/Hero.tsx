@@ -901,7 +901,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         {/* Header Content */}
         <div className="text-center mb-6">
           {/* Heading */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4 leading-tight animate-slide-up">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight animate-slide-up">
             Discover Your
             <span className="block text-gradient-sunset bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
               Dream Vacation
