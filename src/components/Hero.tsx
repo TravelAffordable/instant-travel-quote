@@ -1,10 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap, MessageCircle } from 'lucide-react';
+
+// Genie destination images
+import vaalRiverImg from '@/assets/destinations/vaal-river.jpg';
+import umhlangaImg from '@/assets/destinations/umhlanga.jpg';
+import knysnaImg from '@/assets/destinations/knysna.jpg';
+import hartiesImg from '@/assets/destinations/hartbeespoort.jpg';
+import magaliesImg from '@/assets/destinations/magaliesberg.jpg';
+import durbanImg from '@/assets/destinations/durban.jpg';
+import mpumalangaImg from '@/assets/destinations/mpumalanga.jpg';
+import sunCityImg from '@/assets/destinations/sun-city.jpg';
+import capeTownImg from '@/assets/destinations/cape-town.jpg';
+import pretoriaImg from '@/assets/destinations/pretoria.jpg';
+import thailandImg from '@/assets/destinations/thailand.jpg';
+import dubaiImg from '@/assets/destinations/dubai.jpg';
+import baliImg from '@/assets/destinations/bali.jpg';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import {
   destinations,
