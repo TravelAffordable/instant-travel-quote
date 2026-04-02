@@ -1,10 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap, MessageCircle } from 'lucide-react';
+
+// Genie destination images
+import vaalRiverImg from '@/assets/destinations/vaal-river.jpg';
+import umhlangaImg from '@/assets/destinations/umhlanga.jpg';
+import knysnaImg from '@/assets/destinations/knysna.jpg';
+import hartiesImg from '@/assets/destinations/hartbeespoort.jpg';
+import magaliesImg from '@/assets/destinations/magaliesberg.jpg';
+import durbanImg from '@/assets/destinations/durban.jpg';
+import mpumalangaImg from '@/assets/destinations/mpumalanga.jpg';
+import sunCityImg from '@/assets/destinations/sun-city.jpg';
+import capeTownImg from '@/assets/destinations/cape-town.jpg';
+import pretoriaImg from '@/assets/destinations/pretoria.jpg';
+import thailandImg from '@/assets/destinations/thailand.jpg';
+import dubaiImg from '@/assets/destinations/dubai.jpg';
+import baliImg from '@/assets/destinations/bali.jpg';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import {
   destinations,
@@ -383,6 +398,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
 
+  const formRef = useRef<HTMLDivElement>(null);
+
   // RMS hotel search (database-backed)
   const {
     searchHotels: searchRMSHotels,
@@ -390,6 +407,31 @@ export function Hero({ onGetQuote }: HeroProps) {
     isLoading: isSearchingRMS,
     clearHotels: clearRMSHotels,
   } = useRMSHotels();
+
+  // Genie-style destination grid data
+  const genieDestinations = [
+    { id: 'vaal-river', name: 'Vaal River', image: vaalRiverImg },
+    { id: 'umhlanga', name: 'Umhlanga', image: umhlangaImg },
+    { id: 'knysna', name: 'Knysna', image: knysnaImg },
+    { id: 'harties', name: 'Hartbeespoort', image: hartiesImg },
+    { id: 'magalies', name: 'Magaliesberg', image: magaliesImg },
+    { id: 'durban', name: 'Durban', image: durbanImg },
+    { id: 'mpumalanga', name: 'Mpumalanga', image: mpumalangaImg },
+    { id: 'sun-city', name: 'Sun City', image: sunCityImg },
+    { id: 'cape-town', name: 'Cape Town', image: capeTownImg },
+    { id: 'pretoria', name: 'Pretoria', image: pretoriaImg },
+    { id: 'thailand', name: 'Thailand (Phuket)', image: thailandImg },
+    { id: 'dubai', name: 'Dubai', image: dubaiImg },
+    { id: 'bali', name: 'Bali', image: baliImg },
+  ];
+
+  const handleDestinationSelect = (destId: string) => {
+    setDestination(destId);
+    // Scroll to the form after selecting
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
   
   // Accommodation type filter
   type AccommodationType = 'budget' | 'affordable' | 'premium';
@@ -899,7 +941,35 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
         </div>
 
-        {/* Booking Type Selection - Outside the white form */}
+        {/* Our Destinations Grid - Genie style */}
+        <div id="destinations" className="max-w-6xl mx-auto py-8 px-4">
+          <h2 className="text-3xl font-bold text-center mb-8 text-white font-display">Our Destinations</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {genieDestinations.map((dest) => (
+              <div
+                key={dest.id}
+                onClick={() => handleDestinationSelect(dest.id)}
+                className={`genie-destination-card ${destination === dest.id ? 'ring-4 ring-secondary' : ''}`}
+                style={{ backgroundImage: `url(${dest.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+              >
+                <div className="genie-destination-overlay">
+                  <h3 className="text-xl font-bold text-white">{dest.name}</h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-2 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                  >
+                    {destination === dest.id ? '✓ Selected' : 'Select Destination'}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Form + Buttons - only show when destination is selected */}
+        {destination && (
+        <div ref={formRef}>
         <div className="max-w-4xl mx-auto mb-4 animate-slide-up" style={{ animationDelay: '0.28s' }}>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
@@ -984,30 +1054,30 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <span className="font-bold text-base">START HERE – Please click here to speak to Jenny, our Travel Assistant, for easy & quick assistance</span>
               </button>
 
-              {/* Row 1: Destination, Check In, Check Out */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Where would you like to go? *</Label>
-                  <Select value={destination} onValueChange={setDestination}>
-                    <SelectTrigger className="h-11 bg-white border-gray-200">
-                      <SelectValue placeholder="Select Destination" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">South Africa</div>
-                      {destinations.filter(d => !d.international).map(d => (
-                        <SelectItem key={d.id} value={d.id}>
-                          {d.name}
-                        </SelectItem>
-                      ))}
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">International</div>
-                      {destinations.filter(d => d.international).map(d => (
-                        <SelectItem key={d.id} value={d.id}>
-                          {d.name}, {d.country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {/* Selected destination indicator */}
+              <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-gray-700">
+                    Destination: {genieDestinations.find(d => d.id === destination)?.name || destination}
+                  </span>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setDestination('');
+                    setQuotes([]);
+                    setFamilyQuotes([]);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Change
+                </Button>
+              </div>
+
+              {/* Row 1: Check In, Check Out */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Check In *</Label>
                   <Input
@@ -1489,11 +1559,10 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
-              {/* Search Button */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <div className="pt-2">
                 <Button
                   onClick={handleCalculate}
-                  className="flex-1 h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
+                  className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
                   disabled={isCalculating || isSearchingRMS}
                 >
                   {isCalculating || isSearchingRMS ? (
@@ -1507,14 +1576,6 @@ export function Hero({ onGetQuote }: HeroProps) {
                       Get Quotes
                     </>
                   )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-12 px-6 text-base font-semibold border-gray-300 text-gray-700 hover:bg-gray-50"
-                  onClick={() => document.querySelector('#destinations')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  Explore Destinations
-                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </div>
@@ -1542,6 +1603,8 @@ export function Hero({ onGetQuote }: HeroProps) {
               </div>
             ))}
           </div>
+        )}
+        </div>
         )}
       </div>
     </section>
