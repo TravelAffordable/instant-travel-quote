@@ -1184,7 +1184,10 @@ export function Hero({ onGetQuote }: HeroProps) {
                     {isPackageDropdownOpen && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {availablePackages.map(pkg => {
+                          {(packageIds.length > 0
+                            ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
+                            : availablePackages
+                          ).map(pkg => {
                             const isSelected = packageIds.includes(pkg.id);
                             const packageImage = getPackageImage(pkg.id);
                             const tourCode = pkg.name.split(' - ')[0] || pkg.id.toUpperCase();
@@ -1247,6 +1250,21 @@ export function Hero({ onGetQuote }: HeroProps) {
                               </div>
                             );
                           })}
+
+                          {/* "Select More Packages" button shown inline in the grid when packages are selected */}
+                          {packageIds.length > 0 && (
+                            <div
+                              onClick={() => setPackageIds([])}
+                              className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 border-2 border-dashed border-primary/50 hover:border-primary flex items-center justify-center bg-black/30"
+                              style={{ minHeight: '280px' }}
+                            >
+                              <div className="text-center p-4">
+                                <Puzzle className="w-8 h-8 text-primary mx-auto mb-2" />
+                                <p className="text-white font-bold text-sm">Select More Packages</p>
+                                <p className="text-white/60 text-xs mt-1">Browse all available options</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                         {packageIds.length > 0 && (
                           <Button
