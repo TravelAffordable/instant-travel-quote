@@ -390,6 +390,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [destination, setDestination] = useState('');
   const [packageIds, setPackageIds] = useState<string[]>([]);
   const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(false);
+  const [isBrowsingMore, setIsBrowsingMore] = useState(false);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [adults, setAdults] = useState(2);
@@ -1184,7 +1185,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                     {isPackageDropdownOpen && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {(packageIds.length > 0
+                          {(packageIds.length > 0 && !isBrowsingMore
                             ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
                             : availablePackages
                           ).map(pkg => {
@@ -1252,9 +1253,9 @@ export function Hero({ onGetQuote }: HeroProps) {
                           })}
 
                           {/* "Select More Packages" button shown inline in the grid when packages are selected */}
-                          {packageIds.length > 0 && (
+                          {packageIds.length > 0 && !isBrowsingMore && (
                             <div
-                              onClick={() => setPackageIds([])}
+                              onClick={() => setIsBrowsingMore(true)}
                               className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 border-2 border-dashed border-primary/50 hover:border-primary flex items-center justify-center bg-black/30"
                               style={{ minHeight: '280px' }}
                             >
@@ -1270,7 +1271,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                           <Button
                             variant="default"
                             size="sm"
-                            onClick={() => setIsPackageDropdownOpen(false)}
+                            onClick={() => { setIsPackageDropdownOpen(false); setIsBrowsingMore(false); }}
                             className="w-full"
                           >
                             Done – {packageIds.length} package{packageIds.length > 1 ? 's' : ''} selected
