@@ -8,8 +8,8 @@ const groupTours = [
   {
     id: 'cape-town-christmas',
     title: 'Christmas in Cape Town',
-    dates: '24-27 December 2025',
-    price: 2500,
+    dates: '24-27 December 2026',
+    price: 3800,
     image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg',
     badge: 'CHRISTMAS',
     location: 'Cape Town',
@@ -17,8 +17,8 @@ const groupTours = [
   {
     id: 'sun-city-newyear',
     title: 'New Year in Sun City',
-    dates: '31 Dec - 02 Jan 2026',
-    price: 2800,
+    dates: '31 Dec - 02 Jan 2027',
+    price: 3500,
     image: sunCityImage,
     badge: 'NEW YEAR',
     location: 'Sun City',
@@ -26,8 +26,8 @@ const groupTours = [
   {
     id: 'durban-christmas',
     title: 'Christmas in Durban',
-    dates: '24-27 December 2025',
-    price: 2200,
+    dates: '24-27 December 2026',
+    price: 2900,
     image: 'https://images.unsplash.com/photo-1509316785289-025f5b8b4c22?w=800',
     badge: 'CHRISTMAS',
     location: 'Durban',
@@ -35,8 +35,8 @@ const groupTours = [
   {
     id: 'mpumalanga-newyear',
     title: 'New Year in Mpumalanga',
-    dates: '31 Dec - 02 Jan 2026',
-    price: 2600,
+    dates: '31 Dec - 02 Jan 2027',
+    price: 3200,
     image: 'https://images.unsplash.com/photo-1580256087713-963146b8d1a3?w=800',
     badge: 'NEW YEAR',
     location: 'Mpumalanga',
