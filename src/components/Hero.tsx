@@ -1271,7 +1271,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                           <Button
                             variant="default"
                             size="sm"
-                            onClick={() => setIsPackageDropdownOpen(false)}
+                            onClick={() => { setIsPackageDropdownOpen(false); setIsBrowsingMore(false); }}
                             className="w-full"
                           >
                             Done – {packageIds.length} package{packageIds.length > 1 ? 's' : ''} selected
