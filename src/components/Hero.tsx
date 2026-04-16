@@ -1253,9 +1253,9 @@ export function Hero({ onGetQuote }: HeroProps) {
                           })}
 
                           {/* "Select More Packages" button shown inline in the grid when packages are selected */}
-                          {packageIds.length > 0 && (
+                          {packageIds.length > 0 && !isBrowsingMore && (
                             <div
-                              onClick={() => setPackageIds([])}
+                              onClick={() => setIsBrowsingMore(true)}
                               className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 border-2 border-dashed border-primary/50 hover:border-primary flex items-center justify-center bg-black/30"
                               style={{ minHeight: '280px' }}
                             >
