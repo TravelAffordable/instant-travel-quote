@@ -1235,8 +1235,8 @@ export function Hero({ onGetQuote }: HeroProps) {
                                   </h4>
 
                                   {/* Inclusions */}
-                                  <p className="text-white/90 text-[11px] leading-relaxed mb-3">
-                                    {pkg.description}
+                                  <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
+                                    {pkg.description.replace('Includes', 'This package includes')}
                                   </p>
 
                                   {/* Price */}
