@@ -1180,37 +1180,70 @@ export function Hero({ onGetQuote }: HeroProps) {
                       </div>
                     )}
 
-                    {/* Package cards grid */}
+                    {/* Package cards grid - visual image cards */}
                     {isPackageDropdownOpen && (
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto">
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {availablePackages.map(pkg => {
                             const isSelected = packageIds.includes(pkg.id);
+                            const packageImage = getPackageImage(pkg.id);
+                            const tourCode = pkg.name.split(' - ')[0] || pkg.id.toUpperCase();
                             return (
                               <div
                                 key={pkg.id}
                                 onClick={() => togglePackageSelection(pkg.id)}
-                                className={`border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-md ${
+                                className={`relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 ${
                                   isSelected
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-gray-200 bg-white hover:border-primary/40'
+                                    ? 'ring-3 ring-primary shadow-lg scale-[1.02]'
+                                    : 'hover:shadow-xl hover:scale-[1.01]'
                                 }`}
+                                style={{ minHeight: '280px' }}
                               >
-                                <h4 className="text-sm font-bold text-primary uppercase leading-tight">{pkg.name}</h4>
-                                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
-                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg))} per person</p>
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant={isSelected ? 'default' : 'outline'}
-                                  className="mt-3 w-full text-xs"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    togglePackageSelection(pkg.id);
-                                  }}
-                                >
-                                  {isSelected ? '✓ Selected' : 'Get a quote for this option'}
-                                </Button>
+                                {/* Background Image */}
+                                {packageImage ? (
+                                  <img
+                                    src={packageImage}
+                                    alt={pkg.shortName || pkg.name}
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary" />
+                                )}
+
+                                {/* Dark overlay for text readability */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20 group-hover:from-black/95 group-hover:via-black/60 transition-all duration-300" />
+
+                                {/* Selected checkmark badge */}
+                                {isSelected && (
+                                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-10">
+                                    <Check className="w-4 h-4 text-white" />
+                                  </div>
+                                )}
+
+                                {/* Content overlay */}
+                                <div className="relative z-[5] h-full flex flex-col justify-end p-4" style={{ minHeight: '280px' }}>
+                                  {/* Tour Code */}
+                                  <div className="mb-1">
+                                    <span className="inline-block bg-primary/90 text-white text-xs font-bold px-2 py-1 rounded">
+                                      {tourCode}
+                                    </span>
+                                  </div>
+
+                                  {/* Package short name */}
+                                  <h4 className="text-white font-bold text-sm leading-tight mb-2">
+                                    {pkg.shortName || pkg.name.split(' - ')[1]?.substring(0, 40) || pkg.name}
+                                  </h4>
+
+                                  {/* Inclusions */}
+                                  <p className="text-white/90 text-[11px] leading-relaxed mb-3">
+                                    {pkg.description}
+                                  </p>
+
+                                  {/* Price */}
+                                  <p className="text-white font-semibold text-xs">
+                                    From {formatCurrency(getPackageFromPrice(pkg))} pp
+                                  </p>
+                                </div>
                               </div>
                             );
                           })}
