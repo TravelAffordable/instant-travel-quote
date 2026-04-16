@@ -1185,7 +1185,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                     {isPackageDropdownOpen && (
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {(packageIds.length > 0
+                          {(packageIds.length > 0 && !isBrowsingMore
                             ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
                             : availablePackages
                           ).map(pkg => {
