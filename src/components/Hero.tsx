@@ -1195,7 +1195,13 @@ export function Hero({ onGetQuote }: HeroProps) {
                             return (
                               <div
                                 key={pkg.id}
-                                onClick={() => togglePackageSelection(pkg.id)}
+                                onClick={() => {
+                                  togglePackageSelection(pkg.id);
+                                  // After selecting a new package, collapse back to show only selected
+                                  if (!isSelected) {
+                                    setIsBrowsingMore(false);
+                                  }
+                                }}
                                 className={`relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 ${
                                   isSelected
                                     ? 'ring-3 ring-primary shadow-lg scale-[1.02]'
@@ -1252,7 +1258,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                             );
                           })}
 
-                          {/* "Select More Packages" button shown inline in the grid when packages are selected */}
+                          {/* "Select More Packages" button shown inline in the grid when packages are selected and not browsing */}
                           {packageIds.length > 0 && !isBrowsingMore && (
                             <div
                               onClick={() => setIsBrowsingMore(true)}
@@ -1267,16 +1273,6 @@ export function Hero({ onGetQuote }: HeroProps) {
                             </div>
                           )}
                         </div>
-                        {packageIds.length > 0 && (
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => { setIsPackageDropdownOpen(false); setIsBrowsingMore(false); }}
-                            className="w-full"
-                          >
-                            Done – {packageIds.length} package{packageIds.length > 1 ? 's' : ''} selected
-                          </Button>
-                        )}
                       </div>
                     )}
                   </div>
