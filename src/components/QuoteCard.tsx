@@ -180,9 +180,12 @@ export function QuoteCard({
           const headingClass = isCapeTown
             ? 'font-bold text-sm mb-2 text-yellow-600'
             : 'font-semibold text-sm text-primary mb-2';
-          const itemTextClass = isCapeTown
-            ? 'text-sm font-semibold text-yellow-600'
+           const itemTextClass = isCapeTown
+             ? 'text-sm font-semibold text-yellow-600'
             : 'text-sm text-foreground';
+           const inclusionHighlightClass = isCapeTown
+             ? 'flex-1 rounded-md bg-card px-2 py-1.5 shadow-sm ring-1 ring-border/80'
+             : '';
           const iconClass = isCapeTown
             ? 'w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0'
             : 'w-4 h-4 text-accent mt-0.5 flex-shrink-0';
@@ -212,17 +215,13 @@ export function QuoteCard({
                         .map((activity, idx) => (
                           <li key={idx} className={`flex items-start gap-2 ${itemTextClass}`}>
                             <CheckCircle2 className={iconClass} />
-                            <span className="inline box-decoration-clone rounded-md bg-white px-2 py-1 shadow-sm ring-1 ring-border/70">
-                              {activity}
-                            </span>
+                            <span className={inclusionHighlightClass || undefined}>{activity}</span>
                           </li>
                         ))}
                       {quote.includesBreakfast && (
                         <li className={`flex items-start gap-2 ${itemTextClass}`}>
                           <CheckCircle2 className={iconClass} />
-                          <span className="inline box-decoration-clone rounded-md bg-white px-2 py-1 shadow-sm ring-1 ring-border/70">
-                            Breakfast included
-                          </span>
+                          <span className={inclusionHighlightClass || undefined}>Breakfast included</span>
                         </li>
                       )}
                     </ul>
