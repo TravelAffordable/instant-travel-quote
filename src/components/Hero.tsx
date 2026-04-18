@@ -1248,10 +1248,9 @@ export function Hero({ onGetQuote }: HeroProps) {
                                   <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
                                     {(() => {
                                       const rawDescription = pkg.description;
-                                      const isCapeTown = pkg.destination === 'cape-town';
                                       const includesIdx = rawDescription.toLowerCase().indexOf('includes');
 
-                                      if (isCapeTown && includesIdx !== -1) {
+                                      if (includesIdx !== -1) {
                                         const prefix = 'This package includes ';
                                         const inclusionsText = rawDescription
                                           .slice(includesIdx + 'includes'.length)
@@ -1265,7 +1264,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                         );
                                       }
 
-                                      return rawDescription.replace('Includes', 'This package includes');
+                                      return rawDescription.toUpperCase();
                                     })()}
                                   </p>
 
