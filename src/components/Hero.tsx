@@ -1247,27 +1247,24 @@ export function Hero({ onGetQuote }: HeroProps) {
                                   {/* Inclusions */}
                                   <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
                                     {(() => {
-                                      const description = pkg.description.replace('Includes', 'This package includes');
-                                      const highlightStart = description.indexOf('accommodation');
-                                      const highlightEnd = description.indexOf('canal cruise.');
+                                      const rawDescription = pkg.description;
+                                      const isCapeTown = pkg.destination === 'cape-town';
+                                      const includesIdx = rawDescription.toLowerCase().indexOf('includes');
 
-                                      if (
-                                        description.includes('Entrance Franschoek Wine Tram with wine tasting') &&
-                                        highlightStart !== -1 &&
-                                        highlightEnd !== -1 &&
-                                        highlightEnd >= highlightStart
-                                      ) {
-                                        const highlightText = description.slice(highlightStart, highlightEnd + 'canal cruise.'.length);
+                                      if (isCapeTown && includesIdx !== -1) {
+                                        const prefix = 'This package includes ';
+                                        const inclusionsText = rawDescription
+                                          .slice(includesIdx + 'includes'.length)
+                                          .replace(/^[\s:]+/, '');
                                         return (
                                           <>
-                                            {description.slice(0, highlightStart)}
-                                            <span className="cape-town-inclusion-highlight">{highlightText}</span>
-                                            {description.slice(highlightEnd + 'canal cruise.'.length)}
+                                            {prefix}
+                                            <span className="cape-town-inclusion-block">{inclusionsText}</span>
                                           </>
                                         );
                                       }
 
-                                      return description;
+                                      return rawDescription.replace('Includes', 'This package includes');
                                     })()}
                                   </p>
 
