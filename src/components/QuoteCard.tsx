@@ -171,44 +171,63 @@ export function QuoteCard({
 
       <CardContent className="space-y-4 pt-4">
         {/* Package Description - THE KEY INFO */}
-        <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-          <div className="flex items-start gap-2">
-            <Package className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
-              <p className="font-semibold text-sm text-primary mb-2">Package: {quote.packageName}</p>
-              {(() => {
-                // Use affordableInclusions if hotel tier is affordable and package has them
-                const inclusions = (quote.hotelTier === 'affordable' && quote.affordableInclusions && quote.affordableInclusions.length > 0)
-                  ? quote.affordableInclusions
-                  : quote.activitiesIncluded;
-                
-                return inclusions && inclusions.length > 0 ? (
-                  <ul className="space-y-1.5">
-                    {inclusions
-                      .filter(activity => {
-                        const lower = activity.toLowerCase();
-                        return !lower.includes('breakfast at selected') &&
-                               !lower.includes('buffet breakfast at selected') &&
-                               !lower.includes('room only');
-                      })
-                      .map((activity, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
-                          <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                          <span>{activity}</span>
+        {(() => {
+          const isCapeTown = quote.destination?.toLowerCase().includes('cape town');
+          // Test run: Cape Town gets translucent white highlight + yellow text
+          const containerClass = isCapeTown
+            ? 'bg-white/70 backdrop-blur-sm border border-white/80 rounded-lg p-4 shadow-sm'
+            : 'bg-primary/5 border border-primary/20 rounded-lg p-4';
+          const headingClass = isCapeTown
+            ? 'font-bold text-sm mb-2 text-yellow-600'
+            : 'font-semibold text-sm text-primary mb-2';
+          const itemTextClass = isCapeTown
+            ? 'text-sm font-semibold text-yellow-600'
+            : 'text-sm text-foreground';
+          const iconClass = isCapeTown
+            ? 'w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0'
+            : 'w-4 h-4 text-accent mt-0.5 flex-shrink-0';
+          const packageIconClass = isCapeTown
+            ? 'w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0'
+            : 'w-5 h-5 text-primary mt-0.5 flex-shrink-0';
+
+          const inclusions = (quote.hotelTier === 'affordable' && quote.affordableInclusions && quote.affordableInclusions.length > 0)
+            ? quote.affordableInclusions
+            : quote.activitiesIncluded;
+
+          return (
+            <div className={containerClass}>
+              <div className="flex items-start gap-2">
+                <Package className={packageIconClass} />
+                <div className="flex-1">
+                  <p className={headingClass}>This Package: {quote.packageName}</p>
+                  {inclusions && inclusions.length > 0 ? (
+                    <ul className="space-y-1.5">
+                      {inclusions
+                        .filter(activity => {
+                          const lower = activity.toLowerCase();
+                          return !lower.includes('breakfast at selected') &&
+                                 !lower.includes('buffet breakfast at selected') &&
+                                 !lower.includes('room only');
+                        })
+                        .map((activity, idx) => (
+                          <li key={idx} className={`flex items-start gap-2 ${itemTextClass}`}>
+                            <CheckCircle2 className={iconClass} />
+                            <span>{activity}</span>
+                          </li>
+                        ))}
+                      {quote.includesBreakfast && (
+                        <li className={`flex items-start gap-2 ${itemTextClass}`}>
+                          <CheckCircle2 className={iconClass} />
+                          <span>Breakfast included</span>
                         </li>
-                      ))}
-                    {quote.includesBreakfast && (
-                      <li className="flex items-start gap-2 text-sm text-foreground">
-                        <CheckCircle2 className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                        <span>Breakfast included</span>
-                      </li>
-                    )}
-                  </ul>
-                ) : null;
-              })()}
+                      )}
+                    </ul>
+                  ) : null}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          );
+        })()}
 
         {/* Room Info */}
         <div className="grid grid-cols-2 gap-3 text-sm">
