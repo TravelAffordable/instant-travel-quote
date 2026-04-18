@@ -180,14 +180,12 @@ export function QuoteCard({
           const headingClass = isCapeTown
             ? 'font-bold text-sm mb-2 text-yellow-600'
             : 'font-semibold text-sm text-primary mb-2';
-           const itemTextClass = isCapeTown
-             ? 'text-sm font-semibold text-yellow-600'
-            : 'text-sm text-foreground';
+           const itemTextClass = 'text-sm';
            const inclusionHighlightClass = isCapeTown
-             ? 'flex-1 rounded-md bg-card px-2 py-1.5 shadow-sm ring-1 ring-border/80'
+             ? 'cape-town-inclusion-highlight'
              : '';
           const iconClass = isCapeTown
-            ? 'w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0'
+             ? 'w-4 h-4 mt-0.5 flex-shrink-0 cape-town-inclusion-icon'
             : 'w-4 h-4 text-accent mt-0.5 flex-shrink-0';
           const packageIconClass = isCapeTown
             ? 'w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0'
@@ -213,13 +211,13 @@ export function QuoteCard({
                                  !lower.includes('room only');
                         })
                         .map((activity, idx) => (
-                          <li key={idx} className={`flex items-start gap-2 ${itemTextClass}`}>
+                          <li key={idx} className={`flex items-start gap-2 ${isCapeTown ? 'text-transparent' : 'text-foreground'} ${itemTextClass}`}>
                             <CheckCircle2 className={iconClass} />
                             <span className={inclusionHighlightClass || undefined}>{activity}</span>
                           </li>
                         ))}
                       {quote.includesBreakfast && (
-                        <li className={`flex items-start gap-2 ${itemTextClass}`}>
+                        <li className={`flex items-start gap-2 ${isCapeTown ? 'text-transparent' : 'text-foreground'} ${itemTextClass}`}>
                           <CheckCircle2 className={iconClass} />
                           <span className={inclusionHighlightClass || undefined}>Breakfast included</span>
                         </li>
