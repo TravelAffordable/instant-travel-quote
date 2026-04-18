@@ -173,10 +173,11 @@ export function QuoteCard({
         {/* Package Description - THE KEY INFO */}
         {(() => {
           // All destinations use highlighted inclusion style for maximum visibility
+          const isKnysna = quote.destination.toLowerCase().includes('knysna');
           const containerClass = 'bg-white/70 backdrop-blur-sm border border-white/80 rounded-lg p-4 shadow-sm';
           const headingClass = 'font-bold text-sm mb-2 text-yellow-600';
           const itemTextClass = 'text-sm';
-          const inclusionHighlightClass = 'cape-town-inclusion-highlight';
+          const inclusionHighlightClass = isKnysna ? 'knysna-inclusion-highlight' : 'cape-town-inclusion-highlight';
           const iconClass = 'w-4 h-4 mt-0.5 flex-shrink-0 cape-town-inclusion-icon';
           const packageIconClass = 'w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0';
 

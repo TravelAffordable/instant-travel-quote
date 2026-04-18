@@ -189,6 +189,15 @@
     line-height: 1.9;
   }
 
+  .knysna-inclusion-highlight {
+    background-color: white;
+    color: hsl(48 100% 45%); /* Yellow-600 */
+    @apply inline font-bold px-2 py-1 rounded-sm uppercase underline underline-offset-2 decoration-2;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    line-height: 1.9;
+  }
+
   .cape-town-inclusion-icon {
     color: hsl(var(--quote-highlight-text));
   }
