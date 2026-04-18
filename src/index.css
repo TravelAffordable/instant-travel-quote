@@ -179,27 +179,6 @@
     box-shadow: var(--shadow-sunset-glow);
   }
 
-  .cape-town-inclusion-highlight {
-    background-color: hsl(var(--quote-highlight-bg));
-    color: hsl(var(--quote-highlight-text));
-    box-shadow: var(--shadow-sm);
-    @apply inline font-bold px-2 py-1 rounded-sm;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
-    line-height: 1.9;
-  }
-
-  .cape-town-inclusion-block {
-    background-color: hsl(var(--quote-highlight-bg));
-    color: hsl(var(--quote-highlight-text));
-    @apply font-bold px-2 py-1;
-    border-radius: 0;
-    line-height: 1.4;
-    display: inline;
-    box-decoration-break: slice;
-    -webkit-box-decoration-break: slice;
-  }
-
   .knysna-inclusion-highlight {
     background-color: white;
     color: hsl(48 100% 45%); /* Yellow-600 */
@@ -207,10 +186,6 @@
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
     line-height: 1.9;
-  }
-
-  .cape-town-inclusion-icon {
-    color: hsl(var(--quote-highlight-text));
   }
 }
 

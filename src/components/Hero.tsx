@@ -1255,11 +1255,12 @@ export function Hero({ onGetQuote }: HeroProps) {
                                         const prefix = 'This package includes ';
                                         const inclusionsText = rawDescription
                                           .slice(includesIdx + 'includes'.length)
-                                          .replace(/^[\s:]+/, '');
+                                          .replace(/^[\s:]+/, '')
+                                          .toUpperCase();
                                         return (
                                           <>
                                             {prefix}
-                                            <span className="cape-town-inclusion-block">{inclusionsText}</span>
+                                            {inclusionsText}
                                           </>
                                         );
                                       }
