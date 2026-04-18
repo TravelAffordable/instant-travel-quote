@@ -212,13 +212,17 @@ export function QuoteCard({
                         .map((activity, idx) => (
                           <li key={idx} className={`flex items-start gap-2 ${itemTextClass}`}>
                             <CheckCircle2 className={iconClass} />
-                            <span className="bg-white/80 px-1.5 py-0.5 rounded">{activity}</span>
+                            <span className="inline box-decoration-clone rounded-md bg-white px-2 py-1 shadow-sm ring-1 ring-border/70">
+                              {activity}
+                            </span>
                           </li>
                         ))}
                       {quote.includesBreakfast && (
                         <li className={`flex items-start gap-2 ${itemTextClass}`}>
                           <CheckCircle2 className={iconClass} />
-                          <span className="bg-white/80 px-1.5 py-0.5 rounded">Breakfast included</span>
+                          <span className="inline box-decoration-clone rounded-md bg-white px-2 py-1 shadow-sm ring-1 ring-border/70">
+                            Breakfast included
+                          </span>
                         </li>
                       )}
                     </ul>
