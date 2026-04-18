@@ -172,24 +172,13 @@ export function QuoteCard({
       <CardContent className="space-y-4 pt-4">
         {/* Package Description - THE KEY INFO */}
         {(() => {
-          const isCapeTown = quote.destination?.toLowerCase().includes('cape town');
-          // Test run: Cape Town gets translucent white highlight + yellow text
-          const containerClass = isCapeTown
-            ? 'bg-white/70 backdrop-blur-sm border border-white/80 rounded-lg p-4 shadow-sm'
-            : 'bg-primary/5 border border-primary/20 rounded-lg p-4';
-          const headingClass = isCapeTown
-            ? 'font-bold text-sm mb-2 text-yellow-600'
-            : 'font-semibold text-sm text-primary mb-2';
-           const itemTextClass = 'text-sm';
-           const inclusionHighlightClass = isCapeTown
-             ? 'cape-town-inclusion-highlight'
-             : '';
-          const iconClass = isCapeTown
-             ? 'w-4 h-4 mt-0.5 flex-shrink-0 cape-town-inclusion-icon'
-            : 'w-4 h-4 text-accent mt-0.5 flex-shrink-0';
-          const packageIconClass = isCapeTown
-            ? 'w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0'
-            : 'w-5 h-5 text-primary mt-0.5 flex-shrink-0';
+          // All destinations use highlighted inclusion style for maximum visibility
+          const containerClass = 'bg-white/70 backdrop-blur-sm border border-white/80 rounded-lg p-4 shadow-sm';
+          const headingClass = 'font-bold text-sm mb-2 text-yellow-600';
+          const itemTextClass = 'text-sm';
+          const inclusionHighlightClass = 'cape-town-inclusion-highlight';
+          const iconClass = 'w-4 h-4 mt-0.5 flex-shrink-0 cape-town-inclusion-icon';
+          const packageIconClass = 'w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0';
 
           const inclusions = (quote.hotelTier === 'affordable' && quote.affordableInclusions && quote.affordableInclusions.length > 0)
             ? quote.affordableInclusions
@@ -211,13 +200,13 @@ export function QuoteCard({
                                  !lower.includes('room only');
                         })
                         .map((activity, idx) => (
-                          <li key={idx} className={`flex items-start gap-2 ${isCapeTown ? 'text-transparent' : 'text-foreground'} ${itemTextClass}`}>
+                          <li key={idx} className={`flex items-start gap-2 text-transparent ${itemTextClass}`}>
                             <CheckCircle2 className={iconClass} />
                             <span className={inclusionHighlightClass || undefined}>{activity}</span>
                           </li>
                         ))}
                       {quote.includesBreakfast && (
-                        <li className={`flex items-start gap-2 ${isCapeTown ? 'text-transparent' : 'text-foreground'} ${itemTextClass}`}>
+                        <li className={`flex items-start gap-2 text-transparent ${itemTextClass}`}>
                           <CheckCircle2 className={iconClass} />
                           <span className={inclusionHighlightClass || undefined}>Breakfast included</span>
                         </li>
