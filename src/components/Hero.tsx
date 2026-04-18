@@ -1246,7 +1246,29 @@ export function Hero({ onGetQuote }: HeroProps) {
 
                                   {/* Inclusions */}
                                   <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
-                                    {pkg.description.replace('Includes', 'This package includes')}
+                                    {(() => {
+                                      const description = pkg.description.replace('Includes', 'This package includes');
+                                      const highlightStart = description.indexOf('accommodation');
+                                      const highlightEnd = description.indexOf('canal cruise.');
+
+                                      if (
+                                        description.includes('Entrance Franschoek Wine Tram with wine tasting') &&
+                                        highlightStart !== -1 &&
+                                        highlightEnd !== -1 &&
+                                        highlightEnd >= highlightStart
+                                      ) {
+                                        const highlightText = description.slice(highlightStart, highlightEnd + 'canal cruise.'.length);
+                                        return (
+                                          <>
+                                            {description.slice(0, highlightStart)}
+                                            <span className="cape-town-inclusion-highlight">{highlightText}</span>
+                                            {description.slice(highlightEnd + 'canal cruise.'.length)}
+                                          </>
+                                        );
+                                      }
+
+                                      return description;
+                                    })()}
                                   </p>
 
                                   {/* Price */}
