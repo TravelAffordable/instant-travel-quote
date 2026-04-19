@@ -27,7 +27,7 @@ export const destinationToActivityKey: Record<string, string> = {
   'dubai': 'Dubai Luxury',
   'thailand': 'Thailand Adventure',
   'knysna': 'Garden Route Accommodation',
-  'vaal-river': 'Vaal River Accommodation',
+  'vaal-river': 'Vaal Cruise and Emerald Casino Accommodation',
   'bela-bela': 'Bela Bela Accommodation',
   'pretoria': 'Johannesburg, Sandton and Soweto Accommodation',
 };
