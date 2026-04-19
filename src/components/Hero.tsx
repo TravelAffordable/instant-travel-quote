@@ -1046,18 +1046,6 @@ export function Hero({ onGetQuote }: HeroProps) {
         <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.3s' }}>
           <div id="quote-section" className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
             <div className="space-y-5">
-              {/* Jenny Travel Assistant Button - at top of form */}
-              <button
-                onClick={() => {
-                  const chatToggle = document.querySelector('[data-chat-toggle]') as HTMLButtonElement;
-                  if (chatToggle) chatToggle.click();
-                }}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-white border-2 border-orange-400 text-orange-500 hover:bg-orange-50 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all"
-              >
-                <MessageCircle className="w-6 h-6" />
-                <span className="font-bold text-base">START HERE – Please click here to speak to Jenny, our Travel Assistant, for easy & quick assistance</span>
-              </button>
-
               {/* Selected destination indicator */}
               <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
