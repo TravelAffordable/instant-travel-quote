@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -518,6 +519,12 @@ const BuildPackage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Build Your Own SA Holiday Package | Custom Travel Quotes"
+        description="Design a custom South African holiday — pick your destination, dates, hotel tier and activities. Instant pricing for Durban, Cape Town, Sun City, Harties & more."
+        canonical="/build-package"
+        keywords="custom holiday package, build my holiday, south africa diy package, customise getaway"
+      />
       <Header />
 
       {/* Hero Section */}
