@@ -660,7 +660,7 @@ rate_overrides
 | `sun-city` | Sun City | R2,000 pp | ✅ |
 | `mpumalanga` | Mpumalanga | R2,520 pp | ✅ |
 | `knysna` | Knysna (Garden Route) | R2,750 pp | ❌ |
-| `vaal-river` | Vaal River | R2,250 pp | ❌ |
+| `vaal-river` | Vaal Cruise and Emerald Casino | R2,250 pp | ❌ |
 | `bela-bela` | Bela Bela | R2,600 pp | ❌ |
 | `pretoria` | The Blyde FUNtastic Resort | R2,200 pp | ❌ |
 
@@ -755,7 +755,7 @@ rate_overrides
 | MP3 | Kruger Experience | R2,100 | R600 | Graskop Gorge Lift, suspension bridge, Kruger game drive |
 | MP4 | Weekender | R2,800 | R1,200 | Kruger game drive, full day Panorama Route tour |
 
-### Vaal River Packages (3 packages)
+### Vaal Cruise and Emerald Casino Packages (3 packages)
 
 | Code | Short Name | Base Price/Adult | Kids Price | Inclusions |
 |------|-----------|-----------------|------------|------------|
