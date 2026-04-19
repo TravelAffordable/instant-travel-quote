@@ -11,6 +11,9 @@ interface QuoteListProps {
   quotes: QuoteResult[];
   onQuoteSelected?: (quote: QuoteResult) => void;
   budget?: string;
+  guestName?: string;
+  guestTel?: string;
+  guestEmail?: string;
 }
 
 const formatDate = (date: Date) => {
@@ -21,7 +24,7 @@ const formatDate = (date: Date) => {
   });
 };
 
-export function QuoteList({ quotes, onQuoteSelected, budget }: QuoteListProps) {
+export function QuoteList({ quotes, onQuoteSelected, budget, guestName: propGuestName, guestTel, guestEmail }: QuoteListProps) {
   const [selectedQuotes, setSelectedQuotes] = useState<Set<string>>(new Set());
 
   const toggleQuoteSelection = (hotelId: string) => {
@@ -40,7 +43,8 @@ export function QuoteList({ quotes, onQuoteSelected, budget }: QuoteListProps) {
     return quotes.filter(q => selectedQuotes.has(q.hotelId));
   };
 
-  const generateQuoteText = (quote: QuoteResult, guestName?: string) => {
+  const generateQuoteText = (quote: QuoteResult, guestNameOverride?: string) => {
+    const guestName = guestNameOverride ?? propGuestName;
     const nightsCount = quote.nights || Math.ceil(
       (new Date(quote.checkOut).getTime() - new Date(quote.checkIn).getTime()) / (1000 * 60 * 60 * 24)
     );
