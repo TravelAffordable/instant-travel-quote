@@ -219,6 +219,12 @@ export default function SchoolTrips() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="School Trips & Educational Tours South Africa | Quotes"
+        description="Affordable educational school trips across South Africa — history, geography, science & life sciences tours. Day & multi-day options. Get an instant quote for your school."
+        canonical="/school-trips"
+        keywords="school trips south africa, educational tours, history tour, geography tour, school excursions, school camps"
+      />
       <Header />
 
       {/* Hero Banner */}
