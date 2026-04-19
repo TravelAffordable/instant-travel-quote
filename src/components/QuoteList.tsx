@@ -11,6 +11,9 @@ interface QuoteListProps {
   quotes: QuoteResult[];
   onQuoteSelected?: (quote: QuoteResult) => void;
   budget?: string;
+  guestName?: string;
+  guestTel?: string;
+  guestEmail?: string;
 }
 
 const formatDate = (date: Date) => {
@@ -21,7 +24,7 @@ const formatDate = (date: Date) => {
   });
 };
 
-export function QuoteList({ quotes, onQuoteSelected, budget }: QuoteListProps) {
+export function QuoteList({ quotes, onQuoteSelected, budget, guestName: propGuestName, guestTel, guestEmail }: QuoteListProps) {
   const [selectedQuotes, setSelectedQuotes] = useState<Set<string>>(new Set());
 
   const toggleQuoteSelection = (hotelId: string) => {
@@ -40,7 +43,8 @@ export function QuoteList({ quotes, onQuoteSelected, budget }: QuoteListProps) {
     return quotes.filter(q => selectedQuotes.has(q.hotelId));
   };
 
-  const generateQuoteText = (quote: QuoteResult, guestName?: string) => {
+  const generateQuoteText = (quote: QuoteResult, guestNameOverride?: string) => {
+    const guestName = guestNameOverride ?? propGuestName;
     const nightsCount = quote.nights || Math.ceil(
       (new Date(quote.checkOut).getTime() - new Date(quote.checkIn).getTime()) / (1000 * 60 * 60 * 24)
     );
@@ -89,6 +93,11 @@ Rooms: ${quote.rooms} x ${quote.roomType || (quote.is4SleeperRoom ? '4 Sleeper' 
 
 PRICING
 Grand Total: ${formatCurrency(quote.totalForGroup)}
+
+CLIENT CONTACT DETAILS
+Name: ${guestName || 'Not provided'}
+Telephone: ${guestTel || 'Not provided'}
+Email: ${guestEmail || 'Not provided'}
 
 To start with your booking process, please click on request to book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.
 
