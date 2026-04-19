@@ -466,11 +466,11 @@ export const PREMIUM_HOTELS: BudgetHotelEntry[] = [
   { alias: 'Issaquena Heights Boutique Hotel', realName: 'Issaquena Heights Boutique Hotel', dest: 'knysna', tier: 'premium', cap: '2_sleeper', refRate: 1300, city: 'Knysna', breakfast: false, roomType: 'Hotel Room' },
 
   // VAAL RIVER PREMIUM
-  { alias: 'Riviera on the Vaal', realName: 'Riviera on the Vaal', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 2000, city: 'Vaal River', breakfast: true, roomType: 'Hotel Room' },
-  { alias: 'Clivia Lodge', realName: 'Clivia Lodge', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 1100, city: 'Vaal River', breakfast: false, roomType: 'Lodge Room' },
-  { alias: 'Troas Boutique Hotel', realName: 'Troas Boutique Hotel', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 1200, city: 'Vaal River', breakfast: false, roomType: 'Hotel Room' },
-  { alias: '12 On Vaal Drive Guesthouse', realName: '12 On Vaal Drive Guesthouse', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 900, city: 'Vaal River', breakfast: false, roomType: 'Guest House Room' },
-  { alias: 'Casa Angelo', realName: 'Casa Angelo', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 950, city: 'Vaal River', breakfast: false, roomType: 'Guest House Room' },
+  { alias: 'Riviera on the Vaal', realName: 'Riviera on the Vaal', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 2000, city: 'Vaal Cruise and Emerald Casino', breakfast: true, roomType: 'Hotel Room' },
+  { alias: 'Clivia Lodge', realName: 'Clivia Lodge', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 1100, city: 'Vaal Cruise and Emerald Casino', breakfast: false, roomType: 'Lodge Room' },
+  { alias: 'Troas Boutique Hotel', realName: 'Troas Boutique Hotel', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 1200, city: 'Vaal Cruise and Emerald Casino', breakfast: false, roomType: 'Hotel Room' },
+  { alias: '12 On Vaal Drive Guesthouse', realName: '12 On Vaal Drive Guesthouse', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 900, city: 'Vaal Cruise and Emerald Casino', breakfast: false, roomType: 'Guest House Room' },
+  { alias: 'Casa Angelo', realName: 'Casa Angelo', dest: 'vaal-river', tier: 'premium', cap: '2_sleeper', refRate: 950, city: 'Vaal Cruise and Emerald Casino', breakfast: false, roomType: 'Guest House Room' },
 
   // BELA BELA PREMIUM
   { alias: 'Mabalingwe Nature Reserve', realName: 'Mabalingwe Nature Reserve', dest: 'bela-bela', tier: 'premium', cap: '2_sleeper', refRate: 1200, city: 'Bela Bela', breakfast: false, roomType: 'Resort Room' },
