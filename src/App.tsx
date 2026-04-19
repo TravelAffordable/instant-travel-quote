@@ -14,6 +14,9 @@ import BusHirePage from "./pages/BusHirePage";
 import HotelProviderPage from "./pages/HotelProviderPage";
 import TravelAgentPage from "./pages/TravelAgentPage";
 import DurbanPremiumCalendars from "./pages/DurbanPremiumCalendars";
+import DestinationPage from "./pages/DestinationPage";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +38,9 @@ const App = () => (
           <Route path="/travel-agent" element={<TravelAgentPage />} />
           <Route path="/durban-premium-calendars" element={<DurbanPremiumCalendars />} />
           <Route path="/premium-live-calendars" element={<DurbanPremiumCalendars />} />
+          <Route path="/destinations/:slug" element={<DestinationPage />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
