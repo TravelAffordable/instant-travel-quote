@@ -412,7 +412,7 @@ export function Hero({ onGetQuote }: HeroProps) {
 
   // Genie-style destination grid data
   const genieDestinations = [
-    { id: 'vaal-river', name: 'Vaal River', image: vaalRiverImg },
+    { id: 'vaal-river', name: 'Vaal Cruise and Emerald Casino', image: vaalRiverImg },
     { id: 'umhlanga', name: 'Umhlanga', image: umhlangaImg },
     { id: 'knysna', name: 'Knysna', image: knysnaImg },
     { id: 'harties', name: 'Hartbeespoort', image: hartiesImg },

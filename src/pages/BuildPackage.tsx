@@ -253,7 +253,7 @@ const activitiesByDestination: Record<string, Activity[]> = {
     { name: 'Birds of Eden Free Flight Sanctuary', image: knysnaForestImg, rates: { adult: 280, child: 180, freeAge: 3 } },
     { name: 'Tsitsikamma Storms River Bridge Walk', image: knysnaHeadsImg, rates: { adult: 350, child: 250, freeAge: 0 } },
   ],
-  'Vaal River Getaways': [
+  'Vaal Cruise and Emerald Casino Getaways': [
     { name: 'Aquadome Pools and Waterpark Entry', image: vaalAquadomeImg, rates: { adult: 280, child: 200, freeAge: 3 } },
     { name: 'Game Drive in Safari Truck', image: vaalGameDriveImg, rates: { adult: 380, child: 280, freeAge: 6 } },
     { name: 'Animal World Visit', image: hartiesSafariParkImg, rates: { adult: 150, child: 100, freeAge: 3 } },

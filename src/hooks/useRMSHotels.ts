@@ -52,7 +52,7 @@ const destinationLabelMap: Record<string, string> = {
   umhlanga: 'Umhlanga',
   'cape-town': 'Cape Town',
   mpumalanga: 'Mpumalanga',
-  'vaal-river': 'Vaal River',
+  'vaal-river': 'Vaal Cruise and Emerald Casino',
   'bela-bela': 'Bela Bela',
   pretoria: 'Pretoria',
   knysna: 'Knysna',
