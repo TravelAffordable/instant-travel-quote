@@ -94,6 +94,11 @@ Rooms: ${quote.rooms} x ${quote.roomType || (quote.is4SleeperRoom ? '4 Sleeper' 
 PRICING
 Grand Total: ${formatCurrency(quote.totalForGroup)}
 
+CLIENT CONTACT DETAILS
+Name: ${guestName || 'Not provided'}
+Telephone: ${guestTel || 'Not provided'}
+Email: ${guestEmail || 'Not provided'}
+
 To start with your booking process, please click on request to book button below. An email message with your booking details will open. Send the email. Our agents will then be in communication with you, then if you request we will send you the invoice for you to secure your booking.
 
 Once payment is received we will proceed with bookings then send you a confirmation letter with all the important information including ticket information, hotel confirmation numbers, transport schedules where applicable and itineraries for your getaway.
