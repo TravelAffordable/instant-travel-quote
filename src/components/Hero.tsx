@@ -1339,6 +1339,27 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
+              {/* Budget Field - compulsory for with-activities, placed under Rooms */}
+              {bookingType === 'with-activities' && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Your Total Budget (ZAR) *</Label>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Enter your total budget so we can find the best options that fit your pocket.
+                  </p>
+                  <div className="relative max-w-xs">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">R</span>
+                    <Input
+                      type="number"
+                      placeholder="e.g. 13800"
+                      value={budget}
+                      onChange={(e) => setBudget(e.target.value)}
+                      className="h-11 bg-white border-gray-200 pl-8"
+                      min={0}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Accommodation Type Selection - shown for both booking types */}
               {(bookingType === 'with-activities' || bookingType === 'accommodation-only') && (
                 <div className="space-y-2">
