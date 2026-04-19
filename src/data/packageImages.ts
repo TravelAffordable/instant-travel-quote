@@ -18,6 +18,9 @@ import hartiesBoatCruise from '@/assets/activities/harties-boat-cruise.jpg';
 import hartiesCableway from '@/assets/activities/harties-cableway.jpg';
 import hartiesHorseRiding from '@/assets/activities/harties-horse-riding.jpg';
 import hartiesSafariPark from '@/assets/activities/harties-safari-park.jpg';
+import hartiesLittleParis from '@/assets/activities/harties-little-paris.jpg';
+import hartiesCoupleJetski from '@/assets/activities/harties-couple-jetski.jpg';
+import hartiesRomanticHorseRiding from '@/assets/activities/harties-romantic-horse-riding.jpg';
 
 // Magaliesburg Activities
 import magaliesGameDrive from '@/assets/activities/magalies-game-drive.jpg';
@@ -85,12 +88,12 @@ export const packageImages: Record<string, string> = {
   'hg2': hartiesHorseRiding,
   'hg3': hartiesSafariPark,
   'hg4': elephantExperience,
-  'hg5': hartiesCableway,
+  'hg5': hartiesLittleParis,
   'hg6': hartiesCableway,
   'hg7': hartiesBoatCruise,
   'hg8': hartiesSafariPark,
-  'hg9': hartiesHorseRiding,
-  'hg10': hartiesCableway,
+  'hg9': hartiesRomanticHorseRiding,
+  'hg10': hartiesCoupleJetski,
   'hg11': hartiesBoatCruise,
   'hg12': fullBodyMassageSpa,
 
