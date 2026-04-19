@@ -1030,14 +1030,51 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
+              {/* Contact Details (Required) - moved to top for early lead capture */}
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                <p className="text-sm font-semibold text-gray-700 mb-3">Your Contact Details *</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Full Name *</Label>
+                    <Input
+                      type="text"
+                      placeholder="Your full name"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      className="h-11 bg-white border-gray-200"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Telephone Number *</Label>
+                    <Input
+                      type="tel"
+                      placeholder="e.g. 072 123 4567"
+                      value={guestTel}
+                      onChange={(e) => setGuestTel(e.target.value)}
+                      className="h-11 bg-white border-gray-200"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Email Address *</Label>
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={guestEmail}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      className="h-11 bg-white border-gray-200"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Row 2: Package (only for with-activities), Adults, Kids, Rooms */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {bookingType === 'with-activities' && (
                   <div className="space-y-2 col-span-2 md:col-span-4">
                     <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
-                    <p className="text-xs text-muted-foreground mb-1">
-                    Click "Show Packages" to view available packages for your destination. You may select one or more packages to get a quote.
-                    </p>
 
                     {/* Budget Field - compulsory for with-activities */}
                     <div className="mb-3">
