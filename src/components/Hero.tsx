@@ -1552,45 +1552,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               )}
 
-              {/* Contact Details (Required) */}
-              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                <p className="text-sm font-semibold text-gray-700 mb-3">Your Contact Details *</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">Full Name *</Label>
-                    <Input
-                      type="text"
-                      placeholder="Your full name"
-                      value={guestName}
-                      onChange={(e) => setGuestName(e.target.value)}
-                      className="h-11 bg-white border-gray-200"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">Telephone Number *</Label>
-                    <Input
-                      type="tel"
-                      placeholder="e.g. 072 123 4567"
-                      value={guestTel}
-                      onChange={(e) => setGuestTel(e.target.value)}
-                      className="h-11 bg-white border-gray-200"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">Email Address *</Label>
-                    <Input
-                      type="email"
-                      placeholder="your@email.com"
-                      value={guestEmail}
-                      onChange={(e) => setGuestEmail(e.target.value)}
-                      className="h-11 bg-white border-gray-200"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
+
 
               <div className="pt-2">
                 <Button
