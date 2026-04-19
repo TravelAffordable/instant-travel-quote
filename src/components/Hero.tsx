@@ -1644,7 +1644,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         {quotes.length > 0 && (
           <div id="quote-results" className="max-w-4xl mx-auto mt-8 animate-fade-in scroll-mt-4">
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
-              <QuoteList quotes={quotes} />
+              <QuoteList quotes={quotes} guestName={guestName} guestTel={guestTel} guestEmail={guestEmail} />
             </div>
           </div>
         )}
@@ -1657,7 +1657,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <h3 className="text-xl font-semibold text-primary mb-4">
                   {familyData.parentName}'s Quote
                 </h3>
-                <QuoteList quotes={familyData.quotes} />
+                <QuoteList quotes={familyData.quotes} guestName={familyData.parentName || guestName} guestTel={guestTel} guestEmail={guestEmail} />
               </div>
             ))}
           </div>
