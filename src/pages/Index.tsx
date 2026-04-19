@@ -6,6 +6,7 @@ import { Testimonials } from '@/components/Testimonials';
 import { WhyChooseUs } from '@/components/WhyChooseUs';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
+import { SEO } from '@/components/SEO';
 
 
 const Index = () => {
@@ -14,6 +15,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Travel Affordable | Cheap SA Holiday Packages from R1,400pp"
+        description="Instant quotes for affordable South African holidays — Durban, Cape Town, Sun City, Hartbeespoort, Magaliesburg, Bela-Bela & more. Family, group & school trip specialists."
+        canonical="/"
+        keywords="cheap holiday packages south africa, affordable getaways, durban packages, cape town holidays, sun city, hartbeespoort accommodation, group tours, school trips"
+      />
       <Header />
       
       {/* Hero Section with Quote Form */}
