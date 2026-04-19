@@ -1,4 +1,5 @@
 import { Plane, Mail, Phone, MapPin, Facebook, Instagram, Twitter } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -74,19 +75,24 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="#group-tours" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    Group Tours
-                  </a>
+                  <Link to="/build-package" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Build Your Own Package
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    About Us
-                  </a>
+                  <Link to="/bus-hire" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Bus Hire Quotes
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    Terms & Conditions
-                  </a>
+                  <Link to="/school-trips" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    School Trips
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/blog" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Travel Blog
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -96,29 +102,39 @@ export function Footer() {
               <h4 className="font-semibold text-lg mb-4">Top Destinations</h4>
               <ul className="space-y-3">
                 <li>
-                  <a href="#" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    Cape Town
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    Sun City
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-background/70 hover:text-primary text-sm transition-colors">
+                  <Link to="/destinations/durban" className="text-background/70 hover:text-primary text-sm transition-colors">
                     Durban
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    Bali, Indonesia
-                  </a>
+                  <Link to="/destinations/cape-town" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Cape Town
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    Dubai, UAE
-                  </a>
+                  <Link to="/destinations/sun-city" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Sun City
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/destinations/hartbeespoort" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Hartbeespoort
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/destinations/magaliesburg" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Magaliesburg
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/destinations/mpumalanga" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Mpumalanga
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/destinations/bela-bela" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Bela-Bela
+                  </Link>
                 </li>
               </ul>
             </div>
