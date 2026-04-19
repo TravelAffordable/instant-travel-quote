@@ -1076,7 +1076,482 @@ export function Hero({ onGetQuote }: HeroProps) {
                   <div className="space-y-2 col-span-2 md:col-span-4">
                     <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
 
+                    {/* Budget Field - compulsory for with-activities */}
+                    <div className="mb-3">
+                      <Label className="text-sm font-medium text-gray-700">Your Total Budget (ZAR) *</Label>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Enter your total budget so we can find the best options that fit your pocket.
+                      </p>
+                      <div className="relative max-w-xs">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">R</span>
+                        <Input
+                          type="number"
+                          placeholder="e.g. 13800"
+                          value={budget}
+                          onChange={(e) => setBudget(e.target.value)}
+                          className="h-11 bg-white border-gray-200 pl-8"
+                          min={0}
+                        />
+                      </div>
+                    </div>
                     
+                    {/* Show Packages button - only when no packages shown yet */}
+                    {!isPackageDropdownOpen && packageIds.length === 0 && (
+                      <Button
+                        variant="outline"
+                        disabled={!destination}
+                        onClick={() => setIsPackageDropdownOpen(true)}
+                        className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                      >
+                        {destination ? 'Show Packages' : 'Select destination first'}
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    )}
+
+                    {/* Selected packages summary + change button */}
+                    {packageIds.length > 0 && !isPackageDropdownOpen && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {availablePackages
+                            .filter(pkg => packageIds.includes(pkg.id))
+                            .map(pkg => (
+                              <div
+                                key={pkg.id}
+                                className="border-2 border-primary bg-primary/5 rounded-xl p-4 relative"
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => togglePackageSelection(pkg.id)}
+                                  className="absolute top-2 right-2 text-gray-400 hover:text-destructive text-lg leading-none"
+                                  aria-label="Remove package"
+                                >
+                                  ×
+                                </button>
+                                <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
+                                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg))} per person</p>
+                              </div>
+                            ))}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsPackageDropdownOpen(true)}
+                          className="border-primary text-primary hover:bg-primary/10"
+                        >
+                          Change Packages
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Package cards grid - visual image cards */}
+                    {isPackageDropdownOpen && (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {(packageIds.length > 0 && !isBrowsingMore
+                            ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
+                            : availablePackages
+                          ).map(pkg => {
+                            const isSelected = packageIds.includes(pkg.id);
+                            const packageImage = getPackageImage(pkg.id);
+                            const tourCode = pkg.name.split(' - ')[0] || pkg.id.toUpperCase();
+                            return (
+                              <div
+                                key={pkg.id}
+                                onClick={() => {
+                                  togglePackageSelection(pkg.id);
+                                  // After selecting a new package, collapse back to show only selected
+                                  if (!isSelected) {
+                                    setIsBrowsingMore(false);
+                                  }
+                                }}
+                                className={`relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 ${
+                                  isSelected
+                                    ? 'ring-3 ring-primary shadow-lg scale-[1.02]'
+                                    : 'hover:shadow-xl hover:scale-[1.01]'
+                                }`}
+                                style={{ minHeight: '280px' }}
+                              >
+                                {/* Background Image */}
+                                {packageImage ? (
+                                  <img
+                                    src={packageImage}
+                                    alt={pkg.shortName || pkg.name}
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary" />
+                                )}
+
+                                {/* Dark overlay for text readability */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20 group-hover:from-black/95 group-hover:via-black/60 transition-all duration-300" />
+
+                                {/* Selected checkmark badge */}
+                                {isSelected && (
+                                  <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-10">
+                                    <Check className="w-4 h-4 text-white" />
+                                  </div>
+                                )}
+
+                                {/* Content overlay */}
+                                <div className="relative z-[5] h-full flex flex-col justify-end p-4" style={{ minHeight: '280px' }}>
+                                  {/* Tour Code */}
+                                  <div className="mb-1">
+                                    <span className="inline-block bg-primary/90 text-white text-xs font-bold px-2 py-1 rounded">
+                                      {tourCode}
+                                    </span>
+                                  </div>
+
+                                  {/* Package short name */}
+                                  <h4 className="text-white font-bold text-sm leading-tight mb-2">
+                                    {pkg.shortName || pkg.name.split(' - ')[1]?.substring(0, 40) || pkg.name}
+                                  </h4>
+
+                                  {/* Inclusions */}
+                                  <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
+                                    {(() => {
+                                      const rawDescription = pkg.description;
+                                      const includesIdx = rawDescription.toLowerCase().indexOf('includes');
+
+                                      if (includesIdx !== -1) {
+                                        const prefix = 'This package includes ';
+                                        const inclusionsText = rawDescription
+                                          .slice(includesIdx + 'includes'.length)
+                                          .replace(/^[\s:]+/, '')
+                                          .toUpperCase();
+                                        return (
+                                          <>
+                                            {prefix}
+                                            {inclusionsText}
+                                          </>
+                                        );
+                                      }
+
+                                      return rawDescription.toUpperCase();
+                                    })()}
+                                  </p>
+
+                                  {/* Price */}
+                                  <p className="text-white font-semibold text-xs">
+                                    From {formatCurrency(getPackageFromPrice(pkg))} pp
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+
+                          {/* "Select More Packages" button shown inline in the grid when packages are selected and not browsing */}
+                          {packageIds.length > 0 && !isBrowsingMore && (
+                            <div
+                              onClick={() => setIsBrowsingMore(true)}
+                              className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 border-2 border-dashed border-primary/50 hover:border-primary flex items-center justify-center bg-black/30"
+                              style={{ minHeight: '280px' }}
+                            >
+                              <div className="text-center p-4">
+                                <Puzzle className="w-8 h-8 text-primary mx-auto mb-2" />
+                                <p className="text-white font-bold text-sm">Select More Packages</p>
+                                <p className="text-white/60 text-xs mt-1">Browse all available options</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Adults *</Label>
+                  <Select value={adults.toString()} onValueChange={v => setAdults(parseInt(v))}>
+                    <SelectTrigger className="h-11 bg-white border-gray-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 100 }, (_, i) => i + 1).map(n => (
+                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Number of Kids</Label>
+                  <Select 
+                    value={children.toString()} 
+                    onValueChange={v => {
+                      const newCount = parseInt(v);
+                      setChildren(newCount);
+                      // Adjust childrenAges array
+                      const currentAges = childrenAges.split(',').map(a => a.trim()).filter(a => a !== '');
+                      if (newCount > currentAges.length) {
+                        // Add default ages for new children
+                        const newAges = [...currentAges];
+                        while (newAges.length < newCount) {
+                          newAges.push('5');
+                        }
+                        setChildrenAges(newAges.join(','));
+                      } else if (newCount < currentAges.length) {
+                        // Remove extra ages
+                        setChildrenAges(currentAges.slice(0, newCount).join(','));
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-11 bg-white border-gray-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 101 }, (_, i) => i).map(n => (
+                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Child Age Selection */}
+                {children > 0 && (
+                  <div className="space-y-2 col-span-full">
+                    <Label className="text-sm font-medium text-gray-700">Child Ages (3-17 years)</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {Array.from({ length: children }, (_, i) => {
+                        const ages = childrenAges.split(',').map(a => a.trim());
+                        const currentAge = ages[i] || '5';
+                        return (
+                          <div key={i} className="flex items-center gap-1">
+                            <span className="text-xs text-gray-500">Child {i + 1}:</span>
+                            <Select 
+                              value={currentAge} 
+                              onValueChange={v => {
+                                const newAges = [...ages];
+                                newAges[i] = v;
+                                // Ensure array has correct length
+                                while (newAges.length < children) {
+                                  newAges.push('5');
+                                }
+                                setChildrenAges(newAges.slice(0, children).join(','));
+                              }}
+                            >
+                              <SelectTrigger className="h-9 w-20 bg-white border-gray-200">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[200px]">
+                                {Array.from({ length: 18 }, (_, age) => age).map(age => (
+                                  <SelectItem key={age} value={age.toString()}>{age} yrs</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Rooms *</Label>
+                  <Select value={rooms.toString()} onValueChange={v => setRooms(parseInt(v))}>
+                    <SelectTrigger className="h-11 bg-white border-gray-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 100 }, (_, i) => i + 1).map(n => (
+                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Accommodation Type Selection - shown for both booking types */}
+              {(bookingType === 'with-activities' || bookingType === 'accommodation-only') && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Accommodation Type by budget:</Label>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Please use the buttons to navigate various budget options, each time you change to another button to view options always click the get quotes button again to see new results. Once you've found the option that fits your budget please click enquire about this option and send it via email so we can send you pictures of the hotel.
+                  </p>
+                  {(() => {
+                    // Check if any selected package has budget disabled
+                    const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
+                    const budgetDisabledPkg = selectedPkgs.find(p => p.budgetDisabled);
+                    const isBudgetDisabled = !!budgetDisabledPkg;
+                    const budgetDisabledMessage = budgetDisabledPkg?.budgetDisabledMessage || 'Budget option is not available for this package.';
+                    
+                    return (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isBudgetDisabled) {
+                              toast.info(budgetDisabledMessage);
+                              return;
+                            }
+                            setAccommodationType('budget');
+                          }}
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
+                            isBudgetDisabled
+                              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : accommodationType === 'budget'
+                                ? 'border-green-500 bg-green-50 text-green-700'
+                                : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50/50'
+                          }`}
+                        >
+                          Budget Friendly Hotel Options
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAccommodationType('affordable')}
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
+                            accommodationType === 'affordable'
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-gray-200 bg-white text-gray-700 hover:border-primary/50 hover:bg-primary/5'
+                          }`}
+                        >
+                          Affordable Hotel Options
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAccommodationType('premium')}
+                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
+                            accommodationType === 'premium'
+                              ? 'border-purple-500 bg-purple-50 text-purple-700'
+                              : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300 hover:bg-purple-50/50'
+                          }`}
+                        >
+                          Premium Hotel Options
+                        </button>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {/* Family Split Option */}
+              {showFamilySplitOption && !isFamilySplitMode && (
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-4">
+                  <p className="text-sm text-gray-700 mb-2">
+                    If you are different families and each family would be paying separately, please click here:
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsFamilySplitMode(true)}
+                    className="border-primary text-primary hover:bg-primary/10"
+                  >
+                    Split by Family
+                  </Button>
+                </div>
+              )}
+
+              {/* Family Split Mode */}
+              {isFamilySplitMode && (
+                <div className="space-y-4 bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium text-gray-700">How many families are you?</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setIsFamilySplitMode(false);
+                        setFamilyQuotes([]);
+                      }}
+                      className="text-gray-500"
+                    >
+                      Cancel Split
+                    </Button>
+                  </div>
+                  <Select value={numberOfFamilies.toString()} onValueChange={v => setNumberOfFamilies(parseInt(v))}>
+                    <SelectTrigger className="h-11 bg-white border-gray-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                        <SelectItem key={n} value={n.toString()}>{n} Families</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Family Forms */}
+                  <div className="space-y-4 max-h-[350px] overflow-y-auto">
+                    {families.map((family, index) => (
+                      <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                        <h4 className="font-semibold text-sm text-primary">Family {index + 1}</h4>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-xs text-gray-600">Name of Parent</Label>
+                          <Input
+                            placeholder="Parent name"
+                            value={family.parentName}
+                            onChange={e => updateFamilyData(index, 'parentName', e.target.value)}
+                            className="h-9 bg-white border-gray-200"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">Adults</Label>
+                            <Select 
+                              value={family.adults.toString()} 
+                              onValueChange={v => updateFamilyData(index, 'adults', parseInt(v))}
+                            >
+                              <SelectTrigger className="h-9 bg-white border-gray-200">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                                  <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">Kids</Label>
+                            <Select 
+                              value={family.children.toString()} 
+                              onValueChange={v => updateFamilyData(index, 'children', parseInt(v))}
+                            >
+                              <SelectTrigger className="h-9 bg-white border-gray-200">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[0, 1, 2, 3, 4, 5, 6].map(n => (
+                                  <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">Rooms</Label>
+                            <Select 
+                              value={family.rooms.toString()} 
+                              onValueChange={v => updateFamilyData(index, 'rooms', parseInt(v))}
+                            >
+                              <SelectTrigger className="h-9 bg-white border-gray-200">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[1, 2, 3, 4, 5].map(n => (
+                                  <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        {family.children > 0 && (
+                          <div className="space-y-1">
+                            <Label className="text-xs text-gray-600">Kids Ages (comma separated, 3-17)</Label>
+                            <Input
+                              placeholder="e.g. 5, 8"
+                              value={family.childrenAges}
+                              onChange={e => updateFamilyData(index, 'childrenAges', e.target.value)}
+                              className="h-9 bg-white border-gray-200"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
 
 
               <div className="pt-2">
