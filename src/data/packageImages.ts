@@ -42,6 +42,8 @@ import culturalVillage from '@/assets/activities/cultural-village.jpg';
 import magaliesCradleOfMankind from '@/assets/activities/magalies-cradle-of-mankind.jpg';
 import magaliesLuxSpaPool from '@/assets/activities/magalies-lux-spa-pool.jpg';
 import magaliesCoupleHorseRiding from '@/assets/activities/magalies-couple-horse-riding.jpg';
+import magaliesSpaFooter from '@/assets/activities/magalies-spa-footer.jpg';
+import magaliesLionRhino from '@/assets/activities/magalies-lion-rhino.jpg';
 import elephantExperience from '@/assets/activities/elephant-experience.jpg';
 import zipliningAdventure from '@/assets/activities/ziplining-adventure.jpg';
 import cheetahCentre from '@/assets/activities/cheetah-centre.jpg';
@@ -127,8 +129,8 @@ export const packageImages: Record<string, string> = {
   // ============= MAGALIESBURG =============
   'mag1': magaliesCradleOfMankind,  // Cradle of Mankind + Sterkfontein + game drive
   'mag2': magaliesLuxSpaPool,       // Lux + buffet cruise + game drive
-  'mag3': cheetahCentre,            // Half day spa + game + sunset cruise
-  'mag4': magaliesGameDrive,        // Budget game drive + massage
+  'mag3': magaliesSpaFooter,        // Half day spa + game + sunset cruise
+  'mag4': magaliesLionRhino,        // Budget game drive + massage
   'mag5': magaliesCoupleHorseRiding,// Horse + quad + private picnic
   'mag6': magaliesPrivatePicnic,    // Horse + spa + picnic
 
