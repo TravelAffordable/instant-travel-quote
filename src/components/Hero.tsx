@@ -440,6 +440,7 @@ export function Hero({ onGetQuote }: HeroProps) {
     { id: 'mpumalanga', name: 'Mpumalanga Getaways', image: mpumalangaImg },
     { id: 'pretoria', name: 'The Blyde Pretoria Getaways', image: pretoriaImg },
     { id: 'cape-town', name: 'Cape Town Getaways', image: capeTownImg },
+    { id: 'vaal-river', name: 'Emerald Casino and 2 Hour Vaal Cruise Getaways', image: vaalRiverImg },
     { id: 'dubai', name: 'Dubai Getaways', image: dubaiImg },
     { id: 'thailand', name: 'Thailand Getaways', image: thailandImg },
     { id: 'bali', name: 'Bali Getaways', image: baliImg },
@@ -978,7 +979,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 style={{ backgroundImage: `url(${dest.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
               >
                 <div className="genie-destination-overlay">
-                  <h3 className="text-xl font-bold text-white">{dest.name}</h3>
+                  <h3 className="text-2xl text-white tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700 }}>{dest.name}</h3>
                   <Button 
                     variant="outline" 
                     size="sm" 
