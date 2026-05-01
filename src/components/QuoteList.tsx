@@ -255,15 +255,6 @@ Web: www.travelaffordable.co.za`;
         
         return packageNames.map((packageName) => (
           <div key={packageName} className="space-y-4">
-            {/* Package Header - Only show if multiple packages */}
-            {hasMultiplePackages && (
-              <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-4 mt-6 first:mt-0">
-                <h2 className="text-xl md:text-2xl font-bold uppercase tracking-wide text-primary text-center">
-                  {packageName}
-                </h2>
-              </div>
-            )}
-            
             {packageGroups[packageName].map((quote) => {
               const index = globalIndex++;
               return (
