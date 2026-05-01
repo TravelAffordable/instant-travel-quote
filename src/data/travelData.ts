@@ -950,7 +950,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag6',
-    name: 'MAG6 - HORSE, SPA AND PICNIC MAGALIES GETAWAY',
+    name: 'MAG6 - HORSE, SPA AND PICNIC MAGALIES GETAWAY WITH ACCOMMODATION, 1-HOUR HORSE TRAIL, 60-MINUTE FULL BODY MASSAGE, PRIVATE ROMANTIC PICNIC SETUP, CHAMPAGNE AND PICNIC BASKET',
     shortName: 'Horse, Spa & Picnic',
     description: 'Includes accommodation, 1-hour horse trail, 60-minute full body massage, private romantic picnic with champagne and a picnic basket.',
     destination: 'magalies',
