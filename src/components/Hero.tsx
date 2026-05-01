@@ -1151,7 +1151,6 @@ export function Hero({ onGetQuote }: HeroProps) {
                           ).map(pkg => {
                             const isSelected = packageIds.includes(pkg.id);
                             const packageImage = getPackageImage(pkg.id);
-                            const tourCode = pkg.name.split(' - ')[0] || pkg.id.toUpperCase();
                             return (
                               <div
                                 key={pkg.id}
