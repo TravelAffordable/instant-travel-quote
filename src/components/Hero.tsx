@@ -174,7 +174,22 @@ function calculateServiceFees(adults: number, childrenAges: number[]): number {
   return totalAdultFees + childFees;
 }
 
-function getPackageFromPrice(pkg: Package): number {
+function getPackageFromPrice(
+  pkg: Package,
+  cheapestNightlyByDestination: Record<string, number> = {},
+): number {
+  // Teaser is always based on a 2-night stay for 2 adults (weekend getaway baseline).
+  const TEASER_NIGHTS = 2;
+  const TEASER_ADULTS = 2;
+
+  const cachedNightly = cheapestNightlyByDestination[pkg.destination];
+
+  if (cachedNightly && cachedNightly > 0) {
+    const accommodationPerPerson = (cachedNightly * TEASER_NIGHTS) / TEASER_ADULTS;
+    return roundToNearest10(pkg.basePrice + accommodationPerPerson);
+  }
+
+  // Fallback to static budget hotel data only when no cached rate exists for the destination.
   const cheapestBudgetHotel = hotels
     .filter((hotel) => hotel.destination === pkg.destination && hotel.type === 'very-affordable')
     .sort((a, b) => {
@@ -185,13 +200,11 @@ function getPackageFromPrice(pkg: Package): number {
       return a.pricePerNight - b.pricePerNight;
     })[0];
 
-  const stayNights = Number.parseInt(pkg.duration, 10) || 2;
-
   if (!cheapestBudgetHotel) {
     return roundToNearest10(pkg.basePrice);
   }
 
-  const accommodationPerPerson = (cheapestBudgetHotel.pricePerNight * stayNights) / 2;
+  const accommodationPerPerson = (cheapestBudgetHotel.pricePerNight * TEASER_NIGHTS) / TEASER_ADULTS;
   return roundToNearest10(pkg.basePrice + accommodationPerPerson);
 }
 
