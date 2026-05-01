@@ -1122,8 +1122,16 @@ export function Hero({ onGetQuote }: HeroProps) {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
+                        key={`checkout-${checkIn}-${checkOut}`}
                         mode="single"
                         selected={checkOut ? new Date(checkOut) : undefined}
+                        defaultMonth={
+                          checkOut
+                            ? new Date(checkOut)
+                            : checkIn
+                              ? new Date(new Date(checkIn).getTime() + 24 * 60 * 60 * 1000)
+                              : new Date()
+                        }
                         onSelect={(date) => {
                           if (!date) return;
                           const yyyy = date.getFullYear();
