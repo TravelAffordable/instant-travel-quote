@@ -906,7 +906,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag2',
-    name: 'MAG2 - MAGALIES ULTIMATE LUX GETAWAY PACKAGE WITH BUFFET CRUISE, CRADLE OF MANKIND, MASSAGE, GAME DRIVE, PREDATOR ENCLOSURE, SNAKE AND REPTILE SHOW',
+    name: 'MAG2 - MAGALIES ULTIMATE LUX GETAWAY PACKAGE WITH ACCOMMODATION, CRADLE OF MANKIND ORIGINS CENTRE, GUIDED GAME DRIVE IN RHINO AND LION PARK, 2-HOUR BUFFET LUNCH CRUISE, 60-MINUTE FULL BODY MASSAGE, REPTILE SHOW AND PREDATOR ENCLOSURE AT THE PARK WELCOME CENTRE',
     shortName: 'Ultimate Lux',
     description: 'Includes accommodation, 2-hour buffet lunch cruise, Cradle of Mankind Origins Centre, 60-minute full body massage, guided game drive in Rhino and Lion Park, predator enclosure, and snake and reptile show.',
     destination: 'magalies',
