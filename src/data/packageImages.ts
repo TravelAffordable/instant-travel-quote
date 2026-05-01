@@ -39,6 +39,9 @@ import magaliesSterkfontein from '@/assets/activities/magalies-sterkfontein.jpg'
 import magaliesPrivatePicnic from '@/assets/activities/magalies-private-picnic.jpg';
 import magaliesBuffetCruise from '@/assets/activities/magalies-buffet-cruise.jpg';
 import culturalVillage from '@/assets/activities/cultural-village.jpg';
+import magaliesCradleOfMankind from '@/assets/activities/magalies-cradle-of-mankind.jpg';
+import magaliesLuxSpaPool from '@/assets/activities/magalies-lux-spa-pool.jpg';
+import magaliesCoupleHorseRiding from '@/assets/activities/magalies-couple-horse-riding.jpg';
 import elephantExperience from '@/assets/activities/elephant-experience.jpg';
 import zipliningAdventure from '@/assets/activities/ziplining-adventure.jpg';
 import cheetahCentre from '@/assets/activities/cheetah-centre.jpg';
@@ -122,11 +125,11 @@ export const packageImages: Record<string, string> = {
   'hg12': fullBodyMassageSpa,       // Water tube + massage
 
   // ============= MAGALIESBURG =============
-  'mag1': culturalVillage,          // Cradle of Mankind + Sterkfontein + game drive
-  'mag2': magaliesBuffetCruise,     // Lux + buffet cruise + game drive
+  'mag1': magaliesCradleOfMankind,  // Cradle of Mankind + Sterkfontein + game drive
+  'mag2': magaliesLuxSpaPool,       // Lux + buffet cruise + game drive
   'mag3': cheetahCentre,            // Half day spa + game + sunset cruise
   'mag4': magaliesGameDrive,        // Budget game drive + massage
-  'mag5': magaliesSterkfontein,     // Horse + quad + private picnic
+  'mag5': magaliesCoupleHorseRiding,// Horse + quad + private picnic
   'mag6': magaliesPrivatePicnic,    // Horse + spa + picnic
 
   // ============= CAPE TOWN =============
