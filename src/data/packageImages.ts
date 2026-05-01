@@ -32,6 +32,8 @@ import hartiesRomanticHorseRiding from '@/assets/activities/harties-romantic-hor
 import hartiesLeisureDeck from '@/assets/activities/harties-leisure-deck.jpg';
 import hartiesCoupleQuad from '@/assets/activities/harties-couple-quad.jpg';
 import hartiesSunsetBuffetCruise from '@/assets/activities/harties-sunset-buffet-cruise.jpg';
+import hartiesHg6CablewayView from '@/assets/activities/harties-hg6-cableway-view.jpg';
+import hartiesHg7ChampagneSunset from '@/assets/activities/harties-hg7-champagne-sunset-cruise.jpg';
 import hartiesHg8CoupleQuad from '@/assets/activities/harties-hg8-couple-quad.jpg';
 import hartiesHg9HorseGiraffes from '@/assets/activities/harties-hg9-horse-giraffes.webp';
 import hartiesHg10Jetski from '@/assets/activities/harties-hg10-jetski.jpeg';
@@ -123,8 +125,8 @@ export const packageImages: Record<string, string> = {
   'hg3': hartiesSafariPark,         // Family fun weekender
   'hg4': elephantExperience,        // Elephant sanctuary + horse/quad + cableway
   'hg5': hartiesLittleParis,        // Upside down house + Little Paris
-  'hg6': hartiesCableway,           // Full day cableway
-  'hg7': hartiesSunsetBuffetCruise, // Couple sunset buffet cruise
+  'hg6': hartiesHg6CablewayView,    // Full day cableway
+  'hg7': hartiesHg7ChampagneSunset, // Couple sunset buffet cruise
   'hg8': hartiesHg8CoupleQuad,      // Couple quad biking
   'hg9': hartiesHg9HorseGiraffes,   // Romance + horse + cableway
   'hg10': hartiesHg10Jetski,        // Jet ski fun
