@@ -1042,25 +1042,107 @@ export function Hero({ onGetQuote }: HeroProps) {
 
               {/* Row 1: Check In, Check Out */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Row 1: Check In, Check Out */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Check In *</Label>
-                  <Input
-                    type="date"
-                    value={checkIn}
-                    onChange={e => setCheckIn(e.target.value)}
-                    min={today}
-                    className="h-11 bg-white border-gray-200"
-                  />
+                  <Popover open={checkInOpen} onOpenChange={(open) => {
+                    setCheckInOpen(open);
+                    if (open) {
+                      setPendingCheckIn(checkIn ? new Date(checkIn) : undefined);
+                    }
+                  }}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className={cn(
+                          "h-11 w-full justify-start text-left font-normal bg-white border-gray-200",
+                          !checkIn && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {checkIn ? format(new Date(checkIn), 'PPP') : <span>Pick check-in date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={pendingCheckIn}
+                        onSelect={setPendingCheckIn}
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                      <div className="flex justify-end gap-2 border-t p-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setCheckInOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={!pendingCheckIn}
+                          onClick={() => {
+                            if (!pendingCheckIn) return;
+                            const yyyy = pendingCheckIn.getFullYear();
+                            const mm = String(pendingCheckIn.getMonth() + 1).padStart(2, '0');
+                            const dd = String(pendingCheckIn.getDate()).padStart(2, '0');
+                            setCheckIn(`${yyyy}-${mm}-${dd}`);
+                            setCheckInOpen(false);
+                            // Auto-open check-out picker after confirming check-in
+                            setTimeout(() => setCheckOutOpen(true), 150);
+                          }}
+                        >
+                          Set
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Check Out *</Label>
-                  <Input
-                    type="date"
-                    value={checkOut}
-                    onChange={e => setCheckOut(e.target.value)}
-                    min={checkIn || today}
-                    className="h-11 bg-white border-gray-200"
-                  />
+                  <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className={cn(
+                          "h-11 w-full justify-start text-left font-normal bg-white border-gray-200",
+                          !checkOut && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {checkOut ? format(new Date(checkOut), 'PPP') : <span>Pick check-out date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={checkOut ? new Date(checkOut) : undefined}
+                        onSelect={(date) => {
+                          if (!date) return;
+                          const yyyy = date.getFullYear();
+                          const mm = String(date.getMonth() + 1).padStart(2, '0');
+                          const dd = String(date.getDate()).padStart(2, '0');
+                          setCheckOut(`${yyyy}-${mm}-${dd}`);
+                          setCheckOutOpen(false);
+                        }}
+                        disabled={(date) => {
+                          const minDate = checkIn
+                            ? new Date(new Date(checkIn).getTime() + 24 * 60 * 60 * 1000)
+                            : new Date(new Date().setHours(0, 0, 0, 0));
+                          return date < minDate;
+                        }}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
                  </div>
                </div>
 
