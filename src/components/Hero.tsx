@@ -1151,7 +1151,6 @@ export function Hero({ onGetQuote }: HeroProps) {
                           ).map(pkg => {
                             const isSelected = packageIds.includes(pkg.id);
                             const packageImage = getPackageImage(pkg.id);
-                            const tourCode = pkg.name.split(' - ')[0] || pkg.id.toUpperCase();
                             return (
                               <div
                                 key={pkg.id}
@@ -1199,13 +1198,6 @@ export function Hero({ onGetQuote }: HeroProps) {
 
                                    {/* Spacer pushes the rest to the bottom */}
                                    <div className="flex-1" />
-
-                                   {/* Tour Code below the title */}
-                                   <div className="mb-2">
-                                     <span className="inline-block bg-primary/90 text-white text-xs font-bold px-2 py-1 rounded">
-                                       {tourCode}
-                                     </span>
-                                   </div>
 
                                   {/* Inclusions */}
                                   <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
