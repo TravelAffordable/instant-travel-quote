@@ -1193,9 +1193,9 @@ export function Hero({ onGetQuote }: HeroProps) {
                                  {/* Content overlay */}
                                  <div className="relative z-[5] h-full flex flex-col p-4" style={{ minHeight: '280px' }}>
                                    {/* Full package title - pinned to top */}
-                                   <h4 className="text-yellow-300 font-normal text-base leading-tight mb-2 tracking-wide" style={{ fontFamily: "'Anton', sans-serif" }}>
-                                     {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
-                                   </h4>
+                                    <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide`} style={{ fontFamily: "'Anton', sans-serif" }}>
+                                      {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
+                                    </h4>
 
                                    {/* Spacer pushes the rest to the bottom */}
                                    <div className="flex-1" />
