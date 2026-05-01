@@ -1190,19 +1190,19 @@ export function Hero({ onGetQuote }: HeroProps) {
                                   </div>
                                 )}
 
-                                {/* Content overlay */}
-                                <div className="relative z-[5] h-full flex flex-col justify-end p-4" style={{ minHeight: '280px' }}>
-                                  {/* Tour Code */}
-                                  <div className="mb-1">
-                                    <span className="inline-block bg-primary/90 text-white text-xs font-bold px-2 py-1 rounded">
-                                      {tourCode}
-                                    </span>
-                                  </div>
+                                 {/* Content overlay */}
+                                 <div className="relative z-[5] h-full flex flex-col justify-end p-4" style={{ minHeight: '280px' }}>
+                                   {/* Full package title */}
+                                   <h4 className="text-white font-bold text-sm leading-tight mb-2">
+                                     {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
+                                   </h4>
 
-                                  {/* Package short name */}
-                                  <h4 className="text-white font-bold text-sm leading-tight mb-2">
-                                    {pkg.shortName || pkg.name.split(' - ')[1]?.substring(0, 40) || pkg.name}
-                                  </h4>
+                                   {/* Tour Code below the title */}
+                                   <div className="mb-2">
+                                     <span className="inline-block bg-primary/90 text-white text-xs font-bold px-2 py-1 rounded">
+                                       {tourCode}
+                                     </span>
+                                   </div>
 
                                   {/* Inclusions */}
                                   <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
