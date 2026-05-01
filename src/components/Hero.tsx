@@ -988,7 +988,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                     size="sm" 
                     className="mt-2 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
                   >
-                    {destination === dest.id ? '✓ Selected' : 'Select Destination'}
+                    {destination === dest.id ? '✓ Selected' : 'Click here to select this Trip/Destination'}
                   </Button>
                 </div>
               </div>
@@ -1237,6 +1237,11 @@ export function Hero({ onGetQuote }: HeroProps) {
                                       From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} pp
                                     </p>
                                   )}
+
+                                  {/* Click-to-select prompt */}
+                                  <p className="text-white font-semibold text-xs mt-2">
+                                    {isSelected ? '✓ Selected' : 'Click here to select this Trip/Getaway'}
+                                  </p>
                                 </div>
                               </div>
                             );
