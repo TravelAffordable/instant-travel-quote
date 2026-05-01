@@ -1126,7 +1126,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 </button>
                                 <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
-                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg))} per person</p>
+                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} per person</p>
                               </div>
                             ))}
                         </div>
@@ -1230,7 +1230,7 @@ export function Hero({ onGetQuote }: HeroProps) {
 
                                   {/* Price */}
                                   <p className="text-white font-semibold text-xs">
-                                    From {formatCurrency(getPackageFromPrice(pkg))} pp
+                                    From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} pp
                                   </p>
                                 </div>
                               </div>
