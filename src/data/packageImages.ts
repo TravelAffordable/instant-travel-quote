@@ -32,6 +32,11 @@ import hartiesRomanticHorseRiding from '@/assets/activities/harties-romantic-hor
 import hartiesLeisureDeck from '@/assets/activities/harties-leisure-deck.jpg';
 import hartiesCoupleQuad from '@/assets/activities/harties-couple-quad.jpg';
 import hartiesSunsetBuffetCruise from '@/assets/activities/harties-sunset-buffet-cruise.jpg';
+import hartiesHg8CoupleQuad from '@/assets/activities/harties-hg8-couple-quad.jpg';
+import hartiesHg9HorseGiraffes from '@/assets/activities/harties-hg9-horse-giraffes.webp';
+import hartiesHg10Jetski from '@/assets/activities/harties-hg10-jetski.jpeg';
+import hartiesHg11WakeSnake from '@/assets/activities/harties-hg11-wake-snake.jpg';
+import hartiesHg12WaterTube from '@/assets/activities/harties-hg12-water-tube.png';
 
 // Magaliesburg Activities
 import magaliesGameDrive from '@/assets/activities/magalies-game-drive.jpg';
@@ -120,11 +125,11 @@ export const packageImages: Record<string, string> = {
   'hg5': hartiesLittleParis,        // Upside down house + Little Paris
   'hg6': hartiesCableway,           // Full day cableway
   'hg7': hartiesSunsetBuffetCruise, // Couple sunset buffet cruise
-  'hg8': hartiesCoupleQuad,         // Couple quad biking
-  'hg9': hartiesRomanticHorseRiding,// Romance + horse + cableway
-  'hg10': hartiesCoupleJetski,      // Jet ski fun
-  'hg11': hartiesBoatCruise,        // Wake snake + sunset cruise
-  'hg12': fullBodyMassageSpa,       // Water tube + massage
+  'hg8': hartiesHg8CoupleQuad,      // Couple quad biking
+  'hg9': hartiesHg9HorseGiraffes,   // Romance + horse + cableway
+  'hg10': hartiesHg10Jetski,        // Jet ski fun
+  'hg11': hartiesHg11WakeSnake,     // Wake snake + sunset cruise
+  'hg12': hartiesHg12WaterTube,     // Water tube + massage
 
   // ============= MAGALIESBURG =============
   'mag1': magaliesCradleOfMankind,  // Cradle of Mankind + Sterkfontein + game drive
