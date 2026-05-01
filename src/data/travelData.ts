@@ -895,7 +895,7 @@ export const packages: Package[] = [
   // ============= MAGALIES PACKAGES =============
   {
     id: 'mag1',
-    name: 'MAG1 - MAGALIES EXPLORER GETAWAY PACKAGE WITH ACCOMMODATION, CRADLE OF MANKIND, STERKFONTEIN CAVES, GAME DRIVE, PREDATOR ENCLOSURE, SNAKE AND REPTILE SHOW',
+    name: 'MAG1 - MAGALIES EXPLORER GETAWAY PACKAGE WITH ACCOMMODATION, CRADLE OF MANKIND ORIGINS CENTRE, RHINO AND LION PARK GUIDED GAME DRIVE IN SAFARI TRUCK, REPTILE SHOW AND PREDATOR ENCLOSURE AT THE PARK WELCOME CENTRE',
     shortName: 'Explorer Getaway',
     description: 'Includes accommodation, entrance to Cradle of Mankind Origins Centre, Sterkfontein Caves, game drive, predator enclosure, snake and reptile show.',
     destination: 'magalies',
