@@ -433,19 +433,16 @@ export function Hero({ onGetQuote }: HeroProps) {
 
   // Genie-style destination grid data
   const genieDestinations = [
-    { id: 'vaal-river', name: 'Vaal Cruise and Emerald Casino', image: vaalRiverImg },
-    { id: 'umhlanga', name: 'Umhlanga', image: umhlangaImg },
-    { id: 'knysna', name: 'Knysna', image: knysnaImg },
-    { id: 'harties', name: 'Hartbeespoort', image: hartiesImg },
-    { id: 'magalies', name: 'Magaliesberg', image: magaliesImg },
-    { id: 'durban', name: 'Durban', image: durbanImg },
-    { id: 'mpumalanga', name: 'Mpumalanga', image: mpumalangaImg },
-    { id: 'sun-city', name: 'Sun City', image: sunCityImg },
-    { id: 'cape-town', name: 'Cape Town', image: capeTownImg },
-    { id: 'pretoria', name: 'Pretoria', image: pretoriaImg },
-    { id: 'thailand', name: 'Thailand (Phuket)', image: thailandImg },
-    { id: 'dubai', name: 'Dubai', image: dubaiImg },
-    { id: 'bali', name: 'Bali', image: baliImg },
+    { id: 'durban', name: 'Durban Getaways', image: durbanImg },
+    { id: 'harties', name: 'Harties Getaways', image: hartiesImg },
+    { id: 'magalies', name: 'Magalies Getaways', image: magaliesImg },
+    { id: 'sun-city', name: 'Sun City Getaways', image: sunCityImg },
+    { id: 'mpumalanga', name: 'Mpumalanga Getaways', image: mpumalangaImg },
+    { id: 'pretoria', name: 'The Blyde Pretoria Getaways', image: pretoriaImg },
+    { id: 'cape-town', name: 'Cape Town Getaways', image: capeTownImg },
+    { id: 'dubai', name: 'Dubai Getaways', image: dubaiImg },
+    { id: 'thailand', name: 'Thailand Getaways', image: thailandImg },
+    { id: 'bali', name: 'Bali Getaways', image: baliImg },
   ];
 
   const handleDestinationSelect = (destId: string) => {
