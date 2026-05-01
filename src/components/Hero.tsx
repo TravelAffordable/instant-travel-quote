@@ -1065,9 +1065,11 @@ export function Hero({ onGetQuote }: HeroProps) {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
+                        key={checkIn || 'checkin-empty'}
                         mode="single"
                         selected={pendingCheckIn}
                         onSelect={setPendingCheckIn}
+                        defaultMonth={pendingCheckIn ?? (checkIn ? new Date(checkIn) : new Date())}
                         disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
