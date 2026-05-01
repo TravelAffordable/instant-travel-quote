@@ -895,7 +895,7 @@ export const packages: Package[] = [
   // ============= MAGALIES PACKAGES =============
   {
     id: 'mag1',
-    name: 'MAG1 - MAGALIES EXPLORER GETAWAY PACKAGE WITH ACCOMMODATION, CRADLE OF MANKIND, STERKFONTEIN CAVES, GAME DRIVE, PREDATOR ENCLOSURE, SNAKE AND REPTILE SHOW',
+    name: 'MAG1 - MAGALIES EXPLORER GETAWAY PACKAGE WITH ACCOMMODATION, CRADLE OF MANKIND ORIGINS CENTRE, RHINO AND LION PARK GUIDED GAME DRIVE IN SAFARI TRUCK, REPTILE SHOW AND PREDATOR ENCLOSURE AT THE PARK WELCOME CENTRE',
     shortName: 'Explorer Getaway',
     description: 'Includes accommodation, entrance to Cradle of Mankind Origins Centre, Sterkfontein Caves, game drive, predator enclosure, snake and reptile show.',
     destination: 'magalies',
@@ -906,7 +906,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag2',
-    name: 'MAG2 - MAGALIES ULTIMATE LUX GETAWAY PACKAGE WITH BUFFET CRUISE, CRADLE OF MANKIND, MASSAGE, GAME DRIVE, PREDATOR ENCLOSURE, SNAKE AND REPTILE SHOW',
+    name: 'MAG2 - MAGALIES ULTIMATE LUX GETAWAY PACKAGE WITH ACCOMMODATION, CRADLE OF MANKIND ORIGINS CENTRE, GUIDED GAME DRIVE IN RHINO AND LION PARK, 2-HOUR BUFFET LUNCH CRUISE, 60-MINUTE FULL BODY MASSAGE, REPTILE SHOW AND PREDATOR ENCLOSURE AT THE PARK WELCOME CENTRE',
     shortName: 'Ultimate Lux',
     description: 'Includes accommodation, 2-hour buffet lunch cruise, Cradle of Mankind Origins Centre, 60-minute full body massage, guided game drive in Rhino and Lion Park, predator enclosure, and snake and reptile show.',
     destination: 'magalies',
@@ -917,7 +917,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag3',
-    name: 'MAG3 - MAGALIES DELUXE HALF DAY SPA, GAME DRIVE AND SUNSET CRUISE WEEKENDER',
+    name: 'MAG3 - MAGALIES DELUXE HALF DAY SPA, GAME DRIVE AND SUNSET CRUISE WEEKENDER WITH ACCOMMODATION, HALF-DAY SPA EXPERIENCE FULL BODY MASSAGE AND OTHER TREATMENTS, RHINO AND LION PARK GAME DRIVE IN SAFARI TRUCK, REPTILE AND PREDATOR SHOW AT THE PARK WELCOME CENTRE, 2 HOUR CHAMPAGNE SUNSET CRUISE WITH DELICIOUS BUFFET',
     shortName: 'Deluxe Spa Weekender',
     description: 'Includes accommodation, half-day spa session with massages and treats, game drive in Rhino and Lion Park including snake show, Predator World and cub interactions, sunset cruise.',
     destination: 'magalies',
@@ -928,7 +928,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag4',
-    name: 'MAG4 - MAGALIES BUDGET WITH GAME DRIVE IN RHINO PARK AND FULL BODY MASSAGE',
+    name: 'MAG4 - MAGALIES BUDGET GETAWAY WITH ACCOMMODATION, ENTRANCE TO RHINO AND LION PARK, RHINO AND LION PARK GUIDED GAME DRIVE, 60-MINUTE FULL BODY MASSAGE',
     shortName: 'Budget Game Drive',
     description: 'Includes accommodation, entrance to Rhino and Lion Park, guided game drive, snake show, Predator World, cub interactions, and 60-minute full body massage.',
     destination: 'magalies',
@@ -939,7 +939,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag5',
-    name: 'MAG5 - THE PERFECT DATE IN MAGALIES WITH HORSE RIDING, QUAD BIKING, AND PRIVATE PICNIC',
+    name: 'MAG5 - THE PERFECT DATE IN MAGALIES WITH ACCOMMODATION, 60-MINUTE HORSE RIDING EXPERIENCE, QUAD BIKING ADVENTURE, PRIVATE ROMANTIC PICNIC SETUP, CHAMPAGNE AND PICNIC BASKET, ROMANTIC BLANKET LAYOUT',
     shortName: 'Perfect Date',
     description: 'Includes accommodation, 60-minute horse riding, quad biking, private romantic picnic with champagne and a picnic basket, set on a romantically laid out blanket.',
     destination: 'magalies',
@@ -950,7 +950,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag6',
-    name: 'MAG6 - HORSE, SPA AND PICNIC MAGALIES GETAWAY',
+    name: 'MAG6 - HORSE, SPA AND PICNIC MAGALIES GETAWAY WITH ACCOMMODATION, 1-HOUR HORSE TRAIL, 60-MINUTE FULL BODY MASSAGE, PRIVATE ROMANTIC PICNIC SETUP, CHAMPAGNE AND PICNIC BASKET',
     shortName: 'Horse, Spa & Picnic',
     description: 'Includes accommodation, 1-hour horse trail, 60-minute full body massage, private romantic picnic with champagne and a picnic basket.',
     destination: 'magalies',
