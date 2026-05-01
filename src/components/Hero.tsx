@@ -979,7 +979,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 style={{ backgroundImage: `url(${dest.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
               >
                 <div className="genie-destination-overlay">
-                  <h3 className="text-xl font-bold text-white">{dest.name}</h3>
+                  <h3 className="text-2xl text-white tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700 }}>{dest.name}</h3>
                   <Button 
                     variant="outline" 
                     size="sm" 
