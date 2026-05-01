@@ -917,7 +917,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag3',
-    name: 'MAG3 - MAGALIES DELUXE HALF DAY SPA, GAME DRIVE AND SUNSET CRUISE WEEKENDER',
+    name: 'MAG3 - MAGALIES DELUXE HALF DAY SPA, GAME DRIVE AND SUNSET CRUISE WEEKENDER WITH ACCOMMODATION, HALF-DAY SPA EXPERIENCE FULL BODY MASSAGE AND OTHER TREATMENTS, RHINO AND LION PARK GAME DRIVE IN SAFARI TRUCK, REPTILE AND PREDATOR SHOW AT THE PARK WELCOME CENTRE, 2 HOUR CHAMPAGNE SUNSET CRUISE WITH DELICIOUS BUFFET',
     shortName: 'Deluxe Spa Weekender',
     description: 'Includes accommodation, half-day spa session with massages and treats, game drive in Rhino and Lion Park including snake show, Predator World and cub interactions, sunset cruise.',
     destination: 'magalies',
