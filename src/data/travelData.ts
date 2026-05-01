@@ -939,7 +939,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag5',
-    name: 'MAG5 - THE PERFECT DATE IN MAGALIES WITH HORSE RIDING, QUAD BIKING, AND PRIVATE PICNIC',
+    name: 'MAG5 - THE PERFECT DATE IN MAGALIES WITH ACCOMMODATION, 60-MINUTE HORSE RIDING EXPERIENCE, QUAD BIKING ADVENTURE, PRIVATE ROMANTIC PICNIC SETUP, CHAMPAGNE AND PICNIC BASKET, ROMANTIC BLANKET LAYOUT',
     shortName: 'Perfect Date',
     description: 'Includes accommodation, 60-minute horse riding, quad biking, private romantic picnic with champagne and a picnic basket, set on a romantically laid out blanket.',
     destination: 'magalies',
