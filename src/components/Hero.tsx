@@ -21,6 +21,7 @@ import pretoriaImg from '@/assets/destinations/pretoria.jpg';
 import thailandImg from '@/assets/destinations/thailand.jpg';
 import dubaiImg from '@/assets/destinations/dubai.jpg';
 import baliImg from '@/assets/destinations/bali.jpg';
+import belaBelaImg from '@/assets/destinations/bela-bela.jpg';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
 import {
   destinations,
@@ -438,6 +439,7 @@ export function Hero({ onGetQuote }: HeroProps) {
     { id: 'magalies', name: 'Magalies Getaways', image: magaliesImg },
     { id: 'sun-city', name: 'Sun City Getaways', image: sunCityImg },
     { id: 'mpumalanga', name: 'Mpumalanga Getaways', image: mpumalangaImg },
+    { id: 'bela-bela', name: 'Bela Bela Getaways', image: belaBelaImg },
     { id: 'pretoria', name: 'The Blyde Pretoria Getaways', image: pretoriaImg },
     { id: 'cape-town', name: 'Cape Town Getaways', image: capeTownImg },
     { id: 'vaal-river', name: 'Emerald Casino and 2 Hour Vaal Cruise Getaways', image: vaalRiverImg },
