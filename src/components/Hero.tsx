@@ -440,6 +440,7 @@ export function Hero({ onGetQuote }: HeroProps) {
     { id: 'mpumalanga', name: 'Mpumalanga Getaways', image: mpumalangaImg },
     { id: 'pretoria', name: 'The Blyde Pretoria Getaways', image: pretoriaImg },
     { id: 'cape-town', name: 'Cape Town Getaways', image: capeTownImg },
+    { id: 'vaal-river', name: 'Emerald Casino and 2 Hour Vaal Cruise Getaways', image: vaalRiverImg },
     { id: 'dubai', name: 'Dubai Getaways', image: dubaiImg },
     { id: 'thailand', name: 'Thailand Getaways', image: thailandImg },
     { id: 'bali', name: 'Bali Getaways', image: baliImg },
