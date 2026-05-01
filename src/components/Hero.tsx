@@ -178,6 +178,11 @@ function getPackageFromPrice(
   pkg: Package,
   cheapestNightlyByDestination: Record<string, number> = {},
 ): number {
+  // Manual override always wins so curated "From" prices stay accurate.
+  if (typeof pkg.fromPriceOverride === 'number' && pkg.fromPriceOverride > 0) {
+    return pkg.fromPriceOverride;
+  }
+
   // Teaser is always based on a 2-night stay for 2 adults (weekend getaway baseline).
   const TEASER_NIGHTS = 2;
   const TEASER_ADULTS = 2;

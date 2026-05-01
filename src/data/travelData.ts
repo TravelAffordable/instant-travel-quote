@@ -52,6 +52,9 @@ export interface Package {
   // Optional: disable budget tier with custom message
   budgetDisabled?: boolean;
   budgetDisabledMessage?: string;
+  // Optional: fixed "From R___ pp" teaser shown on package cards.
+  // When set, overrides the dynamic basePrice + cheapest-accommodation calculation.
+  fromPriceOverride?: number;
 }
 
 export interface Destination {
@@ -666,7 +669,8 @@ export const packages: Package[] = [
     basePrice: 1100,
     kidsPrice: 800,
     activitiesIncluded: ['Aquadome Pools and Waterpark', 'Game drive in safari truck', 'Animal World', '2 Hour Sunday lunch buffet boat cruise'],
-    duration: '2 nights'
+    duration: '2 nights',
+    fromPriceOverride: 2150
   },
   {
     id: 'emer2',
@@ -677,7 +681,8 @@ export const packages: Package[] = [
     basePrice: 1050,
     kidsPrice: 700,
     activitiesIncluded: ['Emerald Casino Resort', 'Aquadome Pools and Waterpark', '1 hour leisure cruise', 'Game drive in safari truck', 'Sunday lunch buffet and carvery'],
-    duration: '2 nights'
+    duration: '2 nights',
+    fromPriceOverride: 2100
   },
   {
     id: 'emer3',
@@ -688,7 +693,8 @@ export const packages: Package[] = [
     basePrice: 1700,
     kidsPrice: 950,
     activitiesIncluded: ['Emerald Casino Resort', '60 Minute Full Body Massage', 'Game drive experience', 'Lunch cruise'],
-    duration: '2 nights'
+    duration: '2 nights',
+    fromPriceOverride: 2750
   },
 
   // ============= UMHLANGA PACKAGES =============
