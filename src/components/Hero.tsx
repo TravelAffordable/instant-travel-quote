@@ -417,6 +417,9 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [isBrowsingMore, setIsBrowsingMore] = useState(false);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [checkOutOpen, setCheckOutOpen] = useState(false);
+  const [pendingCheckIn, setPendingCheckIn] = useState<Date | undefined>(undefined);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [childrenAges, setChildrenAges] = useState<string>('');
