@@ -928,7 +928,7 @@ export const packages: Package[] = [
   },
   {
     id: 'mag4',
-    name: 'MAG4 - MAGALIES BUDGET WITH GAME DRIVE IN RHINO PARK AND FULL BODY MASSAGE',
+    name: 'MAG4 - MAGALIES BUDGET GETAWAY WITH ACCOMMODATION, ENTRANCE TO RHINO AND LION PARK, RHINO AND LION PARK GUIDED GAME DRIVE, 60-MINUTE FULL BODY MASSAGE',
     shortName: 'Budget Game Drive',
     description: 'Includes accommodation, entrance to Rhino and Lion Park, guided game drive, snake show, Predator World, cub interactions, and 60-minute full body massage.',
     destination: 'magalies',
