@@ -1193,7 +1193,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                  {/* Content overlay */}
                                  <div className="relative z-[5] h-full flex flex-col justify-end p-4" style={{ minHeight: '280px' }}>
                                    {/* Full package title */}
-                                   <h4 className="text-white font-bold text-sm leading-tight mb-2">
+                                   <h4 className="text-yellow-300 font-normal text-base leading-tight mb-2 tracking-wide" style={{ fontFamily: "'Anton', sans-serif" }}>
                                      {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
                                    </h4>
 
