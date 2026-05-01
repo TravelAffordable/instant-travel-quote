@@ -1264,7 +1264,7 @@ export const packages: Package[] = [
   // ============= BELA BELA PACKAGES =============
   {
     id: 'bela1',
-    name: 'BELA1 - BELA BELA RESORT WATERPARK & GAME DRIVE GETAWAY',
+    name: 'BELA BELA GETAWAY PACKAGE WITH ACCOMMODATION, ENTRY TO BELA BELA WARMBATHS WATER PARK, GAME DRIVE IN SAFARI TRUCK',
     shortName: 'Waterpark & Game Drive',
     description: 'Includes entrance into Bela Bela Resort Waterpark with water slides, water sports and warm pools, guided game drive in safari truck, and accommodation inside or just outside the resort.',
     destination: 'bela-bela',
@@ -1272,53 +1272,6 @@ export const packages: Package[] = [
     kidsPrice: 600,
     kidsMinAge: 4,
     activitiesIncluded: ['Entrance into Bela Bela Resort Waterpark with water slides, water sports and warm pools', 'Guided game drive in safari truck', 'Accommodation inside or just outside the resort'],
-    duration: '2 nights'
-  },
-  {
-    id: 'bela2',
-    name: 'BELA2 - BELA BELA MABALINGWE ADVENTURE WITH WATERPARK',
-    shortName: 'Mabalingwe & Waterpark',
-    description: 'Includes accommodation at Mabalingwe Nature Reserve (R1350/night for 2 adults), entrance fees to Bela Bela Resort Waterpark, and choice between Mabalingwe Nature Reserve horseback safari or guided game drive in safari truck (R350 per adult).',
-    destination: 'bela-bela',
-    basePrice: 850,
-    kidsPrice: 700,
-    kidsMinAge: 4,
-    activitiesIncluded: ['Accommodation at Mabalingwe Nature Reserve', 'Entrance fees to Bela Bela Resort Waterpark', 'Choice between Mabalingwe Nature Reserve horseback safari or guided game drive in safari truck'],
-    duration: '2 nights'
-  },
-  {
-    id: 'bela3',
-    name: 'BELA3 - BELA BELA MABULA GAME LODGE SAFARI GETAWAY',
-    shortName: 'Mabula Safari',
-    description: 'Includes accommodation at Mabula Game Lodge, Big 5 game drives, bush walks, and all meals.',
-    destination: 'bela-bela',
-    basePrice: 3200,
-    kidsPrice: 1600,
-    kidsMinAge: 8,
-    activitiesIncluded: ['Accommodation at Mabula Game Lodge', 'Big 5 game drives', 'Bush walks', 'All meals included'],
-    duration: '2 nights'
-  },
-  {
-    id: 'bela4',
-    name: 'BELA4 - BELA BELA ZEBRA LODGE RELAXATION WITH SPA & NATURE WALKS',
-    shortName: 'Zebra Lodge Spa Retreat',
-    description: 'Includes accommodation at Zebra Country Lodge, spa treatment, guided nature walks, and gourmet meals.',
-    destination: 'bela-bela',
-    basePrice: 2600,
-    kidsPrice: 1300,
-    activitiesIncluded: ['Accommodation at Zebra Country Lodge', 'Spa treatment', 'Guided nature walks', 'Gourmet meals'],
-    duration: '2 nights'
-  },
-  {
-    id: 'bela5',
-    name: 'BELA5 - BELA BELA ADVENTURE PACKAGE WITH QUAD BIKING & HOT SPRINGS',
-    shortName: 'Adventure & Hot Springs',
-    description: 'Includes accommodation, quad biking adventure, access to natural hot springs, and breakfast.',
-    destination: 'bela-bela',
-    basePrice: 1600,
-    kidsPrice: 800,
-    kidsMinAge: 12,
-    activitiesIncluded: ['Accommodation', 'Quad biking adventure', 'Hot springs access', 'Breakfast daily'],
     duration: '2 nights'
   },
 
