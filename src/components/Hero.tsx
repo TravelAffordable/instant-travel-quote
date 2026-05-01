@@ -1028,6 +1028,11 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </Button>
               </div>
 
+              {/* Instruction above check-in */}
+              <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
+                Please fill out all the fields in the form then click Get Quote to generate a quote that you can send to us to provide name of hotel and an accurate price for your dates. This is not yet a booking.
+              </div>
+
               {/* Row 1: Check In, Check Out */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
