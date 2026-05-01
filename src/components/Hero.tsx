@@ -424,6 +424,8 @@ export function Hero({ onGetQuote }: HeroProps) {
     clearHotels: clearRMSHotels,
   } = useRMSHotels();
 
+  const { cheapestNightlyByDestination } = useCheapestCachedRates();
+
   // Genie-style destination grid data
   const genieDestinations = [
     { id: 'vaal-river', name: 'Vaal Cruise and Emerald Casino', image: vaalRiverImg },
