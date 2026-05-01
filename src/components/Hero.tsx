@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap, MessageCircle, Check } from 'lucide-react';
+import { ArrowRight, Sparkles, MapPin, Star, Calculator, ChevronDown, Hotel, PartyPopper, FileText, Bus, Puzzle, GraduationCap, MessageCircle, Check, CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { getPackageImage } from '@/data/packageImages';
 
 // Genie destination images
