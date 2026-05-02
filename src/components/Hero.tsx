@@ -1258,7 +1258,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                     <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide`} style={{ fontFamily: "'Anton', sans-serif" }}>
                                       {(() => {
                                         const title = pkg.name.split(' - ').slice(1).join(' - ') || pkg.name;
-                                        if (pkg.id === 'HG1') {
+                                        if (pkg.id?.toUpperCase() === 'HG1') {
                                           const highlight = 'HARTIES LEISURETIME GETAWAY WITH ACCOMMODATION, 2 HOUR SUNSET CHAMPAGNE BOAT CRUISE WITH A DELICIOUS BUFFET WELCOME DRINKS AND';
                                           const rest = title.startsWith(highlight) ? title.slice(highlight.length) : '';
                                           return (
