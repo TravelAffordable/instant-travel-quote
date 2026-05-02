@@ -1255,8 +1255,21 @@ export function Hero({ onGetQuote }: HeroProps) {
                                )}
 
                                 <div className="relative z-[5] h-full flex flex-col p-4" style={{ minHeight: '280px' }}>
-                                    <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : pkg.id === 'HG1' ? 'text-primary bg-white px-2 py-1 rounded inline-block self-start' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide`} style={{ fontFamily: "'Anton', sans-serif" }}>
-                                      {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
+                                    <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide`} style={{ fontFamily: "'Anton', sans-serif" }}>
+                                      {(() => {
+                                        const title = pkg.name.split(' - ').slice(1).join(' - ') || pkg.name;
+                                        if (pkg.id === 'HG1') {
+                                          const highlight = 'HARTIES LEISURETIME GETAWAY WITH ACCOMMODATION, 2 HOUR SUNSET CHAMPAGNE BOAT CRUISE WITH A DELICIOUS BUFFET WELCOME DRINKS AND';
+                                          const rest = title.startsWith(highlight) ? title.slice(highlight.length) : '';
+                                          return (
+                                            <>
+                                              <span className="bg-white text-primary px-2 py-1 rounded box-decoration-clone">{highlight}</span>
+                                              {rest && <span>{rest}</span>}
+                                            </>
+                                          );
+                                        }
+                                        return title;
+                                      })()}
                                     </h4>
 
                                  <div className="flex-1" />
