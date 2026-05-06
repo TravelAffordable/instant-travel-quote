@@ -2,6 +2,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Users, MapPin } from 'lucide-react';
 import sunCityImage from '@/assets/sun-city.jpeg';
+import durbanTourImage from '@/assets/durban-tour.jpg';
+import mpumalangaTourImage from '@/assets/mpumalanga-tour.jpg';
 import { formatCurrency } from '@/lib/utils';
 
 const groupTours = [
@@ -28,7 +30,7 @@ const groupTours = [
     title: 'Christmas in Durban',
     dates: '24-27 December 2026',
     price: 3800,
-    image: 'https://images.unsplash.com/photo-1509316785289-025f5b8b4c22?w=800',
+    image: durbanTourImage,
     badge: 'CHRISTMAS',
     location: 'Durban',
   },
@@ -37,7 +39,7 @@ const groupTours = [
     title: 'New Year in Mpumalanga',
     dates: '31 Dec - 02 Jan 2027',
     price: 4200,
-    image: 'https://images.unsplash.com/photo-1580256087713-963146b8d1a3?w=800',
+    image: mpumalangaTourImage,
     badge: 'NEW YEAR',
     location: 'Mpumalanga',
   },
