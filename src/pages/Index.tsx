@@ -16,10 +16,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Travel Affordable | Cheap SA Holiday Packages from R1,400pp"
-        description="Instant quotes for affordable South African holidays — Durban, Cape Town, Sun City, Hartbeespoort, Magaliesburg, Bela-Bela & more. Family, group & school trip specialists."
+        title="Cheap Trips & Luxury Shot Left Getaways | Travel Affordable"
+        description="Cheap trips & luxury shot left getaways plus cheap accommodation in Durban, Harties, Cape Town, Sun City, Mpumalanga, Bela Bela, Magalies, Blyde, Munyaka, Vaal, Knysna, Thailand, Dubai & Bali."
         canonical="/"
-        keywords="cheap holiday packages south africa, affordable getaways, durban packages, cape town holidays, sun city, hartbeespoort accommodation, group tours, school trips"
+        keywords="cheap trips, luxury shot left getaways, cheap accommodation shot left, durban, harties, cape town, sun city, mpumalanga, bela bela, magalies, the blyde, crystal beach, munyaka, vaal cruise, emerald casino, knysna, thailand, dubai, bali"
       />
       <Header />
       
