@@ -1041,27 +1041,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.3s' }}>
           <div id="quote-section" className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
             <div className="space-y-5">
-              {/* Selected destination indicator */}
-              <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-gray-700">
-                    Destination: {genieDestinations.find(d => d.id === destination)?.name || destination}
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setDestination('');
-                    setQuotes([]);
-                    setFamilyQuotes([]);
-                  }}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  Change
-                </Button>
-              </div>
+              {/* Destination is shown above; the change-destination dropdown lives under the destination tile */}
 
               {/* Instruction above check-in */}
               <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
