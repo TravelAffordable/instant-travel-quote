@@ -1007,7 +1007,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           {/* Change destination dropdown - shown only after a destination is selected */}
           {destination && (
             <div className="max-w-md mx-auto mt-6 w-full relative z-20">
-              <p className="text-center text-white text-sm mb-2 font-medium">Want to pick a different place?</p>
+              <p className="text-center text-white text-sm mb-2 font-medium">To pick a different place please click the drop-down below to see other places.</p>
               <select
                 value={destination}
                 onChange={(e) => {
