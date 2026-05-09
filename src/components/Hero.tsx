@@ -980,12 +980,14 @@ export function Hero({ onGetQuote }: HeroProps) {
         <div className="w-full" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
         <div id="destinations" className="max-w-6xl mx-auto py-12 px-4">
           <h2 className="text-3xl font-bold text-center mb-10 text-white">Our Destinations</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {genieDestinations.map((dest) => (
+          <div className={destination ? "max-w-md mx-auto" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"}>
+            {genieDestinations
+              .filter((dest) => !destination || destination === dest.id)
+              .map((dest) => (
               <div
                 key={dest.id}
-                onClick={() => handleDestinationSelect(dest.id)}
-                className={`genie-destination-card ${destination === dest.id ? 'ring-4 ring-secondary' : ''}`}
+                onClick={() => !destination && handleDestinationSelect(dest.id)}
+                className={`genie-destination-card ${destination === dest.id ? 'ring-4 ring-secondary cursor-default' : ''}`}
                 style={{ backgroundImage: `url(${dest.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
               >
                 <div className="genie-destination-overlay">
@@ -1001,6 +1003,32 @@ export function Hero({ onGetQuote }: HeroProps) {
               </div>
             ))}
           </div>
+
+          {/* Change destination dropdown - shown only after a destination is selected */}
+          {destination && (
+            <div className="max-w-md mx-auto mt-4">
+              <Label className="text-sm font-medium text-white/90 mb-2 block">
+                Want a different destination? Change it here:
+              </Label>
+              <Select
+                value={destination}
+                onValueChange={(value) => {
+                  setDestination(value);
+                  setQuotes([]);
+                  setFamilyQuotes([]);
+                }}
+              >
+                <SelectTrigger className="h-11 bg-white border-gray-200 text-gray-900">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {genieDestinations.map((dest) => (
+                    <SelectItem key={dest.id} value={dest.id}>{dest.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
         {/* Booking type & secondary navigation buttons removed — they confused mobile users.
             Users now select a destination first, then see the form with package cards. */}
