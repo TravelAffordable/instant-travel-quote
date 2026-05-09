@@ -1074,7 +1074,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                           .map(pkg => (
                             <div
                               key={pkg.id}
-                              className="border-2 border-primary bg-primary/5 rounded-xl p-4 relative"
+                              className="border-2 border-primary bg-primary/5 rounded-xl p-4 relative text-center"
                             >
                               <button
                                 type="button"
@@ -1084,10 +1084,10 @@ export function Hero({ onGetQuote }: HeroProps) {
                               >
                                 ×
                               </button>
-                              <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
-                              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                              <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5 text-center">{pkg.name}</h4>
+                              <p className="text-xs text-muted-foreground mt-2 leading-relaxed text-center">{pkg.description}</p>
                               {pkg.destination === 'vaal-river' && (
-                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} per person</p>
+                                <p className="text-sm font-semibold text-primary mt-3 text-center">From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} per person</p>
                               )}
                             </div>
                           ))}
