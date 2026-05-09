@@ -1006,24 +1006,31 @@ export function Hero({ onGetQuote }: HeroProps) {
 
           {/* Change destination dropdown - shown only after a destination is selected */}
           {destination && (
-            <div className="max-w-md mx-auto mt-4 w-full">
-              <Select
+            <div className="max-w-md mx-auto mt-6 w-full relative z-20">
+              <p className="text-center text-white text-sm mb-2 font-medium">Want to pick a different place?</p>
+              <select
                 value={destination}
-                onValueChange={(value) => {
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '__change__') return;
                   setDestination(value);
                   setQuotes([]);
                   setFamilyQuotes([]);
                 }}
+                className="w-full h-14 px-4 rounded-xl border-2 border-white bg-orange-500 text-white text-base font-bold shadow-lg cursor-pointer hover:bg-orange-600 appearance-none text-center"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 1rem center',
+                  backgroundSize: '1.5rem',
+                  paddingRight: '3rem',
+                }}
               >
-                <SelectTrigger className="h-14 w-full bg-secondary text-secondary-foreground border-2 border-secondary hover:bg-secondary/90 text-base font-bold justify-center gap-3 rounded-xl shadow-lg [&>svg]:h-6 [&>svg]:w-6 [&>svg]:opacity-100">
-                  <span>Click here to change destination</span>
-                </SelectTrigger>
-                <SelectContent className="w-[var(--radix-select-trigger-width)]">
-                  {genieDestinations.map((dest) => (
-                    <SelectItem key={dest.id} value={dest.id} className="text-base py-3">{dest.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <option value="__change__">⬇ Click here to change destination</option>
+                {genieDestinations.map((dest) => (
+                  <option key={dest.id} value={dest.id}>{dest.name}</option>
+                ))}
+              </select>
             </div>
           )}
 
