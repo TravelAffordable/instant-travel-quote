@@ -980,12 +980,14 @@ export function Hero({ onGetQuote }: HeroProps) {
         <div className="w-full" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
         <div id="destinations" className="max-w-6xl mx-auto py-12 px-4">
           <h2 className="text-3xl font-bold text-center mb-10 text-white">Our Destinations</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {genieDestinations.map((dest) => (
+          <div className={destination ? "max-w-md mx-auto" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"}>
+            {genieDestinations
+              .filter((dest) => !destination || destination === dest.id)
+              .map((dest) => (
               <div
                 key={dest.id}
-                onClick={() => handleDestinationSelect(dest.id)}
-                className={`genie-destination-card ${destination === dest.id ? 'ring-4 ring-secondary' : ''}`}
+                onClick={() => !destination && handleDestinationSelect(dest.id)}
+                className={`genie-destination-card ${destination === dest.id ? 'ring-4 ring-secondary cursor-default' : ''}`}
                 style={{ backgroundImage: `url(${dest.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
               >
                 <div className="genie-destination-overlay">
@@ -1002,6 +1004,32 @@ export function Hero({ onGetQuote }: HeroProps) {
             ))}
           </div>
 
+          {/* Change destination dropdown - shown only after a destination is selected */}
+          {destination && (
+            <div className="max-w-md mx-auto mt-4">
+              <Label className="text-sm font-medium text-white/90 mb-2 block">
+                Want a different destination? Change it here:
+              </Label>
+              <Select
+                value={destination}
+                onValueChange={(value) => {
+                  setDestination(value);
+                  setQuotes([]);
+                  setFamilyQuotes([]);
+                }}
+              >
+                <SelectTrigger className="h-11 bg-white border-gray-200 text-gray-900">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {genieDestinations.map((dest) => (
+                    <SelectItem key={dest.id} value={dest.id}>{dest.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
         {/* Booking type & secondary navigation buttons removed — they confused mobile users.
             Users now select a destination first, then see the form with package cards. */}
 
@@ -1013,27 +1041,170 @@ export function Hero({ onGetQuote }: HeroProps) {
         <div className="max-w-4xl mx-auto animate-slide-up" style={{ animationDelay: '0.3s' }}>
           <div id="quote-section" className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-8">
             <div className="space-y-5">
-              {/* Selected destination indicator */}
-              <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-gray-700">
-                    Destination: {genieDestinations.find(d => d.id === destination)?.name || destination}
-                  </span>
+              {/* Destination is shown above; the change-destination dropdown lives under the destination tile */}
+
+              {/* Package cards - shown right under the destination tile, before dates */}
+              {bookingType === 'with-activities' && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
+
+                  {/* Show Packages button - only when no packages shown yet */}
+                  {!isPackageDropdownOpen && packageIds.length === 0 && (
+                    <Button
+                      variant="outline"
+                      disabled={!destination}
+                      onClick={() => setIsPackageDropdownOpen(true)}
+                      className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                    >
+                      {destination ? 'Show Packages' : 'Select destination first'}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  )}
+
+                  {/* Selected packages summary + change button */}
+                  {packageIds.length > 0 && !isPackageDropdownOpen && (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {availablePackages
+                          .filter(pkg => packageIds.includes(pkg.id))
+                          .map(pkg => (
+                            <div
+                              key={pkg.id}
+                              className="border-2 border-primary bg-primary/5 rounded-xl p-4 relative"
+                            >
+                              <button
+                                type="button"
+                                onClick={() => togglePackageSelection(pkg.id)}
+                                className="absolute top-2 right-2 text-gray-400 hover:text-destructive text-lg leading-none"
+                                aria-label="Remove package"
+                              >
+                                ×
+                              </button>
+                              <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
+                              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                              {pkg.destination === 'vaal-river' && (
+                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} per person</p>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsPackageDropdownOpen(true)}
+                        className="border-primary text-primary hover:bg-primary/10"
+                      >
+                        Change Packages
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Package cards grid - visual image cards */}
+                  {isPackageDropdownOpen && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {(packageIds.length > 0 && !isBrowsingMore
+                          ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
+                          : availablePackages
+                        ).map(pkg => {
+                          const isSelected = packageIds.includes(pkg.id);
+                          const packageImage = getPackageImage(pkg.id);
+                          return (
+                            <div
+                              key={pkg.id}
+                              onClick={() => {
+                                togglePackageSelection(pkg.id);
+                                if (!isSelected) {
+                                  setIsBrowsingMore(false);
+                                }
+                              }}
+                              className={`relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 ${
+                                isSelected
+                                  ? 'ring-3 ring-primary shadow-lg scale-[1.02]'
+                                  : 'hover:shadow-xl hover:scale-[1.01]'
+                              }`}
+                              style={{ minHeight: '280px' }}
+                            >
+                              {packageImage ? (
+                                <img
+                                  src={packageImage}
+                                  alt={pkg.shortName || pkg.name}
+                                  className="absolute inset-0 w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary" />
+                              )}
+
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20 group-hover:from-black/95 group-hover:via-black/60 transition-all duration-300" />
+
+                              {isSelected && (
+                                <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-10">
+                                  <Check className="w-4 h-4 text-white" />
+                                </div>
+                              )}
+
+                              <div className="relative z-[5] h-full flex flex-col p-4" style={{ minHeight: '280px' }}>
+                                <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide`} style={{ fontFamily: "'Anton', sans-serif" }}>
+                                  {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
+                                </h4>
+
+                                <div className="flex-1" />
+
+                                <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
+                                  {(() => {
+                                    const rawDescription = pkg.description;
+                                    const includesIdx = rawDescription.toLowerCase().indexOf('includes');
+
+                                    if (includesIdx !== -1) {
+                                      const prefix = 'This package includes ';
+                                      const inclusionsText = rawDescription
+                                        .slice(includesIdx + 'includes'.length)
+                                        .replace(/^[\s:]+/, '')
+                                        .toUpperCase();
+                                      return (
+                                        <>
+                                          {prefix}
+                                          {inclusionsText}
+                                        </>
+                                      );
+                                    }
+
+                                    return rawDescription.toUpperCase();
+                                  })()}
+                                </p>
+
+                                {pkg.destination === 'vaal-river' && (
+                                  <p className="text-white font-semibold text-xs">
+                                    From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} pp
+                                  </p>
+                                )}
+
+                                <p className="text-white font-semibold text-xs mt-2">
+                                  {isSelected ? '✓ Selected' : 'Click here to select this Trip/Getaway'}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {packageIds.length > 0 && !isBrowsingMore && (
+                          <div
+                            onClick={() => setIsBrowsingMore(true)}
+                            className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 border-2 border-dashed border-primary/50 hover:border-primary flex items-center justify-center bg-black/30"
+                            style={{ minHeight: '280px' }}
+                          >
+                            <div className="text-center p-4">
+                              <Puzzle className="w-8 h-8 text-primary mx-auto mb-2" />
+                              <p className="text-white font-bold text-sm">Select More Packages</p>
+                              <p className="text-white/60 text-xs mt-1">Browse all available options</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setDestination('');
-                    setQuotes([]);
-                    setFamilyQuotes([]);
-                  }}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  Change
-                </Button>
-              </div>
+              )}
 
               {/* Instruction above check-in */}
               <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
@@ -1153,169 +1324,6 @@ export function Hero({ onGetQuote }: HeroProps) {
                   </Popover>
                  </div>
                </div>
-
-               {/* Package cards - moved up to appear right after Check Out */}
-               {bookingType === 'with-activities' && (
-                 <div className="space-y-2">
-                   <Label className="text-sm font-medium text-gray-700">Package/s *</Label>
-
-                   {/* Show Packages button - only when no packages shown yet */}
-                   {!isPackageDropdownOpen && packageIds.length === 0 && (
-                     <Button
-                       variant="outline"
-                       disabled={!destination}
-                       onClick={() => setIsPackageDropdownOpen(true)}
-                       className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                     >
-                       {destination ? 'Show Packages' : 'Select destination first'}
-                       <ChevronDown className="ml-2 h-4 w-4" />
-                     </Button>
-                   )}
-
-                   {/* Selected packages summary + change button */}
-                   {packageIds.length > 0 && !isPackageDropdownOpen && (
-                     <div className="space-y-3">
-                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                         {availablePackages
-                           .filter(pkg => packageIds.includes(pkg.id))
-                           .map(pkg => (
-                             <div
-                               key={pkg.id}
-                               className="border-2 border-primary bg-primary/5 rounded-xl p-4 relative"
-                             >
-                               <button
-                                 type="button"
-                                 onClick={() => togglePackageSelection(pkg.id)}
-                                 className="absolute top-2 right-2 text-gray-400 hover:text-destructive text-lg leading-none"
-                                 aria-label="Remove package"
-                               >
-                                 ×
-                               </button>
-                               <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
-                               <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
-                               {pkg.destination === 'vaal-river' && (
-                                 <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} per person</p>
-                               )}
-                             </div>
-                           ))}
-                       </div>
-                       <Button
-                         variant="outline"
-                         size="sm"
-                         onClick={() => setIsPackageDropdownOpen(true)}
-                         className="border-primary text-primary hover:bg-primary/10"
-                       >
-                         Change Packages
-                       </Button>
-                     </div>
-                   )}
-
-                   {/* Package cards grid - visual image cards */}
-                   {isPackageDropdownOpen && (
-                     <div className="space-y-4">
-                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                         {(packageIds.length > 0 && !isBrowsingMore
-                           ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
-                           : availablePackages
-                         ).map(pkg => {
-                           const isSelected = packageIds.includes(pkg.id);
-                           const packageImage = getPackageImage(pkg.id);
-                           return (
-                             <div
-                               key={pkg.id}
-                               onClick={() => {
-                                 togglePackageSelection(pkg.id);
-                                 if (!isSelected) {
-                                   setIsBrowsingMore(false);
-                                 }
-                               }}
-                               className={`relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 ${
-                                 isSelected
-                                   ? 'ring-3 ring-primary shadow-lg scale-[1.02]'
-                                   : 'hover:shadow-xl hover:scale-[1.01]'
-                               }`}
-                               style={{ minHeight: '280px' }}
-                             >
-                               {packageImage ? (
-                                 <img
-                                   src={packageImage}
-                                   alt={pkg.shortName || pkg.name}
-                                   className="absolute inset-0 w-full h-full object-cover"
-                                 />
-                               ) : (
-                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary" />
-                               )}
-
-                               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20 group-hover:from-black/95 group-hover:via-black/60 transition-all duration-300" />
-
-                               {isSelected && (
-                                 <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-10">
-                                   <Check className="w-4 h-4 text-white" />
-                                 </div>
-                               )}
-
-                                <div className="relative z-[5] h-full flex flex-col p-4" style={{ minHeight: '280px' }}>
-                                    <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide`} style={{ fontFamily: "'Anton', sans-serif" }}>
-                                       {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
-                                    </h4>
-
-                                 <div className="flex-1" />
-
-                                 <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
-                                   {(() => {
-                                     const rawDescription = pkg.description;
-                                     const includesIdx = rawDescription.toLowerCase().indexOf('includes');
-
-                                     if (includesIdx !== -1) {
-                                       const prefix = 'This package includes ';
-                                       const inclusionsText = rawDescription
-                                         .slice(includesIdx + 'includes'.length)
-                                         .replace(/^[\s:]+/, '')
-                                         .toUpperCase();
-                                       return (
-                                         <>
-                                           {prefix}
-                                           {inclusionsText}
-                                         </>
-                                       );
-                                     }
-
-                                     return rawDescription.toUpperCase();
-                                   })()}
-                                 </p>
-
-                                 {pkg.destination === 'vaal-river' && (
-                                   <p className="text-white font-semibold text-xs">
-                                     From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} pp
-                                   </p>
-                                 )}
-
-                                 <p className="text-white font-semibold text-xs mt-2">
-                                   {isSelected ? '✓ Selected' : 'Click here to select this Trip/Getaway'}
-                                 </p>
-                               </div>
-                             </div>
-                           );
-                         })}
-
-                         {packageIds.length > 0 && !isBrowsingMore && (
-                           <div
-                             onClick={() => setIsBrowsingMore(true)}
-                             className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 border-2 border-dashed border-primary/50 hover:border-primary flex items-center justify-center bg-black/30"
-                             style={{ minHeight: '280px' }}
-                           >
-                             <div className="text-center p-4">
-                               <Puzzle className="w-8 h-8 text-primary mx-auto mb-2" />
-                               <p className="text-white font-bold text-sm">Select More Packages</p>
-                               <p className="text-white/60 text-xs mt-1">Browse all available options</p>
-                             </div>
-                           </div>
-                         )}
-                       </div>
-                     </div>
-                   )}
-                 </div>
-               )}
 
                {/* Contact Details (Required) - moved to top for early lead capture */}
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
