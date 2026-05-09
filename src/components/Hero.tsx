@@ -1139,7 +1139,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary" />
                               )}
 
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20 group-hover:from-black/95 group-hover:via-black/60 transition-all duration-300" />
+                              <div className="absolute inset-0 bg-black/70 group-hover:bg-black/80 transition-all duration-300" />
 
                               {isSelected && (
                                 <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-10">
