@@ -1074,7 +1074,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                           .map(pkg => (
                             <div
                               key={pkg.id}
-                              className="border-2 border-primary bg-primary/5 rounded-xl p-4 relative"
+                              className="border-2 border-primary bg-primary/5 rounded-xl p-4 relative text-center"
                             >
                               <button
                                 type="button"
@@ -1084,10 +1084,10 @@ export function Hero({ onGetQuote }: HeroProps) {
                               >
                                 ×
                               </button>
-                              <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5">{pkg.name}</h4>
-                              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{pkg.description}</p>
+                              <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5 text-center">{pkg.name}</h4>
+                              <p className="text-xs text-muted-foreground mt-2 leading-relaxed text-center">{pkg.description}</p>
                               {pkg.destination === 'vaal-river' && (
-                                <p className="text-sm font-semibold text-primary mt-3">From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} per person</p>
+                                <p className="text-sm font-semibold text-primary mt-3 text-center">From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} per person</p>
                               )}
                             </div>
                           ))}
@@ -1147,14 +1147,14 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 </div>
                               )}
 
-                              <div className="relative z-[5] h-full flex flex-col p-4" style={{ minHeight: '280px' }}>
-                                <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide`} style={{ fontFamily: "'Anton', sans-serif" }}>
+                              <div className="relative z-[5] h-full flex flex-col p-4 text-center" style={{ minHeight: '280px' }}>
+                                <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide text-center`} style={{ fontFamily: "'Anton', sans-serif" }}>
                                   {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
                                 </h4>
 
                                 <div className="flex-1" />
 
-                                <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium">
+                                <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium text-center">
                                   {(() => {
                                     const rawDescription = pkg.description;
                                     const includesIdx = rawDescription.toLowerCase().indexOf('includes');
@@ -1178,12 +1178,12 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 </p>
 
                                 {pkg.destination === 'vaal-river' && (
-                                  <p className="text-white font-semibold text-xs">
+                                  <p className="text-white font-semibold text-xs text-center">
                                     From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} pp
                                   </p>
                                 )}
 
-                                <p className="text-white font-semibold text-xs mt-2">
+                                <p className="text-white font-semibold text-xs mt-2 text-center">
                                   {isSelected ? '✓ Selected' : 'Click here to select this Trip/Getaway'}
                                 </p>
                               </div>
