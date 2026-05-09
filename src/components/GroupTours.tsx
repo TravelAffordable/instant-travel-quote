@@ -107,7 +107,7 @@ export function GroupTours() {
                     }}
                     className="bg-primary hover:bg-primary/90"
                   >
-                    Book Now
+                    See Package Details
                   </Button>
                 </div>
               </CardContent>
