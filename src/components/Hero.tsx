@@ -1085,7 +1085,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 ×
                               </button>
                               <h4 className="text-sm font-bold text-primary uppercase leading-tight pr-5 text-center">{pkg.name}</h4>
-                              <p className="text-[11px] font-bold text-accent mt-1 tracking-wider text-center">TOUR CODE: {pkg.id.toUpperCase()}</p>
+                              <p className="text-sm font-bold text-primary uppercase leading-tight text-center mt-1">TOUR CODE: {pkg.id.toUpperCase()}</p>
                               <p className="text-xs text-muted-foreground mt-2 leading-relaxed text-center">{pkg.description}</p>
                               {pkg.destination === 'vaal-river' && (
                                 <p className="text-sm font-semibold text-primary mt-3 text-center">From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} per person</p>
