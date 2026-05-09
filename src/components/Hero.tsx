@@ -1139,7 +1139,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary" />
                               )}
 
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20 group-hover:from-black/95 group-hover:via-black/60 transition-all duration-300" />
+                              <div className="absolute inset-0 bg-black/70 group-hover:bg-black/80 transition-all duration-300" />
 
                               {isSelected && (
                                 <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-primary flex items-center justify-center z-10">
@@ -1148,13 +1148,13 @@ export function Hero({ onGetQuote }: HeroProps) {
                               )}
 
                               <div className="relative z-[5] h-full flex flex-col p-4 text-center" style={{ minHeight: '280px' }}>
-                                <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide text-center`} style={{ fontFamily: "'Anton', sans-serif" }}>
+                                <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide text-center`} style={{ fontFamily: "'Anton', sans-serif", textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
                                   {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
                                 </h4>
 
                                 <div className="flex-1" />
 
-                                <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium text-center">
+                                <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
                                   {(() => {
                                     const rawDescription = pkg.description;
                                     const includesIdx = rawDescription.toLowerCase().indexOf('includes');
@@ -1178,12 +1178,12 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 </p>
 
                                 {pkg.destination === 'vaal-river' && (
-                                  <p className="text-white font-semibold text-xs text-center">
+                                  <p className="text-white font-semibold text-xs text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95)' }}>
                                     From {formatCurrency(getPackageFromPrice(pkg, cheapestNightlyByDestination))} pp
                                   </p>
                                 )}
 
-                                <p className="text-white font-semibold text-xs mt-2 text-center">
+                                <p className="text-white font-semibold text-xs mt-2 text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95)' }}>
                                   {isSelected ? '✓ Selected' : 'Click here to select this Trip/Getaway'}
                                 </p>
                               </div>
