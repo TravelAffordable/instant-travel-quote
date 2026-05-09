@@ -1152,7 +1152,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                 <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-1 tracking-wide text-center`} style={{ fontFamily: "'Anton', sans-serif", textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
                                   {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
                                 </h4>
-                                <p className="text-white text-[11px] font-bold tracking-widest mb-2 text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
+                                <p className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide text-center`} style={{ fontFamily: "'Anton', sans-serif", textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
                                   TOUR CODE: {pkg.id.toUpperCase()}
                                 </p>
 
