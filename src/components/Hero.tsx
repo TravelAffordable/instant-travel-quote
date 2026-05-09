@@ -1006,10 +1006,7 @@ export function Hero({ onGetQuote }: HeroProps) {
 
           {/* Change destination dropdown - shown only after a destination is selected */}
           {destination && (
-            <div className="max-w-md mx-auto mt-4">
-              <Label className="text-sm font-medium text-white/90 mb-2 block">
-                Want a different destination? Change it here:
-              </Label>
+            <div className="max-w-md mx-auto mt-4 w-full px-4 sm:px-0">
               <Select
                 value={destination}
                 onValueChange={(value) => {
@@ -1018,10 +1015,10 @@ export function Hero({ onGetQuote }: HeroProps) {
                   setFamilyQuotes([]);
                 }}
               >
-                <SelectTrigger className="h-11 bg-white border-gray-200 text-gray-900">
-                  <SelectValue />
+                <SelectTrigger className="h-12 bg-white border-gray-200 text-gray-900 w-full text-base font-medium justify-center gap-2">
+                  <span>Click here to change destination</span>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="w-full">
                   {genieDestinations.map((dest) => (
                     <SelectItem key={dest.id} value={dest.id}>{dest.name}</SelectItem>
                   ))}
