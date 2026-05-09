@@ -65,7 +65,7 @@ export function Header() {
               onClick={() => scrollToSection('#quote')}
               className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
             >
-              Get Instant Quote
+              See Prices for Your Trip
             </Button>
           </div>
 
