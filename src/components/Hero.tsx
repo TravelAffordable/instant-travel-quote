@@ -416,6 +416,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(true);
   const [isBrowsingMore, setIsBrowsingMore] = useState(false);
   const [showAllPackages, setShowAllPackages] = useState(false);
+  const [expandedDestinationDeals, setExpandedDestinationDeals] = useState<Record<string, boolean>>({});
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [checkInOpen, setCheckInOpen] = useState(false);
@@ -463,6 +464,17 @@ export function Hero({ onGetQuote }: HeroProps) {
     setIsPackageDropdownOpen(true);
     setPackageIds([]);
     // Scroll to the form after selecting
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  const handleLandingPackageSelect = (destId: string, pkgId: string) => {
+    setDestination(destId);
+    setIsPackageDropdownOpen(true);
+    setIsBrowsingMore(false);
+    setShowAllPackages(false);
+    setPackageIds([pkgId]);
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
@@ -575,7 +587,8 @@ export function Hero({ onGetQuote }: HeroProps) {
 
   // Reset packages when destination changes
   useEffect(() => {
-    setPackageIds([]);
+    const destinationPackageIds = new Set(getPackagesByDestination(destination).map(pkg => pkg.id));
+    setPackageIds(prev => prev.filter(pkgId => destinationPackageIds.has(pkgId)));
     setShowAllPackages(false);
     setIsBrowsingMore(false);
     setQuotes([]);
@@ -983,28 +996,114 @@ export function Hero({ onGetQuote }: HeroProps) {
         <div className="w-full" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
         <div id="destinations" className="max-w-6xl mx-auto py-12 px-4">
           <h2 className="text-3xl font-bold text-center mb-10 text-white">Our Destinations</h2>
-          <div className={destination ? "max-w-md mx-auto" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"}>
+          <div className={destination ? "max-w-md mx-auto" : "space-y-8"}>
             {genieDestinations
               .filter((dest) => !destination || destination === dest.id)
-              .map((dest) => (
-              <div
-                key={dest.id}
-                onClick={() => !destination && handleDestinationSelect(dest.id)}
-                className={`genie-destination-card ${destination === dest.id ? 'ring-4 ring-secondary cursor-default' : ''}`}
-                style={{ backgroundImage: `url(${dest.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-              >
-                <div className="genie-destination-overlay">
-                  <h3 className="text-2xl text-white tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700 }}>{dest.name}</h3>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="mt-2 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
-                  >
-                    {destination === dest.id ? '✓ Selected' : 'Click here to select this Trip/Destination'}
-                  </Button>
-                </div>
-              </div>
-            ))}
+              .map((dest) => {
+                const destinationPackages = getPackagesByDestination(dest.id);
+                const showAllDestinationDeals = expandedDestinationDeals[dest.id] ?? false;
+                const visibleDestinationPackages = showAllDestinationDeals
+                  ? destinationPackages
+                  : destinationPackages.slice(0, 4);
+                const hasMoreDestinationDeals = destinationPackages.length > 4 && !showAllDestinationDeals;
+
+                return (
+                  <div key={dest.id} className={destination ? "" : "space-y-4"}>
+                    <div
+                      onClick={() => !destination && handleDestinationSelect(dest.id)}
+                      className={`genie-destination-card ${destination === dest.id ? 'ring-4 ring-secondary cursor-default' : ''}`}
+                      style={{ backgroundImage: `url(${dest.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    >
+                      <div className="genie-destination-overlay">
+                        <h3 className="text-2xl text-white tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700 }}>{dest.name}</h3>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="mt-2 bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                        >
+                          {destination === dest.id ? '✓ Selected' : 'Click here to select this Trip/Destination'}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {!destination && destinationPackages.length > 0 && (
+                      <div className="rounded-2xl bg-white/95 backdrop-blur-md p-4 shadow-2xl">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {visibleDestinationPackages.map(pkg => {
+                            const packageImage = getPackageImage(pkg.id);
+                            return (
+                              <div
+                                key={pkg.id}
+                                onClick={() => handleLandingPackageSelect(dest.id, pkg.id)}
+                                className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
+                                style={{ minHeight: '280px' }}
+                              >
+                                {packageImage ? (
+                                  <img
+                                    src={packageImage}
+                                    alt={pkg.shortName || pkg.name}
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary" />
+                                )}
+                                <div className="absolute inset-0 bg-black/70 group-hover:bg-black/80 transition-all duration-300" />
+                                <div className="relative z-[5] h-full flex flex-col p-4 text-center" style={{ minHeight: '280px' }}>
+                                  <h4 className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-1 tracking-wide text-center`} style={{ fontFamily: "'Anton', sans-serif", textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
+                                    {pkg.name.split(' - ').slice(1).join(' - ') || pkg.name}
+                                  </h4>
+                                  <p className={`${pkg.id === 'MAG6' ? 'text-primary' : 'text-yellow-300'} font-normal text-base leading-tight mb-2 tracking-wide text-center`} style={{ fontFamily: "'Anton', sans-serif", textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
+                                    TOUR CODE: {pkg.id.toUpperCase()}
+                                  </p>
+                                  <div className="flex-1" />
+                                  <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
+                                    {(() => {
+                                      const rawDescription = pkg.description;
+                                      const includesIdx = rawDescription.toLowerCase().indexOf('includes');
+
+                                      if (includesIdx !== -1) {
+                                        const prefix = 'This package includes ';
+                                        const inclusionsText = rawDescription
+                                          .slice(includesIdx + 'includes'.length)
+                                          .replace(/^[\s:]+/, '')
+                                          .toUpperCase();
+                                        return (
+                                          <>
+                                            {prefix}
+                                            {inclusionsText}
+                                          </>
+                                        );
+                                      }
+
+                                      return rawDescription.toUpperCase();
+                                    })()}
+                                  </p>
+                                  <p className="text-white font-semibold text-xs mt-2 text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95)' }}>
+                                    Click here to select this Deal
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {hasMoreDestinationDeals && (
+                          <div className="flex justify-center pt-4">
+                            <button
+                              type="button"
+                              onClick={() => setExpandedDestinationDeals(prev => ({ ...prev, [dest.id]: true }))}
+                              className="px-6 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg tracking-wide"
+                              style={{ fontFamily: "'Anton', sans-serif", fontWeight: 'normal', fontSize: '1rem' }}
+                            >
+                              Click here to select more {dest.name}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </div>
 
           {/* Change destination dropdown - shown only after a destination is selected */}
