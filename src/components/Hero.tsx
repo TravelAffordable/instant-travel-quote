@@ -415,6 +415,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [packageIds, setPackageIds] = useState<string[]>([]);
   const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(false);
   const [isBrowsingMore, setIsBrowsingMore] = useState(false);
+  const [showAllPackages, setShowAllPackages] = useState(false);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [checkInOpen, setCheckInOpen] = useState(false);
@@ -441,19 +442,19 @@ export function Hero({ onGetQuote }: HeroProps) {
 
   // Genie-style destination grid data
   const genieDestinations = [
-    { id: 'durban', name: 'Durban Getaways', image: durbanImg },
-    { id: 'harties', name: 'Harties Getaways', image: hartiesImg },
-    { id: 'magalies', name: 'Magalies Getaways', image: magaliesImg },
-    { id: 'sun-city', name: 'Sun City Getaways', image: sunCityImg },
-    { id: 'mpumalanga', name: 'Mpumalanga Getaways', image: mpumalangaImg },
-    { id: 'bela-bela', name: 'Bela Bela Getaways', image: belaBelaImg },
-    { id: 'pretoria', name: 'The Blyde Pretoria Getaways', image: pretoriaImg },
-    { id: 'cape-town', name: 'Cape Town Getaways', image: capeTownImg },
-    { id: 'vaal-river', name: 'Emerald Casino and 2 Hour Vaal Cruise Getaways', image: vaalRiverImg },
-    { id: 'knysna', name: 'Knysna Getaways', image: knysnaImg },
-    { id: 'dubai', name: 'Dubai Getaways', image: dubaiImg },
-    { id: 'thailand', name: 'Thailand Getaways', image: thailandImg },
-    { id: 'bali', name: 'Bali Getaways', image: baliImg },
+    { id: 'durban', name: 'Durban Deals', image: durbanImg },
+    { id: 'harties', name: 'Harties Deals', image: hartiesImg },
+    { id: 'magalies', name: 'Magalies Deals', image: magaliesImg },
+    { id: 'sun-city', name: 'Sun City Deals', image: sunCityImg },
+    { id: 'mpumalanga', name: 'Mpumalanga Deals', image: mpumalangaImg },
+    { id: 'bela-bela', name: 'Bela Bela Deals', image: belaBelaImg },
+    { id: 'pretoria', name: 'The Blyde Pretoria Deals', image: pretoriaImg },
+    { id: 'cape-town', name: 'Cape Town Deals', image: capeTownImg },
+    { id: 'vaal-river', name: 'Emerald Casino and 2 Hour Vaal Cruise Deals', image: vaalRiverImg },
+    { id: 'knysna', name: 'Knysna Deals', image: knysnaImg },
+    { id: 'dubai', name: 'Dubai Deals', image: dubaiImg },
+    { id: 'thailand', name: 'Thailand Deals', image: thailandImg },
+    { id: 'bali', name: 'Bali Deals', image: baliImg },
   ];
 
   const handleDestinationSelect = (destId: string) => {
@@ -575,6 +576,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   // Reset packages when destination changes
   useEffect(() => {
     setPackageIds([]);
+    setShowAllPackages(false);
+    setIsBrowsingMore(false);
     setQuotes([]);
     setFamilyQuotes([]);
     clearRMSHotels();
@@ -1105,13 +1108,20 @@ export function Hero({ onGetQuote }: HeroProps) {
                   )}
 
                   {/* Package cards grid - visual image cards */}
-                  {isPackageDropdownOpen && (
+                  {isPackageDropdownOpen && (() => {
+                    const currentDestName = genieDestinations.find(d => d.id === destination)?.name || 'Deals';
+                    const isShowingSelectedOnly = packageIds.length > 0 && !isBrowsingMore;
+                    const fullList = isShowingSelectedOnly
+                      ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
+                      : availablePackages;
+                    const visibleList = (isShowingSelectedOnly || showAllPackages)
+                      ? fullList
+                      : fullList.slice(0, 4);
+                    const hasMore = !isShowingSelectedOnly && !showAllPackages && fullList.length > 4;
+                    return (
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {(packageIds.length > 0 && !isBrowsingMore
-                          ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
-                          : availablePackages
-                        ).map(pkg => {
+                        {visibleList.map(pkg => {
                           const isSelected = packageIds.includes(pkg.id);
                           const packageImage = getPackageImage(pkg.id);
                           return (
@@ -1195,7 +1205,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                           );
                         })}
 
-                        {packageIds.length > 0 && !isBrowsingMore && (
+                        {isShowingSelectedOnly && (
                           <div
                             onClick={() => setIsBrowsingMore(true)}
                             className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 border-2 border-dashed border-primary/50 hover:border-primary flex items-center justify-center bg-black/30"
@@ -1203,14 +1213,32 @@ export function Hero({ onGetQuote }: HeroProps) {
                           >
                             <div className="text-center p-4">
                               <Puzzle className="w-8 h-8 text-primary mx-auto mb-2" />
-                              <p className="text-white font-bold text-sm">Select More Packages</p>
-                              <p className="text-white/60 text-xs mt-1">Browse all available options</p>
+                              <p
+                                className="text-yellow-300 tracking-wide"
+                                style={{ fontFamily: "'Anton', sans-serif", fontWeight: 'normal', fontSize: '1rem', lineHeight: 1.2, textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}
+                              >
+                                Click here to select more {currentDestName}
+                              </p>
                             </div>
                           </div>
                         )}
                       </div>
+
+                      {hasMore && (
+                        <div className="flex justify-center pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowAllPackages(true)}
+                            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg tracking-wide"
+                            style={{ fontFamily: "'Anton', sans-serif", fontWeight: 'normal', fontSize: '1rem' }}
+                          >
+                            Click here to select more {currentDestName}
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
+                    );
+                  })()}
                 </div>
               )}
 
