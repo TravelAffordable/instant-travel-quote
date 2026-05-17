@@ -1056,7 +1056,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                                     TOUR CODE: {pkg.id.toUpperCase()}
                                   </p>
                                   <div className="flex-1" />
-                                  {pkg.destination === 'durban' && pkg.activitiesIncluded?.length ? (
+                                  {pkg.activitiesIncluded?.length ? (
                                     <ul className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium text-left space-y-1 mx-auto inline-block" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
                                       {pkg.activitiesIncluded.map((item, i) => (
                                         <li key={i} className="flex items-start gap-2">
