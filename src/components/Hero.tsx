@@ -416,6 +416,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(true);
   const [isBrowsingMore, setIsBrowsingMore] = useState(false);
   const [showAllPackages, setShowAllPackages] = useState(false);
+  const [expandedDestinationDeals, setExpandedDestinationDeals] = useState<Record<string, boolean>>({});
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [checkInOpen, setCheckInOpen] = useState(false);
@@ -463,6 +464,17 @@ export function Hero({ onGetQuote }: HeroProps) {
     setIsPackageDropdownOpen(true);
     setPackageIds([]);
     // Scroll to the form after selecting
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  const handleLandingPackageSelect = (destId: string, pkgId: string) => {
+    setDestination(destId);
+    setIsPackageDropdownOpen(true);
+    setIsBrowsingMore(false);
+    setShowAllPackages(false);
+    setPackageIds([pkgId]);
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
@@ -575,7 +587,8 @@ export function Hero({ onGetQuote }: HeroProps) {
 
   // Reset packages when destination changes
   useEffect(() => {
-    setPackageIds([]);
+    const destinationPackageIds = new Set(getPackagesByDestination(destination).map(pkg => pkg.id));
+    setPackageIds(prev => prev.filter(pkgId => destinationPackageIds.has(pkgId)));
     setShowAllPackages(false);
     setIsBrowsingMore(false);
     setQuotes([]);
