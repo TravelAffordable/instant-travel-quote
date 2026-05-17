@@ -992,7 +992,7 @@ export function Hero({ onGetQuote }: HeroProps) {
 
           {/* Shotleft Deals section */}
           <div className="mt-10 max-w-3xl mx-auto text-left bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-2xl">
-            <h2 className="text-4xl md:text-5xl text-center text-foreground mb-4 tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700 }}>
+            <h2 className="text-4xl md:text-5xl text-center mb-4 tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700, color: '#D4AF37' }}>
               Shotleft Deals
             </h2>
             <p className="text-sm md:text-base text-foreground/80 text-center mb-6 leading-relaxed">
@@ -1038,7 +1038,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 <Input name="people" type="number" min={1} max={100} required className="h-8 flex-1 text-sm" />
               </label>
               <label className="flex items-center gap-2">
-                <span className="whitespace-nowrap">Price you saw:</span>
+                <span className="whitespace-nowrap">Price you saw on Shotleft or Google:</span>
                 <Input name="price" required maxLength={50} placeholder="e.g. R3 500 pp" className="h-8 flex-1 text-sm" />
               </label>
               <div className="md:col-span-2">
