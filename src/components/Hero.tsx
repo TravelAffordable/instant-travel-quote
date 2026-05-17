@@ -1011,38 +1011,38 @@ export function Hero({ onGetQuote }: HeroProps) {
                 const body = `Full name: ${data.get('fullName')}%0D%0AEmail: ${data.get('email')}%0D%0ATelephone: ${data.get('telephone')}%0D%0ADeal interested in: ${data.get('deal')}%0D%0ATravel dates: ${data.get('dates')}%0D%0ANumber of people: ${data.get('people')}%0D%0APrice of the deal: ${data.get('price')}`;
                 window.location.href = `mailto:info@travelaffordable.co.za?subject=Shotleft Deal Request&body=${body}`;
               }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm"
             >
+              <label className="md:col-span-2 flex items-center gap-2">
+                <span className="whitespace-nowrap">Full name:</span>
+                <Input name="fullName" required maxLength={100} className="h-8 flex-1 text-sm" />
+              </label>
+              <label className="flex items-center gap-2">
+                <span className="whitespace-nowrap">Email Address:</span>
+                <Input name="email" type="email" required maxLength={255} className="h-8 flex-1 text-sm" />
+              </label>
+              <label className="flex items-center gap-2">
+                <span className="whitespace-nowrap">Telephone:</span>
+                <Input name="telephone" type="tel" required maxLength={20} className="h-8 flex-1 text-sm" />
+              </label>
+              <label className="flex items-center gap-2">
+                <span className="whitespace-nowrap">Deal interested in:</span>
+                <Input name="deal" required maxLength={200} className="h-8 flex-1 text-sm" />
+              </label>
+              <label className="flex items-center gap-2">
+                <span className="whitespace-nowrap">Travel dates:</span>
+                <Input name="dates" required maxLength={100} placeholder="e.g. 12-15 June 2026" className="h-8 flex-1 text-sm" />
+              </label>
+              <label className="flex items-center gap-2">
+                <span className="whitespace-nowrap">Number of people:</span>
+                <Input name="people" type="number" min={1} max={100} required className="h-8 flex-1 text-sm" />
+              </label>
+              <label className="flex items-center gap-2">
+                <span className="whitespace-nowrap">Price you saw:</span>
+                <Input name="price" required maxLength={50} placeholder="e.g. R3 500 pp" className="h-8 flex-1 text-sm" />
+              </label>
               <div className="md:col-span-2">
-                <Label htmlFor="sl-fullName">Full name</Label>
-                <Input id="sl-fullName" name="fullName" required maxLength={100} />
-              </div>
-              <div>
-                <Label htmlFor="sl-email">Email Address</Label>
-                <Input id="sl-email" name="email" type="email" required maxLength={255} />
-              </div>
-              <div>
-                <Label htmlFor="sl-telephone">Telephone</Label>
-                <Input id="sl-telephone" name="telephone" type="tel" required maxLength={20} />
-              </div>
-              <div>
-                <Label htmlFor="sl-deal">The deal you are interested in</Label>
-                <Input id="sl-deal" name="deal" required maxLength={200} />
-              </div>
-              <div>
-                <Label htmlFor="sl-dates">Your travel dates</Label>
-                <Input id="sl-dates" name="dates" required maxLength={100} placeholder="e.g. 12-15 June 2026" />
-              </div>
-              <div>
-                <Label htmlFor="sl-people">Number of people</Label>
-                <Input id="sl-people" name="people" type="number" min={1} max={100} required />
-              </div>
-              <div>
-                <Label htmlFor="sl-price">Price of the deal you saw</Label>
-                <Input id="sl-price" name="price" required maxLength={50} placeholder="e.g. R3 500 pp" />
-              </div>
-              <div className="md:col-span-2">
-                <Button type="submit" className="w-full bg-primary text-primary-foreground font-semibold">
+                <Button type="submit" size="sm" className="w-full bg-primary text-primary-foreground font-semibold">
                   Send Request
                 </Button>
               </div>
