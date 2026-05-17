@@ -415,6 +415,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [packageIds, setPackageIds] = useState<string[]>([]);
   const [isPackageDropdownOpen, setIsPackageDropdownOpen] = useState(false);
   const [isBrowsingMore, setIsBrowsingMore] = useState(false);
+  const [showAllPackages, setShowAllPackages] = useState(false);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [checkInOpen, setCheckInOpen] = useState(false);
