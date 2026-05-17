@@ -576,6 +576,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   // Reset packages when destination changes
   useEffect(() => {
     setPackageIds([]);
+    setShowAllPackages(false);
+    setIsBrowsingMore(false);
     setQuotes([]);
     setFamilyQuotes([]);
     clearRMSHotels();
