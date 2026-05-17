@@ -441,19 +441,19 @@ export function Hero({ onGetQuote }: HeroProps) {
 
   // Genie-style destination grid data
   const genieDestinations = [
-    { id: 'durban', name: 'Durban Getaways', image: durbanImg },
-    { id: 'harties', name: 'Harties Getaways', image: hartiesImg },
-    { id: 'magalies', name: 'Magalies Getaways', image: magaliesImg },
-    { id: 'sun-city', name: 'Sun City Getaways', image: sunCityImg },
-    { id: 'mpumalanga', name: 'Mpumalanga Getaways', image: mpumalangaImg },
-    { id: 'bela-bela', name: 'Bela Bela Getaways', image: belaBelaImg },
-    { id: 'pretoria', name: 'The Blyde Pretoria Getaways', image: pretoriaImg },
-    { id: 'cape-town', name: 'Cape Town Getaways', image: capeTownImg },
-    { id: 'vaal-river', name: 'Emerald Casino and 2 Hour Vaal Cruise Getaways', image: vaalRiverImg },
-    { id: 'knysna', name: 'Knysna Getaways', image: knysnaImg },
-    { id: 'dubai', name: 'Dubai Getaways', image: dubaiImg },
-    { id: 'thailand', name: 'Thailand Getaways', image: thailandImg },
-    { id: 'bali', name: 'Bali Getaways', image: baliImg },
+    { id: 'durban', name: 'Durban Deals', image: durbanImg },
+    { id: 'harties', name: 'Harties Deals', image: hartiesImg },
+    { id: 'magalies', name: 'Magalies Deals', image: magaliesImg },
+    { id: 'sun-city', name: 'Sun City Deals', image: sunCityImg },
+    { id: 'mpumalanga', name: 'Mpumalanga Deals', image: mpumalangaImg },
+    { id: 'bela-bela', name: 'Bela Bela Deals', image: belaBelaImg },
+    { id: 'pretoria', name: 'The Blyde Pretoria Deals', image: pretoriaImg },
+    { id: 'cape-town', name: 'Cape Town Deals', image: capeTownImg },
+    { id: 'vaal-river', name: 'Emerald Casino and 2 Hour Vaal Cruise Deals', image: vaalRiverImg },
+    { id: 'knysna', name: 'Knysna Deals', image: knysnaImg },
+    { id: 'dubai', name: 'Dubai Deals', image: dubaiImg },
+    { id: 'thailand', name: 'Thailand Deals', image: thailandImg },
+    { id: 'bali', name: 'Bali Deals', image: baliImg },
   ];
 
   const handleDestinationSelect = (destId: string) => {
