@@ -1108,13 +1108,20 @@ export function Hero({ onGetQuote }: HeroProps) {
                   )}
 
                   {/* Package cards grid - visual image cards */}
-                  {isPackageDropdownOpen && (
+                  {isPackageDropdownOpen && (() => {
+                    const currentDestName = genieDestinations.find(d => d.id === destination)?.name || 'Deals';
+                    const isShowingSelectedOnly = packageIds.length > 0 && !isBrowsingMore;
+                    const fullList = isShowingSelectedOnly
+                      ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
+                      : availablePackages;
+                    const visibleList = (isShowingSelectedOnly || showAllPackages)
+                      ? fullList
+                      : fullList.slice(0, 4);
+                    const hasMore = !isShowingSelectedOnly && !showAllPackages && fullList.length > 4;
+                    return (
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {(packageIds.length > 0 && !isBrowsingMore
-                          ? availablePackages.filter(pkg => packageIds.includes(pkg.id))
-                          : availablePackages
-                        ).map(pkg => {
+                        {visibleList.map(pkg => {
                           const isSelected = packageIds.includes(pkg.id);
                           const packageImage = getPackageImage(pkg.id);
                           return (
@@ -1198,7 +1205,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                           );
                         })}
 
-                        {packageIds.length > 0 && !isBrowsingMore && (
+                        {isShowingSelectedOnly && (
                           <div
                             onClick={() => setIsBrowsingMore(true)}
                             className="relative rounded-xl overflow-hidden cursor-pointer group transition-all duration-300 border-2 border-dashed border-primary/50 hover:border-primary flex items-center justify-center bg-black/30"
@@ -1206,14 +1213,32 @@ export function Hero({ onGetQuote }: HeroProps) {
                           >
                             <div className="text-center p-4">
                               <Puzzle className="w-8 h-8 text-primary mx-auto mb-2" />
-                              <p className="text-white font-bold text-sm">Select More Packages</p>
-                              <p className="text-white/60 text-xs mt-1">Browse all available options</p>
+                              <p
+                                className="text-yellow-300 tracking-wide"
+                                style={{ fontFamily: "'Anton', sans-serif", fontWeight: 'normal', fontSize: '1rem', lineHeight: 1.2, textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}
+                              >
+                                Click here to select more {currentDestName}
+                              </p>
                             </div>
                           </div>
                         )}
                       </div>
+
+                      {hasMore && (
+                        <div className="flex justify-center pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowAllPackages(true)}
+                            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg tracking-wide"
+                            style={{ fontFamily: "'Anton', sans-serif", fontWeight: 'normal', fontSize: '1rem' }}
+                          >
+                            Click here to select more {currentDestName}
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
+                    );
+                  })()}
                 </div>
               )}
 
