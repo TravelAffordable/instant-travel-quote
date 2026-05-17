@@ -989,6 +989,65 @@ export function Hero({ onGetQuote }: HeroProps) {
             <Sparkles className="w-4 h-4" />
             <span className="text-sm font-semibold">LIMITED TIME: Up to 30% OFF Selected Packages!</span>
           </div>
+
+          {/* Shotleft Deals section */}
+          <div className="mt-10 max-w-3xl mx-auto text-left bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-2xl">
+            <h2 className="text-4xl md:text-5xl text-center text-foreground mb-4 tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700 }}>
+              Shotleft Deals
+            </h2>
+            <p className="text-sm md:text-base text-foreground/80 text-center mb-6 leading-relaxed">
+              Should you be interested in a deal you saw on shot left or on Google that may not appear on the website, or if you are looking to get assistance without searching the website, please send an email to{' '}
+              <a href="mailto:info@travelaffordable.co.za" className="text-primary font-semibold underline">info@travelaffordable.co.za</a>{' '}
+              or WhatsApp{' '}
+              <a href="https://wa.me/27796813869" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold underline">079 681 3869</a>{' '}
+              or please fill out this request form (please be aware that the prices you see on shotleft are per person not per couple).
+            </p>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const f = e.currentTarget as HTMLFormElement;
+                const data = new FormData(f);
+                const body = `Full name: ${data.get('fullName')}%0D%0AEmail: ${data.get('email')}%0D%0ATelephone: ${data.get('telephone')}%0D%0ADeal interested in: ${data.get('deal')}%0D%0ATravel dates: ${data.get('dates')}%0D%0ANumber of people: ${data.get('people')}%0D%0APrice of the deal: ${data.get('price')}`;
+                window.location.href = `mailto:info@travelaffordable.co.za?subject=Shotleft Deal Request&body=${body}`;
+              }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
+              <div className="md:col-span-2">
+                <Label htmlFor="sl-fullName">Full name</Label>
+                <Input id="sl-fullName" name="fullName" required maxLength={100} />
+              </div>
+              <div>
+                <Label htmlFor="sl-email">Email Address</Label>
+                <Input id="sl-email" name="email" type="email" required maxLength={255} />
+              </div>
+              <div>
+                <Label htmlFor="sl-telephone">Telephone</Label>
+                <Input id="sl-telephone" name="telephone" type="tel" required maxLength={20} />
+              </div>
+              <div>
+                <Label htmlFor="sl-deal">The deal you are interested in</Label>
+                <Input id="sl-deal" name="deal" required maxLength={200} />
+              </div>
+              <div>
+                <Label htmlFor="sl-dates">Your travel dates</Label>
+                <Input id="sl-dates" name="dates" required maxLength={100} placeholder="e.g. 12-15 June 2026" />
+              </div>
+              <div>
+                <Label htmlFor="sl-people">Number of people</Label>
+                <Input id="sl-people" name="people" type="number" min={1} max={100} required />
+              </div>
+              <div>
+                <Label htmlFor="sl-price">Price of the deal you saw</Label>
+                <Input id="sl-price" name="price" required maxLength={50} placeholder="e.g. R3 500 pp" />
+              </div>
+              <div className="md:col-span-2">
+                <Button type="submit" className="w-full bg-primary text-primary-foreground font-semibold">
+                  Send Request
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
 
         </div>{/* close container */}
