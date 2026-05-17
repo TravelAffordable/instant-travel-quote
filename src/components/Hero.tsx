@@ -1056,28 +1056,32 @@ export function Hero({ onGetQuote }: HeroProps) {
                                     TOUR CODE: {pkg.id.toUpperCase()}
                                   </p>
                                   <div className="flex-1" />
-                                  <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
-                                    {(() => {
-                                      const rawDescription = pkg.description;
-                                      const includesIdx = rawDescription.toLowerCase().indexOf('includes');
-
-                                      if (includesIdx !== -1) {
-                                        const prefix = 'This package includes ';
-                                        const inclusionsText = rawDescription
-                                          .slice(includesIdx + 'includes'.length)
-                                          .replace(/^[\s:]+/, '')
-                                          .toUpperCase();
-                                        return (
-                                          <>
-                                            {prefix}
-                                            {inclusionsText}
-                                          </>
-                                        );
-                                      }
-
-                                      return rawDescription.toUpperCase();
-                                    })()}
-                                  </p>
+                                  {pkg.destination === 'durban' && pkg.activitiesIncluded?.length ? (
+                                    <ul className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium text-left space-y-1 mx-auto inline-block" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
+                                      {pkg.activitiesIncluded.map((item, i) => (
+                                        <li key={i} className="flex items-start gap-2">
+                                          <span className="mt-1.5 inline-block w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#D4AF37', boxShadow: '0 0 4px rgba(212,175,55,0.9)' }} />
+                                          <span>{item.toUpperCase()}</span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p className="text-yellow-300 text-xs leading-relaxed mb-3 font-medium text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.9)' }}>
+                                      {(() => {
+                                        const rawDescription = pkg.description;
+                                        const includesIdx = rawDescription.toLowerCase().indexOf('includes');
+                                        if (includesIdx !== -1) {
+                                          const prefix = 'This package includes ';
+                                          const inclusionsText = rawDescription
+                                            .slice(includesIdx + 'includes'.length)
+                                            .replace(/^[\s:]+/, '')
+                                            .toUpperCase();
+                                          return (<>{prefix}{inclusionsText}</>);
+                                        }
+                                        return rawDescription.toUpperCase();
+                                      })()}
+                                    </p>
+                                  )}
                                   <p className="text-white font-semibold text-xs mt-2 text-center" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.95)' }}>
                                     Click here to select this Deal
                                   </p>
