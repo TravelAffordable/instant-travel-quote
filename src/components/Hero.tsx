@@ -1505,9 +1505,9 @@ export function Hero({ onGetQuote }: HeroProps) {
               {/* Budget Field - compulsory for with-activities, placed under Rooms */}
               {bookingType === 'with-activities' && (
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Your Total Budget (ZAR) *</Label>
+                  <Label className="text-sm font-medium text-gray-700">How much would you like to spend for your whole group? (ZAR) *</Label>
                   <p className="text-xs text-muted-foreground mb-1">
-                    Enter your total budget so we can find the best options that fit your pocket.
+                    Enter how much you'd like to spend for your whole group so we can find the best options that fit your pocket.
                   </p>
                   <div className="relative max-w-xs">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">R</span>
