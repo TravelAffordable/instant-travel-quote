@@ -1796,6 +1796,63 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               )}
 
+  const handleRequestQuotation = async () => {
+    if (!guestName || !guestTel || !guestEmail) {
+      toast.error('Please fill in your name, telephone and email');
+      return;
+    }
+    if (!destination) {
+      toast.error('Please select a destination');
+      return;
+    }
+    if (!checkIn || !checkOut) {
+      toast.error('Please select your check-in and check-out dates');
+      return;
+    }
+    if (bookingType === 'with-activities' && packageIds.length === 0) {
+      toast.error('Please select at least one package');
+      return;
+    }
+
+    setIsSubmittingRequest(true);
+    try {
+      const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
+      const packageNames = selectedPkgs.map(p => p.name);
+      const destObj = destinations.find(d => d.id === destination);
+
+      const { data, error } = await supabase.functions.invoke('send-quote-request', {
+        body: {
+          guestName,
+          guestEmail,
+          guestTel,
+          destination: destObj?.name || destination,
+          packageNames,
+          checkIn,
+          checkOut,
+          adults,
+          children,
+          childrenAges,
+          rooms,
+          budget,
+          bookingType,
+        },
+      });
+
+      if (error || !(data as { success?: boolean })?.success) {
+        console.error('Quote request failed:', error, data);
+        toast.error('Could not send your request. Please WhatsApp 079 681 3869 or email info@travelaffordable.co.za.');
+        return;
+      }
+
+      toast.success("Thank you! Your quotation request has been sent. We'll be in touch shortly.");
+    } catch (err) {
+      console.error('Quote request error:', err);
+      toast.error('Could not send your request. Please try again.');
+    } finally {
+      setIsSubmittingRequest(false);
+    }
+  };
+
 
 
               <div className="pt-2">
