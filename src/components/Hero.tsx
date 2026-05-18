@@ -689,7 +689,7 @@ export function Hero({ onGetQuote }: HeroProps) {
         `Check-in: ${checkIn}`,
         `Check-out: ${checkOut}`,
         `Adults: ${adults}`,
-        `Children: ${children}${childrenAges?.length ? ` (ages ${childrenAges.join(', ')})` : ''}`,
+        `Children: ${children}${childrenAges ? ` (ages ${childrenAges})` : ''}`,
         `Rooms: ${rooms}`,
         budget ? `Budget: R${budget}` : null,
       ].filter(Boolean).join('\n');
