@@ -1662,68 +1662,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               )}
 
-              {/* Accommodation Type Selection - shown for both booking types */}
-              {(bookingType === 'with-activities' || bookingType === 'accommodation-only') && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Accommodation Type by budget:</Label>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Please use the buttons to navigate various budget options, each time you change to another button to view options always click the get quotes button again to see new results. Once you've found the option that fits your budget please click enquire about this option and send it via email so we can send you pictures of the hotel.
-                  </p>
-                  {(() => {
-                    // Check if any selected package has budget disabled
-                    const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
-                    const budgetDisabledPkg = selectedPkgs.find(p => p.budgetDisabled);
-                    const isBudgetDisabled = !!budgetDisabledPkg;
-                    const budgetDisabledMessage = budgetDisabledPkg?.budgetDisabledMessage || 'Budget option is not available for this package.';
-                    
-                    return (
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (isBudgetDisabled) {
-                              toast.info(budgetDisabledMessage);
-                              return;
-                            }
-                            setAccommodationType('budget');
-                          }}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
-                            isBudgetDisabled
-                              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : accommodationType === 'budget'
-                                ? 'border-green-500 bg-green-50 text-green-700'
-                                : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50/50'
-                          }`}
-                        >
-                          Budget Friendly Hotel Options
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setAccommodationType('affordable')}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
-                            accommodationType === 'affordable'
-                              ? 'border-primary bg-primary/10 text-primary'
-                              : 'border-gray-200 bg-white text-gray-700 hover:border-primary/50 hover:bg-primary/5'
-                          }`}
-                        >
-                          Affordable Hotel Options
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setAccommodationType('premium')}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
-                            accommodationType === 'premium'
-                              ? 'border-purple-500 bg-purple-50 text-purple-700'
-                              : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300 hover:bg-purple-50/50'
-                          }`}
-                        >
-                          Premium Hotel Options
-                        </button>
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
+              {/* Tier buttons removed — quote requests now go directly to our team */}
 
               {/* Family Split Option */}
               {showFamilySplitOption && !isFamilySplitMode && (
