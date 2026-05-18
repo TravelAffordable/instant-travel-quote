@@ -428,6 +428,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [rooms, setRooms] = useState(1);
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
   const formRef = useRef<HTMLDivElement>(null);
 
