@@ -429,6 +429,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
+  const [emailDelivered, setEmailDelivered] = useState<boolean | null>(null);
 
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -667,17 +669,39 @@ export function Hero({ onGetQuote }: HeroProps) {
     }
 
     setIsSubmittingRequest(true);
+    setEmailDelivered(null);
+    setWhatsappLink(null);
     try {
       const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
       const packageNames = selectedPkgs.map(p => p.name);
       const destObj = destinations.find(d => d.id === destination);
+      const destName = destObj?.name || destination;
+
+      // Build WhatsApp fallback message regardless of email outcome
+      const lines = [
+        `*New Quotation Request*`,
+        `Name: ${guestName}`,
+        `Email: ${guestEmail}`,
+        `Tel: ${guestTel}`,
+        `Destination: ${destName}`,
+        packageNames.length ? `Package(s): ${packageNames.join(', ')}` : null,
+        `Booking type: ${bookingType}`,
+        `Check-in: ${checkIn}`,
+        `Check-out: ${checkOut}`,
+        `Adults: ${adults}`,
+        `Children: ${children}${childrenAges ? ` (ages ${childrenAges})` : ''}`,
+        `Rooms: ${rooms}`,
+        budget ? `Budget: R${budget}` : null,
+      ].filter(Boolean).join('\n');
+      const waUrl = `https://wa.me/27796813869?text=${encodeURIComponent(lines)}`;
+      setWhatsappLink(waUrl);
 
       const { data, error } = await supabase.functions.invoke('send-quote-request', {
         body: {
           guestName,
           guestEmail,
           guestTel,
-          destination: destObj?.name || destination,
+          destination: destName,
           packageNames,
           checkIn,
           checkOut,
@@ -690,16 +714,18 @@ export function Hero({ onGetQuote }: HeroProps) {
         },
       });
 
-      if (error || !(data as { success?: boolean })?.success) {
+      const ok = !error && (data as { success?: boolean })?.success;
+      setEmailDelivered(!!ok);
+      if (ok) {
+        toast.success("Thank you! Your request was sent. You can also confirm via WhatsApp below.");
+      } else {
         console.error('Quote request failed:', error, data);
-        toast.error('Could not send your request. Please WhatsApp 079 681 3869 or email info@travelaffordable.co.za.');
-        return;
+        toast.error('Email could not be sent — please tap "Send via WhatsApp" below to deliver your request.');
       }
-
-      toast.success("Thank you! Your quotation request has been sent. We'll be in touch shortly.");
     } catch (err) {
       console.error('Quote request error:', err);
-      toast.error('Could not send your request. Please try again.');
+      setEmailDelivered(false);
+      toast.error('Email could not be sent — please tap "Send via WhatsApp" below.');
     } finally {
       setIsSubmittingRequest(false);
     }
@@ -1872,6 +1898,25 @@ export function Hero({ onGetQuote }: HeroProps) {
                     </>
                   )}
                 </Button>
+
+                {whatsappLink && (
+                  <div className="mt-3 p-3 rounded-md border border-border bg-muted/40 text-sm space-y-2">
+                    <p className="text-foreground">
+                      {emailDelivered
+                        ? '✅ Email sent. You can also confirm instantly via WhatsApp:'
+                        : '⚠️ Email delivery failed. Please send your request via WhatsApp instead:'}
+                    </p>
+                    <a
+                      href={whatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center w-full h-11 rounded-md font-semibold text-white"
+                      style={{ backgroundColor: '#25D366' }}
+                    >
+                      Send via WhatsApp (079 681 3869)
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>

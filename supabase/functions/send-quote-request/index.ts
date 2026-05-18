@@ -5,7 +5,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const RECIPIENTS = ["info@travelaffordable.co.za", "travelaffordable2017@gmail.com"];
+// Resend is in test mode (no verified domain yet), so we can only send to the
+// account owner's verified address. Forward from this inbox manually for now.
+const RECIPIENTS = ["travelaffordable2017@gmail.com"];
 
 function esc(v: unknown): string {
   return String(v ?? "")
@@ -83,7 +85,9 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "Travel Affordable <onboarding@resend.dev>",
         to: RECIPIENTS,
-        reply_to: guestEmail,
+        ...(guestEmail && /^\S+@\S+\.\S+$/.test(String(guestEmail))
+          ? { reply_to: String(guestEmail) }
+          : {}),
         subject: `New Quotation Request — ${guestName}${destination ? ` (${destination})` : ""}`,
         html,
         text,
