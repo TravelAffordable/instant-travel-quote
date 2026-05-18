@@ -428,6 +428,7 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [rooms, setRooms] = useState(1);
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -645,6 +646,63 @@ export function Hero({ onGetQuote }: HeroProps) {
     const newFamilies = [...families];
     newFamilies[index] = { ...newFamilies[index], [field]: value };
     setFamilies(newFamilies);
+  };
+
+  const handleRequestQuotation = async () => {
+    if (!guestName || !guestTel || !guestEmail) {
+      toast.error('Please fill in your name, telephone and email');
+      return;
+    }
+    if (!destination) {
+      toast.error('Please select a destination');
+      return;
+    }
+    if (!checkIn || !checkOut) {
+      toast.error('Please select your check-in and check-out dates');
+      return;
+    }
+    if (bookingType === 'with-activities' && packageIds.length === 0) {
+      toast.error('Please select at least one package');
+      return;
+    }
+
+    setIsSubmittingRequest(true);
+    try {
+      const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
+      const packageNames = selectedPkgs.map(p => p.name);
+      const destObj = destinations.find(d => d.id === destination);
+
+      const { data, error } = await supabase.functions.invoke('send-quote-request', {
+        body: {
+          guestName,
+          guestEmail,
+          guestTel,
+          destination: destObj?.name || destination,
+          packageNames,
+          checkIn,
+          checkOut,
+          adults,
+          children,
+          childrenAges,
+          rooms,
+          budget,
+          bookingType,
+        },
+      });
+
+      if (error || !(data as { success?: boolean })?.success) {
+        console.error('Quote request failed:', error, data);
+        toast.error('Could not send your request. Please WhatsApp 079 681 3869 or email info@travelaffordable.co.za.');
+        return;
+      }
+
+      toast.success("Thank you! Your quotation request has been sent. We'll be in touch shortly.");
+    } catch (err) {
+      console.error('Quote request error:', err);
+      toast.error('Could not send your request. Please try again.');
+    } finally {
+      setIsSubmittingRequest(false);
+    }
   };
 
   const handleCalculate = async () => {
@@ -1406,19 +1464,14 @@ export function Hero({ onGetQuote }: HeroProps) {
 
               {/* Instruction above check-in */}
               <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
-                Please fill out all the fields in the form then click Get Quote to generate a quote that you can send to us to provide name of hotel and an accurate price for your dates. This is not yet a booking.
+                Please fill out all the fields in the form then click Request a Quotation. Your request will be sent to our team and we will get back to you with hotel options and accurate pricing for your dates.
               </div>
 
               {/* Row 1: Check In, Check Out */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Check In *</Label>
-                  <Popover open={checkInOpen} onOpenChange={(open) => {
-                    setCheckInOpen(open);
-                    if (open) {
-                      setPendingCheckIn(checkIn ? new Date(checkIn) : undefined);
-                    }
-                  }}>
+                  <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         type="button"
@@ -1436,40 +1489,22 @@ export function Hero({ onGetQuote }: HeroProps) {
                       <Calendar
                         key={checkIn || 'checkin-empty'}
                         mode="single"
-                        selected={pendingCheckIn}
-                        onSelect={setPendingCheckIn}
-                        defaultMonth={pendingCheckIn ?? (checkIn ? new Date(checkIn) : new Date())}
+                        selected={checkIn ? new Date(checkIn) : undefined}
+                        onSelect={(date) => {
+                          if (!date) return;
+                          const yyyy = date.getFullYear();
+                          const mm = String(date.getMonth() + 1).padStart(2, '0');
+                          const dd = String(date.getDate()).padStart(2, '0');
+                          setCheckIn(`${yyyy}-${mm}-${dd}`);
+                          setCheckInOpen(false);
+                          // Auto-open check-out picker after selecting check-in
+                          setTimeout(() => setCheckOutOpen(true), 150);
+                        }}
+                        defaultMonth={checkIn ? new Date(checkIn) : new Date()}
                         disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
                       />
-                      <div className="flex justify-end gap-2 border-t p-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setCheckInOpen(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          disabled={!pendingCheckIn}
-                          onClick={() => {
-                            if (!pendingCheckIn) return;
-                            const yyyy = pendingCheckIn.getFullYear();
-                            const mm = String(pendingCheckIn.getMonth() + 1).padStart(2, '0');
-                            const dd = String(pendingCheckIn.getDate()).padStart(2, '0');
-                            setCheckIn(`${yyyy}-${mm}-${dd}`);
-                            setCheckInOpen(false);
-                            // Auto-open check-out picker after confirming check-in
-                            setTimeout(() => setCheckOutOpen(true), 150);
-                          }}
-                        >
-                          Set
-                        </Button>
-                      </div>
                     </PopoverContent>
                   </Popover>
                 </div>
@@ -1685,68 +1720,7 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               )}
 
-              {/* Accommodation Type Selection - shown for both booking types */}
-              {(bookingType === 'with-activities' || bookingType === 'accommodation-only') && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Accommodation Type by budget:</Label>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Please use the buttons to navigate various budget options, each time you change to another button to view options always click the get quotes button again to see new results. Once you've found the option that fits your budget please click enquire about this option and send it via email so we can send you pictures of the hotel.
-                  </p>
-                  {(() => {
-                    // Check if any selected package has budget disabled
-                    const selectedPkgs = packages.filter(p => packageIds.includes(p.id));
-                    const budgetDisabledPkg = selectedPkgs.find(p => p.budgetDisabled);
-                    const isBudgetDisabled = !!budgetDisabledPkg;
-                    const budgetDisabledMessage = budgetDisabledPkg?.budgetDisabledMessage || 'Budget option is not available for this package.';
-                    
-                    return (
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (isBudgetDisabled) {
-                              toast.info(budgetDisabledMessage);
-                              return;
-                            }
-                            setAccommodationType('budget');
-                          }}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
-                            isBudgetDisabled
-                              ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
-                              : accommodationType === 'budget'
-                                ? 'border-green-500 bg-green-50 text-green-700'
-                                : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50/50'
-                          }`}
-                        >
-                          Budget Friendly Hotel Options
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setAccommodationType('affordable')}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
-                            accommodationType === 'affordable'
-                              ? 'border-primary bg-primary/10 text-primary'
-                              : 'border-gray-200 bg-white text-gray-700 hover:border-primary/50 hover:bg-primary/5'
-                          }`}
-                        >
-                          Affordable Hotel Options
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setAccommodationType('premium')}
-                          className={`px-4 py-3 rounded-lg border-2 transition-all font-medium text-sm ${
-                            accommodationType === 'premium'
-                              ? 'border-purple-500 bg-purple-50 text-purple-700'
-                              : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300 hover:bg-purple-50/50'
-                          }`}
-                        >
-                          Premium Hotel Options
-                        </button>
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
+              {/* Tier buttons removed — quote requests now go directly to our team */}
 
               {/* Family Split Option */}
               {showFamilySplitOption && !isFamilySplitMode && (
@@ -1880,22 +1854,21 @@ export function Hero({ onGetQuote }: HeroProps) {
               )}
 
 
-
               <div className="pt-2">
                 <Button
-                  onClick={handleCalculate}
+                  onClick={handleRequestQuotation}
                   className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-glow"
-                  disabled={isCalculating || isSearchingRMS}
+                  disabled={isSubmittingRequest}
                 >
-                  {isCalculating || isSearchingRMS ? (
+                  {isSubmittingRequest ? (
                     <>
                       <Sparkles className="w-5 h-5 mr-2 animate-spin" />
-                      Calculating...
+                      Sending request...
                     </>
                   ) : (
                     <>
-                      <Calculator className="w-5 h-5 mr-2" />
-                      Get Quotes
+                      <FileText className="w-5 h-5 mr-2" />
+                      Request a Quotation
                     </>
                   )}
                 </Button>
