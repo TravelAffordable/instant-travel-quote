@@ -85,7 +85,9 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "Travel Affordable <onboarding@resend.dev>",
         to: RECIPIENTS,
-        reply_to: guestEmail,
+        ...(guestEmail && /^\S+@\S+\.\S+$/.test(String(guestEmail))
+          ? { reply_to: String(guestEmail) }
+          : {}),
         subject: `New Quotation Request — ${guestName}${destination ? ` (${destination})` : ""}`,
         html,
         text,
