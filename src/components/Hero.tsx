@@ -1406,19 +1406,14 @@ export function Hero({ onGetQuote }: HeroProps) {
 
               {/* Instruction above check-in */}
               <div className="rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
-                Please fill out all the fields in the form then click Get Quote to generate a quote that you can send to us to provide name of hotel and an accurate price for your dates. This is not yet a booking.
+                Please fill out all the fields in the form then click Request a Quotation. Your request will be sent to our team and we will get back to you with hotel options and accurate pricing for your dates.
               </div>
 
               {/* Row 1: Check In, Check Out */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Check In *</Label>
-                  <Popover open={checkInOpen} onOpenChange={(open) => {
-                    setCheckInOpen(open);
-                    if (open) {
-                      setPendingCheckIn(checkIn ? new Date(checkIn) : undefined);
-                    }
-                  }}>
+                  <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         type="button"
@@ -1436,40 +1431,22 @@ export function Hero({ onGetQuote }: HeroProps) {
                       <Calendar
                         key={checkIn || 'checkin-empty'}
                         mode="single"
-                        selected={pendingCheckIn}
-                        onSelect={setPendingCheckIn}
-                        defaultMonth={pendingCheckIn ?? (checkIn ? new Date(checkIn) : new Date())}
+                        selected={checkIn ? new Date(checkIn) : undefined}
+                        onSelect={(date) => {
+                          if (!date) return;
+                          const yyyy = date.getFullYear();
+                          const mm = String(date.getMonth() + 1).padStart(2, '0');
+                          const dd = String(date.getDate()).padStart(2, '0');
+                          setCheckIn(`${yyyy}-${mm}-${dd}`);
+                          setCheckInOpen(false);
+                          // Auto-open check-out picker after selecting check-in
+                          setTimeout(() => setCheckOutOpen(true), 150);
+                        }}
+                        defaultMonth={checkIn ? new Date(checkIn) : new Date()}
                         disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
                       />
-                      <div className="flex justify-end gap-2 border-t p-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setCheckInOpen(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          disabled={!pendingCheckIn}
-                          onClick={() => {
-                            if (!pendingCheckIn) return;
-                            const yyyy = pendingCheckIn.getFullYear();
-                            const mm = String(pendingCheckIn.getMonth() + 1).padStart(2, '0');
-                            const dd = String(pendingCheckIn.getDate()).padStart(2, '0');
-                            setCheckIn(`${yyyy}-${mm}-${dd}`);
-                            setCheckInOpen(false);
-                            // Auto-open check-out picker after confirming check-in
-                            setTimeout(() => setCheckOutOpen(true), 150);
-                          }}
-                        >
-                          Set
-                        </Button>
-                      </div>
                     </PopoverContent>
                   </Popover>
                 </div>
