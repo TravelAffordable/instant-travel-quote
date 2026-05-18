@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.sync-hotel-rates]
 verify_jwt = false
+
+[functions.send-quote-request]
+verify_jwt = false
