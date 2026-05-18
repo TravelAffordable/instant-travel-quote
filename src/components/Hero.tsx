@@ -667,6 +667,10 @@ export function Hero({ onGetQuote }: HeroProps) {
       toast.error('Please select at least one package');
       return;
     }
+    if (!budget || parseInt(budget) <= 0) {
+      toast.error('Please enter your total budget so we can find the best options for you');
+      return;
+    }
 
     setIsSubmittingRequest(true);
     setEmailDelivered(null);
