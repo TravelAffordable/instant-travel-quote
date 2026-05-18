@@ -667,6 +667,10 @@ export function Hero({ onGetQuote }: HeroProps) {
       toast.error('Please select at least one package');
       return;
     }
+    if (!budget || parseInt(budget) <= 0) {
+      toast.error('Please enter your total budget so we can find the best options for you');
+      return;
+    }
 
     setIsSubmittingRequest(true);
     setEmailDelivered(null);
@@ -1725,26 +1729,26 @@ export function Hero({ onGetQuote }: HeroProps) {
                 </div>
               </div>
 
-              {/* Budget Field - compulsory for with-activities, placed under Rooms */}
-              {bookingType === 'with-activities' && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">How much would you like to spend for your whole group? (ZAR) *</Label>
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Enter how much you'd like to spend for your whole group so we can find the best options that fit your pocket.
-                  </p>
-                  <div className="relative max-w-xs">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">R</span>
-                    <Input
-                      type="number"
-                      placeholder="e.g. 13800"
-                      value={budget}
-                      onChange={(e) => setBudget(e.target.value)}
-                      className="h-11 bg-white border-gray-200 pl-8"
-                      min={0}
-                    />
-                  </div>
+              {/* Budget Field - compulsory for all quotation requests */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">How much would you like to spend for your whole group? (ZAR) *</Label>
+                <p className="text-xs text-muted-foreground mb-1">
+                  Enter how much you'd like to spend for your whole group so we can find the best options that fit your pocket.
+                </p>
+                <div className="relative max-w-xs">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">R</span>
+                  <Input
+                    type="number"
+                    placeholder="e.g. 13800"
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    className="h-11 bg-white border-gray-200 pl-8"
+                    min={0}
+                    required
+                  />
                 </div>
-              )}
+              </div>
+
 
               {/* Tier buttons removed — quote requests now go directly to our team */}
 
