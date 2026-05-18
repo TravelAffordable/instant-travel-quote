@@ -429,6 +429,8 @@ export function Hero({ onGetQuote }: HeroProps) {
   const [quotes, setQuotes] = useState<QuoteResult[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [whatsappLink, setWhatsappLink] = useState<string | null>(null);
+  const [emailDelivered, setEmailDelivered] = useState<boolean | null>(null);
 
   const formRef = useRef<HTMLDivElement>(null);
 
