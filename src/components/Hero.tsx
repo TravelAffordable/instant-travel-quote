@@ -1898,6 +1898,25 @@ export function Hero({ onGetQuote }: HeroProps) {
                     </>
                   )}
                 </Button>
+
+                {whatsappLink && (
+                  <div className="mt-3 p-3 rounded-md border border-border bg-muted/40 text-sm space-y-2">
+                    <p className="text-foreground">
+                      {emailDelivered
+                        ? '✅ Email sent. You can also confirm instantly via WhatsApp:'
+                        : '⚠️ Email delivery failed. Please send your request via WhatsApp instead:'}
+                    </p>
+                    <a
+                      href={whatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center w-full h-11 rounded-md font-semibold text-white"
+                      style={{ backgroundColor: '#25D366' }}
+                    >
+                      Send via WhatsApp (079 681 3869)
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
