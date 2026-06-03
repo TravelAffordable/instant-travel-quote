@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, MapPin, Calendar, Users, Check, Sparkles } from 'lucide-react';
 import { getDestinationPage } from '@/data/destinationPages';
+import { getPackagesByDestination } from '@/data/travelData';
+import { getPackageImage } from '@/data/packageImages';
+import { formatCurrency } from '@/lib/utils';
 import NotFound from './NotFound';
 
 const SITE_URL = 'https://travelaffordable.co.za';
@@ -171,6 +174,72 @@ const DestinationPage = () => {
           </Card>
         </aside>
       </section>
+
+      {/* Packages */}
+      {(() => {
+        const pkgs = getPackagesByDestination(data.destinationId);
+        if (!pkgs.length) return null;
+        return (
+          <section className="container mx-auto px-4 py-12">
+            <h2 className="font-display text-3xl font-bold text-foreground mb-2">
+              {data.name} Packages
+            </h2>
+            <p className="text-muted-foreground mb-8">
+              All available packages for {data.name}. Click any package to get an instant quote.
+            </p>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {pkgs.map((pkg) => {
+                const img = getPackageImage(pkg.id) || data.heroImage;
+                const fromPrice = pkg.fromPriceOverride ?? pkg.basePrice;
+                return (
+                  <Card key={pkg.id} className="overflow-hidden flex flex-col">
+                    <div className="h-44 overflow-hidden">
+                      <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                    <CardContent className="p-5 flex flex-col flex-1">
+                      <h3 className="font-display text-lg font-bold text-foreground line-clamp-2">
+                        {pkg.shortName}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        <Calendar className="inline h-3 w-3 mr-1" />{pkg.duration}
+                      </p>
+                      <p className="text-sm text-foreground/80 mt-3 line-clamp-3 flex-1">
+                        {pkg.description}
+                      </p>
+                      {pkg.activitiesIncluded?.length > 0 && (
+                        <ul className="mt-3 space-y-1">
+                          {pkg.activitiesIncluded.slice(0, 4).map((a) => (
+                            <li key={a} className="text-xs text-foreground/70 flex items-start gap-1">
+                              <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
+                              <span className="line-clamp-1">{a}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="mt-4 pt-4 border-t flex items-center justify-between">
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase">From</p>
+                          <p className="text-lg font-bold text-primary">
+                            {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() =>
+                            navigate(`/?destination=${data.destinationId}&package=${pkg.id}#quote`)
+                          }
+                        >
+                          Enquire <ArrowRight className="ml-1 h-3 w-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* FAQs */}
       <section className="bg-muted/30 py-12">
