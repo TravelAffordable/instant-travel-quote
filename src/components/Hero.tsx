@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { destinationPages } from '@/data/destinationPages';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -1076,6 +1077,24 @@ export function Hero({ onGetQuote }: HeroProps) {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/90 text-secondary-foreground animate-float">
             <Sparkles className="w-4 h-4" />
             <span className="text-sm font-semibold">LIMITED TIME: Up to 30% OFF Selected Packages!</span>
+          </div>
+
+          {/* Destination quick links - two rows */}
+          <div className="mt-6 max-w-4xl mx-auto">
+            <p className="text-white/90 text-sm font-medium mb-3 text-center">
+              Browse all packages by destination:
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+              {destinationPages.map((d) => (
+                <Link
+                  key={d.slug}
+                  to={`/destinations/${d.slug}`}
+                  className="px-3 py-2 rounded-full bg-white/95 hover:bg-secondary hover:text-secondary-foreground text-foreground text-xs sm:text-sm font-semibold text-center shadow-md transition-colors"
+                >
+                  {d.name}
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* Shotleft Deals section */}
