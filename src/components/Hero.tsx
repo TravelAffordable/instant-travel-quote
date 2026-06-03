@@ -1095,7 +1095,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
 
           {/* Shotleft Deals section */}
-          <div className="mt-10 max-w-3xl mx-auto text-left bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-2xl">
+          <div className="mt-4 max-w-3xl mx-auto text-left bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-2xl">
             <h2 className="text-4xl md:text-5xl text-center mb-4 tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700, color: '#D4AF37' }}>
               Shotleft Deals
             </h2>
