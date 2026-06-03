@@ -131,7 +131,7 @@ export function QuoteCard({
                 {quote.hotelName}
               </h3>
               <p className="text-base font-bold uppercase tracking-wide text-primary">
-                {quote.packageName}
+                {quote.packageName.replace(/^[A-Z]+\d+\s*-\s*/, '')}
               </p>
             </div>
           </div>
