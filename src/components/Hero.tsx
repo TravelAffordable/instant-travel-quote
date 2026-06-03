@@ -1080,16 +1080,13 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
 
           {/* Destination quick links - two rows */}
-          <div className="mt-6 max-w-4xl mx-auto">
-            <p className="text-white/90 text-sm font-medium mb-3 text-center">
-              Browse all packages by destination:
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+          <div className="mt-2 max-w-4xl mx-auto">
+            <div className="grid grid-cols-5 gap-1">
               {destinationPages.map((d) => (
                 <Link
                   key={d.slug}
                   to={`/destinations/${d.slug}`}
-                  className="px-3 py-2 rounded-full bg-white/95 hover:bg-secondary hover:text-secondary-foreground text-foreground text-xs sm:text-sm font-semibold text-center shadow-md transition-colors"
+                  className="px-1 py-1 rounded bg-white/95 hover:bg-secondary hover:text-secondary-foreground text-foreground text-[10px] sm:text-xs font-semibold text-center shadow transition-colors leading-tight"
                 >
                   {d.name}
                 </Link>
@@ -1098,7 +1095,7 @@ export function Hero({ onGetQuote }: HeroProps) {
           </div>
 
           {/* Shotleft Deals section */}
-          <div className="mt-10 max-w-3xl mx-auto text-left bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-2xl">
+          <div className="mt-4 max-w-3xl mx-auto text-left bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-2xl">
             <h2 className="text-4xl md:text-5xl text-center mb-4 tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700, color: '#D4AF37' }}>
               Shotleft Deals
             </h2>
