@@ -197,8 +197,8 @@ const DestinationPage = () => {
                       <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <CardContent className="p-5 flex flex-col flex-1">
-                      <h3 className="font-display text-lg font-bold text-foreground line-clamp-2">
-                        {pkg.shortName}
+                      <h3 className="font-display text-lg font-bold text-foreground">
+                        {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-1">
                         <Calendar className="inline h-3 w-3 mr-1" />{pkg.duration}

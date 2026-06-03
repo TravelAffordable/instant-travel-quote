@@ -131,7 +131,7 @@ export function QuoteCard({
                 {quote.hotelName}
               </h3>
               <p className="text-base font-bold uppercase tracking-wide text-primary">
-                {quote.packageName}
+                {quote.packageName.replace(/^[A-Z]+\d+\s*-\s*/, '')}
               </p>
             </div>
           </div>
@@ -190,7 +190,7 @@ export function QuoteCard({
               <div className="flex items-start gap-2">
                 <Package className={packageIconClass} />
                 <div className="flex-1">
-                  <p className={headingClass}>This Package: {quote.packageName}</p>
+                  <p className={headingClass}>This Package: {quote.packageName.replace(/^[A-Z]+\d+\s*-\s*/, '')}</p>
                   {inclusions && inclusions.length > 0 ? (
                     <ul className="space-y-1.5">
                       {inclusions
