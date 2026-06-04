@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ArrowRight, MapPin, Calendar, Users, Check, Sparkles } from 'lucide-react';
 import { getDestinationPage } from '@/data/destinationPages';
 import { getPackagesByDestination } from '@/data/travelData';
@@ -17,10 +21,23 @@ const DestinationPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const data = slug ? getDestinationPage(slug) : undefined;
+  const [requestPkg, setRequestPkg] = useState<{ id: string; name: string } | null>(null);
+  const [form, setForm] = useState({ checkIn: '', checkOut: '', name: '', tel: '', email: '', adults: '2', kids: '0' });
 
   if (!data) return <NotFound />;
 
   const canonical = `/destinations/${data.slug}`;
+
+  const submitRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!requestPkg) return;
+    const subject = `Price Request: ${requestPkg.name}`;
+    const body = `Package: ${requestPkg.name}\nDestination: ${data.name}\n\nCheck In: ${form.checkIn}\nCheck Out: ${form.checkOut}\n\nName: ${form.name}\nTel: ${form.tel}\nEmail: ${form.email}\nAdults: ${form.adults}\nKids: ${form.kids}\n\nPlease send me prices for this package.`;
+    window.location.href = `mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setRequestPkg(null);
+  };
+
+
 
   // JSON-LD: TouristDestination + Breadcrumb + FAQ
   const jsonLd = [
@@ -171,10 +188,10 @@ const DestinationPage = () => {
                         <Button
                           size="sm"
                           onClick={() =>
-                            navigate(`/?destination=${data.destinationId}&package=${pkg.id}#quote`)
+                            setRequestPkg({ id: pkg.id, name: pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '') })
                           }
                         >
-                          Enquire <ArrowRight className="ml-1 h-3 w-3" />
+                          Request Prices <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
                       </div>
                     </CardContent>
@@ -222,6 +239,50 @@ const DestinationPage = () => {
             ))}
         </div>
       </section>
+
+      <Dialog open={!!requestPkg} onOpenChange={(o) => !o && setRequestPkg(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Request Prices</DialogTitle>
+            <DialogDescription>{requestPkg?.name}</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitRequest} className="space-y-3">
+            <div>
+              <Label htmlFor="checkIn">Check in date (when you arrive)</Label>
+              <Input id="checkIn" type="date" required value={form.checkIn} onChange={(e) => setForm({ ...form, checkIn: e.target.value })} />
+            </div>
+            <div>
+              <Label htmlFor="checkOut">Check out date (when you leave)</Label>
+              <Input id="checkOut" type="date" required value={form.checkOut} onChange={(e) => setForm({ ...form, checkOut: e.target.value })} />
+            </div>
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            </div>
+            <div>
+              <Label htmlFor="tel">Tel</Label>
+              <Input id="tel" type="tel" required value={form.tel} onChange={(e) => setForm({ ...form, tel: e.target.value })} />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="adults">How many Adults</Label>
+                <Input id="adults" type="number" min="1" required value={form.adults} onChange={(e) => setForm({ ...form, adults: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="kids">How many Kids</Label>
+                <Input id="kids" type="number" min="0" value={form.kids} onChange={(e) => setForm({ ...form, kids: e.target.value })} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" className="w-full">Send Request</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
