@@ -170,9 +170,6 @@ const DestinationPage = () => {
             <h1 className="font-display mt-2 text-4xl font-bold text-navy md:text-6xl">
               {data.name} Weekend Getaways
             </h1>
-            <p className="mt-3 max-w-2xl text-base text-navy md:text-lg font-medium">
-              Trusted by families, friends, couples, social, sport and Church groups and corporate companies.
-            </p>
           </div>
         </div>
       </section>
