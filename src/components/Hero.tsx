@@ -1141,7 +1141,36 @@ export function Hero({ onGetQuote }: HeroProps) {
               </div>
             </form>
           </div>
-        </div>
+
+          {/* Destinations navigation bar — between Shotleft Deals and Durban deals */}
+          <nav className="mt-6 max-w-5xl mx-auto border-y border-white/20 bg-white/95 backdrop-blur rounded-xl">
+            <div className="px-4 py-3 overflow-x-auto">
+              <ul className="flex flex-nowrap items-center gap-2 md:gap-3 justify-center min-w-max">
+                {[
+                  { slug: 'durban', label: 'Durban' },
+                  { slug: 'umhlanga', label: 'Umhlanga' },
+                  { slug: 'cape-town', label: 'Cape Town' },
+                  { slug: 'sun-city', label: 'Sun City' },
+                  { slug: 'hartbeespoort', label: 'Hartbeespoort' },
+                  { slug: 'magaliesburg', label: 'Magaliesburg' },
+                  { slug: 'mpumalanga', label: 'Mpumalanga' },
+                  { slug: 'bela-bela', label: 'Bela-Bela' },
+                  { slug: 'vaal-river', label: 'Vaal River' },
+                  { slug: 'knysna', label: 'Knysna' },
+                ].map((d) => (
+                  <li key={d.slug}>
+                    <a
+                      href={`#dest-${d.slug}`}
+                      className="inline-block whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium text-navy hover:bg-muted transition-colors"
+                    >
+                      {d.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </nav>
+
 
         </div>{/* close container */}
         {/* Our Destinations Grid - Genie style */}
