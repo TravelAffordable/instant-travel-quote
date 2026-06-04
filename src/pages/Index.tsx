@@ -4,9 +4,11 @@ import { Hero } from '@/components/Hero';
 import { GroupTours } from '@/components/GroupTours';
 import { Testimonials } from '@/components/Testimonials';
 import { WhyChooseUs } from '@/components/WhyChooseUs';
+import { HomeDestinationsShowcase } from '@/components/HomeDestinationsShowcase';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
 import { SEO } from '@/components/SEO';
+
 
 
 const Index = () => {
@@ -26,7 +28,11 @@ const Index = () => {
       {/* Hero Section with Quote Form */}
       <Hero onGetQuote={() => {}} />
 
+      {/* Destination packages showcase (mirrors destination pages) */}
+      <HomeDestinationsShowcase />
+
       {/* Destinations section removed - now integrated into Hero */}
+
 
       {/* Group Tours */}
       <GroupTours />

@@ -1079,20 +1079,9 @@ export function Hero({ onGetQuote }: HeroProps) {
             <span className="text-sm font-semibold">LIMITED TIME: Up to 30% OFF Selected Packages!</span>
           </div>
 
-          {/* Destination quick links - two rows */}
-          <div className="mt-2 max-w-4xl mx-auto">
-            <div className="grid grid-cols-5 gap-1">
-              {destinationPages.map((d) => (
-                <Link
-                  key={d.slug}
-                  to={`/destinations/${d.slug}`}
-                  className="px-1 py-1 rounded bg-white/95 hover:bg-secondary hover:text-secondary-foreground text-foreground text-[10px] sm:text-xs font-semibold text-center shadow transition-colors leading-tight"
-                >
-                  {d.name}
-                </Link>
-              ))}
-            </div>
-          </div>
+          {/* (Destination quick links moved below the Shotleft Deals section) */}
+
+
 
           {/* Shotleft Deals section */}
           <div className="mt-4 max-w-3xl mx-auto text-left bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-2xl">
