@@ -1175,13 +1175,15 @@ export function Hero({ onGetQuote }: HeroProps) {
 
         </div>{/* close container */}
 
-        {/* Our Destinations Grid - Genie style */}
+        {/* Our Destinations Grid - Genie style (only shown when a destination is pre-selected) */}
         <div className="w-full" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
         <div id="destinations" className="max-w-6xl mx-auto py-12 px-4">
-          <h2 className="text-3xl font-bold text-center mb-10 text-white">Our Destinations</h2>
+          {destination && (
+            <h2 className="text-3xl font-bold text-center mb-10 text-white">Our Destinations</h2>
+          )}
           <div className={destination ? "max-w-md mx-auto" : "space-y-8"}>
             {genieDestinations
-              .filter((dest) => !destination || destination === dest.id)
+              .filter((dest) => destination === dest.id)
               .map((dest) => {
                 const destinationPackages = getPackagesByDestination(dest.id);
                 const showAllDestinationDeals = expandedDestinationDeals[dest.id] ?? false;
