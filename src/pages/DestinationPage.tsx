@@ -1,12 +1,27 @@
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { format } from 'date-fns';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, MapPin, Calendar, Users, Check, Sparkles } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { ArrowRight, MapPin, Calendar as CalendarIcon, Users, Check, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { getDestinationPage } from '@/data/destinationPages';
-import { getPackagesByDestination } from '@/data/travelData';
+import { getPackagesByDestination, TravelPackage } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 import { formatCurrency } from '@/lib/utils';
 import NotFound from './NotFound';
@@ -18,15 +33,49 @@ const DestinationPage = () => {
   const navigate = useNavigate();
   const data = slug ? getDestinationPage(slug) : undefined;
 
+  const [requestPkg, setRequestPkg] = useState<TravelPackage | null>(null);
+  const [checkIn, setCheckIn] = useState<Date | undefined>();
+  const [checkOut, setCheckOut] = useState<Date | undefined>();
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [checkOutOpen, setCheckOutOpen] = useState(false);
+  const [form, setForm] = useState({ name: '', tel: '', email: '', adults: 2, kids: 0 });
+
   if (!data) return <NotFound />;
 
   const canonical = `/destinations/${data.slug}`;
 
-  const requestPrices = (pkgId: string) => {
-    navigate(`/?destination=${data.destinationId}&package=${pkgId}#quote-section`);
-    setTimeout(() => {
-      document.getElementById('quote-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
+  const openRequest = (pkg: TravelPackage) => {
+    setRequestPkg(pkg);
+    setCheckIn(undefined);
+    setCheckOut(undefined);
+    setForm({ name: '', tel: '', email: '', adults: 2, kids: 0 });
+  };
+
+  const closeRequest = () => {
+    setRequestPkg(null);
+    setCheckInOpen(false);
+    setCheckOutOpen(false);
+  };
+
+  const submitRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!requestPkg) return;
+    const subject = `Price request: ${requestPkg.name} (${data.name})`;
+    const body = [
+      `Package: ${requestPkg.name}`,
+      `Destination: ${data.name}`,
+      `Check-in: ${checkIn ? format(checkIn, 'PPP') : '-'}`,
+      `Check-out: ${checkOut ? format(checkOut, 'PPP') : '-'}`,
+      `Name: ${form.name}`,
+      `Tel: ${form.tel}`,
+      `Email: ${form.email}`,
+      `Adults: ${form.adults}`,
+      `Kids: ${form.kids}`,
+    ].join('\n');
+    window.location.href = `mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(
+      subject,
+    )}&body=${encodeURIComponent(body)}`;
+    closeRequest();
   };
 
 
