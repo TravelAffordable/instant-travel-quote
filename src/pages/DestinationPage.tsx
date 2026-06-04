@@ -55,7 +55,7 @@ const DestinationPage = () => {
     setRequestPkg(pkg);
     setCheckIn(undefined);
     setCheckOut(undefined);
-    setForm({ name: '', tel: '', email: '', adults: 2, kids: 0 });
+    setForm({ name: '', tel: '', email: '', adults: 2, kids: 0, rooms: 1, budget: '', childAges: [] });
   };
 
   const closeRequest = () => {
