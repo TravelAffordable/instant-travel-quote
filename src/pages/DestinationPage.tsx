@@ -240,6 +240,50 @@ const DestinationPage = () => {
         </div>
       </section>
 
+      <Dialog open={!!requestPkg} onOpenChange={(o) => !o && setRequestPkg(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Request Prices</DialogTitle>
+            <DialogDescription>{requestPkg?.name}</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitRequest} className="space-y-3">
+            <div>
+              <Label htmlFor="checkIn">Check in date (when you arrive)</Label>
+              <Input id="checkIn" type="date" required value={form.checkIn} onChange={(e) => setForm({ ...form, checkIn: e.target.value })} />
+            </div>
+            <div>
+              <Label htmlFor="checkOut">Check out date (when you leave)</Label>
+              <Input id="checkOut" type="date" required value={form.checkOut} onChange={(e) => setForm({ ...form, checkOut: e.target.value })} />
+            </div>
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            </div>
+            <div>
+              <Label htmlFor="tel">Tel</Label>
+              <Input id="tel" type="tel" required value={form.tel} onChange={(e) => setForm({ ...form, tel: e.target.value })} />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="adults">How many Adults</Label>
+                <Input id="adults" type="number" min="1" required value={form.adults} onChange={(e) => setForm({ ...form, adults: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="kids">How many Kids</Label>
+                <Input id="kids" type="number" min="0" value={form.kids} onChange={(e) => setForm({ ...form, kids: e.target.value })} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" className="w-full">Send Request</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
