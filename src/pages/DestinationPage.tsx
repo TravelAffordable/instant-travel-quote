@@ -171,7 +171,7 @@ const DestinationPage = () => {
               {data.name} Weekend Getaways
             </h1>
             <p className="mt-3 max-w-2xl text-base text-navy md:text-lg font-medium">
-              Trusted by South African families. Instant all-inclusive quotes from <strong className="text-navy">R{data.startingFrom.toLocaleString('en-ZA')}pp</strong> — accommodation and activities included, no hidden costs.
+              Trusted by families, friends, couples, social, sport and Church groups and corporate companies.
             </p>
           </div>
         </div>
@@ -195,7 +195,6 @@ const DestinationPage = () => {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {pkgs.map((pkg) => {
                 const img = getPackageImage(pkg.id) || data.heroImage;
-                const fromPrice = pkg.fromPriceOverride ?? pkg.basePrice;
                 return (
                   <Card key={pkg.id} className="overflow-hidden flex flex-col">
                     <div className="h-44 overflow-hidden">
@@ -222,12 +221,6 @@ const DestinationPage = () => {
                         </ul>
                       )}
                       <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
-                        <div>
-                          <p className="font-['Anton'] text-[10px] text-navy/70 uppercase tracking-wide">From</p>
-                          <p className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
-                            {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
-                          </p>
-                        </div>
                         <Button size="sm" onClick={() => openRequest(pkg)}>
                           Request Prices <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
