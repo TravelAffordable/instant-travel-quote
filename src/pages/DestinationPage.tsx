@@ -99,7 +99,7 @@ const DestinationPage = () => {
               <span>{data.region}, South Africa</span>
             </div>
             <h1 className="font-display mt-2 text-4xl font-bold text-foreground md:text-6xl">
-              {data.name} Holiday Packages
+              {data.name} Weekend Getaways
             </h1>
             <p className="mt-3 max-w-2xl text-base text-foreground/80 md:text-lg">
               From <strong className="text-primary">R{data.startingFrom.toLocaleString('en-ZA')}pp</strong> — instant
@@ -117,63 +117,8 @@ const DestinationPage = () => {
         </div>
       </section>
 
-      {/* Intro + sidebar */}
-      <section className="container mx-auto grid gap-8 px-4 py-12 md:grid-cols-3">
-        <article className="prose prose-slate max-w-none md:col-span-2 dark:prose-invert">
-          <h2 className="text-2xl font-bold text-foreground">About {data.name}</h2>
-          <p className="text-foreground/80">{data.intro}</p>
+      {/* Intro removed per request — packages section below */}
 
-          <h3 className="mt-8 text-xl font-semibold text-foreground">Top highlights</h3>
-          <ul className="space-y-2">
-            {data.highlights.map((h) => (
-              <li key={h} className="flex items-start gap-2 text-foreground/80">
-                <Check className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                <span>{h}</span>
-              </li>
-            ))}
-          </ul>
-
-          <h3 className="mt-8 text-xl font-semibold text-foreground">Why visit</h3>
-          <p className="text-foreground/80">{data.whyVisit}</p>
-
-          <h3 className="mt-8 text-xl font-semibold text-foreground">Best time to visit</h3>
-          <p className="text-foreground/80">{data.bestTime}</p>
-
-          <h3 className="mt-8 text-xl font-semibold text-foreground">Who it’s for</h3>
-          <p className="text-foreground/80">{data.whoFor}</p>
-        </article>
-
-        <aside className="space-y-4">
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="font-semibold text-foreground">Quick facts</h3>
-              <dl className="mt-4 space-y-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">{data.region}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">Year-round destination</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">{data.whoFor}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">
-                    From R{data.startingFrom.toLocaleString('en-ZA')}pp
-                  </span>
-                </div>
-              </dl>
-              <Button className="mt-6 w-full" onClick={goToQuote}>
-                Get Instant Quote
-              </Button>
-            </CardContent>
-          </Card>
-        </aside>
-      </section>
 
       {/* Packages */}
       {(() => {
