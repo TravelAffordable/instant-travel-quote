@@ -1,13 +1,9 @@
-import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { ArrowRight, MapPin, Calendar, Users, Check, Sparkles } from 'lucide-react';
 import { getDestinationPage } from '@/data/destinationPages';
 import { getPackagesByDestination } from '@/data/travelData';
@@ -21,20 +17,16 @@ const DestinationPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const data = slug ? getDestinationPage(slug) : undefined;
-  const [requestPkg, setRequestPkg] = useState<{ id: string; name: string } | null>(null);
-  const [form, setForm] = useState({ checkIn: '', checkOut: '', name: '', tel: '', email: '', adults: '2', kids: '0' });
 
   if (!data) return <NotFound />;
 
   const canonical = `/destinations/${data.slug}`;
 
-  const submitRequest = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!requestPkg) return;
-    const subject = `Price Request: ${requestPkg.name}`;
-    const body = `Package: ${requestPkg.name}\nDestination: ${data.name}\n\nCheck In: ${form.checkIn}\nCheck Out: ${form.checkOut}\n\nName: ${form.name}\nTel: ${form.tel}\nEmail: ${form.email}\nAdults: ${form.adults}\nKids: ${form.kids}\n\nPlease send me prices for this package.`;
-    window.location.href = `mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setRequestPkg(null);
+  const requestPrices = (pkgId: string) => {
+    navigate(`/?destination=${data.destinationId}&package=${pkgId}#quote-section`);
+    setTimeout(() => {
+      document.getElementById('quote-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
   };
 
 
