@@ -363,7 +363,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'knysna',
     name: 'Knysna',
     region: 'Western Cape',
-    metaTitle: 'Knysna Garden Route Packages | Lagoon, Forests & Heads',
+    metaTitle: 'Knysna weekend getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Knysna Garden Route holiday packages — lagoon cruises, indigenous forests and the iconic Heads. Perfect honeymoon stop from R2,400pp.',
     keywords:
