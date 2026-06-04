@@ -99,7 +99,7 @@ const DestinationPage = () => {
               <span>{data.region}, South Africa</span>
             </div>
             <h1 className="font-display mt-2 text-4xl font-bold text-foreground md:text-6xl">
-              {data.name} Holiday Packages
+              {data.name} Weekend Getaways
             </h1>
             <p className="mt-3 max-w-2xl text-base text-foreground/80 md:text-lg">
               From <strong className="text-primary">R{data.startingFrom.toLocaleString('en-ZA')}pp</strong> — instant
