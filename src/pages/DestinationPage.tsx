@@ -226,7 +226,7 @@ const DestinationPage = () => {
                             {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
                           </p>
                         </div>
-                        <Button size="sm" onClick={() => requestPrices(pkg.id)}>
+                        <Button size="sm" onClick={() => openRequest(pkg)}>
                           Request Prices <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
                       </div>
