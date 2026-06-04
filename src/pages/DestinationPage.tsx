@@ -21,7 +21,7 @@ import {
 import { ArrowRight, MapPin, Calendar as CalendarIcon, Users, Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getDestinationPage } from '@/data/destinationPages';
-import { getPackagesByDestination, TravelPackage } from '@/data/travelData';
+import { getPackagesByDestination, Package as TravelPackage } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 import { formatCurrency } from '@/lib/utils';
 import NotFound from './NotFound';
