@@ -201,7 +201,7 @@ const DestinationPage = () => {
                     <div className="h-44 overflow-hidden">
                       <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
                     </div>
-                    <CardContent className="p-5 flex flex-col flex-1">
+                    <CardContent className="p-5 flex flex-col flex-1 text-center">
                       <h3 className="font-['Anton'] text-lg font-bold text-[#F5C542] uppercase tracking-wide">
                         {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
                       </h3>
