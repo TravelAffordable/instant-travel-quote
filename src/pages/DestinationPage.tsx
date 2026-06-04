@@ -202,7 +202,7 @@ const DestinationPage = () => {
                       <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <CardContent className="p-5 flex flex-col flex-1">
-                      <h3 className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
+                      <h3 className="font-['Anton'] text-lg font-bold text-sunset uppercase tracking-wide">
                         {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
                       </h3>
                       <p className="font-['Anton'] text-xs text-navy/70 mt-1 uppercase tracking-wide">
@@ -216,7 +216,7 @@ const DestinationPage = () => {
                           {pkg.activitiesIncluded.slice(0, 4).map((a) => (
                             <li key={a} className="text-xs text-navy/80 flex items-start gap-1">
                               <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                              <span className="font-['Anton'] line-clamp-1 uppercase tracking-wide">{a}</span>
+                              <span className="font-['Anton'] line-clamp-1 uppercase tracking-wide text-sunset">{a}</span>
                             </li>
                           ))}
                         </ul>
