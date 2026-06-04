@@ -1171,8 +1171,10 @@ export function Hero({ onGetQuote }: HeroProps) {
             </div>
           </nav>
 
+        </div>
 
         </div>{/* close container */}
+
         {/* Our Destinations Grid - Genie style */}
         <div className="w-full" style={{ backgroundColor: 'hsl(240 10% 10%)' }}>
         <div id="destinations" className="max-w-6xl mx-auto py-12 px-4">
