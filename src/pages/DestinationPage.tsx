@@ -78,6 +78,9 @@ const DestinationPage = () => {
       `Email: ${form.email}`,
       `Adults: ${form.adults}`,
       `Kids: ${form.kids}`,
+      `Child Ages: ${form.childAges.length ? form.childAges.map((a, i) => `Child ${i + 1}: ${a} yrs`).join(', ') : '-'}`,
+      `Rooms: ${form.rooms}`,
+      `Budget (ZAR): ${form.budget || '-'}`,
     ].join('\n');
     window.location.href = `mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(
       subject,
