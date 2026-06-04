@@ -244,15 +244,15 @@ const DestinationPage = () => {
       {/* FAQs */}
       <section className="bg-muted/30 py-12">
         <div className="container mx-auto max-w-3xl px-4">
-          <h2 className="font-display text-3xl font-bold text-foreground">
+          <h2 className="font-display text-3xl font-bold text-navy">
             {data.name} holiday FAQs
           </h2>
           <div className="mt-6 space-y-4">
             {data.faqs.map((f) => (
               <Card key={f.question}>
                 <CardContent className="p-6">
-                  <h3 className="font-semibold text-foreground">{f.question}</h3>
-                  <p className="mt-2 text-foreground/80">{f.answer}</p>
+                  <h3 className="font-semibold text-navy">{f.question}</h3>
+                  <p className="mt-2 text-navy/80">{f.answer}</p>
                 </CardContent>
               </Card>
             ))}
