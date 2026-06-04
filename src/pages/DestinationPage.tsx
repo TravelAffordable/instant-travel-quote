@@ -223,8 +223,8 @@ const DestinationPage = () => {
                       )}
                       <div className="mt-4 pt-4 border-t flex items-center justify-between">
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase">From</p>
-                          <p className="text-lg font-bold text-primary">
+                          <p className="text-[10px] text-navy/70 uppercase">From</p>
+                          <p className="text-lg font-bold text-navy">
                             {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
                           </p>
                         </div>
