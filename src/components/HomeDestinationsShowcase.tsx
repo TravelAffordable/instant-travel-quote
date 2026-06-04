@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Calendar as CalendarIcon, Check } from 'lucide-react';
+import { ArrowRight, MapPin, Calendar as CalendarIcon, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { destinationPages } from '@/data/destinationPages';
 import { getPackagesByDestination } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 
-// Order specified by user (Umhlanga excluded — covered under Durban):
-// Durban, Harties, Sun City, Magalies, Mpumalanga, Cape Town, Bela Bela, Vaal Cruise & Emerald Casino, Knysna
+// Order: Durban, Harties, Sun City, Magalies, Mpumalanga, Cape Town, Bela-Bela, Vaal River, Knysna
 const ORDERED_SLUGS = [
   'durban',
   'hartbeespoort',
@@ -66,9 +65,6 @@ function DestinationsNav({ activeSlug }: { activeSlug?: string }) {
 export function HomeDestinationsShowcase() {
   return (
     <div className="bg-background">
-      {/* Nav bar moved here — under Shotleft Deals */}
-      <DestinationsNav />
-
       {ORDERED_SLUGS.map((slug) => {
         const data = destinationPages.find((d) => d.slug === slug);
         if (!data) return null;
@@ -76,14 +72,39 @@ export function HomeDestinationsShowcase() {
         if (!pkgs.length) return null;
 
         return (
-          <div key={slug}>
-            <section
-              id={`dest-${slug}`}
-              className="container mx-auto px-4 py-12 scroll-mt-24"
-            >
-              <h2 className="font-display text-3xl font-bold text-navy mb-2">
+          <div key={slug} id={`dest-${slug}`} className="scroll-mt-24">
+            {/* Destination Hero — mirrors DestinationPage */}
+            <section className="relative">
+              <div className="relative h-[50vh] min-h-[360px] w-full overflow-hidden">
+                <img
+                  src={data.heroImage}
+                  alt={`${data.name} holiday packages — ${data.region}`}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  width={1920}
+                  height={1080}
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                <div className="container relative mx-auto flex h-full flex-col justify-end px-4 pb-10">
+                  <div className="flex items-center gap-2 text-sm text-navy font-medium">
+                    <MapPin className="h-4 w-4" />
+                    <span>{data.region}, South Africa</span>
+                  </div>
+                  <h2 className="font-display mt-2 text-4xl font-bold text-navy md:text-6xl">
+                    {data.name} Weekend Getaways
+                  </h2>
+                </div>
+              </div>
+            </section>
+
+            {/* Nav bar (active destination highlighted) */}
+            <DestinationsNav activeSlug={slug} />
+
+            {/* Packages */}
+            <section className="container mx-auto px-4 py-12">
+              <h3 className="font-display text-3xl font-bold text-navy mb-2">
                 {data.name} Packages
-              </h2>
+              </h3>
               <p className="text-navy/80 mb-8">
                 All available packages for {data.name}.{' '}
                 <Link
@@ -108,9 +129,9 @@ export function HomeDestinationsShowcase() {
                         />
                       </div>
                       <CardContent className="p-5 flex flex-col flex-1 text-center">
-                        <h3 className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
+                        <h4 className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
                           {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
-                        </h3>
+                        </h4>
                         <p className="font-['Anton'] text-xs text-navy/70 mt-1 uppercase tracking-wide">
                           <CalendarIcon className="inline h-3 w-3 mr-1" />
                           {pkg.duration}
