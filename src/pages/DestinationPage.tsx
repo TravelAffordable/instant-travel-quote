@@ -270,7 +270,7 @@ const DestinationPage = () => {
               <Link
                 key={s}
                 to={`/destinations/${s}`}
-                className="rounded-full border border-border px-4 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-foreground"
+                className="rounded-full border border-border px-4 py-2 text-sm text-navy hover:bg-muted"
               >
                 {s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
               </Link>
