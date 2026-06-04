@@ -216,7 +216,7 @@ const DestinationPage = () => {
                           {pkg.activitiesIncluded.slice(0, 4).map((a) => (
                             <li key={a} className="text-xs text-navy/80 flex items-start gap-1">
                               <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                              <span className="font-['Anton'] line-clamp-1 uppercase tracking-wide">{a}</span>
+                              <span className="font-['Anton'] line-clamp-1 uppercase tracking-wide text-sunset">{a}</span>
                             </li>
                           ))}
                         </ul>
