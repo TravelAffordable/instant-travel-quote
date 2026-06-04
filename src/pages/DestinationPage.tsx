@@ -202,13 +202,13 @@ const DestinationPage = () => {
                       <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <CardContent className="p-5 flex flex-col flex-1">
-                      <h3 className="font-display text-lg font-bold text-foreground">
+                      <h3 className="font-display text-lg font-bold text-navy">
                         {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
                       </h3>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-navy/70 mt-1">
                         <CalendarIcon className="inline h-3 w-3 mr-1" />{pkg.duration}
                       </p>
-                      <p className="text-sm text-foreground/80 mt-3 line-clamp-3 flex-1">
+                      <p className="text-sm text-navy/80 mt-3 line-clamp-3 flex-1">
                         {pkg.description}
                       </p>
                       {pkg.activitiesIncluded?.length > 0 && (
