@@ -60,11 +60,6 @@ export const destinationPages: DestinationPageData[] = [
     startingFrom: 1400,
     faqs: [
       {
-        question: 'How much is a Durban holiday package per person?',
-        answer:
-          'Travel Affordable Durban packages start from R1,400 per person sharing for budget hotels and rise to around R6,500pp for premium beachfront resorts, depending on dates and inclusions.',
-      },
-      {
         question: 'Which areas of Durban do you book?',
         answer:
           'We focus on the Golden Mile, North Beach, South Beach and Umhlanga — all within easy reach of the beach, restaurants and major attractions.',
