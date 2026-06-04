@@ -163,11 +163,11 @@ const DestinationPage = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
           <div className="container relative mx-auto flex h-full flex-col justify-end px-4 pb-10">
-            <div className="flex items-center gap-2 text-sm text-foreground/80">
+            <div className="flex items-center gap-2 text-sm text-navy font-medium">
               <MapPin className="h-4 w-4" />
               <span>{data.region}, South Africa</span>
             </div>
-            <h1 className="font-display mt-2 text-4xl font-bold text-foreground md:text-6xl">
+            <h1 className="font-display mt-2 text-4xl font-bold text-navy md:text-6xl">
               {data.name} Weekend Getaways
             </h1>
             <p className="mt-3 max-w-2xl text-base text-navy md:text-lg font-medium">
@@ -186,10 +186,10 @@ const DestinationPage = () => {
         if (!pkgs.length) return null;
         return (
           <section className="container mx-auto px-4 py-12">
-            <h2 className="font-display text-3xl font-bold text-foreground mb-2">
+            <h2 className="font-display text-3xl font-bold text-navy mb-2">
               {data.name} Packages
             </h2>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-navy/80 mb-8">
               All available packages for {data.name}. Click any package to get an instant quote.
             </p>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -202,19 +202,19 @@ const DestinationPage = () => {
                       <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <CardContent className="p-5 flex flex-col flex-1">
-                      <h3 className="font-display text-lg font-bold text-foreground">
+                      <h3 className="font-display text-lg font-bold text-navy">
                         {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
                       </h3>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-navy/70 mt-1">
                         <CalendarIcon className="inline h-3 w-3 mr-1" />{pkg.duration}
                       </p>
-                      <p className="text-sm text-foreground/80 mt-3 line-clamp-3 flex-1">
+                      <p className="text-sm text-navy/80 mt-3 line-clamp-3 flex-1">
                         {pkg.description}
                       </p>
                       {pkg.activitiesIncluded?.length > 0 && (
                         <ul className="mt-3 space-y-1">
                           {pkg.activitiesIncluded.slice(0, 4).map((a) => (
-                            <li key={a} className="text-xs text-foreground/70 flex items-start gap-1">
+                            <li key={a} className="text-xs text-navy/80 flex items-start gap-1">
                               <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
                               <span className="line-clamp-1">{a}</span>
                             </li>
@@ -223,8 +223,8 @@ const DestinationPage = () => {
                       )}
                       <div className="mt-4 pt-4 border-t flex items-center justify-between">
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase">From</p>
-                          <p className="text-lg font-bold text-primary">
+                          <p className="text-[10px] text-navy/70 uppercase">From</p>
+                          <p className="text-lg font-bold text-navy">
                             {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
                           </p>
                         </div>
@@ -244,15 +244,15 @@ const DestinationPage = () => {
       {/* FAQs */}
       <section className="bg-muted/30 py-12">
         <div className="container mx-auto max-w-3xl px-4">
-          <h2 className="font-display text-3xl font-bold text-foreground">
+          <h2 className="font-display text-3xl font-bold text-navy">
             {data.name} holiday FAQs
           </h2>
           <div className="mt-6 space-y-4">
             {data.faqs.map((f) => (
               <Card key={f.question}>
                 <CardContent className="p-6">
-                  <h3 className="font-semibold text-foreground">{f.question}</h3>
-                  <p className="mt-2 text-foreground/80">{f.answer}</p>
+                  <h3 className="font-semibold text-navy">{f.question}</h3>
+                  <p className="mt-2 text-navy/80">{f.answer}</p>
                 </CardContent>
               </Card>
             ))}
@@ -262,7 +262,7 @@ const DestinationPage = () => {
 
       {/* Internal links */}
       <section className="container mx-auto px-4 py-12">
-        <h2 className="font-display text-2xl font-bold text-foreground">Other popular destinations</h2>
+        <h2 className="font-display text-2xl font-bold text-navy">Other popular destinations</h2>
         <div className="mt-4 flex flex-wrap gap-2">
           {['durban', 'cape-town', 'sun-city', 'hartbeespoort', 'magaliesburg', 'mpumalanga', 'bela-bela', 'umhlanga']
             .filter((s) => s !== data.slug)
@@ -270,7 +270,7 @@ const DestinationPage = () => {
               <Link
                 key={s}
                 to={`/destinations/${s}`}
-                className="rounded-full border border-border px-4 py-2 text-sm text-foreground/80 hover:bg-muted hover:text-foreground"
+                className="rounded-full border border-border px-4 py-2 text-sm text-navy hover:bg-muted"
               >
                 {s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
               </Link>
