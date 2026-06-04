@@ -222,12 +222,6 @@ const DestinationPage = () => {
                         </ul>
                       )}
                       <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
-                        <div>
-                          <p className="font-['Anton'] text-[10px] text-navy/70 uppercase tracking-wide">From</p>
-                          <p className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
-                            {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
-                          </p>
-                        </div>
                         <Button size="sm" onClick={() => openRequest(pkg)}>
                           Request Prices <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
