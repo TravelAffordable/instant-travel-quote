@@ -188,10 +188,10 @@ const DestinationPage = () => {
                         <Button
                           size="sm"
                           onClick={() =>
-                            navigate(`/?destination=${data.destinationId}&package=${pkg.id}#quote`)
+                            setRequestPkg({ id: pkg.id, name: pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '') })
                           }
                         >
-                          Enquire <ArrowRight className="ml-1 h-3 w-3" />
+                          Request Prices <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
                       </div>
                     </CardContent>
