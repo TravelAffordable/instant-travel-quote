@@ -167,9 +167,6 @@ export function HomeDestinationsShowcase() {
                 })}
               </div>
             </section>
-
-            {/* Nav bar between every destination */}
-            <DestinationsNav activeSlug={slug} />
           </div>
         );
       })}
