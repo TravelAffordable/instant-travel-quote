@@ -262,7 +262,7 @@ const DestinationPage = () => {
 
       {/* Internal links */}
       <section className="container mx-auto px-4 py-12">
-        <h2 className="font-display text-2xl font-bold text-foreground">Other popular destinations</h2>
+        <h2 className="font-display text-2xl font-bold text-navy">Other popular destinations</h2>
         <div className="mt-4 flex flex-wrap gap-2">
           {['durban', 'cape-town', 'sun-city', 'hartbeespoort', 'magaliesburg', 'mpumalanga', 'bela-bela', 'umhlanga']
             .filter((s) => s !== data.slug)
