@@ -277,6 +277,111 @@ const DestinationPage = () => {
       </section>
 
 
+      <Dialog open={!!requestPkg} onOpenChange={(o) => !o && closeRequest()}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Request Prices</DialogTitle>
+            <DialogDescription>
+              {requestPkg ? `${requestPkg.name} — ${data.name}` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitRequest} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Check in date (when you arrive)</Label>
+                <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn('w-full justify-start text-left font-normal', !checkIn && 'text-muted-foreground')}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {checkIn ? format(checkIn, 'PPP') : 'Pick a date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={checkIn}
+                      onSelect={(d) => {
+                        setCheckIn(d);
+                        if (d) {
+                          if (checkOut && checkOut <= d) setCheckOut(undefined);
+                          setCheckInOpen(false);
+                          setTimeout(() => setCheckOutOpen(true), 100);
+                        }
+                      }}
+                      disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
+                      className={cn('p-3 pointer-events-auto')}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Check out date (when you leave)</Label>
+                <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn('w-full justify-start text-left font-normal', !checkOut && 'text-muted-foreground')}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {checkOut ? format(checkOut, 'PPP') : 'Pick a date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={checkOut}
+                      onSelect={(d) => {
+                        setCheckOut(d);
+                        if (d) setCheckOutOpen(false);
+                      }}
+                      disabled={(d) =>
+                        checkIn ? d <= checkIn : d < new Date(new Date().setHours(0, 0, 0, 0))
+                      }
+                      initialFocus
+                      className={cn('p-3 pointer-events-auto')}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="rp-name">Name</Label>
+              <Input id="rp-name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-tel">Tel</Label>
+                <Input id="rp-tel" type="tel" required value={form.tel} onChange={(e) => setForm({ ...form, tel: e.target.value })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-email">Email</Label>
+                <Input id="rp-email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-adults">How many Adults</Label>
+                <Input id="rp-adults" type="number" min={1} required value={form.adults} onChange={(e) => setForm({ ...form, adults: Number(e.target.value) })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-kids">How many Kids</Label>
+                <Input id="rp-kids" type="number" min={0} required value={form.kids} onChange={(e) => setForm({ ...form, kids: Number(e.target.value) })} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={closeRequest}>Cancel</Button>
+              <Button type="submit" disabled={!checkIn || !checkOut}>Send Request</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
