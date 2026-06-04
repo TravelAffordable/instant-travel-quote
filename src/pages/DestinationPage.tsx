@@ -163,11 +163,11 @@ const DestinationPage = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
           <div className="container relative mx-auto flex h-full flex-col justify-end px-4 pb-10">
-            <div className="flex items-center gap-2 text-sm text-foreground/80">
+            <div className="flex items-center gap-2 text-sm text-navy font-medium">
               <MapPin className="h-4 w-4" />
               <span>{data.region}, South Africa</span>
             </div>
-            <h1 className="font-display mt-2 text-4xl font-bold text-foreground md:text-6xl">
+            <h1 className="font-display mt-2 text-4xl font-bold text-navy md:text-6xl">
               {data.name} Weekend Getaways
             </h1>
             <p className="mt-3 max-w-2xl text-base text-navy md:text-lg font-medium">
