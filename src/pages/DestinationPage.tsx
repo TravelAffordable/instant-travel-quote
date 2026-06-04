@@ -1,12 +1,27 @@
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { format } from 'date-fns';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, MapPin, Calendar, Users, Check, Sparkles } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { ArrowRight, MapPin, Calendar as CalendarIcon, Users, Check, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { getDestinationPage } from '@/data/destinationPages';
-import { getPackagesByDestination } from '@/data/travelData';
+import { getPackagesByDestination, Package as TravelPackage } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 import { formatCurrency } from '@/lib/utils';
 import NotFound from './NotFound';
@@ -18,15 +33,49 @@ const DestinationPage = () => {
   const navigate = useNavigate();
   const data = slug ? getDestinationPage(slug) : undefined;
 
+  const [requestPkg, setRequestPkg] = useState<TravelPackage | null>(null);
+  const [checkIn, setCheckIn] = useState<Date | undefined>();
+  const [checkOut, setCheckOut] = useState<Date | undefined>();
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [checkOutOpen, setCheckOutOpen] = useState(false);
+  const [form, setForm] = useState({ name: '', tel: '', email: '', adults: 2, kids: 0 });
+
   if (!data) return <NotFound />;
 
   const canonical = `/destinations/${data.slug}`;
 
-  const requestPrices = (pkgId: string) => {
-    navigate(`/?destination=${data.destinationId}&package=${pkgId}#quote-section`);
-    setTimeout(() => {
-      document.getElementById('quote-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 150);
+  const openRequest = (pkg: TravelPackage) => {
+    setRequestPkg(pkg);
+    setCheckIn(undefined);
+    setCheckOut(undefined);
+    setForm({ name: '', tel: '', email: '', adults: 2, kids: 0 });
+  };
+
+  const closeRequest = () => {
+    setRequestPkg(null);
+    setCheckInOpen(false);
+    setCheckOutOpen(false);
+  };
+
+  const submitRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!requestPkg) return;
+    const subject = `Price request: ${requestPkg.name} (${data.name})`;
+    const body = [
+      `Package: ${requestPkg.name}`,
+      `Destination: ${data.name}`,
+      `Check-in: ${checkIn ? format(checkIn, 'PPP') : '-'}`,
+      `Check-out: ${checkOut ? format(checkOut, 'PPP') : '-'}`,
+      `Name: ${form.name}`,
+      `Tel: ${form.tel}`,
+      `Email: ${form.email}`,
+      `Adults: ${form.adults}`,
+      `Kids: ${form.kids}`,
+    ].join('\n');
+    window.location.href = `mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(
+      subject,
+    )}&body=${encodeURIComponent(body)}`;
+    closeRequest();
   };
 
 
@@ -177,7 +226,7 @@ const DestinationPage = () => {
                             {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
                           </p>
                         </div>
-                        <Button size="sm" onClick={() => requestPrices(pkg.id)}>
+                        <Button size="sm" onClick={() => openRequest(pkg)}>
                           Request Prices <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
                       </div>
@@ -227,6 +276,111 @@ const DestinationPage = () => {
         </div>
       </section>
 
+
+      <Dialog open={!!requestPkg} onOpenChange={(o) => !o && closeRequest()}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Request Prices</DialogTitle>
+            <DialogDescription>
+              {requestPkg ? `${requestPkg.name} — ${data.name}` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitRequest} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Check in date (when you arrive)</Label>
+                <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn('w-full justify-start text-left font-normal', !checkIn && 'text-muted-foreground')}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {checkIn ? format(checkIn, 'PPP') : 'Pick a date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={checkIn}
+                      onSelect={(d) => {
+                        setCheckIn(d);
+                        if (d) {
+                          if (checkOut && checkOut <= d) setCheckOut(undefined);
+                          setCheckInOpen(false);
+                          setTimeout(() => setCheckOutOpen(true), 100);
+                        }
+                      }}
+                      disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
+                      className={cn('p-3 pointer-events-auto')}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Check out date (when you leave)</Label>
+                <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn('w-full justify-start text-left font-normal', !checkOut && 'text-muted-foreground')}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {checkOut ? format(checkOut, 'PPP') : 'Pick a date'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={checkOut}
+                      onSelect={(d) => {
+                        setCheckOut(d);
+                        if (d) setCheckOutOpen(false);
+                      }}
+                      disabled={(d) =>
+                        checkIn ? d <= checkIn : d < new Date(new Date().setHours(0, 0, 0, 0))
+                      }
+                      initialFocus
+                      className={cn('p-3 pointer-events-auto')}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="rp-name">Name</Label>
+              <Input id="rp-name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-tel">Tel</Label>
+                <Input id="rp-tel" type="tel" required value={form.tel} onChange={(e) => setForm({ ...form, tel: e.target.value })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-email">Email</Label>
+                <Input id="rp-email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-adults">How many Adults</Label>
+                <Input id="rp-adults" type="number" min={1} required value={form.adults} onChange={(e) => setForm({ ...form, adults: Number(e.target.value) })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="rp-kids">How many Kids</Label>
+                <Input id="rp-kids" type="number" min={0} required value={form.kids} onChange={(e) => setForm({ ...form, kids: Number(e.target.value) })} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={closeRequest}>Cancel</Button>
+              <Button type="submit" disabled={!checkIn || !checkOut}>Send Request</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
