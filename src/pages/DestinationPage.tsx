@@ -319,6 +319,7 @@ const DestinationPage = () => {
                         setCheckIn(d);
                         if (d) {
                           if (checkOut && checkOut <= d) setCheckOut(undefined);
+                          setCheckOutMonth(d);
                           setCheckInOpen(false);
                           setTimeout(() => setCheckOutOpen(true), 100);
                         }
