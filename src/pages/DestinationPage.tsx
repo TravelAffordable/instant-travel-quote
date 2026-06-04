@@ -45,6 +45,7 @@ const DestinationPage = () => {
   const [checkOut, setCheckOut] = useState<Date | undefined>();
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [checkOutOpen, setCheckOutOpen] = useState(false);
+  const [checkOutMonth, setCheckOutMonth] = useState<Date | undefined>();
   const [form, setForm] = useState({ name: '', tel: '', email: '', adults: 2, kids: 0, rooms: 1, budget: '', childAges: [] as number[] });
 
   if (!data) return <NotFound />;
@@ -318,6 +319,7 @@ const DestinationPage = () => {
                         setCheckIn(d);
                         if (d) {
                           if (checkOut && checkOut <= d) setCheckOut(undefined);
+                          setCheckOutMonth(d);
                           setCheckInOpen(false);
                           setTimeout(() => setCheckOutOpen(true), 100);
                         }
@@ -353,6 +355,8 @@ const DestinationPage = () => {
                       disabled={(d) =>
                         checkIn ? d <= checkIn : d < new Date(new Date().setHours(0, 0, 0, 0))
                       }
+                      month={checkOutMonth}
+                      onMonthChange={setCheckOutMonth}
                       initialFocus
                       className={cn('p-3 pointer-events-auto')}
                     />
