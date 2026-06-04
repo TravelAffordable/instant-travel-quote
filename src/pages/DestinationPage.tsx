@@ -21,10 +21,23 @@ const DestinationPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const data = slug ? getDestinationPage(slug) : undefined;
+  const [requestPkg, setRequestPkg] = useState<{ id: string; name: string } | null>(null);
+  const [form, setForm] = useState({ checkIn: '', checkOut: '', name: '', tel: '', email: '', adults: '2', kids: '0' });
 
   if (!data) return <NotFound />;
 
   const canonical = `/destinations/${data.slug}`;
+
+  const submitRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!requestPkg) return;
+    const subject = `Price Request: ${requestPkg.name}`;
+    const body = `Package: ${requestPkg.name}\nDestination: ${data.name}\n\nCheck In: ${form.checkIn}\nCheck Out: ${form.checkOut}\n\nName: ${form.name}\nTel: ${form.tel}\nEmail: ${form.email}\nAdults: ${form.adults}\nKids: ${form.kids}\n\nPlease send me prices for this package.`;
+    window.location.href = `mailto:info@travelaffordable.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setRequestPkg(null);
+  };
+
+
 
   // JSON-LD: TouristDestination + Breadcrumb + FAQ
   const jsonLd = [
