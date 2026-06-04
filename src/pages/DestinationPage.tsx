@@ -202,13 +202,13 @@ const DestinationPage = () => {
                       <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <CardContent className="p-5 flex flex-col flex-1">
-                      <h3 className="font-display text-lg font-bold text-navy">
+                      <h3 className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
                         {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
                       </h3>
-                      <p className="text-xs text-navy/70 mt-1">
+                      <p className="font-['Anton'] text-xs text-navy/70 mt-1 uppercase tracking-wide">
                         <CalendarIcon className="inline h-3 w-3 mr-1" />{pkg.duration}
                       </p>
-                      <p className="text-sm text-navy/80 mt-3 line-clamp-3 flex-1">
+                      <p className="font-['Anton'] text-sm text-navy/80 mt-3 line-clamp-3 flex-1 uppercase tracking-wide">
                         {pkg.description}
                       </p>
                       {pkg.activitiesIncluded?.length > 0 && (
@@ -216,15 +216,15 @@ const DestinationPage = () => {
                           {pkg.activitiesIncluded.slice(0, 4).map((a) => (
                             <li key={a} className="text-xs text-navy/80 flex items-start gap-1">
                               <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                              <span className="line-clamp-1">{a}</span>
+                              <span className="font-['Anton'] line-clamp-1 uppercase tracking-wide">{a}</span>
                             </li>
                           ))}
                         </ul>
                       )}
                       <div className="mt-4 pt-4 border-t flex items-center justify-between">
                         <div>
-                          <p className="text-[10px] text-navy/70 uppercase">From</p>
-                          <p className="text-lg font-bold text-navy">
+                          <p className="font-['Anton'] text-[10px] text-navy/70 uppercase tracking-wide">From</p>
+                          <p className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
                             {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
                           </p>
                         </div>
