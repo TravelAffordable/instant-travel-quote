@@ -186,10 +186,10 @@ const DestinationPage = () => {
         if (!pkgs.length) return null;
         return (
           <section className="container mx-auto px-4 py-12">
-            <h2 className="font-display text-3xl font-bold text-foreground mb-2">
+            <h2 className="font-display text-3xl font-bold text-navy mb-2">
               {data.name} Packages
             </h2>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-navy/80 mb-8">
               All available packages for {data.name}. Click any package to get an instant quote.
             </p>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
