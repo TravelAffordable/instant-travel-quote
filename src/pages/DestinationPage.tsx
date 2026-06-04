@@ -355,6 +355,8 @@ const DestinationPage = () => {
                       disabled={(d) =>
                         checkIn ? d <= checkIn : d < new Date(new Date().setHours(0, 0, 0, 0))
                       }
+                      month={checkOutMonth}
+                      onMonthChange={setCheckOutMonth}
                       initialFocus
                       className={cn('p-3 pointer-events-auto')}
                     />
