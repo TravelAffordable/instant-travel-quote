@@ -45,6 +45,7 @@ const DestinationPage = () => {
   const [checkOut, setCheckOut] = useState<Date | undefined>();
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [checkOutOpen, setCheckOutOpen] = useState(false);
+  const [checkOutMonth, setCheckOutMonth] = useState<Date | undefined>();
   const [form, setForm] = useState({ name: '', tel: '', email: '', adults: 2, kids: 0, rooms: 1, budget: '', childAges: [] as number[] });
 
   if (!data) return <NotFound />;
