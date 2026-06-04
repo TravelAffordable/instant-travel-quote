@@ -374,14 +374,91 @@ const DestinationPage = () => {
                 <Input id="rp-email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="rp-adults">How many Adults</Label>
-                <Input id="rp-adults" type="number" min={1} required value={form.adults} onChange={(e) => setForm({ ...form, adults: Number(e.target.value) })} />
+                <Label>How many Adults</Label>
+                <Select value={String(form.adults)} onValueChange={(v) => setForm({ ...form, adults: Number(v) })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="rp-kids">How many Kids</Label>
-                <Input id="rp-kids" type="number" min={0} required value={form.kids} onChange={(e) => setForm({ ...form, kids: Number(e.target.value) })} />
+                <Label>How many Kids</Label>
+                <Select
+                  value={String(form.kids)}
+                  onValueChange={(v) => {
+                    const k = Number(v);
+                    const childAges = Array.from({ length: k }, (_, i) => form.childAges[i] ?? 5);
+                    setForm({ ...form, kids: k, childAges });
+                  }}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {Array.from({ length: 101 }, (_, i) => i).map((n) => (
+                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Rooms *</Label>
+                <Select value={String(form.rooms)} onValueChange={(v) => setForm({ ...form, rooms: Number(v) })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {form.kids > 0 && (
+              <div className="space-y-2">
+                <Label>Child Ages (3-17 years)</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {form.childAges.map((age, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="text-sm whitespace-nowrap">Child {i + 1}:</span>
+                      <Select
+                        value={String(age)}
+                        onValueChange={(v) => {
+                          const next = [...form.childAges];
+                          next[i] = Number(v);
+                          setForm({ ...form, childAges: next });
+                        }}
+                      >
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent className="max-h-60">
+                          {Array.from({ length: 15 }, (_, n) => n + 3).map((n) => (
+                            <SelectItem key={n} value={String(n)}>{n} yrs</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label htmlFor="rp-budget">How much would you like to spend for your whole group? (ZAR) *</Label>
+              <p className="text-xs text-muted-foreground">
+                Enter how much you'd like to spend for your whole group so we can find the best options that fit your pocket.
+              </p>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R</span>
+                <Input
+                  id="rp-budget"
+                  type="number"
+                  min={0}
+                  required
+                  className="pl-7"
+                  value={form.budget}
+                  onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                />
               </div>
             </div>
             <DialogFooter>
