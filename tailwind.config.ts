@@ -75,6 +75,7 @@ export default {
         sand: "hsl(var(--sand))",
         earth: "hsl(var(--earth))",
         navy: "hsl(var(--navy))",
+        gold: "hsl(var(--gold))",
       },
       borderRadius: {
         lg: "var(--radius)",
