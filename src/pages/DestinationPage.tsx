@@ -214,7 +214,7 @@ const DestinationPage = () => {
                       {pkg.activitiesIncluded?.length > 0 && (
                         <ul className="mt-3 space-y-1">
                           {pkg.activitiesIncluded.slice(0, 4).map((a) => (
-                            <li key={a} className="text-xs text-foreground/70 flex items-start gap-1">
+                            <li key={a} className="text-xs text-navy/80 flex items-start gap-1">
                               <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
                               <span className="line-clamp-1">{a}</span>
                             </li>
