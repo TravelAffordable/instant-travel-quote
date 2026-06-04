@@ -177,12 +177,7 @@ const DestinationPage = () => {
                             {formatCurrency(fromPrice)}<span className="text-xs font-normal"> pp</span>
                           </p>
                         </div>
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            setRequestPkg({ id: pkg.id, name: pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '') })
-                          }
-                        >
+                        <Button size="sm" onClick={() => requestPrices(pkg.id)}>
                           Request Prices <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
                       </div>
