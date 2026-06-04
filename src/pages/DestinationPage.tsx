@@ -202,13 +202,13 @@ const DestinationPage = () => {
                       <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <CardContent className="p-5 flex flex-col flex-1 text-center">
-                      <h3 className="font-['Anton'] text-lg font-bold text-[#F5C542] uppercase tracking-wide">
+                      <h3 className="font-['Anton'] text-2xl font-bold text-gold uppercase">
                         {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
                       </h3>
                       <p className="font-['Anton'] text-xs text-navy/70 mt-1 uppercase tracking-wide">
                         <CalendarIcon className="inline h-3 w-3 mr-1" />{pkg.duration}
                       </p>
-                      <p className="font-['Anton'] text-sm text-navy/80 mt-3 line-clamp-3 flex-1 uppercase tracking-wide">
+                      <p className="font-['Anton'] text-sm text-navy/80 mt-3 line-clamp-3 flex-1 uppercase">
                         {pkg.description}
                       </p>
                       {pkg.activitiesIncluded?.length > 0 && (
@@ -216,7 +216,7 @@ const DestinationPage = () => {
                           {pkg.activitiesIncluded.slice(0, 4).map((a) => (
                             <li key={a} className="text-xs text-navy/80 flex items-center justify-center gap-1">
                               <Check className="h-3 w-3 text-primary shrink-0" />
-                              <span className="font-['Anton'] line-clamp-1 uppercase tracking-wide text-[#F5C542]">{a}</span>
+                              <span className="font-['Anton'] line-clamp-1 uppercase text-gold">{a}</span>
                             </li>
                           ))}
                         </ul>
