@@ -195,7 +195,6 @@ const DestinationPage = () => {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {pkgs.map((pkg) => {
                 const img = getPackageImage(pkg.id) || data.heroImage;
-                const fromPrice = pkg.fromPriceOverride ?? pkg.basePrice;
                 return (
                   <Card key={pkg.id} className="overflow-hidden flex flex-col">
                     <div className="h-44 overflow-hidden">
