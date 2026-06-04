@@ -214,7 +214,7 @@ const DestinationPage = () => {
                         {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-1">
-                        <Calendar className="inline h-3 w-3 mr-1" />{pkg.duration}
+                        <CalendarIcon className="inline h-3 w-3 mr-1" />{pkg.duration}
                       </p>
                       <p className="text-sm text-foreground/80 mt-3 line-clamp-3 flex-1">
                         {pkg.description}
