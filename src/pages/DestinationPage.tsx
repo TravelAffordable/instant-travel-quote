@@ -171,7 +171,7 @@ const DestinationPage = () => {
               {data.name} Weekend Getaways
             </h1>
             <p className="mt-3 max-w-2xl text-base text-navy md:text-lg font-medium">
-              Trusted by South African families. Instant all-inclusive quotes from <strong className="text-navy">R{data.startingFrom.toLocaleString('en-ZA')}pp</strong> — accommodation and activities included, no hidden costs.
+              Trusted by families, friends, couples, social, sport and Church groups and corporate companies.
             </p>
           </div>
         </div>
