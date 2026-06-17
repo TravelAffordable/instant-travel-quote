@@ -118,12 +118,12 @@ export function Footer() {
                 </li>
                 <li>
                   <Link to="/destinations/hartbeespoort" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    Hartbeespoort
+                    Harties
                   </Link>
                 </li>
                 <li>
                   <Link to="/destinations/magaliesburg" className="text-background/70 hover:text-primary text-sm transition-colors">
-                    Magaliesburg
+                    Magalies
                   </Link>
                 </li>
                 <li>

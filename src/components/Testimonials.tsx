@@ -8,7 +8,7 @@ const testimonials = [
     avatar: 'https://randomuser.me/api/portraits/women/32.jpg',
     rating: 5,
     text: "Our Harties getaway was absolutely perfect! The sunset cruise was breathtaking and the accommodation was cozy. Will definitely book with Travel Affordable again!",
-    destination: 'Hartbeespoort',
+    destination: 'Harties',
   },
   {
     id: 2,
