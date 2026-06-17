@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowRight, MapPin, Calendar as CalendarIcon, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getDestinationHeroTitle } from '@/lib/utils';
 import { destinationPages } from '@/data/destinationPages';
 import { getPackagesByDestination } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
