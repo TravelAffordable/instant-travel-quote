@@ -27,7 +27,7 @@ const Blog = () => {
     <div className="min-h-screen bg-background">
       <SEO
         title="Travel Blog | South African Holiday Guides & Tips"
-        description="Destination guides, itineraries and travel tips for affordable South African holidays — Durban, Cape Town, Sun City, Harties, Magaliesburg & more."
+        description="Destination guides, itineraries and travel tips for affordable South African holidays — Durban, Cape Town, Sun City, Harties, Magalies & more."
         canonical="/blog"
         keywords="south africa travel blog, holiday guides, sa travel tips, destination guides"
         jsonLd={jsonLd}

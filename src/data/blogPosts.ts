@@ -186,8 +186,8 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: 'hartbeespoort-family-getaway-guide',
-    title: 'Hartbeespoort Family Getaway Guide',
-    metaTitle: 'Hartbeespoort Family Getaway | Best Activities & Resorts',
+    title: 'Harties Family Getaway Guide',
+    metaTitle: 'Harties Family Getaway | Best Activities & Resorts',
     metaDescription:
       'Plan the perfect Harties family weekend — cableway, dam cruises, Little Paris and family resorts. Affordable Gauteng escape from R1,500pp.',
     keywords:
@@ -202,7 +202,7 @@ export const blogPosts: BlogPost[] = [
     body: [
       {
         paragraphs: [
-          'Hartbeespoort is Johannesburg and Pretoria’s favourite weekend valve — close enough to leave after work on Friday, scenic enough to feel genuinely away. For families, the activity menu beats almost every other Gauteng escape.',
+          'Harties is Johannesburg and Pretoria’s favourite weekend valve — close enough to leave after work on Friday, scenic enough to feel genuinely away. For families, the activity menu beats almost every other Gauteng escape.',
         ],
       },
       {
@@ -210,7 +210,7 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [],
         bullets: [
           'Toddlers (2–5): Animal farms, gentle dam cruises, hotel pools.',
-          'Tweens (6–12): Hartbeespoort Cableway, jet boat rides, Little Paris.',
+          'Tweens (6–12): Harties Cableway, jet boat rides, Little Paris.',
           'Teens (13+): Quad biking, jet skis, sunset cruises, zip-lining.',
           'Parents: Spa treatments, wine tastings, scenic drives.',
         ],
@@ -218,7 +218,7 @@ export const blogPosts: BlogPost[] = [
       {
         heading: 'Don’t miss the cableway',
         paragraphs: [
-          'The Hartbeespoort Aerial Cableway lifts you 200m above the dam in five minutes for some of Gauteng’s best panoramic views. Visit at sunset for golden-hour photography.',
+          'The Harties Aerial Cableway lifts you 200m above the dam in five minutes for some of Gauteng’s best panoramic views. Visit at sunset for golden-hour photography.',
         ],
       },
       {
@@ -231,14 +231,14 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: 'magaliesburg-romantic-weekend-ideas',
-    title: 'Magaliesburg Romantic Weekend Ideas',
-    metaTitle: 'Magaliesburg Romantic Weekend | Spa, Picnic & Cruise Ideas',
+    title: 'Magalies Romantic Weekend Ideas',
+    metaTitle: 'Magalies Romantic Weekend | Spa, Picnic & Cruise Ideas',
     metaDescription:
-      'Romantic Magaliesburg weekend ideas — private picnics, spa days, hot-air balloons and dam cruises. Couples escape from R1,600pp.',
+      'Romantic Magalies weekend ideas — private picnics, spa days, hot-air balloons and dam cruises. Couples escape from R1,600pp.',
     keywords:
       'magaliesburg romantic, magaliesburg spa weekend, romantic gauteng getaway, magaliesburg honeymoon',
     excerpt:
-      'Five proven romantic ideas for a Magaliesburg weekend — from sunrise hot-air balloons to private dam picnics — and how to bundle them affordably.',
+      'Five proven romantic ideas for a Magalies weekend — from sunrise hot-air balloons to private dam picnics — and how to bundle them affordably.',
     heroImage: magaliesImg,
     publishedAt: '2026-04-05',
     readTime: '6 min',
@@ -247,13 +247,13 @@ export const blogPosts: BlogPost[] = [
     body: [
       {
         paragraphs: [
-          'Magaliesburg works for romance because it’s close enough to escape on a whim, but the mountains and old-growth bushveld create a real sense of distance. Here are five ideas that consistently deliver an anniversary-quality weekend.',
+          'Magalies works for romance because it’s close enough to escape on a whim, but the mountains and old-growth bushveld create a real sense of distance. Here are five ideas that consistently deliver an anniversary-quality weekend.',
         ],
       },
       {
         heading: '1. Sunrise hot-air balloon flight',
         paragraphs: [
-          'The Magaliesburg balloon flights launch at first light, drift for an hour over the Cradle of Humankind, and land for a champagne breakfast. Book six weeks ahead in peak season.',
+          'The Magalies balloon flights launch at first light, drift for an hour over the Cradle of Humankind, and land for a champagne breakfast. Book six weeks ahead in peak season.',
         ],
       },
       {
@@ -265,7 +265,7 @@ export const blogPosts: BlogPost[] = [
       {
         heading: '3. Spa day with hydrotherapy',
         paragraphs: [
-          'Magaliesburg’s mountain-spring water makes its spa scene world-class. Book a couples’ treatment with hydrotherapy circuits before dinner.',
+          'Magalies’s mountain-spring water makes its spa scene world-class. Book a couples’ treatment with hydrotherapy circuits before dinner.',
         ],
       },
       {
@@ -277,7 +277,7 @@ export const blogPosts: BlogPost[] = [
       {
         heading: '5. Slow morning, late checkout',
         paragraphs: [
-          'The most under-rated romance hack — book a late checkout and have breakfast in bed. Several Travel Affordable Magaliesburg packages include this as a free upgrade.',
+          'The most under-rated romance hack — book a late checkout and have breakfast in bed. Several Travel Affordable Magalies packages include this as a free upgrade.',
         ],
       },
     ],
