@@ -14,3 +14,18 @@ export function formatCurrency(amount: number): string {
   const rounded = roundToNearest10(amount);
   return `R${rounded}`;
 }
+
+export function getDestinationHeroTitle(slug: string, name: string): string {
+  switch (slug) {
+    case 'durban':
+      return 'Durban Weekends and Midweek Getaways';
+    case 'sun-city':
+      return 'Sun City Weekend and Midweek Getaways';
+    case 'magaliesburg':
+      return 'Magalies Weekend and Midweek Getaways';
+    case 'vaal-river':
+      return 'Emerald Casino and Vaal Cruise Weekend and Midweek Getaways';
+    default:
+      return `${name} Weekend Getaways`;
+  }
+}
