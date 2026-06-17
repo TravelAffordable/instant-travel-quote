@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { ArrowRight, MapPin, Calendar as CalendarIcon, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { destinationPages } from '@/data/destinationPages';
@@ -166,10 +167,80 @@ export function HomeDestinationsShowcase() {
                   );
                 })}
               </div>
+              {slug === 'durban' && (
+                <div className="mt-8 max-w-3xl mx-auto text-center">
+                  <p className="text-sm md:text-base text-navy/80 leading-relaxed">
+                    Should you be interested in a deal you saw on shot left that may not appear on the website, or if you are looking to get assistance without searching the website, please send an email to{' '}
+                    <a href="mailto:info@travelaffordable.co.za" className="text-primary font-semibold underline">info@travelaffordable.co.za</a>{' '}
+                    or WhatsApp{' '}
+                    <a href="https://wa.me/27796813869" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold underline">079 681 3869</a>{' '}
+                    or please fill out this request form (please be aware that the prices you see on shotleft are per person not per couple).
+                  </p>
+                </div>
+              )}
             </section>
           </div>
         );
       })}
+
+      {/* Shotleft Deals section */}
+      <div className="max-w-3xl mx-auto text-left bg-white/95 backdrop-blur-md rounded-2xl p-6 md:p-8 shadow-2xl my-12">
+        <h2 className="text-4xl md:text-5xl text-center mb-4 tracking-wide" style={{ fontFamily: "'Anton', sans-serif", fontWeight: 700, color: '#D4AF37' }}>
+          Shotleft Deals
+        </h2>
+        <p className="text-sm md:text-base text-foreground/80 text-center mb-6 leading-relaxed">
+          Should you be interested in a deal you saw on shot left that may not appear on the website, or if you are looking to get assistance without searching the website, please send an email to{' '}
+          <a href="mailto:info@travelaffordable.co.za" className="text-primary font-semibold underline">info@travelaffordable.co.za</a>{' '}
+          or WhatsApp{' '}
+          <a href="https://wa.me/27796813869" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold underline">079 681 3869</a>{' '}
+          or please fill out this request form (please be aware that the prices you see on shotleft are per person not per couple).
+        </p>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const f = e.currentTarget as HTMLFormElement;
+            const data = new FormData(f);
+            const body = `Full name: ${data.get('fullName')}%0D%0AEmail: ${data.get('email')}%0D%0ATelephone: ${data.get('telephone')}%0D%0ADeal interested in: ${data.get('deal')}%0D%0ATravel dates: ${data.get('dates')}%0D%0ANumber of people: ${data.get('people')}%0D%0APrice of the deal: ${data.get('price')}`;
+            window.location.href = `mailto:info@travelaffordable.co.za?subject=Shotleft Deal Request&body=${body}`;
+          }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm"
+        >
+          <label className="md:col-span-2 flex items-center gap-2">
+            <span className="whitespace-nowrap">Full name:</span>
+            <Input name="fullName" required maxLength={100} className="h-8 flex-1 text-sm" />
+          </label>
+          <label className="flex items-center gap-2">
+            <span className="whitespace-nowrap">Email Address:</span>
+            <Input name="email" type="email" required maxLength={255} className="h-8 flex-1 text-sm" />
+          </label>
+          <label className="flex items-center gap-2">
+            <span className="whitespace-nowrap">Telephone:</span>
+            <Input name="telephone" type="tel" required maxLength={20} className="h-8 flex-1 text-sm" />
+          </label>
+          <label className="flex items-center gap-2">
+            <span className="whitespace-nowrap">Deal interested in:</span>
+            <Input name="deal" required maxLength={200} className="h-8 flex-1 text-sm" />
+          </label>
+          <label className="flex items-center gap-2">
+            <span className="whitespace-nowrap">Travel dates:</span>
+            <Input name="dates" required maxLength={100} placeholder="e.g. 12-15 June 2026" className="h-8 flex-1 text-sm" />
+          </label>
+          <label className="flex items-center gap-2">
+            <span className="whitespace-nowrap">Number of people:</span>
+            <Input name="people" type="number" min={1} max={100} required className="h-8 flex-1 text-sm" />
+          </label>
+          <label className="flex items-center gap-2">
+            <span className="whitespace-nowrap">Price you saw on Shotleft or Google:</span>
+            <Input name="price" required maxLength={50} placeholder="e.g. R3 500 pp" className="h-8 flex-1 text-sm" />
+          </label>
+          <div className="md:col-span-2">
+            <Button type="submit" size="sm" className="w-full bg-primary text-primary-foreground font-semibold">
+              Send Request
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
