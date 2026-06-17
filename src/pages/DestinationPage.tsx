@@ -26,7 +26,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { ArrowRight, MapPin, Calendar as CalendarIcon, Users, Check, Sparkles } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getDestinationHeroTitle } from '@/lib/utils';
 import { getDestinationPage } from '@/data/destinationPages';
 import { getPackagesByDestination, Package as TravelPackage } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
@@ -159,7 +159,7 @@ const DestinationPage = () => {
               <span>{data.region}, South Africa</span>
             </div>
             <h1 className="font-display mt-2 text-4xl font-bold text-navy md:text-6xl">
-              {data.name} Weekend Getaways
+              {getDestinationHeroTitle(data.slug, data.name)}
             </h1>
           </div>
         </div>
@@ -176,11 +176,11 @@ const DestinationPage = () => {
               { slug: 'umhlanga', label: 'Umhlanga' },
               { slug: 'cape-town', label: 'Cape Town' },
               { slug: 'sun-city', label: 'Sun City' },
-              { slug: 'hartbeespoort', label: 'Hartbeespoort' },
-              { slug: 'magaliesburg', label: 'Magaliesburg' },
+              { slug: 'hartbeespoort', label: 'Harties' },
+              { slug: 'magaliesburg', label: 'Magalies' },
               { slug: 'mpumalanga', label: 'Mpumalanga' },
               { slug: 'bela-bela', label: 'Bela-Bela' },
-              { slug: 'vaal-river', label: 'Vaal River' },
+              { slug: 'vaal-river', label: 'Emerald Casino and Vaal Cruise' },
               { slug: 'knysna', label: 'Knysna' },
             ].map((d) => {
               const active = d.slug === data.slug;
