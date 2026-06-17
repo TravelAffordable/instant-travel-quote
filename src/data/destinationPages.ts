@@ -36,7 +36,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'durban',
     name: 'Durban',
     region: 'KwaZulu-Natal',
-    metaTitle: 'Durban weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Durban Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Affordable Durban holiday packages on the Golden Mile. Beachfront hotels, uShaka Marine, Moses Mabhida & open-top bus tours. Instant quotes — book today.',
     keywords:
@@ -76,7 +76,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'umhlanga',
     name: 'Umhlanga',
     region: 'KwaZulu-Natal',
-    metaTitle: 'Umhlanga weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Umhlanga Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Upmarket Umhlanga Rocks holiday packages with beachfront hotels, gondola cruises and Gateway shopping. Premium SA coast at affordable prices. Get an instant quote.',
     keywords:
@@ -115,7 +115,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'cape-town',
     name: 'Cape Town',
     region: 'Western Cape',
-    metaTitle: 'Cape Town weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Cape Town Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Affordable Cape Town holiday packages within the City Sightseeing bus route. Table Mountain, V&A Waterfront, Robben Island & wine routes. Instant online quotes.',
     keywords:
@@ -154,7 +154,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'sun-city',
     name: 'Sun City',
     region: 'North West',
-    metaTitle: 'Sun City weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Sun City Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Sun City resort packages with Valley of Waves access, Pilanesberg safari add-ons and family-friendly hotels. From R2,500pp. Get instant pricing online.',
     keywords:
@@ -192,7 +192,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'harties',
     name: 'Harties',
     region: 'North West',
-    metaTitle: 'Harties weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Harties Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Affordable Harties getaways — dam cruises, Harties cableway, Little Paris, jet ski and horse riding. Perfect Gauteng weekend escape from R1,500pp.',
     keywords:
@@ -231,7 +231,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'magalies',
     name: 'Magalies',
     region: 'Gauteng / North West',
-    metaTitle: 'Magalies weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Magalies Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Romantic Magalies packages with private picnics, dam buffet cruises and spa stays. Mountain escape only an hour from Johannesburg. From R1,600pp.',
     keywords:
@@ -264,7 +264,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'mpumalanga',
     name: 'Mpumalanga',
     region: 'Mpumalanga',
-    metaTitle: 'Mpumalanga weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Mpumalanga Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Mpumalanga Panorama Route packages — Blyde River Canyon, God’s Window, Bourke’s Luck Potholes and Graskop. Gateway to Kruger. From R2,800pp.',
     keywords:
@@ -298,7 +298,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'bela-bela',
     name: 'Bela-Bela',
     region: 'Limpopo',
-    metaTitle: 'Bela-Bela weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Bela-Bela Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Affordable Bela-Bela holiday packages with hot springs resorts, water parks and game lodges. Family favourite Limpopo escape from R1,700pp.',
     keywords:
@@ -331,7 +331,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'vaal-river',
     name: 'Vaal River',
     region: 'Gauteng',
-    metaTitle: 'Vaal River weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Vaal River Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Riverside Vaal getaways with boat cruises, paddle boats and family resorts. Quick weekend escape from Johannesburg from R1,500pp.',
     keywords:
@@ -363,7 +363,7 @@ export const destinationPages: DestinationPageData[] = [
     destinationId: 'knysna',
     name: 'Knysna',
     region: 'Western Cape',
-    metaTitle: 'Knysna weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Knysna Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
     metaDescription:
       'Knysna Garden Route holiday packages — lagoon cruises, indigenous forests and the iconic Heads. Perfect honeymoon stop from R2,400pp.',
     keywords:
