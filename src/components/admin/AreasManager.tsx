@@ -22,8 +22,8 @@ const DESTINATIONS = [
   { value: "cape_town", label: "Cape Town" },
   { value: "sun_city", label: "Sun City" },
   { value: "mpumalanga", label: "Mpumalanga" },
-  { value: "hartbeespoort", label: "Hartbeespoort" },
-  { value: "magaliesburg", label: "Magaliesburg" },
+  { value: "hartbeespoort", label: "Harties" },
+  { value: "magaliesburg", label: "Magalies" },
   { value: "vaal", label: "Vaal" },
 ];
 

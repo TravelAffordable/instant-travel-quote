@@ -1093,11 +1093,11 @@ export function Hero({ onGetQuote }: HeroProps) {
                   { slug: 'umhlanga', label: 'Umhlanga' },
                   { slug: 'cape-town', label: 'Cape Town' },
                   { slug: 'sun-city', label: 'Sun City' },
-                  { slug: 'hartbeespoort', label: 'Hartbeespoort' },
-                  { slug: 'magaliesburg', label: 'Magaliesburg' },
+                  { slug: 'hartbeespoort', label: 'Harties' },
+                  { slug: 'magaliesburg', label: 'Magalies' },
                   { slug: 'mpumalanga', label: 'Mpumalanga' },
                   { slug: 'bela-bela', label: 'Bela-Bela' },
-                  { slug: 'vaal-river', label: 'Vaal River' },
+                  { slug: 'vaal-river', label: 'Emerald Casino and Vaal Cruise' },
                   { slug: 'knysna', label: 'Knysna' },
                 ].map((d) => (
                   <li key={d.slug}>
