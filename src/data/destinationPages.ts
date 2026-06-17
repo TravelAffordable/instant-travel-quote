@@ -196,7 +196,7 @@ export const destinationPages: DestinationPageData[] = [
     metaDescription:
       'Affordable Harties getaways — dam cruises, Harties cableway, Little Paris, jet ski and horse riding. Perfect Gauteng weekend escape from R1,500pp.',
     keywords:
-      'hartbeespoort packages, harties weekend, hartbeespoort dam cruise, harties cableway, gauteng weekend getaway',
+      'harties packages, harties weekend, harties dam cruise, harties cableway, gauteng weekend getaway',
     heroImage: hartiesImg,
     intro:
       'Harties — “Harties” to locals — is Gauteng’s favourite weekend escape. The dam, Magaliesberg mountains and a packed activity menu make it perfect for couples and families wanting nature without driving for hours.',
@@ -235,7 +235,7 @@ export const destinationPages: DestinationPageData[] = [
     metaDescription:
       'Romantic Magalies packages with private picnics, dam buffet cruises and spa stays. Mountain escape only an hour from Johannesburg. From R1,600pp.',
     keywords:
-      'magaliesburg packages, magaliesburg spa weekend, romantic getaway gauteng, magaliesburg accommodation',
+      'magalies packages, magalies spa weekend, romantic getaway gauteng, magalies accommodation',
     heroImage: magaliesImg,
     intro:
       'Magalies is Gauteng’s romantic mountain escape — one of the world’s oldest mountain ranges, with spa resorts, hot-air balloon rides and private dam picnics that punch well above the price tag.',
