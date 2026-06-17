@@ -190,18 +190,18 @@ export const destinationPages: DestinationPageData[] = [
   {
     slug: 'hartbeespoort',
     destinationId: 'harties',
-    name: 'Hartbeespoort',
+    name: 'Harties',
     region: 'North West',
-    metaTitle: 'Hartbeespoort weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Harties weekend getaways Amazing Hotels blended with fun activities',
     metaDescription:
-      'Affordable Hartbeespoort getaways — dam cruises, Harties cableway, Little Paris, jet ski and horse riding. Perfect Gauteng weekend escape from R1,500pp.',
+      'Affordable Harties getaways — dam cruises, Harties cableway, Little Paris, jet ski and horse riding. Perfect Gauteng weekend escape from R1,500pp.',
     keywords:
       'hartbeespoort packages, harties weekend, hartbeespoort dam cruise, harties cableway, gauteng weekend getaway',
     heroImage: hartiesImg,
     intro:
-      'Hartbeespoort — “Harties” to locals — is Gauteng’s favourite weekend escape. The dam, Magaliesberg mountains and a packed activity menu make it perfect for couples and families wanting nature without driving for hours.',
+      'Harties — “Harties” to locals — is Gauteng’s favourite weekend escape. The dam, Magaliesberg mountains and a packed activity menu make it perfect for couples and families wanting nature without driving for hours.',
     highlights: [
-      'Hartbeespoort Aerial Cableway with summit views',
+      'Harties Aerial Cableway with summit views',
       'Dam cruises — sunset, buffet and luxury options',
       'Little Paris with mini Eiffel Tower photo stop',
       'Couple jet ski rides and romantic horse trails',
@@ -222,23 +222,23 @@ export const destinationPages: DestinationPageData[] = [
       {
         question: 'What activities are included?',
         answer:
-          'Packages typically include the Hartbeespoort cableway, a dam cruise and your choice of jet ski, horse riding or quad biking.',
+          'Packages typically include the Harties cableway, a dam cruise and your choice of jet ski, horse riding or quad biking.',
       },
     ],
   },
   {
     slug: 'magaliesburg',
     destinationId: 'magalies',
-    name: 'Magaliesburg',
+    name: 'Magalies',
     region: 'Gauteng / North West',
-    metaTitle: 'Magaliesburg weekend getaways Amazing Hotels blended with fun activities',
+    metaTitle: 'Magalies weekend getaways Amazing Hotels blended with fun activities',
     metaDescription:
-      'Romantic Magaliesburg packages with private picnics, dam buffet cruises and spa stays. Mountain escape only an hour from Johannesburg. From R1,600pp.',
+      'Romantic Magalies packages with private picnics, dam buffet cruises and spa stays. Mountain escape only an hour from Johannesburg. From R1,600pp.',
     keywords:
       'magaliesburg packages, magaliesburg spa weekend, romantic getaway gauteng, magaliesburg accommodation',
     heroImage: magaliesImg,
     intro:
-      'Magaliesburg is Gauteng’s romantic mountain escape — one of the world’s oldest mountain ranges, with spa resorts, hot-air balloon rides and private dam picnics that punch well above the price tag.',
+      'Magalies is Gauteng’s romantic mountain escape — one of the world’s oldest mountain ranges, with spa resorts, hot-air balloon rides and private dam picnics that punch well above the price tag.',
     highlights: [
       'Spa resorts with full-day treatment packages',
       'Private picnics on the dam shore',
@@ -253,9 +253,9 @@ export const destinationPages: DestinationPageData[] = [
     startingFrom: 1600,
     faqs: [
       {
-        question: 'Is Magaliesburg suitable for kids?',
+        question: 'Is Magalies suitable for kids?',
         answer:
-          'Yes — many resorts offer family rooms and kids’ activities, though Magaliesburg leans more romantic than Sun City.',
+          'Yes — many resorts offer family rooms and kids’ activities, though Magalies leans more romantic than Sun City.',
       },
     ],
   },

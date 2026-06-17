@@ -72,7 +72,7 @@ export interface Destination {
 // Destination short names for hotel naming
 const destinationShortNames: Record<string, string> = {
   'harties': 'Harties',
-  'magalies': 'Magaliesburg',
+  'magalies': 'Magalies',
   'durban': 'Durban',
   'umhlanga': 'Umhlanga',
   'cape-town': 'Cape Town',
@@ -331,7 +331,7 @@ const pretoriaAffordableHotels: { name: string; price: number; roomType: string;
   { name: 'The Blyde Crystal Lagoon Affordable 4 Sleeper Option 1', price: 1300, roomType: '4 Sleeper Room', capacity: 4 },
 ];
 
-// Custom Hartbeespoort Budget Hotels (2-sleeper) - with actual hotel images
+// Custom Harties Budget Hotels (2-sleeper) - with actual hotel images
 // Real hotel names are in docs/HARTIES_BUDGET_HOTELS_REFERENCE.md for booking reference
 // Only showing options with real user-provided images (Options 1-7 hidden - AI images)
 const hartiesBudgetHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
@@ -339,7 +339,7 @@ const hartiesBudgetHotels2Sleeper: { name: string; price: number; roomType: stri
   { name: 'Harties Budget 2 Sleeper Option 9', price: 750, roomType: '2 Sleeper Room', capacity: 2 },
 ];
 
-// Custom Hartbeespoort Affordable Hotels (2-sleeper) - with actual hotel images  
+// Custom Harties Affordable Hotels (2-sleeper) - with actual hotel images  
 // Real hotel names are in docs/HARTIES_AFFORDABLE_HOTELS_REFERENCE.md for booking reference
 const hartiesAffordableHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
   { name: 'Harties Affordable 2 Sleeper Option 1', price: 1053, roomType: '2 Sleeper Room', capacity: 2 },
@@ -422,7 +422,7 @@ function generateHotels(): Hotel[] {
         });
       });
     } else if (destId === 'harties') {
-      // Hartbeespoort Budget 2-sleeper hotels with custom images
+      // Harties Budget 2-sleeper hotels with custom images
       hartiesBudgetHotels2Sleeper.forEach((hotel, index) => {
         allHotels.push({
           id: `${destId}-very-affordable-2sleeper-${index + 1}`,
@@ -473,7 +473,7 @@ function generateHotels(): Hotel[] {
         });
       });
     } else if (destId === 'harties') {
-      // Hartbeespoort Affordable 2-sleeper hotels with custom images
+      // Harties Affordable 2-sleeper hotels with custom images
       hartiesAffordableHotels2Sleeper.forEach((hotel, index) => {
         allHotels.push({
           id: `${destId}-affordable-2sleeper-${index + 1}`,
