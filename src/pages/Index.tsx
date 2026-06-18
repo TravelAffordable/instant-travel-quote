@@ -18,10 +18,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Cheap Trips & Luxury Shot Left Getaways | Travel Affordable"
-        description="Cheap trips & luxury shot left getaways plus cheap accommodation in Durban, Harties, Cape Town, Sun City, Mpumalanga, Bela Bela, Magalies, Blyde, Munyaka, Vaal, Knysna, Thailand, Dubai & Bali."
+        title="Affordable Weekend and Midweek Getaways and Amazing Shot Left Holiday Experiences to Harties, Sun City, Durban, Cape Town, Magalies, Bela Bela, Mpumalanga, Emerald Casino Cruise, The Blyde Crystal Beach, Knysna | Travel Affordable"
+        description="Affordable Weekend and Midweek Getaways and Amazing Shot Left Holiday Experiences to Harties, Sun City, Durban, Cape Town, Magalies, Bela Bela, Mpumalanga, Emerald Casino Cruise, The Blyde Crystal Beach, Knysna, Thailand, Dubai & Bali."
         canonical="/"
-        keywords="cheap trips, luxury shot left getaways, cheap accommodation shot left, durban, harties, cape town, sun city, mpumalanga, bela bela, magalies, the blyde, crystal beach, munyaka, vaal cruise, emerald casino, knysna, thailand, dubai, bali"
+        keywords="affordable weekend getaways, luxury shot left getaways, affordable accommodation shot left, durban, harties, cape town, sun city, mpumalanga, bela bela, magalies, the blyde, crystal beach, munyaka, vaal cruise, emerald casino, knysna, thailand, dubai, bali"
       />
       <Header />
       

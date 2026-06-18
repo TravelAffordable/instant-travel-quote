@@ -40,7 +40,7 @@ export const destinationPages: DestinationPageData[] = [
     metaDescription:
       'Affordable Durban holiday packages on the Golden Mile. Beachfront hotels, uShaka Marine, Moses Mabhida & open-top bus tours. Instant quotes — book today.',
     keywords:
-      'durban holiday packages, durban beachfront hotels, golden mile accommodation, durban weekend getaway, cheap durban holidays',
+      'durban holiday packages, durban beachfront hotels, golden mile accommodation, durban weekend getaway, affordable durban holidays',
     heroImage: durbanImg,
     intro:
       'Durban is South Africa’s warm-water capital — 320 days of sunshine, the iconic Golden Mile, and some of the most affordable beach holidays on the continent. Travel Affordable curates packages that combine beachfront hotels with the city’s best activities at unbeatable prices.',
@@ -119,7 +119,7 @@ export const destinationPages: DestinationPageData[] = [
     metaDescription:
       'Affordable Cape Town holiday packages within the City Sightseeing bus route. Table Mountain, V&A Waterfront, Robben Island & wine routes. Instant online quotes.',
     keywords:
-      'cape town holiday packages, table mountain tour, va waterfront hotels, cheap cape town holidays, cape town weekend getaway',
+      'cape town holiday packages, table mountain tour, va waterfront hotels, affordable cape town holidays, cape town weekend getaway',
     heroImage: capeTownImg,
     intro:
       'Cape Town consistently ranks among the world’s most beautiful cities — and you don’t need a luxury budget to experience it. We focus on hotels within the City Sightseeing bus route so guests can reach Table Mountain, the V&A Waterfront, Camps Bay and the wine routes effortlessly.',

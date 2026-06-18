@@ -92,7 +92,7 @@ export const blogPosts: BlogPost[] = [
     metaDescription:
       'Smart tips to enjoy Cape Town on a budget — affordable hotels in the City Sightseeing route, free attractions, and packages from R2,200pp.',
     keywords:
-      'cape town budget, cheap cape town holiday, table mountain budget, va waterfront affordable, cape town packages',
+      'cape town budget, affordable cape town holiday, table mountain budget, va waterfront affordable, cape town packages',
     excerpt:
       'Cape Town doesn’t have to be expensive. Here’s how to see Table Mountain, the V&A and Cape Point on a real-world South African budget.',
     heroImage: capeTownImg,
@@ -119,7 +119,7 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
-        heading: 'Free and cheap activities worth your time',
+        heading: 'Free and affordable activities worth your time',
         paragraphs: ['Some of Cape Town’s best experiences cost almost nothing:'],
         bullets: [
           'Sea Point promenade walk at sunset (free).',
