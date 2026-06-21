@@ -1069,19 +1069,15 @@ export function AccommodationProviderQuote() {
                           </div>
                         </div>
 
-                        {/* Total Price with Service Fee Breakdown */}
+                        {/* All-inclusive total — no internal fee breakdown shown to clients */}
                         <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Accommodation</span>
                             <span className="font-medium">{formatCurrency(parseFloat(hotelQuoteAmount) || 0)}</span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Activities ({adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` + ${children} child${children > 1 ? 'ren' : ''}` : ''})</span>
-                            <span className="font-medium">{formatCurrency(result.totalGroupCost - (parseFloat(hotelQuoteAmount) || 0) - calculateServiceFee().totalFees)}</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Service Fees</span>
-                            <span className="font-medium">{formatCurrency(calculateServiceFee().totalFees)}</span>
+                            <span className="text-muted-foreground">Activities & Package ({adults} adult{adults > 1 ? 's' : ''}{children > 0 ? ` + ${children} child${children > 1 ? 'ren' : ''}` : ''})</span>
+                            <span className="font-medium">{formatCurrency(result.totalGroupCost - (parseFloat(hotelQuoteAmount) || 0))}</span>
                           </div>
                           <div className="border-t border-border pt-2 mt-2 flex justify-between text-lg font-bold">
                             <span>Grand Total</span>

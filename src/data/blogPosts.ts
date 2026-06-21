@@ -80,7 +80,7 @@ export const blogPosts: BlogPost[] = [
       {
         heading: 'How much should a Durban holiday cost?',
         paragraphs: [
-          'For a family of four travelling for three nights with activities included, expect a fair all-in cost of R8,000 to R18,000 depending on hotel tier. Travel Affordable packages strip out agency markup so you only pay the genuine combined cost of accommodation, activities and a small service fee.',
+          'For a family of four travelling for three nights with activities included, expect a fair all-in cost of R8,000 to R18,000 depending on hotel tier. Travel Affordable packages strip out agency markup so you only pay one transparent, all-inclusive rate covering accommodation and activities.',
         ],
       },
     ],

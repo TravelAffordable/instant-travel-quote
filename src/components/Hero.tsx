@@ -298,8 +298,7 @@ function convertRMSToQuotes(
         hotelTier: hotel.tier,
         breakdown: [
           { label: `Accommodation (${nights} nights × ${params.rooms} rooms)`, amount: accommodationCost },
-          { label: 'Package', amount: packageCost },
-          { label: 'Service Fees', amount: serviceFees },
+          { label: 'Package', amount: packageCost + serviceFees },
         ],
       });
     }

@@ -1515,8 +1515,7 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
     }
   }
   
-  // Add service fees to breakdown
-  breakdown.push({ label: `Service Fees (${request.adults} Adults @ R${serviceFeePerAdult})`, amount: totalServiceFees });
+  // Service fees are intentionally NOT shown to clients — included silently in totals.
   
   return {
     packageName: pkg.name,
