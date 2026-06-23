@@ -17,7 +17,8 @@ import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/li
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
-import { addBookingDisclaimerToPDF, addQuoteDataToPDF, QuoteFormData } from '@/lib/pdfQuoteUtils';
+import { addQuoteDataToPDF, QuoteFormData } from '@/lib/pdfQuoteUtils';
+import { generateBrochurePDF, BrochurePageData } from '@/lib/travelAgentBrochure';
 import { PDFQuoteUploader } from './PDFQuoteUploader';
 
 interface HotelEntry {
