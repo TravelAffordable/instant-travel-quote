@@ -1006,6 +1006,45 @@ export function TravelAgentQuote() {
                       />
                     </div>
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-600">Website</Label>
+                      <Input
+                        type="text"
+                        value={companyDetails.companyWebsite}
+                        onChange={e => updateCompanyDetails('companyWebsite', e.target.value)}
+                        placeholder="www.youragency.com"
+                        className="h-10 bg-white border-gray-200"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-600">Agency Logo (shown on PDF)</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={e => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = () => updateCompanyDetails('companyLogo', String(reader.result || ''));
+                            reader.readAsDataURL(file);
+                          }}
+                          className="h-10 bg-white border-gray-200"
+                        />
+                        {companyDetails.companyLogo && (
+                          <button
+                            type="button"
+                            onClick={() => updateCompanyDetails('companyLogo', '')}
+                            className="text-xs text-red-600 hover:underline"
+                          >Remove</button>
+                        )}
+                      </div>
+                      {companyDetails.companyLogo && (
+                        <img src={companyDetails.companyLogo} alt="Logo preview" className="h-10 mt-1 object-contain bg-white border rounded p-1" />
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Client Details */}
