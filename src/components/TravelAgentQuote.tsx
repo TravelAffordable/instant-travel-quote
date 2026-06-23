@@ -109,6 +109,8 @@ export function TravelAgentQuote() {
     companyAddress: '',
     companyPhone: '',
     companyEmail: '',
+    companyWebsite: '',
+    companyLogo: '',
     vatNumber: '',
     quoteValidDays: 14,
     termsAndConditions: 'Quote valid for specified period. 50% deposit required to confirm booking. Balance due 14 days before travel. Prices subject to availability.',
