@@ -68,6 +68,8 @@ interface CompanyDetails {
   companyAddress: string;
   companyPhone: string;
   companyEmail: string;
+  companyWebsite: string;
+  companyLogo: string; // data URL
   vatNumber: string;
   quoteValidDays: number;
   termsAndConditions: string;
