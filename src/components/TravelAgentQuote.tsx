@@ -79,6 +79,38 @@ interface CompanyDetails {
   clientEmail: string;
 }
 
+function BrochurePreview({ html }: { html: string }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [innerH, setInnerH] = useState(0);
+
+  useLayoutEffect(() => {
+    const recalc = () => {
+      if (!wrapRef.current || !innerRef.current) return;
+      const w = wrapRef.current.clientWidth;
+      const s = Math.min(1, w / 794);
+      setScale(s);
+      setInnerH(innerRef.current.scrollHeight);
+    };
+    recalc();
+    const ro = new ResizeObserver(recalc);
+    if (wrapRef.current) ro.observe(wrapRef.current);
+    if (innerRef.current) ro.observe(innerRef.current);
+    return () => ro.disconnect();
+  }, [html]);
+
+  return (
+    <div ref={wrapRef} className="w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm bg-white" style={{ height: innerH * scale }}>
+      <div
+        ref={innerRef}
+        style={{ width: 794, transform: `scale(${scale})`, transformOrigin: 'top left' }}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </div>
+  );
+}
+
 export function TravelAgentQuote() {
   const [destination, setDestination] = useState('');
   const [packageIds, setPackageIds] = useState<string[]>([]);
