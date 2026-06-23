@@ -401,245 +401,105 @@ export function TravelAgentQuote() {
     toast.success('Quote calculated successfully!');
   };
 
-  const generatePDFContent = (doc: jsPDF, result: QuoteResult, familyResult?: { packageName: string; families: FamilyQuoteResult[] }) => {
-    const destinationName = destinations.find(d => d.id === destination)?.name || destination;
-    const nights = checkIn && checkOut 
-      ? Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) 
-      : 0;
-    const quoteDate = new Date().toLocaleDateString('en-ZA');
-    const validUntil = new Date();
-    validUntil.setDate(validUntil.getDate() + companyDetails.quoteValidDays);
-    const validUntilStr = validUntil.toLocaleDateString('en-ZA');
-    const hidePerPersonPrice = totalGuests <= 10 && children > 0;
+  const downloadQuotePDF = async (result: QuoteResult) => {
+    try {
+      const destinationName = destinations.find(d => d.id === destination)?.name || destination;
+      const destObj = destinations.find(d => d.id === destination);
+      const destRegion = (destObj as any)?.region || (destObj as any)?.province || '';
+      const nights = checkIn && checkOut
+        ? Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))
+        : 0;
+      const quoteDate = new Date().toISOString();
+      const validUntilDate = new Date();
+      validUntilDate.setDate(validUntilDate.getDate() + companyDetails.quoteValidDays);
+      const validUntil = validUntilDate.toISOString();
 
-    // Header with company branding
-    doc.setFillColor(147, 51, 234); // Purple for travel agents
-    doc.rect(0, 0, 210, 45, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.setFont('helvetica', 'bold');
-    const pdfTitle = companyDetails.companyName ? companyDetails.companyName.toUpperCase() : 'TRAVEL AGENT QUOTATION';
-    doc.text(pdfTitle, 20, 20);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Quote #: ${quoteNumber}`, 20, 30);
-    doc.text(`Date: ${quoteDate}`, 20, 37);
-    doc.text(`Valid Until: ${validUntilStr}`, 120, 30);
+      // Build inclusion list from result + meal plan
+      const baseInclusions: string[] = [];
+      baseInclusions.push(`Accommodation ${nights} Night${nights !== 1 ? 's' : ''}`);
+      // Build one brochure page per hotel option
+      const pages: BrochurePageData[] = filledHotels.map((hotel, idx) => {
+        const hotelCost = parseFloat(hotel.quoteAmount) || 0;
+        const totalGroupForHotel = hotelCost + result.packageTotalCost + result.serviceFeeTotal;
 
-    doc.setTextColor(0, 0, 0);
-
-    let yPos = 55;
-
-    // Company Details (From)
-    if (companyDetails.companyName) {
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.text('FROM:', 20, yPos);
-      doc.setFont('helvetica', 'normal');
-      yPos += 6;
-      doc.text(companyDetails.companyName, 20, yPos);
-      if (companyDetails.companyAddress) { yPos += 5; doc.text(companyDetails.companyAddress, 20, yPos); }
-      if (companyDetails.companyPhone) { yPos += 5; doc.text(`Tel: ${companyDetails.companyPhone}`, 20, yPos); }
-      if (companyDetails.companyEmail) { yPos += 5; doc.text(`Email: ${companyDetails.companyEmail}`, 20, yPos); }
-      if (companyDetails.vatNumber) { yPos += 5; doc.text(`VAT No: ${companyDetails.vatNumber}`, 20, yPos); }
-      yPos += 10;
-    }
-
-    // Client Details (To)
-    if (companyDetails.clientName || companyDetails.clientCompany) {
-      doc.setFont('helvetica', 'bold');
-      doc.text('TO:', 120, 55);
-      doc.setFont('helvetica', 'normal');
-      let clientY = 61;
-      if (companyDetails.clientName) { doc.text(companyDetails.clientName, 120, clientY); clientY += 5; }
-      if (companyDetails.clientCompany) { doc.text(companyDetails.clientCompany, 120, clientY); clientY += 5; }
-      if (companyDetails.clientEmail) { doc.text(companyDetails.clientEmail, 120, clientY); }
-    }
-
-    yPos = Math.max(yPos, 85);
-
-    // Accommodation Details
-    doc.setFillColor(240, 240, 240);
-    doc.rect(15, yPos - 5, 180, 8, 'F');
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('ACCOMMODATION OPTIONS', 20, yPos);
-    yPos += 10;
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    
-    // List all hotels with meal plans
-    filledHotels.forEach((hotel, index) => {
-      doc.setFont('helvetica', 'bold');
-      doc.text(`Option ${index + 1}: ${hotel.name}`, 20, yPos);
-      doc.setFont('helvetica', 'normal');
-      yPos += 5;
-      if (hotel.mealPlan && hotel.mealPlan !== 'none') {
-        const mealPlanText = hotel.mealPlan === 'breakfast' ? 'Breakfast included' :
-                            hotel.mealPlan === 'lunch' ? 'Lunch included' :
-                            hotel.mealPlan === 'dinner' ? 'Dinner included' :
-                            hotel.mealPlan === 'half-board' ? 'Half Board (Breakfast & Dinner)' :
-                            hotel.mealPlan === 'full-board' ? 'Full Board (All Meals)' : '';
-        if (mealPlanText) {
-          doc.setTextColor(34, 139, 34);
-          doc.text(`   • ${mealPlanText}`, 20, yPos);
-          doc.setTextColor(0, 0, 0);
-          yPos += 5;
+        // Per-hotel inclusions: add meal plan if set
+        const inclusions: string[] = [];
+        inclusions.push(`Accommodation ${nights} Night${nights !== 1 ? 's' : ''}`);
+        if (hotel.mealPlan && hotel.mealPlan !== 'none') {
+          const mealPlanText =
+            hotel.mealPlan === 'breakfast' ? 'Breakfast' :
+            hotel.mealPlan === 'lunch' ? 'Lunch' :
+            hotel.mealPlan === 'dinner' ? 'Dinner' :
+            hotel.mealPlan === 'half-board' ? 'Breakfast and Dinner' :
+            hotel.mealPlan === 'full-board' ? 'Full Board' : '';
+          if (mealPlanText) inclusions.push(mealPlanText);
         }
-      }
-      yPos += 2;
-    });
+        (result.activitiesIncluded || []).forEach(a => inclusions.push(a));
 
-    yPos += 4;
-    doc.text(`Destination: ${destinationName}`, 20, yPos);
-    yPos += 6;
-    doc.text(`Check-in: ${checkIn}  |  Check-out: ${checkOut}  |  ${nights} Night${nights !== 1 ? 's' : ''}`, 20, yPos);
-    yPos += 6;
-    doc.text(`Group Size: ${adults} Adults${children > 0 ? `, ${children} Children` : ''} (${totalGuests} Total)`, 20, yPos);
-    yPos += 10;
-
-    // Package Inclusions
-    doc.setFillColor(240, 240, 240);
-    doc.rect(15, yPos - 5, 180, 8, 'F');
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('PACKAGE INCLUSIONS', 20, yPos);
-    yPos += 10;
-
-    doc.setFontSize(10);
-    doc.setTextColor(34, 139, 34);
-    doc.text(`✓   Accommodation - ${nights} Night${nights !== 1 ? 's' : ''} (Multiple Options Available)`, 25, yPos);
-    yPos += 6;
-    doc.text(`✓   ${result.packageName} - ${nights} Night${nights !== 1 ? 's' : ''} Experience`, 25, yPos);
-    yPos += 6;
-
-    if (result.activitiesIncluded && result.activitiesIncluded.length > 0) {
-      result.activitiesIncluded.forEach(activity => {
-        if (yPos < 200) {
-          const maxWidth = 160;
-          const activityText = `     • ${activity}`;
-          const splitActivity = doc.splitTextToSize(activityText, maxWidth);
-          splitActivity.forEach((line: string) => {
-            if (yPos < 200) {
-              doc.text(line, 25, yPos);
-              yPos += 5;
-            }
-          });
-        }
+        return {
+          quoteNumber,
+          quoteDate,
+          validUntil,
+          checkIn,
+          checkOut,
+          nights,
+          adults,
+          children,
+          destinationName,
+          destinationRegion: destRegion,
+          hotel: {
+            name: hotel.name,
+            optionLabel: `Option ${idx + 1}`,
+          },
+          inclusions,
+          totalGroupCost: roundToNearest10(totalGroupForHotel),
+          totalGuests,
+          agent: {
+            companyName: companyDetails.companyName,
+            companyAddress: companyDetails.companyAddress,
+            companyPhone: companyDetails.companyPhone,
+            companyEmail: companyDetails.companyEmail,
+            companyWebsite: companyDetails.companyWebsite,
+            companyLogo: companyDetails.companyLogo,
+          },
+        } satisfies BrochurePageData;
       });
-    }
 
-    if (totalGuests >= 25) {
-      doc.text('✓   Booking & Coordination Service', 25, yPos);
-      yPos += 6;
-    }
-
-    doc.setTextColor(0, 0, 0);
-    yPos += 8;
-
-    // Pricing per hotel
-    doc.setFillColor(240, 240, 240);
-    doc.rect(15, yPos - 5, 180, 8, 'F');
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('PRICING BY ACCOMMODATION', 20, yPos);
-    yPos += 12;
-
-    doc.setFontSize(10);
-
-    filledHotels.forEach((hotel, index) => {
-      const hotelCost = parseFloat(hotel.quoteAmount) || 0;
-
-      // Total for this hotel option must match the main calculation logic
-      const totalGroupForHotel = hotelCost + result.packageTotalCost + result.serviceFeeTotal;
-      const totalPerPersonForHotel = totalGuests > 0 ? totalGroupForHotel / totalGuests : 0;
-
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${hotel.name}`, 20, yPos);
-      yPos += 6;
-      doc.setFont('helvetica', 'normal');
-
-      if (!hidePerPersonPrice) {
-        doc.text(`   Per Person: ${formatCurrency(totalPerPersonForHotel)}`, 25, yPos);
-        yPos += 5;
+      if (pages.length === 0) {
+        toast.error('Add at least one hotel option with a quote amount first.');
+        return;
       }
-      doc.text(`   Total Group Cost: ${formatCurrency(totalGroupForHotel)}`, 25, yPos);
-      yPos += 8;
-    });
 
-    // Family split section if enabled
-    if (familyResult && familyResult.families.length > 0) {
-      yPos += 5;
-      doc.setFillColor(240, 240, 240);
-      doc.rect(15, yPos - 5, 180, 8, 'F');
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.text('FAMILY BREAKDOWN', 20, yPos);
-      yPos += 12;
+      toast.loading('Generating brochure PDF...', { id: 'pdf-gen' });
+      const pdf = await generateBrochurePDF(pages);
 
-      doc.setFontSize(10);
-      familyResult.families.forEach(family => {
-        doc.setFont('helvetica', 'bold');
-        doc.text(`${family.familyName} (${family.adults} Adults${family.children > 0 ? `, ${family.children} Children` : ''})`, 20, yPos);
-        yPos += 6;
-        doc.setFont('helvetica', 'normal');
-        doc.text(`   Total: ${formatCurrency(family.totalCost)}`, 25, yPos);
-        yPos += 8;
-      });
+      // Embed quote data for future editing
+      const quoteData: QuoteFormData = {
+        quoteType: 'travel-agent',
+        destination,
+        checkIn,
+        checkOut,
+        adults,
+        children,
+        childrenAges,
+        packageIds,
+        hotels,
+        companyDetails,
+        enableFamilySplit,
+        families,
+        quoteNumber,
+      };
+      addQuoteDataToPDF(pdf, quoteData);
+
+      const fileName = `TravelAgent_Quote_${quoteNumber}_${result.packageName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+      toast.success('PDF downloaded successfully!', { id: 'pdf-gen' });
+    } catch (err) {
+      console.error('PDF generation failed', err);
+      toast.error('Could not generate PDF. Please try again.', { id: 'pdf-gen' });
     }
-
-    // VAT and terms
-    if (companyDetails.vatNumber) {
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'italic');
-      doc.text('* All prices include VAT where applicable', 20, yPos);
-      yPos += 6;
-    }
-
-
-    if (companyDetails.termsAndConditions && yPos < 260) {
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Terms & Conditions:', 20, yPos);
-      yPos += 5;
-      doc.setFont('helvetica', 'normal');
-      const splitTerms = doc.splitTextToSize(companyDetails.termsAndConditions, 170);
-      doc.text(splitTerms, 20, yPos);
-      yPos += splitTerms.length * 4 + 5;
-    }
-
-    // Add booking disclaimer
-    addBookingDisclaimerToPDF(doc, yPos);
-
-    // Embed quote data for future editing
-    const quoteData: QuoteFormData = {
-      quoteType: 'travel-agent',
-      destination,
-      checkIn,
-      checkOut,
-      adults,
-      children,
-      childrenAges,
-      packageIds,
-      hotels,
-      companyDetails,
-      enableFamilySplit,
-      families,
-      quoteNumber,
-    };
-    addQuoteDataToPDF(doc, quoteData);
   };
 
-  const downloadQuotePDF = (result: QuoteResult) => {
-    const doc = new jsPDF();
-    const familyResult = familyQuoteResults.find(fr => fr.packageName === result.packageName);
-    generatePDFContent(doc, result, familyResult);
-
-    const fileName = `TravelAgent_Quote_${quoteNumber}_${result.packageName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-    doc.save(fileName);
-    toast.success('PDF downloaded successfully!');
-  };
 
   // Handle loading quote data from uploaded PDF
   const handleQuoteLoaded = (data: QuoteFormData) => {
