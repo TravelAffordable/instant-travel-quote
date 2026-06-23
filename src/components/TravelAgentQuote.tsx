@@ -653,7 +653,7 @@ export function TravelAgentQuote() {
     if (data.childrenAges) setChildrenAges(data.childrenAges);
     if (data.packageIds) setPackageIds(data.packageIds);
     if (data.hotels) setHotels(data.hotels.map((h: any) => ({ ...h, mealPlan: h.mealPlan || '' })));
-    if (data.companyDetails) setCompanyDetails(data.companyDetails);
+    if (data.companyDetails) setCompanyDetails({ companyWebsite: '', companyLogo: '', ...data.companyDetails } as CompanyDetails);
     if (data.enableFamilySplit !== undefined) setEnableFamilySplit(data.enableFamilySplit);
     if (data.families) setFamilies(data.families);
     if (data.quoteNumber) setQuoteNumber(data.quoteNumber + '-EDIT');
