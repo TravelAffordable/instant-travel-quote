@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { addQuoteDataToPDF, QuoteFormData } from '@/lib/pdfQuoteUtils';
-import { generateBrochurePDF, BrochurePageData } from '@/lib/travelAgentBrochure';
+import { generateBrochurePDF, buildBrochureHTML, BrochurePageData } from '@/lib/travelAgentBrochure';
 import { PDFQuoteUploader } from './PDFQuoteUploader';
 
 interface HotelEntry {
@@ -77,6 +77,38 @@ interface CompanyDetails {
   clientName: string;
   clientCompany: string;
   clientEmail: string;
+}
+
+function BrochurePreview({ html }: { html: string }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [innerH, setInnerH] = useState(0);
+
+  useLayoutEffect(() => {
+    const recalc = () => {
+      if (!wrapRef.current || !innerRef.current) return;
+      const w = wrapRef.current.clientWidth;
+      const s = Math.min(1, w / 794);
+      setScale(s);
+      setInnerH(innerRef.current.scrollHeight);
+    };
+    recalc();
+    const ro = new ResizeObserver(recalc);
+    if (wrapRef.current) ro.observe(wrapRef.current);
+    if (innerRef.current) ro.observe(innerRef.current);
+    return () => ro.disconnect();
+  }, [html]);
+
+  return (
+    <div ref={wrapRef} className="w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm bg-white" style={{ height: innerH * scale }}>
+      <div
+        ref={innerRef}
+        style={{ width: 794, transform: `scale(${scale})`, transformOrigin: 'top left' }}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </div>
+  );
 }
 
 export function TravelAgentQuote() {
@@ -1131,21 +1163,68 @@ export function TravelAgentQuote() {
 
         {/* Quote Results */}
         {hasCalculated && quoteResults.length > 0 && (
-          <div className="max-w-4xl mx-auto mt-8">
+          <div className="max-w-6xl mx-auto mt-8">
             <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
               Client Quote Results
             </h3>
-            <div className="grid gap-6">
+            <div className="grid gap-8">
               {quoteResults.map((result, index) => {
                 const familyResult = familyQuoteResults.find(fr => fr.packageName === result.packageName);
                 const shareContent = generateShareContent(result);
-                const hidePerPersonPrice = totalGuests <= 10 && children > 0;
+                const destObj = destinations.find(d => d.id === destination);
+                const destRegion = (destObj as any)?.region || (destObj as any)?.province || '';
+                const quoteDate = new Date().toISOString();
+                const validUntilDate = new Date();
+                validUntilDate.setDate(validUntilDate.getDate() + companyDetails.quoteValidDays);
+                const validUntil = validUntilDate.toISOString();
+
+                const pages: BrochurePageData[] = filledHotels.map((hotel, idx) => {
+                  const hotelCost = parseFloat(hotel.quoteAmount) || 0;
+                  const totalGroupForHotel = hotelCost + result.packageTotalCost + result.serviceFeeTotal;
+                  const inclusions: string[] = [];
+                  inclusions.push(`Accommodation ${nights} Night${nights !== 1 ? 's' : ''}`);
+                  if (hotel.mealPlan && hotel.mealPlan !== 'none') {
+                    const mealPlanText =
+                      hotel.mealPlan === 'breakfast' ? 'Breakfast' :
+                      hotel.mealPlan === 'lunch' ? 'Lunch' :
+                      hotel.mealPlan === 'dinner' ? 'Dinner' :
+                      hotel.mealPlan === 'half-board' ? 'Breakfast and Dinner' :
+                      hotel.mealPlan === 'full-board' ? 'Full Board' : '';
+                    if (mealPlanText) inclusions.push(mealPlanText);
+                  }
+                  (result.activitiesIncluded || []).forEach(a => inclusions.push(a));
+
+                  return {
+                    quoteNumber,
+                    quoteDate,
+                    validUntil,
+                    checkIn,
+                    checkOut,
+                    nights,
+                    adults,
+                    children,
+                    destinationName,
+                    destinationRegion: destRegion,
+                    hotel: { name: hotel.name, optionLabel: `Option ${idx + 1}` },
+                    inclusions,
+                    totalGroupCost: roundToNearest10(totalGroupForHotel),
+                    totalGuests,
+                    agent: {
+                      companyName: companyDetails.companyName,
+                      companyAddress: companyDetails.companyAddress,
+                      companyPhone: companyDetails.companyPhone,
+                      companyEmail: companyDetails.companyEmail,
+                      companyWebsite: companyDetails.companyWebsite,
+                      companyLogo: companyDetails.companyLogo,
+                    },
+                  } satisfies BrochurePageData;
+                });
 
                 return (
                   <Card key={index} className="overflow-hidden border-purple-200">
-                    <CardContent className="p-6">
-                      {/* Quote Header with Reference */}
-                      <div className="flex justify-between items-start mb-4">
+                    <CardContent className="p-4 md:p-6">
+                      {/* Quote Header */}
+                      <div className="flex flex-wrap justify-between items-start gap-3 mb-5">
                         <div>
                           <h4 className="text-xl font-bold text-gray-900">{result.packageName}</h4>
                           <p className="text-sm text-gray-600">
@@ -1158,130 +1237,62 @@ export function TravelAgentQuote() {
                         </div>
                       </div>
 
-                      <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                        {/* Quote Details */}
-                        <div className="flex-1 space-y-4">
-                          {/* Hotels Breakdown */}
-                          <div className="bg-purple-50/50 rounded-lg p-4 border border-purple-100">
-                            <p className="text-sm font-semibold text-gray-700 mb-3">Accommodation Options:</p>
-                            <div className="space-y-3">
-                              {filledHotels.map((hotel, hotelIdx) => {
-                                const hotelCost = parseFloat(hotel.quoteAmount) || 0;
+                      {/* Brochure previews — one per hotel option */}
+                      <div className="grid gap-6">
+                        {pages.map((p, i) => (
+                          <BrochurePreview key={i} html={buildBrochureHTML(p)} />
+                        ))}
+                      </div>
 
-                                // Show TOTAL GROUP COST for each hotel option using the SAME pricing logic
-                                // as the main calculation (hotel + packageTotalCost + serviceFeeTotal).
-                                const totalGroupForHotel = hotelCost + result.packageTotalCost + result.serviceFeeTotal;
-                                const totalPerPersonForHotel = totalGuests > 0 ? totalGroupForHotel / totalGuests : 0;
-
-                                return (
-                                  <div key={hotelIdx} className="flex items-center justify-between bg-white rounded-lg p-3 border">
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2">
-                                        <Hotel className="w-4 h-4 text-purple-600" />
-                                        <span className="font-medium text-gray-800">{hotel.name}</span>
-                                      </div>
-                                      {hotel.mealPlan && hotel.mealPlan !== 'none' && (
-                                        <p className="text-xs text-green-600 ml-6 mt-1">
-                                          {hotel.mealPlan === 'breakfast' && 'Breakfast included'}
-                                          {hotel.mealPlan === 'lunch' && 'Lunch included'}
-                                          {hotel.mealPlan === 'dinner' && 'Dinner included'}
-                                          {hotel.mealPlan === 'half-board' && 'Half Board (Breakfast & Dinner)'}
-                                          {hotel.mealPlan === 'full-board' && 'Full Board (All Meals)'}
-                                        </p>
-                                      )}
-                                    </div>
-                                    <div className="text-right">
-                                      {!hidePerPersonPrice && (
-                                        <p className="text-xs text-gray-500">
-                                          {formatCurrency(totalPerPersonForHotel)}/person
-                                        </p>
-                                      )}
-                                      <p className="font-bold text-purple-600">{formatCurrency(totalGroupForHotel)}</p>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          {/* Package Inclusions */}
-                          <div className="bg-green-50/50 rounded-lg p-4 border border-green-100">
-                            <p className="text-sm font-semibold text-gray-700 mb-3">Package Inclusions:</p>
-                            <div className="space-y-2">
-                              <p className="flex items-center gap-2 text-green-600 text-sm">
-                                <Check className="w-4 h-4 shrink-0" />
-                                <span>{nights} nights accommodation</span>
-                              </p>
-                              {result.activitiesIncluded && result.activitiesIncluded
-                                .filter(activity => {
-                                  const lower = activity.toLowerCase();
-                                  return !lower.includes('accommodation') && 
-                                         !lower.includes('breakfast at selected') &&
-                                         !lower.includes('buffet breakfast at selected') &&
-                                         !lower.includes('room only');
-                                })
-                                .map((activity, i) => (
-                                  <p key={i} className="flex items-center gap-2 text-green-600 text-sm">
-                                    <Check className="w-4 h-4 shrink-0" />
-                                    <span>{activity}</span>
-                                  </p>
-                                ))}
-                            </div>
-                          </div>
-
-                          {/* Family Breakdown */}
-                          {familyResult && familyResult.families.length > 0 && (
-                            <div className="bg-amber-50/50 rounded-lg p-4 border border-amber-100">
-                              <p className="text-sm font-semibold text-gray-700 mb-3">Family Breakdown:</p>
-                              <div className="space-y-2">
-                                {familyResult.families.map((family, i) => (
-                                  <div key={i} className="flex items-center justify-between bg-white rounded-lg p-2 border">
-                                    <div>
-                                      <span className="font-medium text-gray-800">{family.familyName}</span>
-                                      <span className="text-xs text-gray-500 ml-2">
-                                        ({family.adults}A{family.children > 0 ? ` + ${family.children}C` : ''})
-                                      </span>
-                                    </div>
-                                    <span className="font-bold text-amber-600">{formatCurrency(family.totalCost)}</span>
-                                  </div>
-                                ))}
+                      {/* Family Breakdown */}
+                      {familyResult && familyResult.families.length > 0 && (
+                        <div className="bg-amber-50/50 rounded-lg p-4 border border-amber-100 mt-6">
+                          <p className="text-sm font-semibold text-gray-700 mb-3">Family Breakdown:</p>
+                          <div className="space-y-2">
+                            {familyResult.families.map((family, i) => (
+                              <div key={i} className="flex items-center justify-between bg-white rounded-lg p-2 border">
+                                <div>
+                                  <span className="font-medium text-gray-800">{family.familyName}</span>
+                                  <span className="text-xs text-gray-500 ml-2">
+                                    ({family.adults}A{family.children > 0 ? ` + ${family.children}C` : ''})
+                                  </span>
+                                </div>
+                                <span className="font-bold text-amber-600">{formatCurrency(family.totalCost)}</span>
                               </div>
-                            </div>
-                          )}
-
-
+                            ))}
+                          </div>
                         </div>
+                      )}
 
-                        {/* Actions */}
-                        <div className="flex flex-col gap-2 w-full md:w-auto">
-                          <Button
-                            onClick={() => downloadQuotePDF(result)}
-                            className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
-                          >
-                            <FileText className="w-4 h-4" />
-                            Download PDF Quote
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              window.open(`https://wa.me/?text=${encodeURIComponent(shareContent.body)}`, '_blank');
-                            }}
-                            className="gap-2"
-                          >
-                            <MessageSquare className="w-4 h-4" />
-                            Share via WhatsApp
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              window.open(`mailto:?subject=${encodeURIComponent(shareContent.subject)}&body=${encodeURIComponent(shareContent.body)}`, '_blank');
-                            }}
-                            className="gap-2"
-                          >
-                            <Mail className="w-4 h-4" />
-                            Share via Email
-                          </Button>
-                        </div>
+                      {/* Actions */}
+                      <div className="flex flex-wrap gap-2 mt-6 justify-end">
+                        <Button
+                          onClick={() => downloadQuotePDF(result)}
+                          className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
+                        >
+                          <FileText className="w-4 h-4" />
+                          Download PDF Quote
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            window.open(`https://wa.me/?text=${encodeURIComponent(shareContent.body)}`, '_blank');
+                          }}
+                          className="gap-2"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                          Share via WhatsApp
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            window.open(`mailto:?subject=${encodeURIComponent(shareContent.subject)}&body=${encodeURIComponent(shareContent.body)}`, '_blank');
+                          }}
+                          className="gap-2"
+                        >
+                          <Mail className="w-4 h-4" />
+                          Share via Email
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>

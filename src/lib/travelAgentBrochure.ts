@@ -130,7 +130,7 @@ function inclusionCardsHTML(inclusions: string[], nights: number): string {
   return cards;
 }
 
-function buildBrochureHTML(d: BrochurePageData): string {
+export function buildBrochureHTML(d: BrochurePageData): string {
   const { agent } = d;
   const travellersLine = `${d.adults} Adult${d.adults !== 1 ? 's' : ''}${d.children > 0 ? `<br/>${d.children} Child${d.children !== 1 ? 'ren' : ''}` : ''}<br/>(${d.totalGuests} Total)`;
 
