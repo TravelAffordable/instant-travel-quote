@@ -90,6 +90,11 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link to="/travel-agent" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Travel Agent Portal
+                  </Link>
+                </li>
+                <li>
                   <Link to="/blog" className="text-background/70 hover:text-primary text-sm transition-colors">
                     Travel Blog
                   </Link>
