@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { addQuoteDataToPDF, QuoteFormData } from '@/lib/pdfQuoteUtils';
-import { generateBrochurePDF, BrochurePageData } from '@/lib/travelAgentBrochure';
+import { generateBrochurePDF, buildBrochureHTML, BrochurePageData } from '@/lib/travelAgentBrochure';
 import { PDFQuoteUploader } from './PDFQuoteUploader';
 
 interface HotelEntry {
