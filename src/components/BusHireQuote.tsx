@@ -567,12 +567,18 @@ export function BusHireQuote() {
                   <div className="bg-muted/30 border border-border rounded-lg p-4 mb-6">
                     <p className="text-sm font-semibold text-foreground mb-3">Package Inclusions:</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {pkg.activitiesIncluded.map((activity, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
-                          <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                          <span>{activity}</span>
-                        </div>
-                      ))}
+                      <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span>Accommodation — {nights} night{nights !== 1 ? 's' : ''}</span>
+                      </div>
+                      {pkg.activitiesIncluded
+                        .filter(a => !/^accommodation\b/i.test(a.trim()))
+                        .map((activity, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                            <span>{activity}</span>
+                          </div>
+                        ))}
                       <div className="flex items-start gap-2 text-sm text-blue-600 font-medium">
                         <Bus className="w-4 h-4 mt-0.5 flex-shrink-0" />
                         <span>Bus Transport Included</span>
@@ -591,12 +597,34 @@ export function BusHireQuote() {
                         <span className="font-bold text-blue-900">{formatCurrency(activitiesQuote.busAmount)}</span>
                       </div>
 
+                      {activitiesQuote.hasHotelLine && (
+                        <div className="flex justify-between items-center text-lg">
+                          <span className="text-blue-800 font-medium flex items-center gap-2">
+                            <Hotel className="w-5 h-5" />
+                            Accommodation ({nights} night{nights !== 1 ? 's' : ''})
+                          </span>
+                          <span className="font-bold text-blue-900">{formatCurrency(activitiesQuote.hotelAmount)}</span>
+                        </div>
+                      )}
+
+                      {activitiesQuote.noHotel && (
+                        <div className="rounded-md bg-white/60 border border-blue-200 p-3 text-sm text-blue-900">
+                          Accommodation will be sourced by our team within your budget of <strong>{formatCurrency(activitiesQuote.budgetAmount)}</strong>. We will follow up with at least three hotel options and a final branded quote.
+                        </div>
+                      )}
+
                       <div className="border-t-2 border-blue-300 pt-4">
                         <div className="flex justify-between items-center text-xl">
-                          <span className="text-blue-800 font-semibold">Combined Total</span>
+                          <span className="text-blue-800 font-semibold">{activitiesQuote.noHotel ? 'Estimated Group Total' : 'Group Total'}</span>
                           <span className="font-bold text-blue-900 text-2xl">{formatCurrency(activitiesQuote.combinedTotal)}</span>
                         </div>
-                        <p className="text-sm text-blue-600 mt-1">(Bus transport + activities for the group, all-inclusive)</p>
+                        <p className="text-sm text-blue-600 mt-1">
+                          {activitiesQuote.noHotel
+                            ? '(Bus transport + activities + accommodation budget, all-inclusive)'
+                            : activitiesQuote.hasHotelLine
+                              ? '(Bus transport + activities + hotel, all-inclusive)'
+                              : '(Bus transport + activities for the group, all-inclusive)'}
+                        </p>
                       </div>
 
                       <div className="border-t-2 border-blue-300 pt-4">
