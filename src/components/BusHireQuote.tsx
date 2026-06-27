@@ -890,10 +890,13 @@ export function BusHireQuote() {
                   <h3 className="text-2xl font-display font-bold text-gray-900">Your Beautiful Branded Quote</h3>
                   <p className="text-sm text-gray-600 mt-1">A branded brochure has been generated for each package + hotel option. Download, WhatsApp or email it to your client.</p>
                 </div>
-
-
+                {/* Per-package brochure previews + actions */}
+                <div className="space-y-8">
+                  {selectedPackages.map(pkg => {
+                    const filled = brandedHotels.filter(h => h.name.trim() && h.quoteAmount);
                     // Package cost for this pkg (adults + tiered kids)
                     let kidsPkgCost = 0;
+
                     childrenAges.forEach(age => {
                       if (age >= 4 && age <= 16) {
                         if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
