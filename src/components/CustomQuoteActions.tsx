@@ -110,10 +110,7 @@ export function CustomQuoteActions({
     const packageCostPerAdult = selectedPkg?.basePrice || 0;
     const totalPackageCost = packageCostPerAdult * adults;
 
-    let serviceFeePerAdult = 1000;
-    if (adults >= 10) serviceFeePerAdult = 750;
-    else if (adults >= 4) serviceFeePerAdult = 800;
-    else if (adults >= 2) serviceFeePerAdult = 850;
+    const serviceFeePerAdult = 400;
     const totalServiceFees = serviceFeePerAdult * adults;
 
     const kidsAges = childrenAges

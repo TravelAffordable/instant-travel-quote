@@ -59,17 +59,10 @@ const TIER_CONFIG = {
   },
 };
 
-// Service fee calculation
+// Internal flat service fee — never displayed to clients
 function calculateServiceFees(adults: number, children: number, childrenAges: number[]): number {
-  let adultFee = 0;
-  if (adults === 1) adultFee = 1000;
-  else if (adults <= 3) adultFee = 850;
-  else if (adults <= 9) adultFee = 800;
-  else adultFee = 750;
-
-  const totalAdultFees = adultFee * adults;
+  const totalAdultFees = 400 * adults;
   const childFees = calculateChildServiceFeesUtil(adults, childrenAges);
-
   return totalAdultFees + childFees;
 }
 

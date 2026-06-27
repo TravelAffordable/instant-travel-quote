@@ -279,33 +279,17 @@ export function TravelAgentQuote() {
   const filledHotels = hotels.filter(h => h.name.trim() && h.quoteAmount);
   const totalHotelCost = filledHotels.reduce((sum, h) => sum + (parseFloat(h.quoteAmount) || 0), 0);
 
-  // Calculate service fee using tiered structure
+  // Internal flat adult service fee — never shown to clients
   const calculateServiceFee = (): { adultFees: number; kidsFees: number; totalFees: number } => {
-    const totalPeople = adults + childrenAges.length;
-    
-    // Groups of 25+ use flat rate
-    if (totalPeople >= 25) {
-      const adultFees = adults * 400;
-      const kidsFees = calculateChildServiceFeesUtil(adults, childrenAges);
-      return { adultFees, kidsFees, totalFees: adultFees + kidsFees };
-    }
-
-    // Tiered structure for groups 1-24
-    let adultFeePerPerson = 0;
-    if (adults === 1) adultFeePerPerson = 1000;
-    else if (adults >= 2 && adults <= 3) adultFeePerPerson = 850;
-    else if (adults >= 4 && adults <= 9) adultFeePerPerson = 800;
-    else if (adults >= 10) adultFeePerPerson = 750;
-    
-    const adultFees = adults * adultFeePerPerson;
-    
+    const adultFees = adults * 600;
     const kidsFees = calculateChildServiceFeesUtil(adults, childrenAges);
+    return { adultFees, kidsFees, totalFees: adultFees + kidsFees };
+  };
 
-    return {
-      adultFees,
-      kidsFees,
-      totalFees: adultFees + kidsFees,
-    };
+  // Internal commission tracking (never shown to clients/agents)
+  const calculateCommission = (): number => {
+    const perAdult = adults > 20 ? 200 : 100;
+    return perAdult * adults;
   };
 
   const handleCalculate = () => {

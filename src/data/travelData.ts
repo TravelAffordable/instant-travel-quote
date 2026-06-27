@@ -1474,17 +1474,8 @@ export function calculateQuote(request: QuoteRequest): QuoteResult | null {
   
   const childDiscount = 0; // No longer using discount model
   
-  // Calculate service fees based on number of adults
-  let serviceFeePerAdult = 0;
-  if (request.adults === 1) {
-    serviceFeePerAdult = 1000;
-  } else if (request.adults >= 2 && request.adults <= 3) {
-    serviceFeePerAdult = 850;
-  } else if (request.adults >= 4 && request.adults <= 10) {
-    serviceFeePerAdult = 800;
-  } else if (request.adults > 10) {
-    serviceFeePerAdult = 750;
-  }
+  // Internal flat adult service fee (never shown to clients)
+  const serviceFeePerAdult = 400;
   const totalServiceFees = serviceFeePerAdult * request.adults;
   
 // Total calculations
