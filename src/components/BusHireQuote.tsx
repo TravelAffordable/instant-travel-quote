@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
-import { Bus, Users, Calculator, ChevronDown, Check, Building2, Hotel } from 'lucide-react';
+import { Bus, Users, Calculator, ChevronDown, Check, Building2, Hotel, Plus, Trash2, FileText, Mail, MessageSquare, Building } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { 
   destinations, 
@@ -18,6 +18,56 @@ import { useRMSHotels } from '@/hooks/useRMSHotels';
 import { RMSHotelQuotes } from './RMSHotelQuotes';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { calculateChildServiceFees as calculateChildServiceFeesUtil } from '@/lib/childServiceFees';
+import { generateBrochurePDF, buildBrochureHTML, BrochurePageData } from '@/lib/travelAgentBrochure';
+
+interface HotelEntry {
+  id: string;
+  name: string;
+  quoteAmount: string;
+  mealPlan: string;
+}
+
+interface CompanyDetails {
+  companyName: string;
+  companyAddress: string;
+  companyPhone: string;
+  companyEmail: string;
+  companyWebsite: string;
+  companyLogo: string;
+  quoteValidDays: number;
+}
+
+function BrochurePreview({ html }: { html: string }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [innerH, setInnerH] = useState(0);
+
+  useLayoutEffect(() => {
+    const recalc = () => {
+      if (!wrapRef.current || !innerRef.current) return;
+      const w = wrapRef.current.clientWidth;
+      const s = Math.min(1, w / 794);
+      setScale(s);
+      setInnerH(innerRef.current.scrollHeight);
+    };
+    recalc();
+    const ro = new ResizeObserver(recalc);
+    if (wrapRef.current) ro.observe(wrapRef.current);
+    if (innerRef.current) ro.observe(innerRef.current);
+    return () => ro.disconnect();
+  }, [html]);
+
+  return (
+    <div ref={wrapRef} className="w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm bg-white" style={{ height: innerH * scale }}>
+      <div
+        ref={innerRef}
+        style={{ width: 794, transform: `scale(${scale})`, transformOrigin: 'top left' }}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </div>
+  );
+}
 
 type UserType = 'bus-company' | 'group-organizer' | null;
 
