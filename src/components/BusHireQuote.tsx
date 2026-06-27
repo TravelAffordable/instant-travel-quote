@@ -794,6 +794,230 @@ export function BusHireQuote() {
                   )}
                 </div>
               )}
+
+              {/* Branded Client Quote — brochure design + PDF download */}
+              <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-8">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-800 mb-3">
+                    <FileText className="w-4 h-4" />
+                    <span className="text-sm font-semibold">Branded Client Quote</span>
+                  </div>
+                  <h3 className="text-2xl font-display font-bold text-gray-900">Build a beautiful PDF quote for your client</h3>
+                  <p className="text-sm text-gray-600 mt-1">Add your company branding and accommodation options to generate a branded brochure with Download / WhatsApp / Email buttons.</p>
+                </div>
+
+                {/* Company branding */}
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center gap-2 text-gray-700 font-semibold">
+                    <Building className="w-4 h-4" /> Your Company Branding
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <Input placeholder="Company name *" value={companyDetails.companyName} onChange={e => updateCompanyDetails('companyName', e.target.value)} className="h-10 bg-white" />
+                    <Input placeholder="Phone" value={companyDetails.companyPhone} onChange={e => updateCompanyDetails('companyPhone', e.target.value)} className="h-10 bg-white" />
+                    <Input placeholder="Email" value={companyDetails.companyEmail} onChange={e => updateCompanyDetails('companyEmail', e.target.value)} className="h-10 bg-white" />
+                    <Input placeholder="Website" value={companyDetails.companyWebsite} onChange={e => updateCompanyDetails('companyWebsite', e.target.value)} className="h-10 bg-white" />
+                    <Input placeholder="Address" value={companyDetails.companyAddress} onChange={e => updateCompanyDetails('companyAddress', e.target.value)} className="h-10 bg-white md:col-span-2" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Label className="text-sm text-gray-700">Logo:</Label>
+                    <Input type="file" accept="image/*" onChange={handleLogoUpload} className="h-10 bg-white max-w-xs" />
+                    {companyDetails.companyLogo && (
+                      <img src={companyDetails.companyLogo} alt="Logo preview" className="h-10 w-auto object-contain border rounded bg-white p-1" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Accommodation options */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700">Accommodation Options *</Label>
+                      <p className="text-xs text-muted-foreground">Add at least one hotel option (up to 8) to include in the brochure.</p>
+                    </div>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{brandedHotels.length}/8 hotels</span>
+                  </div>
+                  <div className="space-y-3">
+                    {brandedHotels.map((hotel, index) => (
+                      <div key={hotel.id} className="p-3 bg-gray-50 rounded-lg border space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">{index + 1}</div>
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <Input type="text" value={hotel.name} onChange={e => updateBrandedHotel(hotel.id, 'name', e.target.value)} placeholder="Hotel name" className="h-10 bg-white" />
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">R</span>
+                              <Input type="number" value={hotel.quoteAmount} onChange={e => updateBrandedHotel(hotel.id, 'quoteAmount', e.target.value)} placeholder="Total hotel cost for group" min={0} className="h-10 bg-white" />
+                            </div>
+                          </div>
+                          {brandedHotels.length > 1 && (
+                            <Button variant="ghost" size="icon" onClick={() => removeBrandedHotel(hotel.id)} className="h-10 w-10 text-red-500 hover:text-red-700 hover:bg-red-50">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="ml-11">
+                          <Select value={hotel.mealPlan} onValueChange={(value) => updateBrandedHotel(hotel.id, 'mealPlan', value)}>
+                            <SelectTrigger className="h-10 bg-white border-gray-200 w-full md:w-64">
+                              <SelectValue placeholder="Select meal plan (optional)" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              <SelectItem value="none">No meals included</SelectItem>
+                              <SelectItem value="breakfast">Breakfast only</SelectItem>
+                              <SelectItem value="lunch">Lunch only</SelectItem>
+                              <SelectItem value="dinner">Dinner only</SelectItem>
+                              <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
+                              <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {brandedHotels.length < 8 && (
+                    <Button variant="outline" onClick={addBrandedHotel} className="gap-2">
+                      <Plus className="w-4 h-4" /> Add Another Hotel Option
+                    </Button>
+                  )}
+                </div>
+
+                {/* Per-package brochure previews + actions */}
+                <div className="space-y-8">
+                  {selectedPackages.map(pkg => {
+                    const filled = brandedHotels.filter(h => h.name.trim() && h.quoteAmount);
+                    // Package cost for this pkg (adults + tiered kids)
+                    let kidsPkgCost = 0;
+                    childrenAges.forEach(age => {
+                      if (age >= 4 && age <= 16) {
+                        if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
+                          const tier = pkg.kidsPriceTiers.find(t => age >= t.minAge && age <= t.maxAge);
+                          kidsPkgCost += tier ? tier.price : (pkg.kidsPrice || 0);
+                        } else if (pkg.kidsPrice) kidsPkgCost += pkg.kidsPrice;
+                      }
+                    });
+                    const pkgTotal = pkg.basePrice * adults + kidsPkgCost;
+                    const serviceFees = adults * 600 + calculateChildServiceFeesUtil(adults, childrenAges);
+                    const destObj = destinations.find(d => d.id === destination);
+                    const destRegion = (destObj as any)?.region || (destObj as any)?.province || '';
+                    const quoteDate = new Date().toISOString();
+                    const validUntilDate = new Date();
+                    validUntilDate.setDate(validUntilDate.getDate() + companyDetails.quoteValidDays);
+                    const validUntil = validUntilDate.toISOString();
+
+                    const pages: BrochurePageData[] = filled.map((hotel, idx) => {
+                      const hotelCost = parseFloat(hotel.quoteAmount) || 0;
+                      const totalGroup = hotelCost + pkgTotal + serviceFees + busAmount;
+                      const inclusions: string[] = [`Accommodation ${nights} Night${nights !== 1 ? 's' : ''}`];
+                      if (hotel.mealPlan && hotel.mealPlan !== 'none') {
+                        const mp = hotel.mealPlan === 'breakfast' ? 'Breakfast'
+                          : hotel.mealPlan === 'lunch' ? 'Lunch'
+                          : hotel.mealPlan === 'dinner' ? 'Dinner'
+                          : hotel.mealPlan === 'half-board' ? 'Breakfast and Dinner'
+                          : hotel.mealPlan === 'full-board' ? 'Full Board' : '';
+                        if (mp) inclusions.push(mp);
+                      }
+                      (pkg.activitiesIncluded || [])
+                        .filter(a => !/^accommodation\b/i.test(a.trim()))
+                        .forEach(a => inclusions.push(a));
+                      inclusions.push('Bus Transport Included');
+                      return {
+                        quoteNumber,
+                        quoteDate,
+                        validUntil,
+                        checkIn,
+                        checkOut,
+                        nights,
+                        adults,
+                        children,
+                        destinationName,
+                        destinationRegion: destRegion,
+                        hotel: { name: hotel.name, optionLabel: `Option ${idx + 1}` },
+                        inclusions,
+                        totalGroupCost: roundToNearest10(totalGroup),
+                        totalGuests: totalPeople,
+                        agent: {
+                          companyName: companyDetails.companyName,
+                          companyAddress: companyDetails.companyAddress,
+                          companyPhone: companyDetails.companyPhone,
+                          companyEmail: companyDetails.companyEmail,
+                          companyWebsite: companyDetails.companyWebsite,
+                          companyLogo: companyDetails.companyLogo,
+                        },
+                      } satisfies BrochurePageData;
+                    });
+
+                    const handleDownloadPDF = async () => {
+                      if (pages.length === 0) {
+                        toast.error('Add at least one hotel option with a quote amount first.');
+                        return;
+                      }
+                      try {
+                        toast.loading('Generating brochure PDF...', { id: `pdf-${pkg.id}` });
+                        const pdf = await generateBrochurePDF(pages);
+                        const fileName = `BusHire_Quote_${quoteNumber}_${pkg.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                        pdf.save(fileName);
+                        toast.success('PDF downloaded successfully!', { id: `pdf-${pkg.id}` });
+                      } catch (err) {
+                        console.error(err);
+                        toast.error('Could not generate PDF. Please try again.', { id: `pdf-${pkg.id}` });
+                      }
+                    };
+
+                    const shareBody = (() => {
+                      const hotelsText = filled.map((h, i) => {
+                        const hotelCost = parseFloat(h.quoteAmount) || 0;
+                        const total = hotelCost + pkgTotal + serviceFees + busAmount;
+                        const perP = totalPeople > 0 ? total / totalPeople : 0;
+                        return `\n📍 ${h.name}\n   Per Person: ${formatCurrency(perP)}\n   Total: ${formatCurrency(total)}`;
+                      }).join('\n');
+                      const incText = (pkg.activitiesIncluded || []).map(a => `• ${a}`).join('\n');
+                      return `*GROUP QUOTATION*\nRef: ${quoteNumber}\n\n*${pkg.name}*\n\nDestination: ${destinationName}\nDates: ${checkIn} → ${checkOut} (${nights} nights)\nGuests: ${totalPeople}\n\n✅ INCLUSIONS:\n• Accommodation (${nights} nights)\n${incText}\n• Bus Transport Included\n\n🏨 ACCOMMODATION OPTIONS:${hotelsText}`;
+                    })();
+                    const shareSubject = `Group Quote ${quoteNumber} — ${pkg.name} — ${destinationName}`;
+
+                    return (
+                      <Card key={pkg.id} className="overflow-hidden border-blue-200">
+                        <CardContent className="p-4 md:p-6">
+                          <div className="flex flex-wrap justify-between items-start gap-3 mb-5">
+                            <div>
+                              <h4 className="text-xl font-bold text-gray-900">{pkg.name}</h4>
+                              <p className="text-sm text-gray-600">
+                                {destinationName} • {nights} Night{nights !== 1 ? 's' : ''} • {totalPeople} Guests
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500">Quote Ref:</p>
+                              <p className="text-sm font-mono font-medium text-gray-700">{quoteNumber}</p>
+                            </div>
+                          </div>
+
+                          {pages.length > 0 ? (
+                            <div className="grid gap-6">
+                              {pages.map((p, i) => (
+                                <BrochurePreview key={i} html={buildBrochureHTML(p)} />
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="rounded-lg border border-dashed border-blue-300 bg-blue-50/50 p-6 text-center text-sm text-blue-700">
+                              Add a hotel name and total cost above to preview the branded brochure for this package.
+                            </div>
+                          )}
+
+                          <div className="flex flex-wrap gap-2 mt-6 justify-end">
+                            <Button onClick={handleDownloadPDF} className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+                              <FileText className="w-4 h-4" /> Download PDF Quote
+                            </Button>
+                            <Button variant="outline" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareBody)}`, '_blank')} className="gap-2">
+                              <MessageSquare className="w-4 h-4" /> Share via WhatsApp
+                            </Button>
+                            <Button variant="outline" onClick={() => window.open(`mailto:?subject=${encodeURIComponent(shareSubject)}&body=${encodeURIComponent(shareBody)}`, '_blank')} className="gap-2">
+                              <Mail className="w-4 h-4" /> Share via Email
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
         </div>
