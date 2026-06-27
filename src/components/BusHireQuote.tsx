@@ -93,6 +93,50 @@ export function BusHireQuote() {
   const [hasCalculated, setHasCalculated] = useState(false);
   const [showHotelAccommodation, setShowHotelAccommodation] = useState(false);
 
+  // Branded brochure state
+  const [brandedHotels, setBrandedHotels] = useState<HotelEntry[]>([
+    { id: '1', name: '', quoteAmount: '', mealPlan: '' },
+  ]);
+  const [companyDetails, setCompanyDetails] = useState<CompanyDetails>({
+    companyName: '',
+    companyAddress: '',
+    companyPhone: '',
+    companyEmail: '',
+    companyWebsite: '',
+    companyLogo: '',
+    quoteValidDays: 14,
+  });
+  const [quoteNumber, setQuoteNumber] = useState('');
+
+  useEffect(() => {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    setQuoteNumber(`BH-${timestamp}-${random}`);
+  }, []);
+
+  const addBrandedHotel = () => {
+    if (brandedHotels.length < 8) {
+      setBrandedHotels([...brandedHotels, { id: String(brandedHotels.length + 1), name: '', quoteAmount: '', mealPlan: '' }]);
+    }
+  };
+  const removeBrandedHotel = (id: string) => {
+    if (brandedHotels.length > 1) setBrandedHotels(brandedHotels.filter(h => h.id !== id));
+  };
+  const updateBrandedHotel = (id: string, field: keyof HotelEntry, value: string) => {
+    setBrandedHotels(brandedHotels.map(h => h.id === id ? { ...h, [field]: value } : h));
+  };
+  const updateCompanyDetails = (field: keyof CompanyDetails, value: string | number) => {
+    setCompanyDetails(prev => ({ ...prev, [field]: value }));
+  };
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => updateCompanyDetails('companyLogo', String(ev.target?.result || ''));
+    reader.readAsDataURL(file);
+  };
+
+
   // RMS hotel search
   const { searchHotels: searchRMSHotels, hotels: rmsHotels, isLoading: isSearchingRMS, clearHotels: clearRMSHotels } = useRMSHotels();
 
