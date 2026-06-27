@@ -35,6 +35,10 @@ export function BusHireQuote() {
   const [childrenAges, setChildrenAges] = useState<number[]>([]);
   const [rooms, setRooms] = useState(10);
   const [busQuoteAmount, setBusQuoteAmount] = useState('');
+  // Hotel cost flow (new)
+  const [hotelCost, setHotelCost] = useState('');
+  const [noHotel, setNoHotel] = useState(false);
+  const [accommodationBudget, setAccommodationBudget] = useState('');
   const [hasCalculated, setHasCalculated] = useState(false);
   const [showHotelAccommodation, setShowHotelAccommodation] = useState(false);
 
@@ -84,9 +88,18 @@ export function BusHireQuote() {
 
   const totalPeople = adults + children;
   const busAmount = parseFloat(busQuoteAmount) || 0;
+  const enteredHotelCost = noHotel ? 0 : (parseFloat(hotelCost) || 0);
+  const enteredBudget = noHotel ? (parseFloat(accommodationBudget) || 0) : 0;
+  const accommodationLineForTotal = noHotel ? enteredBudget : enteredHotelCost;
   const nights = checkIn && checkOut 
     ? Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)) 
     : 0;
+
+  // Internal commission tracking — never displayed to clients
+  const internalCommission = useMemo(() => {
+    const perAdult = adults > 20 ? 200 : 100;
+    return perAdult * adults;
+  }, [adults]);
 
   // Calculate the activities-only quote (no hotel)
   const activitiesQuote = useMemo(() => {
@@ -119,30 +132,23 @@ export function BusHireQuote() {
       }
     });
 
-    // Service fees
-    const totalPeopleCount = adults + childrenAges.length;
-    let serviceFees = 0;
-    if (totalPeopleCount >= 25) {
-      serviceFees = adults * 400 + calculateChildServiceFeesUtil(adults, childrenAges);
-    } else {
-      let adultFeePerPerson = 0;
-      if (adults === 1) adultFeePerPerson = 1000;
-      else if (adults >= 2 && adults <= 3) adultFeePerPerson = 850;
-      else if (adults >= 4 && adults <= 9) adultFeePerPerson = 800;
-      else if (adults >= 10) adultFeePerPerson = 750;
-      serviceFees = adults * adultFeePerPerson + calculateChildServiceFeesUtil(adults, childrenAges);
-    }
+    // Internal flat adult service fee (never shown to clients)
+    const serviceFees = adults * 600 + calculateChildServiceFeesUtil(adults, childrenAges);
 
     const activitiesAndServiceTotal = totalActivitiesCost + serviceFees;
-    const combinedTotal = activitiesAndServiceTotal + busAmount;
+    const combinedTotal = activitiesAndServiceTotal + busAmount + accommodationLineForTotal;
     const perPerson = totalPeople > 0 ? roundToNearest10(combinedTotal / totalPeople) : 0;
 
     return {
       busAmount,
+      hotelAmount: enteredHotelCost,
+      budgetAmount: enteredBudget,
+      hasHotelLine: enteredHotelCost > 0,
+      noHotel,
       combinedTotal: roundToNearest10(combinedTotal),
       perPerson,
     };
-  }, [selectedPackages, adults, children, childrenAges, busAmount, totalPeople]);
+  }, [selectedPackages, adults, children, childrenAges, busAmount, accommodationLineForTotal, enteredHotelCost, enteredBudget, noHotel, totalPeople]);
 
   const handleCalculate = () => {
     if (!destination || packageIds.length === 0 || !checkIn || !checkOut) {
