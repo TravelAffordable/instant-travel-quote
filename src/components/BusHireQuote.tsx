@@ -482,6 +482,59 @@ export function BusHireQuote() {
                 </div>
               )}
 
+              {/* Hotel Cost / No Hotel / Budget */}
+              <div className="space-y-3 p-4 rounded-lg border border-blue-200 bg-blue-50/40">
+                {!noHotel && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      <Hotel className="w-4 h-4 inline mr-1" />
+                      Preferred hotel cost (R) — total for the group
+                    </Label>
+                    <Input
+                      type="number"
+                      value={hotelCost}
+                      onChange={e => setHotelCost(e.target.value)}
+                      placeholder="e.g. 35000"
+                      min={0}
+                      className="h-11 bg-white border-gray-200"
+                    />
+                  </div>
+                )}
+                <div className="flex items-start gap-2">
+                  <Checkbox
+                    id="no-hotel"
+                    checked={noHotel}
+                    onCheckedChange={(c) => {
+                      const v = !!c;
+                      setNoHotel(v);
+                      if (v) setHotelCost('');
+                      else setAccommodationBudget('');
+                    }}
+                  />
+                  <Label htmlFor="no-hotel" className="text-sm text-gray-700 cursor-pointer leading-snug">
+                    I don't have a hotel, please find my group accommodation at the destination
+                  </Label>
+                </div>
+                {noHotel && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Please write total accommodation budget for your group (R)
+                    </Label>
+                    <Input
+                      type="number"
+                      value={accommodationBudget}
+                      onChange={e => setAccommodationBudget(e.target.value)}
+                      placeholder="e.g. 30000"
+                      min={0}
+                      className="h-11 bg-white border-gray-200"
+                    />
+                    <p className="text-xs text-blue-700">
+                      Our team will source at least three accommodation options at your destination within your budget and prepare a full branded quote.
+                    </p>
+                  </div>
+                )}
+              </div>
+
               {/* Calculate Button */}
               <Button
                 onClick={handleCalculate}
@@ -489,7 +542,7 @@ export function BusHireQuote() {
                 size="lg"
               >
                 <Calculator className="w-5 h-5" />
-                Calculate Transport and Fun Activities
+                Calculate Group Package
               </Button>
             </div>
           </div>
