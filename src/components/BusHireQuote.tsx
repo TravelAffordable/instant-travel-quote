@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent } from '@/components/ui/card';
 import { Bus, Users, Calculator, ChevronDown, Check, Building2, Hotel } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   destinations, 
   packages, 
