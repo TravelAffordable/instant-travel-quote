@@ -629,6 +629,91 @@ export function BusHireQuote() {
                 )}
               </div>
 
+              {/* Branded Client Quote inputs — company branding + accommodation options */}
+              <div className="border-t pt-6 mt-2 space-y-6">
+                <div className="text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-800 mb-2">
+                    <FileText className="w-4 h-4" />
+                    <span className="text-sm font-semibold">Branded Client Quote</span>
+                  </div>
+                  <h3 className="text-xl font-display font-bold text-gray-900">Add your branding & accommodation options</h3>
+                  <p className="text-sm text-gray-600 mt-1">Beautiful branded PDF brochures will be generated for each package + hotel combination after you click Calculate.</p>
+                </div>
+
+                {/* Company branding */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-gray-700 font-semibold">
+                    <Building className="w-4 h-4" /> Your Company Branding
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <Input placeholder="Company name *" value={companyDetails.companyName} onChange={e => updateCompanyDetails('companyName', e.target.value)} className="h-10 bg-white" />
+                    <Input placeholder="Phone" value={companyDetails.companyPhone} onChange={e => updateCompanyDetails('companyPhone', e.target.value)} className="h-10 bg-white" />
+                    <Input placeholder="Email" value={companyDetails.companyEmail} onChange={e => updateCompanyDetails('companyEmail', e.target.value)} className="h-10 bg-white" />
+                    <Input placeholder="Website" value={companyDetails.companyWebsite} onChange={e => updateCompanyDetails('companyWebsite', e.target.value)} className="h-10 bg-white" />
+                    <Input placeholder="Address" value={companyDetails.companyAddress} onChange={e => updateCompanyDetails('companyAddress', e.target.value)} className="h-10 bg-white md:col-span-2" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Label className="text-sm text-gray-700">Logo:</Label>
+                    <Input type="file" accept="image/*" onChange={handleLogoUpload} className="h-10 bg-white max-w-xs" />
+                    {companyDetails.companyLogo && (
+                      <img src={companyDetails.companyLogo} alt="Logo preview" className="h-10 w-auto object-contain border rounded bg-white p-1" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Accommodation options */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700">Accommodation Options *</Label>
+                      <p className="text-xs text-muted-foreground">Add at least one hotel option (up to 8) to include in the brochure.</p>
+                    </div>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{brandedHotels.length}/8 hotels</span>
+                  </div>
+                  <div className="space-y-3">
+                    {brandedHotels.map((hotel, index) => (
+                      <div key={hotel.id} className="p-3 bg-gray-50 rounded-lg border space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">{index + 1}</div>
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <Input type="text" value={hotel.name} onChange={e => updateBrandedHotel(hotel.id, 'name', e.target.value)} placeholder="Hotel name" className="h-10 bg-white" />
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">R</span>
+                              <Input type="number" value={hotel.quoteAmount} onChange={e => updateBrandedHotel(hotel.id, 'quoteAmount', e.target.value)} placeholder="Total hotel cost for group" min={0} className="h-10 bg-white" />
+                            </div>
+                          </div>
+                          {brandedHotels.length > 1 && (
+                            <Button variant="ghost" size="icon" onClick={() => removeBrandedHotel(hotel.id)} className="h-10 w-10 text-red-500 hover:text-red-700 hover:bg-red-50">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="ml-11">
+                          <Select value={hotel.mealPlan} onValueChange={(value) => updateBrandedHotel(hotel.id, 'mealPlan', value)}>
+                            <SelectTrigger className="h-10 bg-white border-gray-200 w-full md:w-64">
+                              <SelectValue placeholder="Select meal plan (optional)" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white">
+                              <SelectItem value="none">No meals included</SelectItem>
+                              <SelectItem value="breakfast">Breakfast only</SelectItem>
+                              <SelectItem value="lunch">Lunch only</SelectItem>
+                              <SelectItem value="dinner">Dinner only</SelectItem>
+                              <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
+                              <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {brandedHotels.length < 8 && (
+                    <Button variant="outline" onClick={addBrandedHotel} className="gap-2">
+                      <Plus className="w-4 h-4" /> Add Another Hotel Option
+                    </Button>
+                  )}
+                </div>
+              </div>
+
               {/* Calculate Button */}
               <Button
                 onClick={handleCalculate}
@@ -636,7 +721,7 @@ export function BusHireQuote() {
                 size="lg"
               >
                 <Calculator className="w-5 h-5" />
-                Calculate Group Package
+                Calculate Group Package & Generate Branded Quote
               </Button>
             </div>
           </div>
@@ -795,96 +880,23 @@ export function BusHireQuote() {
                 </div>
               )}
 
-              {/* Branded Client Quote — brochure design + PDF download */}
+              {/* Branded Client Quote — brochure previews + PDF download */}
               <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-8">
                 <div className="text-center mb-6">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-800 mb-3">
                     <FileText className="w-4 h-4" />
                     <span className="text-sm font-semibold">Branded Client Quote</span>
                   </div>
-                  <h3 className="text-2xl font-display font-bold text-gray-900">Build a beautiful PDF quote for your client</h3>
-                  <p className="text-sm text-gray-600 mt-1">Add your company branding and accommodation options to generate a branded brochure with Download / WhatsApp / Email buttons.</p>
+                  <h3 className="text-2xl font-display font-bold text-gray-900">Your Beautiful Branded Quote</h3>
+                  <p className="text-sm text-gray-600 mt-1">A branded brochure has been generated for each package + hotel option. Download, WhatsApp or email it to your client.</p>
                 </div>
-
-                {/* Company branding */}
-                <div className="space-y-4 mb-6">
-                  <div className="flex items-center gap-2 text-gray-700 font-semibold">
-                    <Building className="w-4 h-4" /> Your Company Branding
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <Input placeholder="Company name *" value={companyDetails.companyName} onChange={e => updateCompanyDetails('companyName', e.target.value)} className="h-10 bg-white" />
-                    <Input placeholder="Phone" value={companyDetails.companyPhone} onChange={e => updateCompanyDetails('companyPhone', e.target.value)} className="h-10 bg-white" />
-                    <Input placeholder="Email" value={companyDetails.companyEmail} onChange={e => updateCompanyDetails('companyEmail', e.target.value)} className="h-10 bg-white" />
-                    <Input placeholder="Website" value={companyDetails.companyWebsite} onChange={e => updateCompanyDetails('companyWebsite', e.target.value)} className="h-10 bg-white" />
-                    <Input placeholder="Address" value={companyDetails.companyAddress} onChange={e => updateCompanyDetails('companyAddress', e.target.value)} className="h-10 bg-white md:col-span-2" />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Label className="text-sm text-gray-700">Logo:</Label>
-                    <Input type="file" accept="image/*" onChange={handleLogoUpload} className="h-10 bg-white max-w-xs" />
-                    {companyDetails.companyLogo && (
-                      <img src={companyDetails.companyLogo} alt="Logo preview" className="h-10 w-auto object-contain border rounded bg-white p-1" />
-                    )}
-                  </div>
-                </div>
-
-                {/* Accommodation options */}
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-sm font-medium text-gray-700">Accommodation Options *</Label>
-                      <p className="text-xs text-muted-foreground">Add at least one hotel option (up to 8) to include in the brochure.</p>
-                    </div>
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{brandedHotels.length}/8 hotels</span>
-                  </div>
-                  <div className="space-y-3">
-                    {brandedHotels.map((hotel, index) => (
-                      <div key={hotel.id} className="p-3 bg-gray-50 rounded-lg border space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">{index + 1}</div>
-                          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <Input type="text" value={hotel.name} onChange={e => updateBrandedHotel(hotel.id, 'name', e.target.value)} placeholder="Hotel name" className="h-10 bg-white" />
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500">R</span>
-                              <Input type="number" value={hotel.quoteAmount} onChange={e => updateBrandedHotel(hotel.id, 'quoteAmount', e.target.value)} placeholder="Total hotel cost for group" min={0} className="h-10 bg-white" />
-                            </div>
-                          </div>
-                          {brandedHotels.length > 1 && (
-                            <Button variant="ghost" size="icon" onClick={() => removeBrandedHotel(hotel.id)} className="h-10 w-10 text-red-500 hover:text-red-700 hover:bg-red-50">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
-                        <div className="ml-11">
-                          <Select value={hotel.mealPlan} onValueChange={(value) => updateBrandedHotel(hotel.id, 'mealPlan', value)}>
-                            <SelectTrigger className="h-10 bg-white border-gray-200 w-full md:w-64">
-                              <SelectValue placeholder="Select meal plan (optional)" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-white">
-                              <SelectItem value="none">No meals included</SelectItem>
-                              <SelectItem value="breakfast">Breakfast only</SelectItem>
-                              <SelectItem value="lunch">Lunch only</SelectItem>
-                              <SelectItem value="dinner">Dinner only</SelectItem>
-                              <SelectItem value="half-board">Half Board (Breakfast & Dinner)</SelectItem>
-                              <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {brandedHotels.length < 8 && (
-                    <Button variant="outline" onClick={addBrandedHotel} className="gap-2">
-                      <Plus className="w-4 h-4" /> Add Another Hotel Option
-                    </Button>
-                  )}
-                </div>
-
                 {/* Per-package brochure previews + actions */}
                 <div className="space-y-8">
                   {selectedPackages.map(pkg => {
                     const filled = brandedHotels.filter(h => h.name.trim() && h.quoteAmount);
                     // Package cost for this pkg (adults + tiered kids)
                     let kidsPkgCost = 0;
+
                     childrenAges.forEach(age => {
                       if (age >= 4 && age <= 16) {
                         if (pkg.kidsPriceTiers && pkg.kidsPriceTiers.length > 0) {
