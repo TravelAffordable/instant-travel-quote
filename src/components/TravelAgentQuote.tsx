@@ -129,7 +129,7 @@ export function TravelAgentQuote() {
   
   // Multiple hotels support (up to 8)
   const [hotels, setHotels] = useState<HotelEntry[]>([
-    { id: '1', name: '', quoteAmount: '', mealPlan: '' }
+    { id: '1', name: '', quoteAmount: '', mealPlan: '', starRating: '' }
   ]);
   
   // Family split support
