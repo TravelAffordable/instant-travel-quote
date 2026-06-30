@@ -26,6 +26,7 @@ interface HotelEntry {
   name: string;
   quoteAmount: string;
   mealPlan: string;
+  starRating: string;
 }
 
 interface FamilySplit {
