@@ -229,7 +229,7 @@ export function TravelAgentQuote() {
     }
   };
 
-  const updateHotel = (id: string, field: 'name' | 'quoteAmount' | 'mealPlan', value: string) => {
+  const updateHotel = (id: string, field: 'name' | 'quoteAmount' | 'mealPlan' | 'starRating', value: string) => {
     setHotels(hotels.map(h => h.id === id ? { ...h, [field]: value } : h));
   };
 
