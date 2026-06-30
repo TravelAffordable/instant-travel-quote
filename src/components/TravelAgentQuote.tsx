@@ -219,7 +219,7 @@ export function TravelAgentQuote() {
   const addHotel = () => {
     if (hotels.length < 8) {
       const newId = (hotels.length + 1).toString();
-      setHotels([...hotels, { id: newId, name: '', quoteAmount: '', mealPlan: '' }]);
+      setHotels([...hotels, { id: newId, name: '', quoteAmount: '', mealPlan: '', starRating: '' }]);
     }
   };
 
