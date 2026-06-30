@@ -16,7 +16,6 @@ Accounts,
 Travel Affordable Pty Ltd
 The Atrium Building
 5th Street, Sandown
-Sandton
 Tel: 0796813869
 e: info@travelaffordable.co.za
 https://instant-travel-quote.lovable.app`;
