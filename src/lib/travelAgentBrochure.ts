@@ -75,6 +75,7 @@ export interface BrochureHotelOption {
   name: string;
   optionLabel?: string; // "Option 1"
   description?: string;
+  starRating?: number; // 1-5; if omitted/0, no stars are shown
 }
 
 export interface BrochurePageData {
@@ -104,16 +105,24 @@ const MUTED = '#5b6b7a';
 const LIGHT = '#f4f1ec';
 
 function inclusionCardsHTML(inclusions: string[], nights: number): string {
-  // Ensure Accommodation card present first if absent
-  const list = inclusions.length ? inclusions.slice() : [];
-  if (!list.some(i => /accommodation|hotel|lodge|stay|nights?/i.test(i))) {
-    list.unshift(`Accommodation ${nights} Night${nights !== 1 ? 's' : ''}`);
+  // Dedupe accommodation entries — keep first, drop the rest
+  const isAccom = (s: string) => /accommodation|accomodation|hotel|lodge|stay|nights?/i.test(s);
+  const seenAccom = { v: false };
+  let list = (inclusions || []).filter(item => {
+    if (isAccom(item)) {
+      if (seenAccom.v) return false;
+      seenAccom.v = true;
+    }
+    return true;
+  });
+  if (!seenAccom.v) {
+    list = [`Accommodation ${nights} Night${nights !== 1 ? 's' : ''}`, ...list];
   }
   const cards = list.slice(0, 12).map(item => {
     const icon = iconForInclusion(item);
     let title = item.trim();
     let sub = '';
-    if (/^accommodation/i.test(title)) {
+    if (isAccom(title)) {
       title = 'Accommodation';
       sub = `${nights} Night${nights !== 1 ? 's' : ''}`;
     } else if (/^breakfast$/i.test(title)) {
@@ -268,7 +277,7 @@ export function buildBrochureHTML(d: BrochurePageData): string {
         <div class="panel-head">YOUR ACCOMMODATION</div>
         <div class="acc-body">
           <div class="acc-name">${esc(d.hotel.name)}</div>
-          <div class="stars">★ ★ ★ ★ ★</div>
+          ${d.hotel.starRating && d.hotel.starRating > 0 ? `<div class="stars">${'★ '.repeat(Math.min(5, Math.max(1, Math.round(d.hotel.starRating)))).trim()}</div>` : ''}
           <div class="acc-row">📅 <b>Check-in</b> &nbsp; ${esc(fmtDate(d.checkIn))}</div>
           <div class="acc-row">📅 <b>Check-out</b> &nbsp; ${esc(fmtDate(d.checkOut))}</div>
           <div class="acc-row">🌙 <b>Duration</b> &nbsp; ${d.nights} Night${d.nights !== 1 ? 's' : ''}</div>
@@ -308,7 +317,12 @@ export function buildBrochureHTML(d: BrochurePageData): string {
       </div>
       <div class="agent">
         <div class="ready">Ready to Book?</div>
-        <div class="ready-sub">Your unforgettable experience starts here.</div>
+        <div class="ready-sub">${(() => {
+          const digits = (agent.companyPhone || '').replace(/\D/g, '');
+          const wa = digits ? (digits.startsWith('0') ? '27' + digits.slice(1) : digits) : '';
+          const href = wa ? `https://wa.me/${wa}` : 'https://wa.me/';
+          return `<a href="${href}" style="color:#fff;text-decoration:underline;font-weight:600;">Click here to request to book</a>`;
+        })()}</div>
         <div class="a-row"><span class="ai">👤</span><span>${esc(agent.companyName || 'YOUR TRAVEL AGENT')}</span></div>
         ${agent.companyPhone ? `<div class="a-row"><span class="ai">📞</span><span>${esc(agent.companyPhone)}</span></div>` : ''}
         ${agent.companyEmail ? `<div class="a-row"><span class="ai">✉️</span><span>${esc(agent.companyEmail)}</span></div>` : ''}

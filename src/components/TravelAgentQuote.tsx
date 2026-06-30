@@ -26,6 +26,7 @@ interface HotelEntry {
   name: string;
   quoteAmount: string;
   mealPlan: string;
+  starRating: string;
 }
 
 interface FamilySplit {
@@ -128,7 +129,7 @@ export function TravelAgentQuote() {
   
   // Multiple hotels support (up to 8)
   const [hotels, setHotels] = useState<HotelEntry[]>([
-    { id: '1', name: '', quoteAmount: '', mealPlan: '' }
+    { id: '1', name: '', quoteAmount: '', mealPlan: '', starRating: '' }
   ]);
   
   // Family split support
@@ -218,7 +219,7 @@ export function TravelAgentQuote() {
   const addHotel = () => {
     if (hotels.length < 8) {
       const newId = (hotels.length + 1).toString();
-      setHotels([...hotels, { id: newId, name: '', quoteAmount: '', mealPlan: '' }]);
+      setHotels([...hotels, { id: newId, name: '', quoteAmount: '', mealPlan: '', starRating: '' }]);
     }
   };
 
@@ -228,7 +229,7 @@ export function TravelAgentQuote() {
     }
   };
 
-  const updateHotel = (id: string, field: 'name' | 'quoteAmount' | 'mealPlan', value: string) => {
+  const updateHotel = (id: string, field: 'name' | 'quoteAmount' | 'mealPlan' | 'starRating', value: string) => {
     setHotels(hotels.map(h => h.id === id ? { ...h, [field]: value } : h));
   };
 
@@ -466,6 +467,7 @@ export function TravelAgentQuote() {
           hotel: {
             name: hotel.name,
             optionLabel: `Option ${idx + 1}`,
+            starRating: hotel.starRating ? parseInt(hotel.starRating) : undefined,
           },
           inclusions,
           totalGroupCost: roundToNearest10(totalGroupForHotel),
@@ -529,7 +531,7 @@ export function TravelAgentQuote() {
     if (data.children !== undefined) setChildren(data.children);
     if (data.childrenAges) setChildrenAges(data.childrenAges);
     if (data.packageIds) setPackageIds(data.packageIds);
-    if (data.hotels) setHotels(data.hotels.map((h: any) => ({ ...h, mealPlan: h.mealPlan || '' })));
+    if (data.hotels) setHotels(data.hotels.map((h: any) => ({ ...h, mealPlan: h.mealPlan || '', starRating: h.starRating || '' })));
     if (data.companyDetails) setCompanyDetails({ companyWebsite: '', companyLogo: '', ...data.companyDetails } as CompanyDetails);
     if (data.enableFamilySplit !== undefined) setEnableFamilySplit(data.enableFamilySplit);
     if (data.families) setFamilies(data.families);
@@ -703,7 +705,7 @@ export function TravelAgentQuote() {
                           </Button>
                         )}
                       </div>
-                      <div className="ml-11">
+                      <div className="ml-11 flex flex-wrap gap-3">
                         <Select value={hotel.mealPlan} onValueChange={(value) => updateHotel(hotel.id, 'mealPlan', value)}>
                           <SelectTrigger className="h-10 bg-white border-gray-200 w-full md:w-64">
                             <SelectValue placeholder="Select meal plan (optional)" />
@@ -717,6 +719,16 @@ export function TravelAgentQuote() {
                             <SelectItem value="full-board">Full Board (All Meals)</SelectItem>
                           </SelectContent>
                         </Select>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={5}
+                          step={1}
+                          value={hotel.starRating}
+                          onChange={e => updateHotel(hotel.id, 'starRating', e.target.value)}
+                          placeholder="How many stars (1-5, optional)"
+                          className="h-10 bg-white border-gray-200 w-full md:w-64"
+                        />
                       </div>
                     </div>
                   ))}
@@ -1189,7 +1201,7 @@ export function TravelAgentQuote() {
                     children,
                     destinationName,
                     destinationRegion: destRegion,
-                    hotel: { name: hotel.name, optionLabel: `Option ${idx + 1}` },
+                    hotel: { name: hotel.name, optionLabel: `Option ${idx + 1}`, starRating: hotel.starRating ? parseInt(hotel.starRating) : undefined },
                     inclusions,
                     totalGroupCost: roundToNearest10(totalGroupForHotel),
                     totalGuests,
