@@ -317,7 +317,12 @@ export function buildBrochureHTML(d: BrochurePageData): string {
       </div>
       <div class="agent">
         <div class="ready">Ready to Book?</div>
-        <div class="ready-sub">Your unforgettable experience starts here.</div>
+        <div class="ready-sub">${(() => {
+          const digits = (agent.companyPhone || '').replace(/\D/g, '');
+          const wa = digits ? (digits.startsWith('0') ? '27' + digits.slice(1) : digits) : '';
+          const href = wa ? `https://wa.me/${wa}` : 'https://wa.me/';
+          return `<a href="${href}" style="color:#fff;text-decoration:underline;font-weight:600;">Click here to request to book</a>`;
+        })()}</div>
         <div class="a-row"><span class="ai">👤</span><span>${esc(agent.companyName || 'YOUR TRAVEL AGENT')}</span></div>
         ${agent.companyPhone ? `<div class="a-row"><span class="ai">📞</span><span>${esc(agent.companyPhone)}</span></div>` : ''}
         ${agent.companyEmail ? `<div class="a-row"><span class="ai">✉️</span><span>${esc(agent.companyEmail)}</span></div>` : ''}
