@@ -75,6 +75,7 @@ export interface BrochureHotelOption {
   name: string;
   optionLabel?: string; // "Option 1"
   description?: string;
+  starRating?: number; // 1-5; if omitted/0, no stars are shown
 }
 
 export interface BrochurePageData {
