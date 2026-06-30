@@ -277,7 +277,7 @@ export function buildBrochureHTML(d: BrochurePageData): string {
         <div class="panel-head">YOUR ACCOMMODATION</div>
         <div class="acc-body">
           <div class="acc-name">${esc(d.hotel.name)}</div>
-          <div class="stars">★ ★ ★ ★ ★</div>
+          ${d.hotel.starRating && d.hotel.starRating > 0 ? `<div class="stars">${'★ '.repeat(Math.min(5, Math.max(1, Math.round(d.hotel.starRating)))).trim()}</div>` : ''}
           <div class="acc-row">📅 <b>Check-in</b> &nbsp; ${esc(fmtDate(d.checkIn))}</div>
           <div class="acc-row">📅 <b>Check-out</b> &nbsp; ${esc(fmtDate(d.checkOut))}</div>
           <div class="acc-row">🌙 <b>Duration</b> &nbsp; ${d.nights} Night${d.nights !== 1 ? 's' : ''}</div>
