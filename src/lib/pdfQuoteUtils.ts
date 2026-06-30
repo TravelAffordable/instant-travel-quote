@@ -141,7 +141,6 @@ export function addBookingDisclaimerToPDF(doc: jsPDF, startY?: number): number {
   doc.text('Travel Affordable Pty Ltd', 20, yPos); yPos += 4;
   doc.text('The Atrium Building', 20, yPos); yPos += 4;
   doc.text('5th Street, Sandown', 20, yPos); yPos += 4;
-  doc.text('Sandton', 20, yPos); yPos += 4;
   doc.text('Tel: 0796813869', 20, yPos); yPos += 4;
   doc.text('e: info@travelaffordable.co.za', 20, yPos); yPos += 4;
   doc.setTextColor(30, 64, 175);
