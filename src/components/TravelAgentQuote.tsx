@@ -1201,7 +1201,7 @@ export function TravelAgentQuote() {
                     children,
                     destinationName,
                     destinationRegion: destRegion,
-                    hotel: { name: hotel.name, optionLabel: `Option ${idx + 1}` },
+                    hotel: { name: hotel.name, optionLabel: `Option ${idx + 1}`, starRating: hotel.starRating ? parseInt(hotel.starRating) : undefined },
                     inclusions,
                     totalGroupCost: roundToNearest10(totalGroupForHotel),
                     totalGuests,
