@@ -105,16 +105,24 @@ const MUTED = '#5b6b7a';
 const LIGHT = '#f4f1ec';
 
 function inclusionCardsHTML(inclusions: string[], nights: number): string {
-  // Ensure Accommodation card present first if absent
-  const list = inclusions.length ? inclusions.slice() : [];
-  if (!list.some(i => /accommodation|hotel|lodge|stay|nights?/i.test(i))) {
-    list.unshift(`Accommodation ${nights} Night${nights !== 1 ? 's' : ''}`);
+  // Dedupe accommodation entries — keep first, drop the rest
+  const isAccom = (s: string) => /accommodation|accomodation|hotel|lodge|stay|nights?/i.test(s);
+  const seenAccom = { v: false };
+  let list = (inclusions || []).filter(item => {
+    if (isAccom(item)) {
+      if (seenAccom.v) return false;
+      seenAccom.v = true;
+    }
+    return true;
+  });
+  if (!seenAccom.v) {
+    list = [`Accommodation ${nights} Night${nights !== 1 ? 's' : ''}`, ...list];
   }
   const cards = list.slice(0, 12).map(item => {
     const icon = iconForInclusion(item);
     let title = item.trim();
     let sub = '';
-    if (/^accommodation/i.test(title)) {
+    if (isAccom(title)) {
       title = 'Accommodation';
       sub = `${nights} Night${nights !== 1 ? 's' : ''}`;
     } else if (/^breakfast$/i.test(title)) {
