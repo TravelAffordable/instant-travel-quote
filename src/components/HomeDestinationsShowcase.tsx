@@ -165,11 +165,19 @@ export function HomeDestinationsShowcase() {
                           </ul>
                         )}
                         {fromPrice !== null && (
-                          <p className="mt-4 font-['Anton'] text-navy">
-                            <span className="text-sm uppercase tracking-wide">From </span>
-                            <span className="text-2xl font-bold text-primary">{formatCurrency(fromPrice)}</span>
-                            <span className="text-sm uppercase tracking-wide"> pp</span>
-                          </p>
+                          <div className="mt-4">
+                            <p className="font-['Anton'] text-navy">
+                              <span className="text-sm uppercase tracking-wide">From </span>
+                              <span className="text-2xl font-bold text-primary">{formatCurrency(fromPrice)}</span>
+                              <span className="text-sm uppercase tracking-wide"> pp</span>
+                            </p>
+                            <p className="mt-1 text-[11px] text-navy/70">
+                              was <span className="line-through">{formatCurrency(fromPrice + 400)} pp</span>
+                            </p>
+                            <p className="text-[11px] text-navy/70 italic">
+                              discounts subject to availability at various hotels
+                            </p>
+                          </div>
                         )}
                         <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
                           <Button size="sm" asChild>
