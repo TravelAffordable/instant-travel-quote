@@ -223,14 +223,21 @@ const DestinationPage = () => {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {pkgs.map((pkg) => {
                 const img = getPackageImage(pkg.id) || data.heroImage;
+                const tourCode = extractTourCode(pkg.name);
+                const fromPrice = getTourFromPrice(pkg.name);
                 return (
                   <Card key={pkg.id} className="overflow-hidden flex flex-col">
                     <div className="h-44 overflow-hidden">
                       <img src={img} alt={pkg.shortName} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                     <CardContent className="p-5 flex flex-col flex-1 text-center">
+                      {tourCode && (
+                        <p className="font-['Anton'] text-xs font-bold text-primary tracking-widest mb-1">
+                          TOUR CODE: {tourCode}
+                        </p>
+                      )}
                       <h3 className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
-                        {pkg.name.replace(/^[A-Z]+\d+\s*-\s*/, '')}
+                        {pkg.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '')}
                       </h3>
                       <p className="font-['Anton'] text-xs text-navy/70 mt-1 uppercase tracking-wide">
                         <CalendarIcon className="inline h-3 w-3 mr-1" />{pkg.duration}
@@ -247,6 +254,13 @@ const DestinationPage = () => {
                             </li>
                           ))}
                         </ul>
+                      )}
+                      {fromPrice !== null && (
+                        <p className="mt-4 font-['Anton'] text-navy">
+                          <span className="text-sm uppercase tracking-wide">From </span>
+                          <span className="text-2xl font-bold text-primary">{formatCurrency(fromPrice)}</span>
+                          <span className="text-sm uppercase tracking-wide"> pp</span>
+                        </p>
                       )}
                       <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
                         <Button size="sm" onClick={() => openRequest(pkg)}>
