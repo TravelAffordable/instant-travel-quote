@@ -64,7 +64,7 @@ import capetownCanalCruise from '@/assets/activities/capetown-canal-cruise.jpg';
 import capetownWineRoute from '@/assets/activities/capetown-wine-route.jpg';
 
 // Sun City Activities
-import suncityValleyWaves from '@/assets/suncity-valley-waves-new.jpg.asset.json';
+import suncityValleyWavesAsset from '@/assets/suncity-valley-waves-new.jpg.asset.json';
 import suncityGameDrive from '@/assets/activities/suncity-game-drive.jpg';
 import suncityResort from '@/assets/activities/suncity-resort.jpg';
 import suncityQuadBiking from '@/assets/activities/suncity-quad-biking.jpg';
