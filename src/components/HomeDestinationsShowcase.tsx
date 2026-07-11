@@ -168,7 +168,7 @@ export function HomeDestinationsShowcase() {
                           <div className="mt-4">
                             <p className="font-['Anton'] text-navy">
                               <span className="text-sm uppercase tracking-wide">From </span>
-                              <span className="text-2xl font-bold text-primary">{formatCurrency(fromPrice)}</span>
+                              <span className="text-2xl font-bold text-sunset">{formatCurrency(fromPrice)}</span>
                               <span className="text-sm uppercase tracking-wide"> pp</span>
                             </p>
                             <p className="mt-1 text-[11px] text-navy/70">
