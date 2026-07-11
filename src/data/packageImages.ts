@@ -77,6 +77,10 @@ import mpumalangaGodsWindow from '@/assets/activities/mpumalanga-gods-window.jpg
 import mpumalangaKrugerSafari from '@/assets/activities/mpumalanga-kruger-safari.jpg';
 import mpumalangaBlydeCanyon from '@/assets/activities/mpumalanga-blyde-canyon.jpg';
 import mpumalangaGraskopGorge from '@/assets/activities/mpumalanga-graskop-gorge.jpg';
+import mp2ZipMpumalanga from '@/assets/activities/mp2-zip-mpumalanga.jpg';
+import mp3Kruger from '@/assets/activities/mp3-kruger.jpg';
+import cptfwWineTram from '@/assets/activities/cptfw-wine-tram.jpg';
+import cptwtcmWineRoute from '@/assets/activities/cptwtcm-wine-route.jpg';
 
 // Bela Bela Activities
 import belabelaWaterpark from '@/assets/activities/belabela-waterpark.jpg';
@@ -144,8 +148,8 @@ export const packageImages: Record<string, string> = {
   // ============= CAPE TOWN =============
   'cpt1': capetownRobbenIsland,
   'cpt2': capetownTableMountain,
-  'cptfw': capetownWineRoute,
-  'cptwtcm': capetownCanalCruise,
+  'cptfw': cptfwWineTram,
+  'cptwtcm': cptwtcmWineRoute,
 
   // ============= SUN CITY =============
   'sun1': suncityValleyWaves,       // Valley of Waves + maze + Sunday lunch
@@ -159,8 +163,8 @@ export const packageImages: Record<string, string> = {
 
   // ============= MPUMALANGA =============
   'mp1': mpumalangaBlydeCanyon,
-  'mp2': mpumalangaGraskopGorge,
-  'mp3': mpumalangaKrugerSafari,
+  'mp2': mp2ZipMpumalanga,
+  'mp3': mp3Kruger,
   'mp4': mpumalangaGodsWindow,
 
   // ============= BELA BELA =============
