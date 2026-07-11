@@ -152,7 +152,7 @@ export const packageImages: Record<string, string> = {
   'cptwtcm': cptwtcmWineRoute,
 
   // ============= SUN CITY =============
-  'sun1': suncityValleyWaves,       // Valley of Waves + maze + Sunday lunch
+  'sun1': suncityValleyWavesAsset.url, // Valley of Waves + maze + Sunday lunch
   'sun2': suncityQuadBiking,        // Valley + quad biking
   'sun3': airportShuttle,           // Valley + shuttle
   'sun4': suncityGameDrive,         // Valley + game drive
