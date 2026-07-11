@@ -172,7 +172,7 @@ export function HomeDestinationsShowcase() {
                               <span className="text-sm uppercase tracking-wide"> pp</span>
                             </p>
                             <p className="mt-1 text-[11px] text-navy/70">
-                              was <span className="line-through">{formatCurrency(fromPrice + 400)} pp</span>
+                              was <span className="line-through bg-blue-100 text-blue-900 px-1 rounded">{formatCurrency(fromPrice + 400)} pp</span>
                             </p>
                             <p className="text-[11px] text-navy/70 italic">
                               discounts subject to availability at various hotels
