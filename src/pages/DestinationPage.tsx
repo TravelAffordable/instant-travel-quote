@@ -31,6 +31,7 @@ import { getDestinationPage } from '@/data/destinationPages';
 import { getPackagesByDestination, Package as TravelPackage } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 import { formatCurrency } from '@/lib/utils';
+import { extractTourCode, getTourFromPrice } from '@/lib/packageTourPricing';
 import NotFound from './NotFound';
 
 const SITE_URL = 'https://travelaffordable.co.za';
