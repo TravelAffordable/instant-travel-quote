@@ -17,6 +17,8 @@ import DurbanPremiumCalendars from "./pages/DurbanPremiumCalendars";
 import DestinationPage from "./pages/DestinationPage";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import BookingPage from "./pages/BookingPage";
+import QuotePage from "./pages/QuotePage";
 
 const queryClient = new QueryClient();
 
