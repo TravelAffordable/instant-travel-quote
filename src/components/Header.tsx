@@ -1,109 +1,127 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Plane, Phone } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { catalogueDestinations } from '@/data/destinationCatalogue';
+
+const navItems = [
+  { label: 'Experiences', to: '/#experiences' },
+  { label: 'Deals', to: '/#deals' },
+  { label: 'Family Travel', to: '/book' },
+  { label: 'Couples', to: '/book' },
+  { label: 'About Us', to: '/#why-choose-us' },
+  { label: 'Contact', to: '/#contact' },
+];
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const navItems = [
-    { label: 'Destinations', href: '#destinations' },
-    { label: 'Get Quote', href: '#quote' },
-    { label: 'Group Tours', href: '#group-tours' },
-    { label: 'Contact', href: '#contact' },
-  ];
-
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMobileMenuOpen(false);
-  };
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50">
+    <header className="fixed left-0 right-0 top-0 z-50 glass border-b border-border/50">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-              <Plane className="w-5 h-5 text-primary-foreground" />
+        <div className="flex h-16 items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+              <Plane className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-display text-xl font-bold text-foreground">
-                Travel Affordable
-              </h1>
-              <p className="text-[10px] text-muted-foreground -mt-0.5">Amazing Getaways • Unbeatable Prices</p>
+              <span className="font-display text-xl font-bold text-foreground">Travel Affordable</span>
+              <p className="-mt-0.5 text-[10px] text-muted-foreground">Your journey. Our passion.</p>
             </div>
-          </a>
+          </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navItems.map(item => (
-              <button
+          <nav className="hidden items-center gap-6 lg:flex">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary">
+                Destinations
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="max-h-80 overflow-y-auto">
+                {catalogueDestinations.map((d) => (
+                  <DropdownMenuItem key={d.slug} asChild>
+                    <Link to={d.enquireOnly ? `/book?destination=${d.slug}` : `/destinations/${d.slug}`}>
+                      {d.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {navItems.map((item) => (
+              <Link
                 key={item.label}
-                onClick={() => scrollToSection(item.href)}
-                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+                to={item.to}
+                className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
               >
                 {item.label}
-              </button>
+              </Link>
             ))}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden items-center gap-3 lg:flex">
             <a
               href="https://wa.me/27796813869"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
             >
-              <Phone className="w-4 h-4" />
+              <Phone className="h-4 w-4" />
               079 681 3869
             </a>
-            <Button
-              onClick={() => scrollToSection('#quote')}
-              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
-            >
-              See Prices for Your Trip
+            <Button asChild className="font-semibold">
+              <Link to="/book">Plan my holiday</Link>
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Menu"
           >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border/50 animate-fade-in">
-            <nav className="flex flex-col gap-2">
-              {navItems.map(item => (
-                <button
+          <div className="animate-fade-in border-t border-border/50 py-4 lg:hidden">
+            <nav className="flex flex-col gap-1">
+              <Link
+                to="/#destinations"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="rounded-lg px-3 py-2 text-foreground/80 hover:bg-muted"
+              >
+                Destinations
+              </Link>
+              {navItems.map((item) => (
+                <Link
                   key={item.label}
-                  onClick={() => scrollToSection(item.href)}
-                  className="text-left py-2 px-3 rounded-lg text-foreground/80 hover:bg-muted hover:text-primary transition-colors"
+                  to={item.to}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="rounded-lg px-3 py-2 text-foreground/80 hover:bg-muted"
                 >
                   {item.label}
-                </button>
+                </Link>
               ))}
-              <div className="pt-2 border-t border-border/50 mt-2">
-                <a
-                  href="https://wa.me/27796813869"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 py-2 px-3 text-accent font-medium"
-                >
-                  <Phone className="w-4 h-4" />
-                  079 681 3869
-                </a>
-              </div>
+              <Button asChild className="mt-2">
+                <Link to="/book" onClick={() => setIsMobileMenuOpen(false)}>
+                  Plan my holiday
+                </Link>
+              </Button>
+              <a
+                href="https://wa.me/27796813869"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 py-2 font-medium text-accent"
+              >
+                <Phone className="h-4 w-4" />
+                079 681 3869
+              </a>
             </nav>
           </div>
         )}

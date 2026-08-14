@@ -17,6 +17,8 @@ import DurbanPremiumCalendars from "./pages/DurbanPremiumCalendars";
 import DestinationPage from "./pages/DestinationPage";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import BookingPage from "./pages/BookingPage";
+import QuotePage from "./pages/QuotePage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/ads" element={<SocialAds />} />
+          <Route path="/book" element={<BookingPage />} />
+          <Route path="/quote" element={<QuotePage />} />
           <Route path="/build-package" element={<BuildPackage />} />
           <Route path="/rate-admin" element={<RateAdmin />} />
           <Route path="/compare/harties/budget/2-sleeper/8" element={<ImageCompare />} />
