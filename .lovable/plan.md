@@ -1,87 +1,66 @@
-# Service Fees, Commissions, Bus Hire Hotel Flow & Inclusions
+# Travel Affordable — Destination-First Rebuild
 
-## 1. Service fee changes (internal — never shown to clients)
+A staged rebuild of the customer-facing website: modern, warm, premium, destination-led, with a simple guided booking journey. Existing working tools (Rate Admin, Travel Agent quotes, Bus Hire, School Trips, Accommodation Provider, ChatBot, blog, destination data) stay in place and untouched.
 
-Update the adult service fee constants across all calculators. Children fees stay as-is (`calculateChildServiceFees`).
+## What exists today (verified)
 
-| Flow | Old adult fee | New adult fee |
-|---|---|---|
-| Public site (Hero, RMSHotelQuotes, CustomQuoteActions, travelData) | tiered up to R850 | **flat R400 / adult** |
-| Accommodation Provider (`/hotel-provider`) | tiered up to R850 | **flat R400 / adult** |
-| Bus Hire & Group Organiser (`/bus-hire`) | tiered up to R850 | **flat R600 / adult** |
-| Travel Agent (`/travel-agent`) | tiered up to R850 | **flat R600 / adult** |
+- Destination data for 9 destinations (`destinationPages.ts`) plus package/hotel catalogue (`travelData.ts`, 1 600+ lines) with budget / affordable / premium hotel tiers, images and live-rate hooks.
+- Homepage = long hero + a showcase that stacks every destination's package grid; pricing shown as static "From R__ pp" per tour code (`packageTourPricing.ts`).
+- Quote flows: `QuoteCalculator`, `BuildPackage`, `BusHireQuote`, `TravelAgentQuote`, `AccommodationProviderQuote`, `SchoolTrips` — all preserved.
+- Child fees today use a 4–16 volume-tiered model (`childServiceFees.ts`) used by group/school flows.
 
-The existing "groups of 25+ get R400 flat" tier is replaced by the single flat rate above (per flow). Tiered logic for 1–24 adults is removed.
+## Key decision to confirm
 
-## 2. Commission (internal accounting, never shown to clients)
+The new per-tour-code table (adult + child 3–12 + child 13–17, service fees already included) becomes the single source of truth for **package/activity pricing on the new consumer booking journey**. The old "From R__ pp" teaser numbers are replaced by the new adult prices. The existing group/school/bus-hire fee logic stays as-is so those flows keep working.
 
-Bus Hire, Group Organiser, and Travel Agent flows:
-- 1–20 travelling adults → **R100 / adult** commission
-- 21+ travelling adults → **R200 / adult** commission
+## Stage 1 — Pricing data layer (no visual change)
 
-Stored as an internal `commissionTotal` on the quote object. Not displayed in the UI or PDF. Used later for reporting.
+- New `src/data/packagePricing.ts`: every tour code with `adult`, `child3to12`, `child13to17`, plus `serviceFees = { adult: 400, child0to2: 0, child3to12: 200, child13to17: 300 }` recorded as metadata (prices already include them). DUR1 override documented (R1 450 + R400 = R1 850).
+- Codes without supplied child prices (KNY1, CPTFW, CPTWTCM, BELA3/4/5 for 3–12) are marked `childPriceOnRequest` — the UI asks the customer to enquire rather than guessing a number.
+- International codes BALI-UBUD, DUBAI-1, PHUKET-1 included.
+- Pure helper `calculatePackagePrice(code, travellers)` returning per-person and total package cost. Unit-tested against the supplied table so nothing drifts.
 
-## 3. Bus Hire / Group Organiser — new accommodation flow
+## Stage 2 — Brand & design system
 
-Replace the current "Add Hotel Accommodation" step with a two-mode hotel cost input:
+- Warm South African palette layered onto the existing tokens: deep plum/berry primary (current brand), warm gold accent, sunset orange for prices, soft sand neutrals. No hardcoded colours in components.
+- Typography: clean modern sans for body/UI, condensed display for headlines (keep Anton where it already reads well, but no all-caps body text).
+- Generous spacing, rounded 2xl cards, soft shadows, large photography.
 
-```
-Preferred hotel cost (R) [_____________]   [x] I don't have a hotel, please find my group accommodation at the destination
-```
+## Stage 3 — Homepage
 
-When the checkbox is ticked:
-- Hide the "preferred hotel cost" field.
-- Show: **"Please write total accommodation budget for your group (R)"** input.
-- Calculation uses the budget as the hotel cost placeholder for the per-person/group total.
-- The on-screen quote shows: per-person package price + total group price, with a note: *"Final accommodation options will be sourced and quoted to you by our team."*
+- Rotating hero carousel (one photo per slide, never a collage) cycling aspirational SA travellers: Black mother & child, that family with partner, white mother & child, white family activity, Indian mother & child, Indian family activity, mixed-race family. Tasteful, premium, no captions about demographics.
+- Search card over the hero: Destination · Experience/package · Adults · Children (0–2, 3–12, 13–17) · dates. Checkbox **"I'd like to do this experience for 1 day"** switches the date control from check-in/check-out to a single tour date.
+- "How it works" in four plain steps: Choose your destination → Choose your experience → Choose where you stay → See your total price.
+- Destination grid (photo-led cards) covering Durban, Cape Town, Johannesburg, Soweto, Mpumalanga, Kruger, Sun City, Pilanesberg, Bela-Bela, Harties, Magalies, Umhlanga, Knysna, Vaal River — new destinations added as data only; ones without packages yet link to an enquiry.
+- Featured experiences, family & couples sections, trust strip, testimonials, footer. The current stacked all-destinations showcase is retired from the homepage (its content still lives on destination pages).
 
-When the checkbox is **not** ticked and a hotel cost is entered:
-- System adds bus quote + activities + entered hotel cost.
-- Shows per-person and total group price including accommodation.
+## Stage 4 — Simple navigation
 
-### After initial calculation — "Generate full quote with accommodation options"
+Destinations · Experiences · Deals · Family Travel · Couples · About · Contact, plus Search and My Booking. Single-level dropdown for Destinations only, no mega-menu. Mobile: full-screen simple list.
 
-Reveal the **same hotel input block used in the Travel Agent section** (up to 8 hotels, name + quote amount + meal plan, minimum 3 required per spec) plus the same client/company details form. "Generate Quote" then produces one PDF page per hotel option (reusing `generateBrochurePDF`), branded with the bus company / group organiser's details (logo, name, email, phone, website, address) — identical layout to the Travel Agent brochure.
+## Stage 5 — Booking journey (new route `/book`)
 
-This means Bus Hire gets:
-- Company/agent details form (logo, name, address, phone, email, website, VAT, client name/email, quote validity, quote number).
-- 1–8 hotel entries.
-- Brochure-style on-screen preview + multi-page PDF download + share button.
-- PDF re-upload (continue editing) using existing `PDFQuoteUploader`, with a new `quoteType: 'bus-hire'`.
+Steps: Destination → Experience → Dates → Travellers → Accommodation → Extras → Review → Payment → Booking Received → Booking Confirmed.
 
-## 4. Inclusions formatting fix
+- Package price shown first: "Package from R__ per person".
+- Accommodation shown after the package, as cards with photo, name, type, location, star rating, short description, room type, meal basis, price, key facilities, "Select accommodation" — grouped into Budget / Standard / Mid-range / Luxury tiers, sourced from the existing hotel catalogue.
+- Running summary: Package + Accommodation = complete holiday price. Rounded totals only, no line-item supplier detail, no margins or costs anywhere in the client bundle.
+- Itinerary block generated from package data: one-day experience itinerary when the 1-day option is chosen, otherwise Day 1 arrival → experience days → farewell, adapted to the actual number of nights, with breakfast first and evening activities last in each day.
 
-Across all generated quotes (PDF + on-screen brochure + share text + RMSHotelQuotes display) replace the bare word `Accommodation` in the inclusions list with **`Accommodation — {N} night{s}`**, where N is calculated from check-in/check-out.
+## Stage 6 — Booking persistence & status
 
-Already partially done in Travel Agent PDF (`Accommodation ${nights} Night${s}`); extend the same rule to:
-- `generateShareContent` (share text)
-- `BrochurePreview` HTML
-- Bus Hire on-screen "Package Inclusions" block
-- RMSHotelQuotes inclusions display
-- Any other "Accommodation" string used in a client-visible inclusions list
+Backend tables for `bookings`, `booking_travellers`, `booking_items`, `accommodation_confirmations` with row-level security so a customer only ever sees their own booking. Status: `received` after payment → `confirmed` once accommodation is secured (accommodation is the confirmation gate; activities never block it). Confirmation view shows itinerary, accommodation, dates and reference.
 
-Activities below the accommodation line continue to come from `pkg.activitiesIncluded` exactly as authored, e.g.:
-```
-Accommodation — 2 nights
-uShaka Marine World combo tickets (Sea World & Wet n Wild)
-Isle of Capri Boat Cruise
-60 minute full body massage
-Shuttle transport from hotel to activities and back
-```
+## Stage 7 — Admin console foundation
 
-## Technical breakdown
+Staff-only routes (role-based, roles in a separate table) listing new bookings, payment status, accommodation awaiting confirmation, with fields to confirm accommodation and capture hotel confirmation numbers. Management screens for destinations, packages, accommodation, pricing and customers build on the existing Rate Admin patterns. Customer-facing surfaces never receive supplier cost data.
 
-- `src/components/BusHireQuote.tsx` — biggest change. Add: hotel cost field, "no hotel" checkbox, budget field, hotel-entries array (reused from Travel Agent), company/client details form, brochure preview + PDF download. Replace tiered fees with flat R600/adult + R100/R200 commission.
-- `src/components/TravelAgentQuote.tsx` — flat R600/adult, add commission calc.
-- `src/components/AccommodationProviderQuote.tsx` — flat R400/adult.
-- `src/components/Hero.tsx`, `src/components/RMSHotelQuotes.tsx`, `src/components/CustomQuoteActions.tsx`, `src/data/travelData.ts` (`serviceFeePerAdult` at line 1482) — flat R400/adult, drop tier table.
-- `src/lib/pdfQuoteUtils.ts` — add `'bus-hire'` to `quoteType` and persist new bus-hire fields.
-- `src/lib/travelAgentBrochure.ts` — neutralise wording so brochure works for bus-hire/group-organiser (currently OK — already agent-agnostic via `agent` block). Inclusions line "Accommodation" → "Accommodation — N nights" already supported by passing the formatted string in.
+## Technical notes
 
-## Out of scope (confirm if you want these too)
+- Generic data-driven components only: `DestinationCard`, `ExperienceCard`, `AccommodationCard`, `PackageCard`, `TierSelector`, `ResponsiveImage`, `BookingSummary`, `Itinerary`, `LoadingState`, `ErrorState`. No per-destination components; adding a destination is a data change.
+- Existing routes and quote tools keep working throughout; each stage is verified in the preview before the next begins.
+- Payments: Stripe or Paddle added at Stage 6 — I'll confirm the provider with you before wiring it.
 
-- Commission display anywhere client-facing (kept fully internal as per memory).
-- Changing the bus quote field placement, package selection UX, or any other UI element not listed above.
-- Database/edge-function changes — all changes are frontend.
+## Suggested order of delivery
 
-Confirm and I'll build it.
+Stages 1–4 first (data + look + homepage + nav) so the site is selling quickly, then 5, then 6–7.
