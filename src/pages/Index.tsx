@@ -25,6 +25,8 @@ const Index = () => {
       />
       <Header />
       <HeroCarousel />
+      <DestinationImageMenu />
+
       <HowItWorks />
       <DestinationGrid />
       <FeaturedExperiences />
