@@ -4,6 +4,8 @@ import { format } from 'date-fns';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
+import { DestinationImageMenu } from '@/components/DestinationImageMenu';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -168,42 +170,9 @@ const DestinationPage = () => {
 
       {/* Intro removed per request — packages section below */}
 
-      {/* Destinations nav */}
-      <nav className="border-b border-border bg-background/80 backdrop-blur">
-        <div className="container mx-auto px-4 py-3 overflow-x-auto">
-          <ul className="flex flex-nowrap items-center gap-2 md:gap-3 justify-center min-w-max">
-            {[
-              { slug: 'durban', label: 'Durban' },
-              { slug: 'umhlanga', label: 'Umhlanga' },
-              { slug: 'cape-town', label: 'Cape Town' },
-              { slug: 'sun-city', label: 'Sun City' },
-              { slug: 'hartbeespoort', label: 'Harties' },
-              { slug: 'magaliesburg', label: 'Magalies' },
-              { slug: 'mpumalanga', label: 'Mpumalanga' },
-              { slug: 'bela-bela', label: 'Bela-Bela' },
-              { slug: 'vaal-river', label: 'Emerald Casino and Vaal Cruise' },
-              { slug: 'knysna', label: 'Knysna' },
-            ].map((d) => {
-              const active = d.slug === data.slug;
-              return (
-                <li key={d.slug}>
-                  <Link
-                    to={`/destinations/${d.slug}`}
-                    className={cn(
-                      'inline-block whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
-                      active
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-navy hover:bg-muted',
-                    )}
-                  >
-                    {d.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </nav>
+      {/* Destinations image menu — same position on every page */}
+      <DestinationImageMenu activeSlug={data.slug} />
+
 
 
 
