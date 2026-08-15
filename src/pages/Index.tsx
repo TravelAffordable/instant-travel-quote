@@ -10,6 +10,8 @@ import { Testimonials } from '@/components/Testimonials';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
 import { SEO } from '@/components/SEO';
+import { DestinationImageMenu } from '@/components/DestinationImageMenu';
+
 import { useState } from 'react';
 
 const Index = () => {
