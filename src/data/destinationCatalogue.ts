@@ -1,16 +1,23 @@
 // Destination-first catalogue for the Travel Affordable homepage & booking flow.
 // Adding a destination = adding data here (plus packages in travelData when available).
 
-import durbanImg from '@/assets/destinations/durban.jpg';
-import capeTownImg from '@/assets/destinations/cape-town.jpg';
-import sunCityImg from '@/assets/destinations/sun-city.jpg';
+import durbanAsset from '@/assets/destinations/durban-new.jpg.asset.json';
+import capeTownAsset from '@/assets/destinations/cape-town-new.jpg.asset.json';
+import sunCityAsset from '@/assets/destinations/sun-city-new.jpg.asset.json';
+import mpumalangaAsset from '@/assets/destinations/mpumalanga-new.jpg.asset.json';
+import knysnaAsset from '@/assets/destinations/knysna-new.jpg.asset.json';
+import belaBelaAsset from '@/assets/destinations/bela-bela-new.jpg.asset.json';
 import hartiesImg from '@/assets/destinations/hartbeespoort.jpg';
 import magaliesImg from '@/assets/destinations/magaliesberg.jpg';
-import mpumalangaImg from '@/assets/destinations/mpumalanga.jpg';
 import umhlangaImg from '@/assets/destinations/umhlanga.jpg';
 import vaalImg from '@/assets/destinations/vaal-river.jpg';
-import knysnaImg from '@/assets/destinations/knysna.jpg';
-import belaBelaImg from '@/assets/destinations/bela-bela.jpg';
+
+const durbanImg = durbanAsset.url;
+const capeTownImg = capeTownAsset.url;
+const sunCityImg = sunCityAsset.url;
+const mpumalangaImg = mpumalangaAsset.url;
+const knysnaImg = knysnaAsset.url;
+const belaBelaImg = belaBelaAsset.url;
 import blydeImg from '@/assets/destinations/pretoria.jpg';
 import joburgImg from '@/assets/destinations/johannesburg.jpg';
 import sowetoImg from '@/assets/destinations/soweto.jpg';
