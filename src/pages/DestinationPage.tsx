@@ -241,7 +241,7 @@ const DestinationPage = () => {
                       )}
                       <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
                         <Button size="sm" onClick={() => openRequest(pkg)}>
-                          Request Prices <ArrowRight className="ml-1 h-3 w-3" />
+                          Book Now <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
                       </div>
                     </CardContent>
