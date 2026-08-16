@@ -180,23 +180,34 @@ export function useRMSHotels() {
           .eq('is_available', true);
 
         if (cachedRates && cachedRates.length > 0) {
-          // Build cached hotel entries
-          const cachedHotels: RMSHotel[] = cachedRates.map((cr, idx) => ({
-            code: `cached-${cr.tier}-${capacityFilter}-${idx}`,
-            name: cr.hotel_alias,
-            starRating: null,
-            tier: cr.tier as 'budget' | 'affordable' | 'premium',
-            includesBreakfast: cr.includes_breakfast ?? false,
-            minRate: Math.round(Number(cr.crawled_rate)),
-            totalRate: Math.round(Number(cr.crawled_rate) * nights),
-            roomTypeId: `cached-${cr.tier}-${capacityFilter}-${idx}`,
-            roomTypeName: cr.room_type || 'Standard Room',
-            capacity: cr.capacity as '2_sleeper' | '4_sleeper',
-            areaName: params.areaName || destinationLabelMap[mappedDestination] || mappedDestination,
-            destination: mappedDestination,
-            images: [],
-            isCachedRate: true,
-          }));
+          // Build cached hotel entries — always display the real property name
+          const cachedHotels: RMSHotel[] = cachedRates
+            .map((cr, idx) => {
+              const displayName = cr.real_hotel_name || cr.hotel_alias;
+              const mappedImage =
+                mappedDestination === 'durban' ? durbanPremiumImageMap[displayName] : undefined;
+              const stars =
+                mappedDestination === 'durban' ? getDurbanHotelStars(displayName) : undefined;
+
+              return {
+                code: `cached-${cr.tier}-${capacityFilter}-${idx}`,
+                name: displayName,
+                starRating: stars ?? null,
+                tier: cr.tier as 'budget' | 'affordable' | 'premium',
+                includesBreakfast: cr.includes_breakfast ?? false,
+                minRate: Math.round(Number(cr.crawled_rate)),
+                totalRate: Math.round(Number(cr.crawled_rate) * nights),
+                roomTypeId: `cached-${cr.tier}-${capacityFilter}-${idx}`,
+                roomTypeName: cr.room_type || 'Standard Room',
+                capacity: cr.capacity as '2_sleeper' | '4_sleeper',
+                areaName: params.areaName || destinationLabelMap[mappedDestination] || mappedDestination,
+                destination: mappedDestination,
+                images: mappedImage ? [mappedImage] : [],
+                isCachedRate: true,
+              } satisfies RMSHotel;
+            })
+            .filter((h) => !isGenericHotelName(h.name));
+
 
           // Group cached by tier to know which tiers have cached data
           const cachedTiers = new Set(cachedRates.map(cr => cr.tier));
