@@ -115,18 +115,19 @@ const durbanBudgetHotels4Sleeper: { name: string; price: number; roomType: strin
 // Custom Durban Premium Hotels with specific names, prices, and room types
 // 2-sleeper rooms
 const durbanPremiumHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
-  { name: 'The Balmoral', price: 1200, roomType: 'Double or Twin Room', capacity: 2, includesBreakfast: true },
-  { name: 'Belaire Suites Hotel', price: 1284, roomType: 'Superior Double or Twin Room', capacity: 2, includesBreakfast: true },
-  { name: 'Blue Waters Hotel', price: 1285, roomType: 'Deluxe King or Twin Room', capacity: 2, includesBreakfast: true },
-  { name: 'Gooderson Tropicana Hotel', price: 1400, roomType: 'Family Double Room', capacity: 2 },
-  { name: 'Southern Sun Garden Court South Beach', price: 1440, roomType: 'Standard Queen Room', capacity: 2, includesBreakfast: true },
-  { name: 'Gooderson Leisure Silver Sands 2', price: 1495, roomType: 'Studio with Sea View', capacity: 2 },
-  { name: 'Southern Sun The Edward', price: 1543, roomType: 'Standard Twin Room', capacity: 2, includesBreakfast: true },
-  { name: 'First Group The Palace All-Suite', price: 1579, roomType: 'Standard Double Room with Sea View', capacity: 2 },
-  { name: 'Southern Sun Garden Court Marine Parade', price: 1635, roomType: 'Standard King Room', capacity: 2, includesBreakfast: true },
-  { name: 'Southern Sun Elangeni & Maharani Hotel', price: 1925, roomType: 'Elangeni Standard Queen', capacity: 2, includesBreakfast: true },
-  { name: 'Suncoast Hotel & Towers', price: 2226, roomType: 'Standard Room Pool Facing', capacity: 2 },
+  { name: 'The Balmoral', price: 979, roomType: 'Double or Twin Room', capacity: 2, includesBreakfast: true },
+  { name: 'Parade Hotel', price: 1146, roomType: 'Private Suite', capacity: 2, includesBreakfast: true },
+  { name: 'Blue Waters Hotel', price: 1494, roomType: 'Deluxe King or Twin Room', capacity: 2, includesBreakfast: true },
+  { name: 'Southern Sun Garden Court South Beach', price: 1496, roomType: 'Standard Queen Room', capacity: 2, includesBreakfast: true },
+  { name: 'Gooderson Tropicana Hotel', price: 1557, roomType: 'Family Double Room', capacity: 2 },
+  { name: 'SatSands Hotel & Self-Catering', price: 1599, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Southern Sun The Edward', price: 1629, roomType: 'Standard Twin Room', capacity: 2, includesBreakfast: true },
+  { name: 'Southern Sun Garden Court Marine Parade', price: 1738, roomType: 'Standard King Room', capacity: 2, includesBreakfast: true },
+  { name: 'Southern Sun Elangeni & Maharani Hotel', price: 1814, roomType: 'Elangeni Standard Queen', capacity: 2, includesBreakfast: true },
+  { name: 'Suncoast Hotel & Towers', price: 1966, roomType: 'Standard Room Pool Facing', capacity: 2 },
+  { name: 'Belaire Suites Hotel', price: 2218, roomType: 'Superior Double or Twin Room', capacity: 2, includesBreakfast: true },
 ];
+
 
 // 4-sleeper rooms for 4 adults
 const durbanPremiumHotels4SleeperAdults: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [

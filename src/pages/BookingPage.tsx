@@ -24,6 +24,7 @@ import { getHotelsByDestination, getPackagesByDestination, packages } from '@/da
 import { calculatePackagePrice } from '@/data/packagePricing';
 import { buildItinerary } from '@/lib/itinerary';
 import { classifyHotels } from '@/lib/accommodationTiers';
+import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
 import { cn } from '@/lib/utils';
 
 type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'extras' | 'review' | 'received';
@@ -104,7 +105,12 @@ export default function BookingPage() {
   const packagePricing = pkg ? calculatePackagePrice(pkg.id, { adults, childrenAges }) : null;
   const packageTotal = packagePricing?.total ?? 0;
 
-  const hotels = destination?.destinationId ? getHotelsByDestination(destination.destinationId) : [];
+  const hotels = (destination?.destinationId ? getHotelsByDestination(destination.destinationId) : [])
+    .filter((h) => !isGenericHotelName(h.name))
+    .map((h) => {
+      const stars = getDurbanHotelStars(h.name);
+      return stars == null ? h : { ...h, rating: stars };
+    });
   const tierMap = useMemo(() => classifyHotels(hotels), [hotels]);
   const totalGuests = adults + kids + teens;
 
