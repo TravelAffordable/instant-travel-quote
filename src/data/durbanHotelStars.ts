@@ -27,6 +27,8 @@ const GENERIC_NAME_PATTERNS = [
   /beachfront\s+budget\s+option/i,
   /\b(budget|affordable|premium)\b.*\boption\s*\d+/i,
   /\bsleeper\s+option\b/i,
+  /\b(guesthouse|guest\s+house|lodge|resort|hotel)\s+[A-J]$/i,
+  /\barea\s+guesthouse\b/i,
   /\b(budget|affordable|premium)\s+hotel(\s+option)?\s+[A-J]\b/i,
 ];
 

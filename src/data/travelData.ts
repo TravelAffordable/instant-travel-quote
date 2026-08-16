@@ -8,6 +8,7 @@ import {
 } from './hartiesHotelImages';
 import { hartiesPremiumImageMap } from './hartiesPremiumImages';
 import { durbanPremiumImageMap } from './durbanPremiumImages';
+import { sunCityPremiumImageMap } from './sunCityPremiumImages';
 import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
 import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
@@ -270,7 +271,6 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'The Marly', nightlyRate: 3500 },
   ],
   'sun-city': [
-    { name: 'Sun City Area Guesthouse A', nightlyRate: 1220, includesBreakfast: true },
     { name: 'Bakubung Bush Lodge', nightlyRate: 3200, includesBreakfast: true },
     { name: 'The Kingdom Resort', nightlyRate: 2500 },
     { name: 'Kwa Maritane Lodge', nightlyRate: 3500, includesBreakfast: true },
@@ -661,6 +661,7 @@ function generateHotels(): Hotel[] {
       const destImageMap: Record<string, string> = {
         ...(destId === 'durban' ? durbanPremiumImageMap : {}),
         ...(destId === 'umhlanga' ? umhlangaPremiumImageMap : {}),
+        ...(destId === 'sun-city' ? sunCityPremiumImageMap : {}),
       };
       destPremiumHotels.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
