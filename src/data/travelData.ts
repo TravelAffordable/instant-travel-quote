@@ -156,8 +156,20 @@ const durbanPremiumHotels4SleeperFamily: { name: string; price: number; roomType
   { name: 'The Edward', price: 3927, roomType: 'Superior Double Double Room', capacity: 4, includesBreakfast: true },
 ];
 
-// Real Umhlanga 2-sleeper properties (rates less R50)
+// Real Umhlanga 2-sleeper properties. Existing properties are retained;
+// supplied rates replace only the matching hotel entries.
 const umhlangaRealHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
+  { name: 'Regal Inn Umhlanga Gateway', price: 950, roomType: 'Hotel Room', capacity: 2 },
+  { name: '71 Sea Lodge Beachfront Apartment', price: 1000, roomType: 'Apartment', capacity: 2 },
+  { name: 'Town Lodge Umhlanga', price: 1050, roomType: 'Hotel Room', capacity: 2 },
+  { name: 'The Millennial Umhlanga', price: 1100, roomType: 'Apartment', capacity: 2 },
+  { name: 'First Group Breakers Resort', price: 1150, roomType: 'Resort Room', capacity: 2 },
+  { name: 'Breakers Resort Apartments', price: 1200, roomType: 'Resort Room', capacity: 2 },
+  { name: 'Breakers Resort 232', price: 1200, roomType: 'Resort Room', capacity: 2 },
+  { name: 'Royal Palm Hotel', price: 1250, roomType: 'Hotel Room', capacity: 2 },
+  { name: 'Premier Hotel Umhlanga', price: 1300, roomType: 'Hotel Room', capacity: 2 },
+  { name: 'aha Gateway Hotel Umhlanga', price: 1350, roomType: 'Hotel Room', capacity: 2 },
+  { name: 'The Villa Umhlanga', price: 1361, roomType: 'Hotel Room', capacity: 2, includesBreakfast: true },
   { name: 'BlackBrick Umhlanga Rocks', price: 1656, roomType: 'One-Bedroom Apartment with Garden View', capacity: 2, includesBreakfast: true },
   { name: 'Premier Splendid Inn Umhlanga', price: 1662, roomType: 'Deluxe King Room', capacity: 2 },
   { name: 'Holiday Inn Express Durban - Umhlanga', price: 1752, roomType: 'Standard Double Room with Sofa Bed', capacity: 2, includesBreakfast: true },
@@ -165,6 +177,7 @@ const umhlangaRealHotels2Sleeper: { name: string; price: number; roomType: strin
   { name: 'Hilton Garden Inn Umhlanga Arch', price: 2114, roomType: 'Twin Room', capacity: 2 },
   { name: 'The Capital Pearls Hotel', price: 2422, roomType: 'Executive Studio', capacity: 2 },
   { name: 'Radisson Blu Hotel, Durban Umhlanga', price: 3232, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Oceans Apartments Balcony Suites Radisson Blu', price: 3596, roomType: 'Apartment', capacity: 2 },
 ];
 
 // Combined Durban budget hotels (for backward compatibility)
