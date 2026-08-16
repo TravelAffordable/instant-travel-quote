@@ -24,6 +24,7 @@ import { getHotelsByDestination, getPackagesByDestination, packages } from '@/da
 import { calculatePackagePrice } from '@/data/packagePricing';
 import { buildItinerary } from '@/lib/itinerary';
 import { classifyHotels } from '@/lib/accommodationTiers';
+import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
 import { cn } from '@/lib/utils';
 
 type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'extras' | 'review' | 'received';
