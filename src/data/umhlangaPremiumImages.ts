@@ -14,6 +14,8 @@ import millennialImg from '@/assets/hotels/umhlanga-premium-millennial.jpg';
 import townLodgeImg from '@/assets/hotels/umhlanga-premium-town-lodge.jpg';
 import seaLodgeImg from '@/assets/hotels/umhlanga-premium-sea-lodge.jpg';
 import oceansApartmentsImg from '@/assets/hotels/umhlanga-premium-oceans-apartments.jpg';
+import capitalPearlsImg from '@/assets/hotels/umhlanga-premium-capital-pearls.jpg';
+import blackBrickImg from '@/assets/hotels/umhlanga-premium-blackbrick.jpg';
 
 export const umhlangaPremiumImageMap: Record<string, string> = {
   'Breakers Resort Apartments': breakersResortImg,
@@ -33,6 +35,10 @@ export const umhlangaPremiumImageMap: Record<string, string> = {
   'Oceans Apartments Balcony Suites Radisson Blu': oceansApartmentsImg,
   'Town Lodge Umhlanga': townLodgeImg,
   '71 Sea Lodge Beachfront Apartment': seaLodgeImg,
+  'The Capital Pearls Hotel': capitalPearlsImg,
+  'BlackBrick Umhlanga Rocks': blackBrickImg,
+  'Holiday Inn Express Durban - Umhlanga': holidayInnImg,
+  'Radisson Blu Hotel, Durban Umhlanga': radissonBluImg,
 };
 
 export function getUmhlangaPremiumImage(hotelName: string): string | undefined {
