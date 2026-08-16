@@ -34,5 +34,5 @@ export const tierLabels: Record<AccommodationTier, string> = {
 };
 
 export function mealBasis(hotel: Hotel): string {
-  return hotel.includesBreakfast ? 'Bed & breakfast' : 'Room only';
+  return hotel.includesBreakfast ? 'Bed & breakfast' : 'Breakfast optional extra';
 }
