@@ -13,6 +13,8 @@ import palaceAllSuiteImg from '@/assets/hotels/durban-premium-palace-all-suite.j
 import seaEstaImg from '@/assets/hotels/durban-premium-sea-esta.jpg';
 import beachHurstImg from '@/assets/hotels/durban-premium-beach-hurst.jpg';
 import ushakaViewsImg from '@/assets/hotels/durban-premium-ushakaviews.jpg';
+import satSandsImg from '@/assets/hotels/durban-premium-satsands.jpg';
+import paradeHotelImg from '@/assets/hotels/durban-premium-parade-hotel.jpg';
 
 export const durbanPremiumImageMap: Record<string, string> = {
   // 2-sleeper hotels
@@ -36,6 +38,9 @@ export const durbanPremiumImageMap: Record<string, string> = {
   'The Edward': theEdwardImg,
   'Garden Court Marine Parade': gardenCourtMarineImg,
   'Southern Sun Elangeni & Maharani': elangeniImg,
+  'The Balmoral - Halaal': balmoralImg,
+  'SatSands Hotel & Self-Catering': satSandsImg,
+  'Parade Hotel': paradeHotelImg,
 };
 
 export function getDurbanPremiumImage(hotelName: string): string | undefined {
