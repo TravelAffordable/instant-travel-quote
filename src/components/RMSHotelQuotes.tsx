@@ -332,10 +332,15 @@ export function RMSHotelQuotes({
                                     ))}
                                   </div>
                                 )}
-                                {hotel.includesBreakfast && (
+                                {hotel.includesBreakfast ? (
                                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
                                     <Coffee className="w-3 h-3 mr-1" />
                                     Breakfast Included
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="bg-muted text-muted-foreground">
+                                    <Coffee className="w-3 h-3 mr-1" />
+                                    Breakfast optional extra
                                   </Badge>
                                 )}
                                 {busQuoteAmount > 0 && (
