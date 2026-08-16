@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import { hotels as staticHotels, type Hotel } from '@/data/travelData';
 import { supabase } from '@/integrations/supabase/client';
+import { getDurbanHotelStars, isGenericHotelName } from '@/data/durbanHotelStars';
+import { durbanPremiumImageMap } from '@/data/durbanPremiumImages';
 
 export interface RMSHotel {
   code: string;
