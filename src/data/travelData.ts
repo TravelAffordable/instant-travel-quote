@@ -662,6 +662,7 @@ function generateHotels(): Hotel[] {
         ...(destId === 'durban' ? durbanPremiumImageMap : {}),
         ...(destId === 'umhlanga' ? umhlangaPremiumImageMap : {}),
         ...(destId === 'sun-city' ? sunCityPremiumImageMap : {}),
+        ...(destId === 'vaal-river' ? vaalPremiumImageMap : {}),
       };
       destPremiumHotels.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
