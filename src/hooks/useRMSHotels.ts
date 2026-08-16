@@ -142,6 +142,7 @@ export function useRMSHotels() {
 
       const rmsHotels = staticHotels
         .filter((hotel) => hotel.destination === mappedDestination)
+        .filter((hotel) => !(mappedDestination === 'durban' && isGenericHotelName(hotel.name)))
         .filter((hotel) => matchesAreaFilter(hotel, params))
         .filter((hotel) => matchesCapacity(hotel, totalGuests, hasKids))
         .map((hotel) => ({
