@@ -25,6 +25,7 @@ import { calculatePackagePrice } from '@/data/packagePricing';
 import { buildItinerary } from '@/lib/itinerary';
 import { classifyHotels } from '@/lib/accommodationTiers';
 import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
+import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 import { cn } from '@/lib/utils';
 
 type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'extras' | 'review' | 'received';
@@ -108,7 +109,7 @@ export default function BookingPage() {
   const hotels = (destination?.destinationId ? getHotelsByDestination(destination.destinationId) : [])
     .filter((h) => !isGenericHotelName(h.name))
     .map((h) => {
-      const stars = getDurbanHotelStars(h.name);
+      const stars = getDurbanHotelStars(h.name) ?? getUmhlangaHotelStars(h.name);
       return stars == null ? h : { ...h, rating: stars };
     });
   const tierMap = useMemo(() => classifyHotels(hotels), [hotels]);

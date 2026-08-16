@@ -9,6 +9,7 @@ import {
 import { hartiesPremiumImageMap } from './hartiesPremiumImages';
 import { durbanPremiumImageMap } from './durbanPremiumImages';
 import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
+import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
 export interface Hotel {
@@ -153,6 +154,17 @@ const durbanPremiumHotels4SleeperFamily: { name: string; price: number; roomType
   { name: 'UshakaViews', price: 2520, roomType: 'Two-Bedroom Apartment', capacity: 4 },
   { name: 'First Group The Palace All-Suite', price: 3502, roomType: 'Two-Bedroom Apartment', capacity: 4, includesBreakfast: true },
   { name: 'The Edward', price: 3927, roomType: 'Superior Double Double Room', capacity: 4, includesBreakfast: true },
+];
+
+// Real Umhlanga 2-sleeper properties (rates less R50)
+const umhlangaRealHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
+  { name: 'BlackBrick Umhlanga Rocks', price: 1656, roomType: 'One-Bedroom Apartment with Garden View', capacity: 2, includesBreakfast: true },
+  { name: 'Premier Splendid Inn Umhlanga', price: 1662, roomType: 'Deluxe King Room', capacity: 2 },
+  { name: 'Holiday Inn Express Durban - Umhlanga', price: 1752, roomType: 'Standard Double Room with Sofa Bed', capacity: 2, includesBreakfast: true },
+  { name: 'Protea Hotel by Marriott Durban Umhlanga', price: 2010, roomType: 'King Room', capacity: 2 },
+  { name: 'Hilton Garden Inn Umhlanga Arch', price: 2114, roomType: 'Twin Room', capacity: 2 },
+  { name: 'The Capital Pearls Hotel', price: 2422, roomType: 'Executive Studio', capacity: 2 },
+  { name: 'Radisson Blu Hotel, Durban Umhlanga', price: 3232, roomType: 'Standard Room', capacity: 2 },
 ];
 
 // Combined Durban budget hotels (for backward compatibility)
@@ -608,6 +620,24 @@ function generateHotels(): Hotel[] {
           images: hotelImages,
           capacity: 2,
           roomType: '2 Sleeper Room',
+          includesBreakfast: hotel.includesBreakfast,
+        });
+      });
+    } else if (destId === 'umhlanga') {
+      umhlangaRealHotels2Sleeper.forEach((hotel, index) => {
+        const hotelImg = umhlangaPremiumImageMap[hotel.name] || premiumImages[index % premiumImages.length];
+        allHotels.push({
+          id: `${destId}-premium-2s-${index + 1}`,
+          name: hotel.name,
+          destination: destId,
+          pricePerNight: hotel.price,
+          rating: getUmhlangaHotelStars(hotel.name) ?? 0,
+          type: 'premium',
+          amenities: ['WiFi', 'Pool', 'Restaurant', 'Parking'],
+          image: hotelImg,
+          images: [hotelImg],
+          capacity: hotel.capacity,
+          roomType: hotel.roomType,
           includesBreakfast: hotel.includesBreakfast,
         });
       });

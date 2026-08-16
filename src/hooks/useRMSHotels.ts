@@ -3,6 +3,8 @@ import { hotels as staticHotels, type Hotel } from '@/data/travelData';
 import { supabase } from '@/integrations/supabase/client';
 import { getDurbanHotelStars, isGenericHotelName } from '@/data/durbanHotelStars';
 import { durbanPremiumImageMap } from '@/data/durbanPremiumImages';
+import { umhlangaPremiumImageMap } from '@/data/umhlangaPremiumImages';
+import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 
 export interface RMSHotel {
   code: string;
@@ -142,7 +144,13 @@ export function useRMSHotels() {
 
       const rmsHotels = staticHotels
         .filter((hotel) => hotel.destination === mappedDestination)
-        .filter((hotel) => !(mappedDestination === 'durban' && isGenericHotelName(hotel.name)))
+        .filter(
+          (hotel) =>
+            !(
+              (mappedDestination === 'durban' || mappedDestination === 'umhlanga') &&
+              isGenericHotelName(hotel.name)
+            ),
+        )
         .filter((hotel) => matchesAreaFilter(hotel, params))
         .filter((hotel) => matchesCapacity(hotel, totalGuests, hasKids))
         .map((hotel) => ({
@@ -185,9 +193,17 @@ export function useRMSHotels() {
             .map((cr, idx) => {
               const displayName = cr.real_hotel_name || cr.hotel_alias;
               const mappedImage =
-                mappedDestination === 'durban' ? durbanPremiumImageMap[displayName] : undefined;
+                mappedDestination === 'durban'
+                  ? durbanPremiumImageMap[displayName]
+                  : mappedDestination === 'umhlanga'
+                    ? umhlangaPremiumImageMap[displayName]
+                    : undefined;
               const stars =
-                mappedDestination === 'durban' ? getDurbanHotelStars(displayName) : undefined;
+                mappedDestination === 'durban'
+                  ? getDurbanHotelStars(displayName)
+                  : mappedDestination === 'umhlanga'
+                    ? getUmhlangaHotelStars(displayName)
+                    : undefined;
 
               return {
                 code: `cached-${cr.tier}-${capacityFilter}-${idx}`,
