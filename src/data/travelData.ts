@@ -10,6 +10,7 @@ import { hartiesPremiumImageMap } from './hartiesPremiumImages';
 import { durbanPremiumImageMap } from './durbanPremiumImages';
 import { sunCityPremiumImageMap } from './sunCityPremiumImages';
 import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
+import { vaalPremiumImageMap } from './vaalPremiumImages';
 import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
