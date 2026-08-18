@@ -1,8 +1,13 @@
-// Magalies premium hotel images
-import cocomoImg from '@/assets/hotels/magalies-premium-cocomo.jpg';
-import mountGraceImg from '@/assets/hotels/magalies-premium-mount-grace.jpg';
-import cradleBoutiqueImg from '@/assets/hotels/magalies-premium-cradle-boutique.jpg';
-import valleyLodgeImg from '@/assets/hotels/magalies-premium-valley-lodge.jpg';
+// Magalies premium hotel images (real property photos, CDN-hosted)
+import cocomoAsset from '@/assets/hotels/magalies-cocomo1.jpg.asset.json';
+import mountGraceAsset from '@/assets/hotels/magalies-MountGrace1.jpg.asset.json';
+import cradleBoutiqueAsset from '@/assets/hotels/magalies-Cradle_Boutique_Hote.jpg.asset.json';
+import valleyLodgeAsset from '@/assets/hotels/magalies-ValleLodge.jpg.asset.json';
+
+const cocomoImg = cocomoAsset.url;
+const mountGraceImg = mountGraceAsset.url;
+const cradleBoutiqueImg = cradleBoutiqueAsset.url;
+const valleyLodgeImg = valleyLodgeAsset.url;
 
 export const magaliesPremiumImageMap: Record<string, string> = {
   'Cocomo Boutique Hotel': cocomoImg,
