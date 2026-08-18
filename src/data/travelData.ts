@@ -11,6 +11,7 @@ import { durbanPremiumImageMap } from './durbanPremiumImages';
 import { sunCityPremiumImageMap } from './sunCityPremiumImages';
 import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
 import { vaalPremiumImageMap } from './vaalPremiumImages';
+import { magaliesPremiumImageMap } from './magaliesPremiumImages';
 import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
@@ -664,6 +665,7 @@ function generateHotels(): Hotel[] {
         ...(destId === 'umhlanga' ? umhlangaPremiumImageMap : {}),
         ...(destId === 'sun-city' ? sunCityPremiumImageMap : {}),
         ...(destId === 'vaal-river' ? vaalPremiumImageMap : {}),
+        ...(destId === 'magalies' ? magaliesPremiumImageMap : {}),
       };
       destPremiumHotels.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
