@@ -28,6 +28,8 @@ serve(async (req) => {
       checkIn, checkOut,
       adults, children, childrenAges,
       rooms, budget, bookingType,
+      paymentOption, promoCode, specialRequests,
+      reference, accommodation, totalAmount,
     } = body ?? {};
 
     if (!guestName || !guestEmail || !guestTel) {
@@ -37,19 +39,24 @@ serve(async (req) => {
     }
 
     const rows: Array<[string, string]> = [
+      ["Reference", reference || "—"],
       ["Name", guestName],
       ["Email", guestEmail],
       ["Telephone", guestTel],
       ["Destination", destination || "—"],
       ["Package(s)", Array.isArray(packageNames) ? packageNames.join(", ") : (packageNames || "—")],
+      ["Accommodation", accommodation || "—"],
       ["Booking Type", bookingType || "—"],
+      ["Payment Option", paymentOption || "—"],
       ["Check In", checkIn || "—"],
       ["Check Out", checkOut || "—"],
       ["Adults", String(adults ?? "—")],
       ["Children", String(children ?? 0)],
       ["Children Ages", childrenAges || "—"],
       ["Rooms", String(rooms ?? "—")],
-      ["Budget (ZAR)", budget ? `R${budget}` : "—"],
+      ["Total Amount (ZAR)", totalAmount ? `R${totalAmount}` : (budget ? `R${budget}` : "—")],
+      ["Promo Code", promoCode || "—"],
+      ["Special Requests", specialRequests || "—"],
     ];
 
     const html = `
