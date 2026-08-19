@@ -16,19 +16,17 @@ import { DestinationTile } from '@/components/cards/DestinationTile';
 import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
 import { BookingSummary } from '@/components/common/BookingSummary';
-import { Itinerary } from '@/components/common/Itinerary';
 import { TierSelector, type AccommodationTier } from '@/components/common/TierSelector';
 import { ErrorState } from '@/components/common/ErrorState';
 import { catalogueDestinations, getCatalogueDestination } from '@/data/destinationCatalogue';
 import { getHotelsByDestination, getPackagesByDestination, packages } from '@/data/travelData';
 import { calculatePackagePrice } from '@/data/packagePricing';
-import { buildItinerary } from '@/lib/itinerary';
 import { classifyHotels } from '@/lib/accommodationTiers';
 import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 import { cn } from '@/lib/utils';
 
-type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'extras' | 'review' | 'received';
+type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'review' | 'received';
 
 const STEP_LABELS: { id: Step; label: string }[] = [
   { id: 'destination', label: 'Destination' },
@@ -36,7 +34,6 @@ const STEP_LABELS: { id: Step; label: string }[] = [
   { id: 'dates', label: 'Dates' },
   { id: 'travellers', label: 'Travellers' },
   { id: 'accommodation', label: 'Stay' },
-  { id: 'extras', label: 'Extras' },
   { id: 'review', label: 'Review' },
 ];
 
@@ -68,6 +65,7 @@ export default function BookingPage() {
   const [tier, setTier] = useState<AccommodationTier | 'all'>('all');
   const [hotelId, setHotelId] = useState<string>();
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+  const [rooms, setRooms] = useState(1);
   const [contact, setContact] = useState({ name: '', email: '', phone: '' });
   const [reference, setReference] = useState<string>();
 
@@ -116,8 +114,8 @@ export default function BookingPage() {
   const totalGuests = adults + kids + teens;
 
   const hotelPrice = (hotelPerNight: number, capacity: number) => {
-    const rooms = Math.max(1, Math.ceil(totalGuests / Math.max(1, capacity)));
-    return hotelPerNight * Math.max(1, nights) * rooms;
+    const roomCount = Math.max(rooms, Math.ceil(totalGuests / Math.max(1, capacity)));
+    return hotelPerNight * Math.max(1, nights) * Math.max(1, roomCount);
   };
 
   const visibleHotels = hotels.filter((h) => tier === 'all' || tierMap.get(h.id) === tier);
@@ -131,6 +129,17 @@ export default function BookingPage() {
     (sum, e) => sum + e.price * adults,
     0,
   );
+
+  const holidayInclusions = useMemo(() => {
+    const items: string[] = [];
+    if (!oneDay) {
+      items.push(`${Math.max(1, nights)} night${Math.max(1, nights) === 1 ? '' : 's'} accommodation`);
+      if (selectedHotel?.includesBreakfast) items.push('Daily Breakfast');
+    }
+    items.push(...(pkg?.activitiesIncluded ?? []));
+    items.push(...EXTRAS.filter((e) => selectedExtras.includes(e.id)).map((e) => e.label));
+    return items;
+  }, [oneDay, nights, selectedHotel, pkg, selectedExtras]);
 
   const datesLabel = oneDay
     ? tourDate
@@ -267,14 +276,14 @@ export default function BookingPage() {
           </section>
         )}
 
-        {(step === 'dates' || step === 'travellers' || step === 'accommodation' || step === 'extras' || step === 'review') &&
+        {(step === 'dates' || step === 'travellers' || step === 'accommodation' || step === 'review') &&
           destination &&
           pkg && (
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
               <div>
                 {step === 'dates' && (
                   <section>
-                    <h1 className="font-display text-3xl font-bold text-foreground">When are you going?</h1>
+                    <h1 className="font-display text-3xl font-bold text-foreground">Your dates of travel</h1>
                     <label className="mt-6 flex cursor-pointer items-center gap-2 text-sm">
                       <Checkbox checked={oneDay} onCheckedChange={(v) => setOneDay(Boolean(v))} />
                       I'd like to do this experience for 1 day
@@ -357,7 +366,7 @@ export default function BookingPage() {
 
                 {step === 'travellers' && (
                   <section>
-                    <h1 className="font-display text-3xl font-bold text-foreground">Who is travelling?</h1>
+                    <h1 className="font-display text-3xl font-bold text-foreground">How many in your travel group</h1>
                     <p className="mt-2 text-muted-foreground">
                       Children under 3 travel free on the experience.
                     </p>
@@ -367,6 +376,7 @@ export default function BookingPage() {
                         { label: 'Children 0–2 (free)', value: infants, set: setInfants, min: 0 },
                         { label: 'Children 3–12', value: kids, set: setKids, min: 0 },
                         { label: 'Children 13–17', value: teens, set: setTeens, min: 0 },
+                        { label: 'How many rooms', value: rooms, set: setRooms, min: 1 },
                       ].map((row) => (
                         <div
                           key={row.label}
@@ -401,7 +411,7 @@ export default function BookingPage() {
                       <Button variant="ghost" onClick={() => goto('dates')}>
                         <ArrowLeft className="mr-1 h-4 w-4" /> Back
                       </Button>
-                      <Button onClick={() => goto(oneDay ? 'extras' : 'accommodation')}>
+                      <Button onClick={() => goto(oneDay ? 'review' : 'accommodation')}>
                         Continue <ArrowRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
@@ -411,7 +421,7 @@ export default function BookingPage() {
                 {step === 'accommodation' && (
                   <section>
                     <h1 className="font-display text-3xl font-bold text-foreground">
-                      Choose where you'd like to stay
+                      Choose your hotel
                     </h1>
                     <p className="mt-2 text-muted-foreground">
                       {nights} night{nights === 1 ? '' : 's'} in {destination.name}. Your package price stays
@@ -439,12 +449,12 @@ export default function BookingPage() {
                             tier={tierMap.get(hotel.id) ?? 'standard'}
                             destinationName={destination.name}
                             nights={Math.max(1, nights)}
-                            rooms={Math.max(1, Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)))}
+                            rooms={Math.max(rooms, Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)))}
                             price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2)}
                             selected={hotelId === hotel.id}
                             onSelect={(id) => {
                               setHotelId(id);
-                              goto('extras');
+                              goto('review');
                             }}
                           />
                         ))}
@@ -457,59 +467,26 @@ export default function BookingPage() {
                   </section>
                 )}
 
-                {step === 'extras' && (
-                  <section>
-                    <h1 className="font-display text-3xl font-bold text-foreground">Add anything extra?</h1>
-                    <p className="mt-2 text-muted-foreground">Optional — you can skip this step.</p>
-                    <div className="mt-6 space-y-3">
-                      {EXTRAS.map((extra) => (
-                        <label
-                          key={extra.id}
-                          className="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-card p-4"
-                        >
-                          <span className="flex items-center gap-3 text-sm font-medium">
-                            <Checkbox
-                              checked={selectedExtras.includes(extra.id)}
-                              onCheckedChange={(v) =>
-                                setSelectedExtras((prev) =>
-                                  v ? [...prev, extra.id] : prev.filter((id) => id !== extra.id),
-                                )
-                              }
-                            />
-                            {extra.label}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            R{extra.price.toLocaleString('en-ZA')} per adult
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                    <div className="mt-8 flex gap-3">
-                      <Button variant="ghost" onClick={() => goto(oneDay ? 'travellers' : 'accommodation')}>
-                        <ArrowLeft className="mr-1 h-4 w-4" /> Back
-                      </Button>
-                      <Button onClick={() => goto('review')}>
-                        Review my holiday <ArrowRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </section>
-                )}
+
+
 
                 {step === 'review' && (
                   <section>
-                    <h1 className="font-display text-3xl font-bold text-foreground">Review your holiday</h1>
+                    <h1 className="font-display text-3xl font-bold text-foreground">My Holiday</h1>
                     <div className="mt-6">
-                      <h2 className="font-display text-xl font-bold text-foreground">Your itinerary</h2>
-                      <div className="mt-4">
-                        <Itinerary
-                          days={buildItinerary(pkg, {
-                            nights,
-                            oneDay,
-                            destinationName: destination.name,
-                          })}
-                        />
-                      </div>
+                      <h2 className="font-display text-xl font-bold text-foreground">
+                        What my holiday includes
+                      </h2>
+                      <ul className="mt-4 space-y-2 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+                        {holidayInclusions.map((item) => (
+                          <li key={item} className="flex gap-2">
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
+
 
                     <Card className="mt-8 rounded-2xl">
                       <CardContent className="space-y-4 p-6">
@@ -560,7 +537,7 @@ export default function BookingPage() {
                       </CardContent>
                     </Card>
 
-                    <Button variant="ghost" className="mt-6" onClick={() => goto('extras')}>
+                    <Button variant="ghost" className="mt-6" onClick={() => goto(oneDay ? 'travellers' : 'accommodation')}>
                       <ArrowLeft className="mr-1 h-4 w-4" /> Back
                     </Button>
                   </section>
