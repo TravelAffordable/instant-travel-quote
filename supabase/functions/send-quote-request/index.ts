@@ -5,9 +5,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Resend is in test mode (no verified domain yet), so we can only send to the
-// account owner's verified address. Forward from this inbox manually for now.
-const RECIPIENTS = ["travelaffordable2017@gmail.com"];
+// Send booking/quote requests to the Travel Affordable team inboxes.
+const RECIPIENTS = ["info@travelaffordable.co.za", "travelaffordable2017@gmail.com"];
 
 function esc(v: unknown): string {
   return String(v ?? "")
