@@ -12,6 +12,7 @@ import { sunCityPremiumImageMap } from './sunCityPremiumImages';
 import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
 import { vaalPremiumImageMap } from './vaalPremiumImages';
 import { magaliesPremiumImageMap } from './magaliesPremiumImages';
+import { mpumalangaPremiumImageMap } from './mpumalangaPremiumImages';
 import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
@@ -658,7 +659,7 @@ function generateHotels(): Hotel[] {
       });
     } else if (premiumHotelNames[destId] && premiumHotelNames[destId].length > 0) {
       // Use real premium hotel names from premiumHotelNames registry
-      const destPremiumHotels = premiumHotelNames[destId];
+      let destPremiumHotels = premiumHotelNames[destId];
       // Destination-specific image maps
       const destImageMap: Record<string, string> = {
         ...(destId === 'durban' ? durbanPremiumImageMap : {}),
@@ -666,7 +667,12 @@ function generateHotels(): Hotel[] {
         ...(destId === 'sun-city' ? sunCityPremiumImageMap : {}),
         ...(destId === 'vaal-river' ? vaalPremiumImageMap : {}),
         ...(destId === 'magalies' ? magaliesPremiumImageMap : {}),
+        ...(destId === 'mpumalanga' ? mpumalangaPremiumImageMap : {}),
       };
+      // Mpumalanga: only show properties with real property photography
+      if (destId === 'mpumalanga') {
+        destPremiumHotels = destPremiumHotels.filter((h) => mpumalangaPremiumImageMap[h.name]);
+      }
       destPremiumHotels.forEach((hotel, index) => {
         const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         const premiumImg = destImageMap[hotel.name] || premiumImages[index % premiumImages.length];
