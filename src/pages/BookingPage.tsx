@@ -133,6 +133,8 @@ export default function BookingPage() {
     0,
   );
 
+  const total = packageTotal + accommodationTotal + extrasTotal;
+
   const holidayInclusions = useMemo(() => {
     const items: string[] = [];
     if (!oneDay) {
