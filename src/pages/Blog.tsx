@@ -34,7 +34,7 @@ const Blog = () => {
         jsonLd={jsonLd}
       />
       <Header />
-      <div className=\"pt-16\" />
+      <div className="h-16" />
       <DestinationImageMenu />
 
       <section className="container mx-auto px-4 pt-24 pb-12">

@@ -18,7 +18,7 @@ const BusHirePage = () => {
         keywords="bus hire south africa, group bus quotes, charter bus, school bus hire, church group transport, 60 seater bus"
       />
       <Header />
-      <div className=\"pt-16\" />
+      <div className="h-16" />
       <DestinationImageMenu />
       <div className="pt-20">
         <BusHireQuote />

@@ -14,7 +14,7 @@ export default function QuotePage() {
         canonical="/quote"
       />
       <Header />
-      <div className=\"pt-16\" />
+      <div className="h-16" />
       <DestinationImageMenu />
       <Hero onGetQuote={() => {}} />
       <Footer />

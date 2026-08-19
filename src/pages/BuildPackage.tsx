@@ -527,7 +527,7 @@ const BuildPackage = () => {
         keywords="custom holiday package, build my holiday, south africa diy package, customise getaway"
       />
       <Header />
-      <div className=\"pt-16\" />
+      <div className="h-16" />
       <DestinationImageMenu />
 
       {/* Hero Section */}

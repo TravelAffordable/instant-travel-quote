@@ -11,7 +11,7 @@ const TravelAgentPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className=\"pt-16\" />
+      <div className="h-16" />
       <DestinationImageMenu />
       <div className="pt-20">
         <TravelAgentQuote />

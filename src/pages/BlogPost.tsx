@@ -63,7 +63,7 @@ const BlogPost = () => {
         jsonLd={jsonLd}
       />
       <Header />
-      <div className=\"pt-16\" />
+      <div className="h-16" />
       <DestinationImageMenu />
 
       <article className="pt-20">

@@ -228,7 +228,7 @@ export default function SchoolTrips() {
         keywords="school trips south africa, educational tours, history tour, geography tour, school excursions, school camps"
       />
       <Header />
-      <div className=\"pt-16\" />
+      <div className="h-16" />
       <DestinationImageMenu />
 
       {/* Hero Banner */}

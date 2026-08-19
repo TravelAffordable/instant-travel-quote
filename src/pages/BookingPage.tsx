@@ -225,7 +225,7 @@ export default function BookingPage() {
         canonical="/book"
       />
       <Header />
-      <div className=\"pt-16\" />
+      <div className="h-16" />
       <DestinationImageMenu />
 
       <main className="container mx-auto px-4 pb-20 pt-24">
