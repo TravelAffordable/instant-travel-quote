@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { SEO } from '@/components/SEO';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, ArrowRight } from 'lucide-react';
@@ -33,6 +34,8 @@ const Blog = () => {
         jsonLd={jsonLd}
       />
       <Header />
+      <div className="h-16" />
+      <DestinationImageMenu />
 
       <section className="container mx-auto px-4 pt-24 pb-12">
         <h1 className="font-display text-4xl font-bold text-foreground md:text-5xl">

@@ -1,5 +1,6 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { BusHireQuote } from '@/components/BusHireQuote';
 import { ChatBot } from '@/components/ChatBot';
 import { SEO } from '@/components/SEO';
@@ -17,6 +18,8 @@ const BusHirePage = () => {
         keywords="bus hire south africa, group bus quotes, charter bus, school bus hire, church group transport, 60 seater bus"
       />
       <Header />
+      <div className="h-16" />
+      <DestinationImageMenu />
       <div className="pt-20">
         <BusHireQuote />
       </div>

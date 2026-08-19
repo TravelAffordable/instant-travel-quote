@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
@@ -62,6 +63,8 @@ const BlogPost = () => {
         jsonLd={jsonLd}
       />
       <Header />
+      <div className="h-16" />
+      <DestinationImageMenu />
 
       <article className="pt-20">
         <header className="container mx-auto max-w-3xl px-4 pt-8">
