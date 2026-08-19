@@ -449,7 +449,7 @@ export default function BookingPage() {
                             tier={tierMap.get(hotel.id) ?? 'standard'}
                             destinationName={destination.name}
                             nights={Math.max(1, nights)}
-                            rooms={Math.max(1, Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)))}
+                            rooms={Math.max(rooms, Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)))}
                             price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2)}
                             selected={hotelId === hotel.id}
                             onSelect={(id) => {
@@ -537,7 +537,7 @@ export default function BookingPage() {
                       </CardContent>
                     </Card>
 
-                    <Button variant="ghost" className="mt-6" onClick={() => goto('extras')}>
+                    <Button variant="ghost" className="mt-6" onClick={() => goto(oneDay ? 'travellers' : 'accommodation')}>
                       <ArrowLeft className="mr-1 h-4 w-4" /> Back
                     </Button>
                   </section>
