@@ -82,33 +82,45 @@ serve(async (req) => {
       });
     }
 
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Travel Affordable <onboarding@resend.dev>",
-        to: RECIPIENTS,
-        ...(guestEmail && /^\S+@\S+\.\S+$/.test(String(guestEmail))
-          ? { reply_to: String(guestEmail) }
-          : {}),
-        subject: `New Quotation Request — ${guestName}${destination ? ` (${destination})` : ""}`,
-        html,
-        text,
-      }),
-    });
+    const emailPayload = {
+      from: "Travel Affordable <onboarding@resend.dev>",
+      ...(guestEmail && /^\S+@\S+\.\S+$/.test(String(guestEmail))
+        ? { reply_to: String(guestEmail) }
+        : {}),
+      subject: `New Booking Request — ${guestName}${destination ? ` (${destination})` : ""}`,
+      html,
+      text,
+    };
 
-    const result = await response.json();
-    if (!response.ok) {
-      console.error("Resend error:", result);
+    // Send to each recipient individually so a test-mode restriction on one
+    // address does not prevent delivery to the other.
+    const results = await Promise.all(
+      RECIPIENTS.map(async (to) => {
+        const response = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${resendApiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...emailPayload, to: [to] }),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          console.error(`Resend error for ${to}:`, result);
+          return { to, ok: false, error: result };
+        }
+        return { to, ok: true };
+      }),
+    );
+
+    const successful = results.filter((r) => r.ok);
+    if (successful.length === 0) {
       return new Response(JSON.stringify({ success: false, error: "Failed to send email" }), {
         status: 500, headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, deliveredTo: successful.map((r) => r.to) }), {
       status: 200, headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (err) {
