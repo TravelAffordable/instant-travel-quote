@@ -175,8 +175,42 @@ export default function BookingPage() {
 
   const goto = (next: Step) => setStep(next);
 
-  const submitBooking = () => {
-    setReference(`TA-${Date.now().toString().slice(-6)}`);
+  const submitBooking = async () => {
+    const ref = `TA-${Date.now().toString().slice(-6)}`;
+    setReference(ref);
+
+    try {
+      await supabase.functions.invoke('send-quote-request', {
+        body: {
+          guestName: contact.name,
+          guestEmail: contact.email,
+          guestTel: contact.phone,
+          destination: destination?.name,
+          packageNames: pkg?.name ? [pkg.name] : undefined,
+          checkIn: oneDay
+            ? (tourDate ? format(tourDate, 'yyyy-MM-dd') : undefined)
+            : (checkIn ? format(checkIn, 'yyyy-MM-dd') : undefined),
+          checkOut: oneDay
+            ? (tourDate ? format(tourDate, 'yyyy-MM-dd') : undefined)
+            : (checkOut ? format(checkOut, 'yyyy-MM-dd') : undefined),
+          adults,
+          children: childrenAges.length,
+          childrenAges: childrenAges.join(', '),
+          rooms,
+          budget: total,
+          bookingType: 'Online Booking Request',
+          paymentOption,
+          promoCode,
+          specialRequests,
+          reference: ref,
+          accommodation: selectedHotel?.name,
+          totalAmount: total,
+        },
+      });
+    } catch (err) {
+      console.error('Failed to send booking notification:', err);
+    }
+
     setStep('received');
   };
 
