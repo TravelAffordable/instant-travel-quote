@@ -487,6 +487,83 @@ export default function BookingPage() {
                       </ul>
                     </div>
 
+                    <Card className="mt-8 rounded-2xl">
+                      <CardContent className="space-y-4 p-6">
+                        <h2 className="font-display text-xl font-bold text-foreground">Payment preference</h2>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <button
+                            type="button"
+                            onClick={() => setPaymentOption('50%')}
+                            className={cn(
+                              'rounded-xl border p-4 text-left text-sm font-medium transition-colors',
+                              paymentOption === '50%'
+                                ? 'border-accent bg-accent/10 text-foreground'
+                                : 'border-border bg-card text-muted-foreground hover:bg-accent/5',
+                            )}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span
+                                className={cn(
+                                  'flex h-4 w-4 items-center justify-center rounded-full border',
+                                  paymentOption === '50%'
+                                    ? 'border-accent bg-accent'
+                                    : 'border-muted-foreground',
+                                )}
+                              >
+                                {paymentOption === '50%' && (
+                                  <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+                                )}
+                              </span>
+                              I'd like to pay 50% to secure my booking
+                            </span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPaymentOption('full')}
+                            className={cn(
+                              'rounded-xl border p-4 text-left text-sm font-medium transition-colors',
+                              paymentOption === 'full'
+                                ? 'border-accent bg-accent/10 text-foreground'
+                                : 'border-border bg-card text-muted-foreground hover:bg-accent/5',
+                            )}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span
+                                className={cn(
+                                  'flex h-4 w-4 items-center justify-center rounded-full border',
+                                  paymentOption === 'full'
+                                    ? 'border-accent bg-accent'
+                                    : 'border-muted-foreground',
+                                )}
+                              >
+                                {paymentOption === 'full' && (
+                                  <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+                                )}
+                              </span>
+                              I'd like to make full payment with a discount
+                            </span>
+                          </button>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          You won't be charged any amount now, we will send you a limited time payment link to
+                          secure booking.
+                        </p>
+                        <div className="flex items-center justify-between border-t border-border pt-4 text-sm">
+                          <span className="text-muted-foreground">Amount on payment link</span>
+                          <span className="font-display text-lg font-bold text-sunset">
+                            R{' '}
+                            {Math.round(
+                              paymentOption === '50%' ? total * 0.5 : total,
+                            ).toLocaleString('en-ZA')}
+                          </span>
+                        </div>
+                        {paymentOption === 'full' && (
+                          <p className="text-xs text-accent">
+                            A limited-time discount will be applied to your payment link.
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
 
                     <Card className="mt-8 rounded-2xl">
                       <CardContent className="space-y-4 p-6">
@@ -521,6 +598,26 @@ export default function BookingPage() {
                               onChange={(e) => setContact({ ...contact, phone: e.target.value })}
                             />
                           </div>
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <Label htmlFor="promo">Promo / discount code</Label>
+                            <Input
+                              id="promo"
+                              value={promoCode}
+                              maxLength={50}
+                              placeholder="Enter code if you have one"
+                              onChange={(e) => setPromoCode(e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-1.5 sm:col-span-2">
+                            <Label htmlFor="requests">Special requests</Label>
+                            <Input
+                              id="requests"
+                              value={specialRequests}
+                              maxLength={500}
+                              placeholder="Dietary requirements, accessibility needs, celebrations, etc."
+                              onChange={(e) => setSpecialRequests(e.target.value)}
+                            />
+                          </div>
                         </div>
                         <Button
                           size="lg"
@@ -528,7 +625,7 @@ export default function BookingPage() {
                           disabled={!contact.name || !contact.email || !contact.phone}
                           onClick={submitBooking}
                         >
-                          Confirm & continue to payment
+                          Request to confirm your booking
                         </Button>
                         <p className="text-center text-xs text-muted-foreground">
                           You'll receive a booking reference immediately. Your booking is confirmed once your
