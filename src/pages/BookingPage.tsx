@@ -457,43 +457,8 @@ export default function BookingPage() {
                   </section>
                 )}
 
-                {step === 'extras' && (
-                  <section>
-                    <h1 className="font-display text-3xl font-bold text-foreground">Add anything extra?</h1>
-                    <p className="mt-2 text-muted-foreground">Optional — you can skip this step.</p>
-                    <div className="mt-6 space-y-3">
-                      {EXTRAS.map((extra) => (
-                        <label
-                          key={extra.id}
-                          className="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-card p-4"
-                        >
-                          <span className="flex items-center gap-3 text-sm font-medium">
-                            <Checkbox
-                              checked={selectedExtras.includes(extra.id)}
-                              onCheckedChange={(v) =>
-                                setSelectedExtras((prev) =>
-                                  v ? [...prev, extra.id] : prev.filter((id) => id !== extra.id),
-                                )
-                              }
-                            />
-                            {extra.label}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            R{extra.price.toLocaleString('en-ZA')} per adult
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                    <div className="mt-8 flex gap-3">
-                      <Button variant="ghost" onClick={() => goto(oneDay ? 'travellers' : 'accommodation')}>
-                        <ArrowLeft className="mr-1 h-4 w-4" /> Back
-                      </Button>
-                      <Button onClick={() => goto('review')}>
-                        Review my holiday <ArrowRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </section>
-                )}
+
+
 
                 {step === 'review' && (
                   <section>
