@@ -171,6 +171,9 @@ export function HomeDestinationsShowcase() {
                               <span className="text-2xl font-bold text-sunset">{formatCurrency(fromPrice)}</span>
                               <span className="text-sm uppercase tracking-wide"> pp</span>
                             </p>
+                            <p className="mt-1 text-sm text-navy/80">
+                              Select your preferred hotel to see the final price for your holiday
+                            </p>
                             <p className="mt-1 text-[11px] text-navy/70">
                               was <span className="line-through bg-blue-100 text-blue-900 px-1 rounded">{formatCurrency(fromPrice + 400)} pp</span>
                             </p>
