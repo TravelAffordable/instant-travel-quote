@@ -497,19 +497,21 @@ export default function BookingPage() {
 
                 {step === 'review' && (
                   <section>
-                    <h1 className="font-display text-3xl font-bold text-foreground">Review your holiday</h1>
+                    <h1 className="font-display text-3xl font-bold text-foreground">My Holiday</h1>
                     <div className="mt-6">
-                      <h2 className="font-display text-xl font-bold text-foreground">Your itinerary</h2>
-                      <div className="mt-4">
-                        <Itinerary
-                          days={buildItinerary(pkg, {
-                            nights,
-                            oneDay,
-                            destinationName: destination.name,
-                          })}
-                        />
-                      </div>
+                      <h2 className="font-display text-xl font-bold text-foreground">
+                        What my holiday includes
+                      </h2>
+                      <ul className="mt-4 space-y-2 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+                        {holidayInclusions.map((item) => (
+                          <li key={item} className="flex gap-2">
+                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
+
 
                     <Card className="mt-8 rounded-2xl">
                       <CardContent className="space-y-4 p-6">
