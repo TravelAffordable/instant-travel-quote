@@ -21,7 +21,7 @@ export function HeroStatic() {
               South African holidays, beautifully arranged
             </p>
             <h1 className="mt-4 font-display text-4xl font-bold leading-tight text-white md:text-6xl">
-              Choose where you want to go. We've done the rest.
+              Choose where to go. We'll do the rest.
             </h1>
             <p className="mt-5 max-w-xl text-base text-white/90 md:text-lg">
               Pick a destination, choose your experience, choose where you stay — and see your complete
