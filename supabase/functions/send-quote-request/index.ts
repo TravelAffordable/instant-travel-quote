@@ -5,9 +5,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Resend is in test mode (no verified domain yet), so we can only send to the
-// account owner's verified address. Forward from this inbox manually for now.
-const RECIPIENTS = ["travelaffordable2017@gmail.com"];
+// Send booking/quote requests to the Travel Affordable team inboxes.
+const RECIPIENTS = ["info@travelaffordable.co.za", "travelaffordable2017@gmail.com"];
 
 function esc(v: unknown): string {
   return String(v ?? "")
@@ -29,6 +28,8 @@ serve(async (req) => {
       checkIn, checkOut,
       adults, children, childrenAges,
       rooms, budget, bookingType,
+      paymentOption, promoCode, specialRequests,
+      reference, accommodation, totalAmount,
     } = body ?? {};
 
     if (!guestName || !guestEmail || !guestTel) {
@@ -38,19 +39,24 @@ serve(async (req) => {
     }
 
     const rows: Array<[string, string]> = [
+      ["Reference", reference || "—"],
       ["Name", guestName],
       ["Email", guestEmail],
       ["Telephone", guestTel],
       ["Destination", destination || "—"],
       ["Package(s)", Array.isArray(packageNames) ? packageNames.join(", ") : (packageNames || "—")],
+      ["Accommodation", accommodation || "—"],
       ["Booking Type", bookingType || "—"],
+      ["Payment Option", paymentOption || "—"],
       ["Check In", checkIn || "—"],
       ["Check Out", checkOut || "—"],
       ["Adults", String(adults ?? "—")],
       ["Children", String(children ?? 0)],
       ["Children Ages", childrenAges || "—"],
       ["Rooms", String(rooms ?? "—")],
-      ["Budget (ZAR)", budget ? `R${budget}` : "—"],
+      ["Total Amount (ZAR)", totalAmount ? `R${totalAmount}` : (budget ? `R${budget}` : "—")],
+      ["Promo Code", promoCode || "—"],
+      ["Special Requests", specialRequests || "—"],
     ];
 
     const html = `
@@ -76,33 +82,45 @@ serve(async (req) => {
       });
     }
 
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "Travel Affordable <onboarding@resend.dev>",
-        to: RECIPIENTS,
-        ...(guestEmail && /^\S+@\S+\.\S+$/.test(String(guestEmail))
-          ? { reply_to: String(guestEmail) }
-          : {}),
-        subject: `New Quotation Request — ${guestName}${destination ? ` (${destination})` : ""}`,
-        html,
-        text,
-      }),
-    });
+    const emailPayload = {
+      from: "Travel Affordable <onboarding@resend.dev>",
+      ...(guestEmail && /^\S+@\S+\.\S+$/.test(String(guestEmail))
+        ? { reply_to: String(guestEmail) }
+        : {}),
+      subject: `New Booking Request — ${guestName}${destination ? ` (${destination})` : ""}`,
+      html,
+      text,
+    };
 
-    const result = await response.json();
-    if (!response.ok) {
-      console.error("Resend error:", result);
+    // Send to each recipient individually so a test-mode restriction on one
+    // address does not prevent delivery to the other.
+    const results = await Promise.all(
+      RECIPIENTS.map(async (to) => {
+        const response = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${resendApiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...emailPayload, to: [to] }),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          console.error(`Resend error for ${to}:`, result);
+          return { to, ok: false, error: result };
+        }
+        return { to, ok: true };
+      }),
+    );
+
+    const successful = results.filter((r) => r.ok);
+    if (successful.length === 0) {
       return new Response(JSON.stringify({ success: false, error: "Failed to send email" }), {
         status: 500, headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, deliveredTo: successful.map((r) => r.to) }), {
       status: 200, headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (err) {
