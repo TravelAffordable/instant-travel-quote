@@ -668,6 +668,7 @@ function generateHotels(): Hotel[] {
         ...(destId === 'vaal-river' ? vaalPremiumImageMap : {}),
         ...(destId === 'magalies' ? magaliesPremiumImageMap : {}),
         ...(destId === 'mpumalanga' ? mpumalangaPremiumImageMap : {}),
+        ...(destId === 'cape-town' ? capeTownPremiumImageMap : {}),
       };
       // Mpumalanga: only show properties with real property photography
       if (destId === 'mpumalanga') {
