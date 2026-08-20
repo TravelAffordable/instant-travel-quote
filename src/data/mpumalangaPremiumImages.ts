@@ -16,6 +16,7 @@ export const mpumalangaPremiumImageMap: Record<string, string> = {
   'Panorama Chalets and Rest Camp': panoramaChaletsAsset.url,
   'Graskop Hotel': graskopHotelAsset.url,
   'Angels View Hotel': angelsViewAsset.url,
+  'Pretoriuskop Rest Camp': pretoriuskopAsset.url,
 };
 
 export function getMpumalangaPremiumImage(hotelName: string): string | undefined {
