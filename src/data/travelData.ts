@@ -197,7 +197,7 @@ const affordablePrices = [1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 
 const premiumPrices = [2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100];
 
 // Premium Hotels with their actual names (prices will use premiumPrices array - 4 hotels per destination)
-const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean; capacity?: '2_sleeper' | '4_sleeper'; nightlyRate?: number }[]> = {
+const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean; capacity?: '2_sleeper' | '4_sleeper'; nightlyRate?: number; sleeps?: number; roomType?: string }[]> = {
   'harties': [
     { name: 'Indlovukazi Guesthouse', nightlyRate: 1150, includesBreakfast: true },
     { name: 'Villa Paradiso Hotel', nightlyRate: 1100 },
@@ -288,7 +288,9 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Royal Marang Hotel', nightlyRate: 1500 },
   ],
   'kruger-national-park': [
-    { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180 },
+    { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180, sleeps: 2, roomType: '2-Sleeper Hut (EB2)' },
+    { name: 'Pretoriuskop Rest Camp (3-Sleeper Hut - EB3)', nightlyRate: 1540, sleeps: 3, roomType: '3-Sleeper Hut (EB3)' },
+    { name: 'Pretoriuskop Rest Camp (4-Sleeper Hut - EB5)', nightlyRate: 1540, sleeps: 4, roomType: '4-Sleeper Hut (EB5)' },
   ],
   'mpumalanga': [
     { name: 'Graskop Hotel', nightlyRate: 1100, includesBreakfast: true },
