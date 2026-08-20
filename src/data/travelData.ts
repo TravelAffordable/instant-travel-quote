@@ -84,6 +84,7 @@ const destinationShortNames: Record<string, string> = {
   'cape-town': 'Cape Town',
   'sun-city': 'Sun City',
   'mpumalanga': 'Mpumalanga',
+  'kruger-national-park': 'Kruger National Park',
   'knysna': 'Knysna',
   'vaal-river': 'Vaal Cruise',
   'bela-bela': 'Bela Bela',
@@ -286,8 +287,10 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Kedar Heritage Lodge Conference Centre & Spa', nightlyRate: 2200, includesBreakfast: true },
     { name: 'Royal Marang Hotel', nightlyRate: 1500 },
   ],
-  'mpumalanga': [
+  'kruger-national-park': [
     { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180 },
+  ],
+  'mpumalanga': [
     { name: 'Graskop Hotel', nightlyRate: 1100, includesBreakfast: true },
     { name: 'Laguna Lodge', nightlyRate: 950 },
     { name: 'Panorama Chalets and Rest Camp', nightlyRate: 800 },
@@ -670,6 +673,7 @@ function generateHotels(): Hotel[] {
         ...(destId === 'vaal-river' ? vaalPremiumImageMap : {}),
         ...(destId === 'magalies' ? magaliesPremiumImageMap : {}),
         ...(destId === 'mpumalanga' ? mpumalangaPremiumImageMap : {}),
+        ...(destId === 'kruger-national-park' ? mpumalangaPremiumImageMap : {}),
         ...(destId === 'cape-town' ? capeTownPremiumImageMap : {}),
       };
       // Mpumalanga: only show properties with real property photography
@@ -1164,7 +1168,7 @@ export const packages: Package[] = [
     name: 'KRUGER001 - KRUGER NATIONAL PARK MPUMALANGA BUDGET WEEKENDER',
     shortName: 'Kruger Weekender',
     description: 'Includes accommodation at Pretoriuskop Rest Camp (Hut - EB2), a 3.5 hour guided Kruger National Park game drive (early morning sunrise, afternoon or sunset drive), conservation and community fees included. Tours to other attractions are on a self drive basis and we can assist with bookings for self drive or scheduled tours should there be a need.',
-    destination: 'mpumalanga',
+    destination: 'kruger-national-park',
     basePrice: 1140,
     activitiesIncluded: [
       'Accommodation at Pretoriuskop Rest Camp (Hut - EB2) — R1 180 per room per night incl. conservation and community fees',
@@ -1430,6 +1434,7 @@ export const destinations: Destination[] = [
   { id: 'umhlanga', name: 'Umhlanga', shortName: 'Umhlanga', country: 'South Africa', description: 'Coastal escape near Durban with beautiful beaches and upscale shopping.', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800', startingPrice: 1700, popular: true, international: false },
   { id: 'cape-town', name: 'Cape Town', shortName: 'Cape Town', country: 'South Africa', description: 'Iconic Table Mountain, stunning beaches, and world-class vineyards.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg', startingPrice: 2400, popular: true, international: false },
   { id: 'sun-city', name: 'Sun City', shortName: 'Sun City', country: 'South Africa', description: 'World-famous resort with Valley of Waves and endless entertainment.', image: sunCityImage, startingPrice: 2000, popular: true, international: false },
+  { id: 'kruger-national-park', name: 'Kruger National Park', shortName: 'Kruger', country: 'South Africa', description: 'Big Five safari with sunrise, afternoon and sunset game drives in the Kruger National Park.', image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800', startingPrice: 2320, popular: true, international: false },
   { id: 'mpumalanga', name: 'Mpumalanga', shortName: 'Mpumalanga', country: 'South Africa', description: 'Panorama Route, Blyde River Canyon, and Kruger National Park adventures.', image: 'https://images.unsplash.com/photo-1580256087713-963146b8d1a3?w=800', startingPrice: 2520, popular: true, international: false },
   { id: 'knysna', name: 'Knysna', shortName: 'Knysna', country: 'South Africa', description: 'Garden Route gem with lagoon, forests, and oyster experiences.', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800', startingPrice: 2750, popular: false, international: false },
   { id: 'vaal-river', name: 'Vaal Cruise and Emerald Casino', shortName: 'Vaal Cruise', country: 'South Africa', description: 'Riverside relaxation and water sports just outside Johannesburg.', image: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800', startingPrice: 2250, popular: false, international: false },
