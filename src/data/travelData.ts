@@ -13,6 +13,7 @@ import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
 import { vaalPremiumImageMap } from './vaalPremiumImages';
 import { magaliesPremiumImageMap } from './magaliesPremiumImages';
 import { mpumalangaPremiumImageMap } from './mpumalangaPremiumImages';
+import { capeTownPremiumImageMap } from './capeTownPremiumImages';
 import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
