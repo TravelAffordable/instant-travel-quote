@@ -14,6 +14,7 @@ import { vaalPremiumImageMap } from './vaalPremiumImages';
 import { magaliesPremiumImageMap } from './magaliesPremiumImages';
 import { mpumalangaPremiumImageMap } from './mpumalangaPremiumImages';
 import { capeTownPremiumImageMap } from './capeTownPremiumImages';
+import { umdlotiPremiumImageMap } from './umdlotiPremiumImages';
 import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
@@ -81,6 +82,7 @@ const destinationShortNames: Record<string, string> = {
   'magalies': 'Magalies',
   'durban': 'Durban',
   'umhlanga': 'Umhlanga',
+  'umdloti': 'uMdloti',
   'cape-town': 'Cape Town',
   'sun-city': 'Sun City',
   'mpumalanga': 'Mpumalanga',
@@ -242,6 +244,15 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Oceans Apartments Balcony Suites Radisson Blu', nightlyRate: 3596 },
     { name: 'Town Lodge Umhlanga', nightlyRate: 1050 },
     { name: '71 Sea Lodge Beachfront Apartment', nightlyRate: 1000 },
+  ],
+  'umdloti': [
+    { name: '94 Camarque Umdloti', nightlyRate: 1350, sleeps: 6, roomType: 'Three-Bedroom Apartment (sleeps up to 6)' },
+    { name: 'Club Mykonos Umdloti', nightlyRate: 1590, sleeps: 4, roomType: 'Standard Two-Bedroom Apartment (sleeps up to 4)' },
+    { name: 'Umdloti Cabanas', nightlyRate: 2035, sleeps: 4, roomType: 'Two-Bedroom Apartment (sleeps up to 4)' },
+    { name: 'Umdloti Holiday Resort Apartments', nightlyRate: 2847, sleeps: 4, roomType: 'Apartment (sleeps up to 4)' },
+    { name: 'Umdloti Holiday Resort Apartments \u2014 Superior Apartment', nightlyRate: 3157, sleeps: 4, roomType: 'Superior Apartment (sleeps up to 4)' },
+    { name: 'Sands Beach Breaks Umdloti Luxury Beach Front', nightlyRate: 3156, sleeps: 6, roomType: 'Three-Bedroom Beachfront Apartment (sleeps up to 6)' },
+    { name: 'The Villa Umdloti', nightlyRate: 5500, sleeps: 10, roomType: 'Five-Bedroom Villa with Sea View (sleeps up to 10)' },
   ],
   'cape-town': [
     { name: 'Sea Point Apartment', nightlyRate: 900 },
@@ -677,6 +688,7 @@ function generateHotels(): Hotel[] {
         ...(destId === 'mpumalanga' ? mpumalangaPremiumImageMap : {}),
         ...(destId === 'kruger-national-park' ? mpumalangaPremiumImageMap : {}),
         ...(destId === 'cape-town' ? capeTownPremiumImageMap : {}),
+        ...(destId === 'umdloti' ? umdlotiPremiumImageMap : {}),
       };
       // Mpumalanga: only show properties with real property photography
       if (destId === 'mpumalanga') {
@@ -1166,6 +1178,28 @@ export const packages: Package[] = [
     duration: '2 nights'
   },
   {
+    id: 'umdl001',
+    name: 'UMDL001 - MYSTIQUAL MDLOTI 3 BEACHES GETAWAY WEEKENDS AND MIDWEEK GETAWAYS',
+    shortName: 'Mystiqual Mdloti 3 Beaches',
+    description: 'Includes accommodation, uMdloti Beach, Ballito Beach and Umhlanga Main Beach, a night out to Isibaya Casino and transport to shuttle you between the beaches, the casino and your accommodation.',
+    destination: 'umdloti',
+    basePrice: 1820,
+    kidsMinAge: 2,
+    kidsPriceTiers: [
+      { minAge: 2, maxAge: 6, price: 600 },
+      { minAge: 7, maxAge: 17, price: 850 },
+    ],
+    activitiesIncluded: [
+      'Self-catering beachfront accommodation in uMdloti',
+      'uMdloti Beach day',
+      'Ballito Beach day',
+      'Umhlanga Main Beach day',
+      'Night out to Isibaya Casino',
+      'Shuttle transport between the beaches, the casino and your accommodation',
+    ],
+    duration: '2 nights'
+  },
+  {
     id: 'kruger001',
     name: 'KRUGER001 - KRUGER NATIONAL PARK MPUMALANGA BUDGET WEEKENDER',
     shortName: 'Kruger Weekender',
@@ -1436,6 +1470,7 @@ export const destinations: Destination[] = [
   { id: 'magalies', name: 'Magalies', shortName: 'Magalies', country: 'South Africa', description: 'Mountain retreats and nature getaways for a refreshing break.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/magalies1.jpg', startingPrice: 2100, popular: true, international: false },
   { id: 'durban', name: 'Durban Beachfront', shortName: 'Durban', country: 'South Africa', description: 'Sunny beach holidays with warm waters and vibrant city life.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/durban.png', startingPrice: 1600, popular: true, international: false },
   { id: 'umhlanga', name: 'Umhlanga', shortName: 'Umhlanga', country: 'South Africa', description: 'Coastal escape near Durban with beautiful beaches and upscale shopping.', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800', startingPrice: 1700, popular: true, international: false },
+  { id: 'umdloti', name: 'uMdloti', shortName: 'uMdloti', country: 'South Africa', description: 'Laid-back north coast beach village between Umhlanga and Ballito with self-catering beachfront apartments.', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800', startingPrice: 1820, popular: true, international: false },
   { id: 'cape-town', name: 'Cape Town', shortName: 'Cape Town', country: 'South Africa', description: 'Iconic Table Mountain, stunning beaches, and world-class vineyards.', image: 'https://raw.githubusercontent.com/TravelAffordable/Travel-Affordable-Website/main/cape%20town.jpg', startingPrice: 2400, popular: true, international: false },
   { id: 'sun-city', name: 'Sun City', shortName: 'Sun City', country: 'South Africa', description: 'World-famous resort with Valley of Waves and endless entertainment.', image: sunCityImage, startingPrice: 2000, popular: true, international: false },
   { id: 'kruger-national-park', name: 'Kruger National Park', shortName: 'Kruger', country: 'South Africa', description: 'Big Five safari with sunrise, afternoon and sunset game drives in the Kruger National Park.', image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800', startingPrice: 2320, popular: true, international: false },
