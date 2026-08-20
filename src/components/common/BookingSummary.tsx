@@ -7,6 +7,7 @@ export interface BookingSummaryProps {
   dates?: string;
   travellers: string;
   accommodationName?: string;
+  roomsLabel?: string;
   packageTotal: number;
   accommodationTotal: number;
   extrasTotal?: number;
