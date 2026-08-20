@@ -9,6 +9,7 @@ import angelsViewAsset from '@/assets/hotels/mpumalanga-AngelsView1.jpg.asset.js
 import pretoriuskopAsset from '@/assets/hotels/mpumalanga-PretoriuskopRestCamp.jpg.asset.json';
 import pretoriuskopEb3Asset from '@/assets/hotels/kruger-PretoriuskopEB3.jpg.asset.json';
 import pretoriuskopEb5Asset from '@/assets/hotels/kruger-PretoriuskopEB5.jpg.asset.json';
+import crystalSpringsAsset from '@/assets/hotels/mpumalanga-CrystalSprings1.jpg.asset.json';
 
 export const mpumalangaPremiumImageMap: Record<string, string> = {
   'Blyde Canyon Forever Resort': blydeCanyonAsset.url,
