@@ -58,6 +58,12 @@ export function BookingSummary({
               <dd className="text-right font-medium text-foreground">{accommodationName}</dd>
             </div>
           )}
+          {roomsLabel && (
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted-foreground">Rooms</dt>
+              <dd className="text-right font-medium text-foreground">{roomsLabel}</dd>
+            </div>
+          )}
         </dl>
 
         <div className="space-y-2 border-t border-border pt-4 text-sm">
