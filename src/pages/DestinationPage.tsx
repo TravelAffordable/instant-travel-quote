@@ -242,6 +242,7 @@ const DestinationPage = () => {
                           </p>
                         </div>
                       )}
+                      {pkg.id === 'kruger001' && <KrugerAvailabilityCalendar />}
                       <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
                         <Button size="sm" asChild>
                           <Link to={`/book?destination=${data.slug}&package=${pkg.id}`}>
