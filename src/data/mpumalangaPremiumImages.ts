@@ -22,6 +22,7 @@ export const mpumalangaPremiumImageMap: Record<string, string> = {
   'Pretoriuskop Rest Camp': pretoriuskopAsset.url,
   'Pretoriuskop Rest Camp (3-Sleeper Hut - EB3)': pretoriuskopEb3Asset.url,
   'Pretoriuskop Rest Camp (4-Sleeper Hut - EB5)': pretoriuskopEb5Asset.url,
+  'Crystal Springs Mountain Lodge by MyResorts': crystalSpringsAsset.url,
 };
 
 export function getMpumalangaPremiumImage(hotelName: string): string | undefined {
