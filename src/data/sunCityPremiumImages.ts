@@ -1,26 +1,26 @@
-// Sun City / Pilanesberg hotel images (real named properties only)
-import bakubungImg from '@/assets/hotels/suncity-premium-bakubung-bush-lodge.jpg';
-import kingdomImg from '@/assets/hotels/suncity-premium-kingdom-resort.jpg';
-import kwaMaritaneImg from '@/assets/hotels/suncity-premium-kwa-maritane.jpg';
-import sundownImg from '@/assets/hotels/suncity-premium-sundown-country-estate.jpg';
-import gettysImg from '@/assets/hotels/suncity-premium-gettys-bnb.jpg';
-import valleyViewImg from '@/assets/hotels/suncity-premium-valley-view-guest-house.jpg';
-import ivoryTreeImg from '@/assets/hotels/suncity-premium-ivory-tree.jpg';
-import pilanesbergImg from '@/assets/hotels/suncity-premium-pilanesberg-hotel.jpg';
-import kedarImg from '@/assets/hotels/suncity-premium-kedar-heritage-lodge.jpg';
-import royalMarangImg from '@/assets/hotels/suncity-premium-royal-marang.jpg';
+// Sun City / Pilanesberg hotel images (real property photos from live listings)
+import bakubungAsset from '@/assets/hotels/suncity-real-bakubung.jpg.asset.json';
+import kingdomAsset from '@/assets/hotels/suncity-real-kingdom.jpg.asset.json';
+import kwaMaritaneAsset from '@/assets/hotels/suncity-real-kwa.jpg.asset.json';
+import sundownAsset from '@/assets/hotels/suncity-real-sundown.jpg.asset.json';
+import gettysAsset from '@/assets/hotels/suncity-real-gettys.jpg.asset.json';
+import valleyViewAsset from '@/assets/hotels/suncity-real-valley.jpg.asset.json';
+import ivoryTreeAsset from '@/assets/hotels/suncity-real-ivory.jpg.asset.json';
+import pilanesbergAsset from '@/assets/hotels/suncity-real-pilanesberg.jpg.asset.json';
+import kedarAsset from '@/assets/hotels/suncity-real-kedar.jpg.asset.json';
+import royalMarangAsset from '@/assets/hotels/suncity-real-marang.jpg.asset.json';
 
 export const sunCityPremiumImageMap: Record<string, string> = {
-  'Bakubung Bush Lodge': bakubungImg,
-  'The Kingdom Resort': kingdomImg,
-  'Kwa Maritane Lodge': kwaMaritaneImg,
-  'Sundown Country Estate': sundownImg,
-  "Getty's Bed and Breakfast": gettysImg,
-  'Valley View Guest House': valleyViewImg,
-  'Ivory Tree Game Lodge': ivoryTreeImg,
-  'Pilanesberg Hotel': pilanesbergImg,
-  'Kedar Heritage Lodge Conference Centre & Spa': kedarImg,
-  'Royal Marang Hotel': royalMarangImg,
+  'Bakubung Bush Lodge': bakubungAsset.url,
+  'The Kingdom Resort': kingdomAsset.url,
+  'Kwa Maritane Lodge': kwaMaritaneAsset.url,
+  'Sundown Country Estate': sundownAsset.url,
+  "Getty's Bed and Breakfast": gettysAsset.url,
+  'Valley View Guest House': valleyViewAsset.url,
+  'Ivory Tree Game Lodge': ivoryTreeAsset.url,
+  'Pilanesberg Hotel': pilanesbergAsset.url,
+  'Kedar Heritage Lodge Conference Centre & Spa': kedarAsset.url,
+  'Royal Marang Hotel': royalMarangAsset.url,
 };
 
 export function getSunCityPremiumImage(hotelName: string): string | undefined {
