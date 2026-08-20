@@ -287,6 +287,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Royal Marang Hotel', nightlyRate: 1500 },
   ],
   'mpumalanga': [
+    { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180 },
     { name: 'Graskop Hotel', nightlyRate: 1100, includesBreakfast: true },
     { name: 'Laguna Lodge', nightlyRate: 950 },
     { name: 'Panorama Chalets and Rest Camp', nightlyRate: 800 },
