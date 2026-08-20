@@ -267,6 +267,8 @@ export default function BookingPage() {
         accommodationTotal={accommodationTotal}
         extrasTotal={extrasTotal}
         childPriceOnRequest={packagePricing?.childPriceOnRequest}
+        onConfirm={step === 'review' ? submitBooking : undefined}
+        confirmDisabled={step === 'review' ? !contact.name || !contact.email || !contact.phone : false}
       />
     </>
   );
@@ -767,14 +769,6 @@ export default function BookingPage() {
                             />
                           </div>
                         </div>
-                        <Button
-                          size="lg"
-                          className="w-full"
-                          disabled={!contact.name || !contact.email || !contact.phone}
-                          onClick={submitBooking}
-                        >
-                          Request to confirm your booking
-                        </Button>
                         <p className="text-center text-xs text-muted-foreground">
                           You'll receive a booking reference immediately. Your booking is confirmed once your
                           accommodation is secured.
