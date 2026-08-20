@@ -5,7 +5,6 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { DestinationImageMenu } from '@/components/DestinationImageMenu';
-import { KrugerAvailabilityCalendar } from '@/components/KrugerAvailabilityCalendar';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -244,16 +243,14 @@ const DestinationPage = () => {
                         </div>
                       )}
                       {pkg.id === 'kruger001' && (
-                        <>
-                          <p className="mt-3 text-xs text-navy/80">
-                            For kids pricing please send a request to{' '}
-                            <a href="mailto:info@travelaffordable.co.za" className="underline">info@travelaffordable.co.za</a>{' '}
-                            or WhatsApp{' '}
-                            <a href="https://wa.me/27796813869" target="_blank" rel="noopener noreferrer" className="underline">079 681 3869</a>
-                          </p>
-                          <KrugerAvailabilityCalendar />
-                        </>
+                        <p className="mt-3 text-xs text-navy/80">
+                          For kids pricing please send a request to{' '}
+                          <a href="mailto:info@travelaffordable.co.za" className="underline">info@travelaffordable.co.za</a>{' '}
+                          or WhatsApp{' '}
+                          <a href="https://wa.me/27796813869" target="_blank" rel="noopener noreferrer" className="underline">079 681 3869</a>
+                        </p>
                       )}
+
                       <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
                         <Button size="sm" asChild>
                           <Link to={`/book?destination=${data.slug}&package=${pkg.id}`}>

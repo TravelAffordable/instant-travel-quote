@@ -26,7 +26,9 @@ import { calculatePackagePrice } from '@/data/packagePricing';
 import { classifyHotels } from '@/lib/accommodationTiers';
 import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
+import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
 import { cn } from '@/lib/utils';
+
 
 type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'review' | 'received';
 
@@ -123,8 +125,24 @@ export default function BookingPage() {
     return hotelPerNight * Math.max(1, nights) * Math.max(1, roomCount);
   };
 
-  const visibleHotels = hotels.filter((h) => tier === 'all' || tierMap.get(h.id) === tier);
-  const selectedHotel = hotels.find((h) => h.id === hotelId);
+  const roomsNeededFor = (capacity: number) =>
+    Math.max(rooms, Math.ceil(totalGuests / Math.max(1, capacity)));
+
+  const isHotelAvailable = (hotelName: string, capacity: number) => {
+    if (!isAvailabilityTracked(hotelName)) return true;
+    return getStayAvailability(checkIn, Math.max(1, nights), roomsNeededFor(capacity)).available;
+  };
+
+  const availableHotels = hotels.filter((h) => isHotelAvailable(h.name, h.capacity ?? 2));
+  const soldOutCount = hotels.length - availableHotels.length;
+  const visibleHotels = availableHotels.filter((h) => tier === 'all' || tierMap.get(h.id) === tier);
+
+  const selectedHotel = availableHotels.find((h) => h.id === hotelId);
+
+  useEffect(() => {
+    if (hotelId && !availableHotels.some((h) => h.id === hotelId)) setHotelId(undefined);
+  }, [hotelId, availableHotels]);
+
   const accommodationTotal =
     oneDay || !selectedHotel
       ? 0
@@ -470,6 +488,13 @@ export default function BookingPage() {
                       {nights} night{nights === 1 ? '' : 's'} in {destination.name}. Your package price stays
                       the same — accommodation is added to it.
                     </p>
+                    {soldOutCount > 0 && (
+                      <p className="mt-2 text-sm font-medium text-destructive">
+                        {soldOutCount} {soldOutCount === 1 ? 'stay is' : 'stays are'} sold out for your selected
+                        dates and have been hidden. Change your dates to see more options.
+                      </p>
+                    )}
+
                     <div className="mt-6">
                       <TierSelector value={tier} onChange={setTier} />
                     </div>

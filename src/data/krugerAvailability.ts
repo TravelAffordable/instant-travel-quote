@@ -34,3 +34,48 @@ export function getMonthStartWeekday(month: string): number {
 export function getDaysInMonth(month: string): number {
   return PRETORIUSKOP_UNITS[month]?.length ?? 0;
 }
+
+/** Hotels whose availability is tracked by the SANParks unit calendar. */
+export const AVAILABILITY_TRACKED_HOTELS = ['Pretoriuskop Rest Camp'];
+
+export function isAvailabilityTracked(hotelName: string): boolean {
+  return AVAILABILITY_TRACKED_HOTELS.some(
+    (n) => n.toLowerCase() === hotelName.trim().toLowerCase(),
+  );
+}
+
+function monthKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/** Units available on a specific date; null when the date falls outside loaded data. */
+export function getUnitsForDay(date: Date): number | null {
+  const month = monthKey(date);
+  if (!PRETORIUSKOP_UNITS[month]) return null;
+  return getUnitsForDate(month, date.getDate());
+}
+
+/**
+ * Availability for a stay. Requires `rooms` units on every night of the stay.
+ * Returns `available: true` when the dates are outside the loaded calendar
+ * (we then confirm on request rather than blocking the booking).
+ */
+export function getStayAvailability(
+  checkIn: Date | undefined,
+  nights: number,
+  rooms = 1,
+): { available: boolean; soldOutDates: Date[]; unknown: boolean } {
+  if (!checkIn) return { available: true, soldOutDates: [], unknown: true };
+  const soldOutDates: Date[] = [];
+  let unknown = false;
+  for (let i = 0; i < Math.max(1, nights); i++) {
+    const day = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate() + i);
+    const units = getUnitsForDay(day);
+    if (units === null) {
+      unknown = true;
+      continue;
+    }
+    if (units < Math.max(1, rooms)) soldOutDates.push(day);
+  }
+  return { available: soldOutDates.length === 0, soldOutDates, unknown };
+}
