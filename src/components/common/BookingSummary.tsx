@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { roundToNearest10 } from '@/lib/utils';
 
 export interface BookingSummaryProps {
@@ -12,6 +13,8 @@ export interface BookingSummaryProps {
   accommodationTotal: number;
   extrasTotal?: number;
   childPriceOnRequest?: boolean;
+  onConfirm?: () => void;
+  confirmDisabled?: boolean;
 }
 
 function rand(amount: number) {
@@ -29,6 +32,8 @@ export function BookingSummary({
   accommodationTotal,
   extrasTotal = 0,
   childPriceOnRequest,
+  onConfirm,
+  confirmDisabled,
 }: BookingSummaryProps) {
   const total = packageTotal + accommodationTotal + extrasTotal;
 
@@ -89,6 +94,17 @@ export function BookingSummary({
           <span className="text-sm font-semibold text-foreground">Complete holiday price</span>
           <span className="font-display text-2xl font-bold text-sunset">{rand(total)}</span>
         </div>
+
+        {onConfirm && (
+          <Button
+            size="lg"
+            className="w-full"
+            disabled={confirmDisabled}
+            onClick={onConfirm}
+          >
+            Request to confirm your booking
+          </Button>
+        )}
 
         {childPriceOnRequest && (
           <p className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">

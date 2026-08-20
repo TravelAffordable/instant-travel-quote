@@ -249,31 +249,6 @@ export default function BookingPage() {
       </Card>
     ) : null;
 
-  const summary = (
-    <>
-      {selectedAccommodationCard}
-      <BookingSummary
-        destinationName={destination?.name ?? 'Your destination'}
-        packageTitle={pkg?.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '')}
-        dates={datesLabel}
-        travellers={travellersLabel}
-        accommodationName={oneDay ? 'Not needed for a 1 day experience' : selectedHotel?.name}
-        roomsLabel={
-          oneDay
-            ? undefined
-            : `${selectedRoomCount} room${selectedRoomCount === 1 ? '' : 's'}`
-        }
-        packageTotal={packageTotal}
-        accommodationTotal={accommodationTotal}
-        extrasTotal={extrasTotal}
-        childPriceOnRequest={packagePricing?.childPriceOnRequest}
-      />
-    </>
-  );
-
-
-  const goto = (next: Step) => setStep(next);
-
   const submitBooking = async () => {
     const ref = `TA-${Date.now().toString().slice(-6)}`;
     setReference(ref);
@@ -312,6 +287,33 @@ export default function BookingPage() {
 
     setStep('received');
   };
+
+  const summary = (
+    <>
+      {selectedAccommodationCard}
+      <BookingSummary
+        destinationName={destination?.name ?? 'Your destination'}
+        packageTitle={pkg?.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '')}
+        dates={datesLabel}
+        travellers={travellersLabel}
+        accommodationName={oneDay ? 'Not needed for a 1 day experience' : selectedHotel?.name}
+        roomsLabel={
+          oneDay
+            ? undefined
+            : `${selectedRoomCount} room${selectedRoomCount === 1 ? '' : 's'}`
+        }
+        packageTotal={packageTotal}
+        accommodationTotal={accommodationTotal}
+        extrasTotal={extrasTotal}
+        childPriceOnRequest={packagePricing?.childPriceOnRequest}
+        onConfirm={step === 'review' ? submitBooking : undefined}
+        confirmDisabled={step === 'review' ? !contact.name || !contact.email || !contact.phone : false}
+      />
+    </>
+  );
+
+
+  const goto = (next: Step) => setStep(next);
 
   const currentIndex = STEP_LABELS.findIndex((s) => s.id === step);
 
@@ -767,14 +769,6 @@ export default function BookingPage() {
                             />
                           </div>
                         </div>
-                        <Button
-                          size="lg"
-                          className="w-full"
-                          disabled={!contact.name || !contact.email || !contact.phone}
-                          onClick={submitBooking}
-                        >
-                          Request to confirm your booking
-                        </Button>
                         <p className="text-center text-xs text-muted-foreground">
                           You'll receive a booking reference immediately. Your booking is confirmed once your
                           accommodation is secured.
