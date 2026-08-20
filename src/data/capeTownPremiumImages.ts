@@ -52,15 +52,19 @@ export const capeTownPremiumImageMap: Record<string, string> = {
   'First Group Riviera Suites': rivieraSuitesAsset.url,
   'Camps Bay Village': campsBayVillageAsset.url,
   'Fountains Hotel': fountainsAsset.url,
-  'Radisson Hotel Cape Town Foreshore': radissonForeshoreAsset.url,
-  'ONOMO Hotel Foreshore': onomoForeshoreAsset.url,
+  'Radisson Hotel Cape Town Foreshore': radissonForeshoreNewAsset.url,
+  'ONOMO Hotel Foreshore': onomoForeshoreNewAsset.url,
   'Clifton YOLO Spaces': cliftonYoloAsset.url,
-  'Radisson RED Hotel V&A Waterfront': radissonRedAsset.url,
-  'Cape Grace V&A Waterfront': capeGraceAsset.url,
+  'Radisson RED Hotel V&A Waterfront': radissonRedNewAsset.url,
+  'Cape Grace V&A Waterfront': capeGraceNewAsset.url,
   'Waterfront Village V&A Waterfront': waterfrontVillageAsset.url,
   'President Hotel': presidentAsset.url,
   'The Bay Hotel': bayHotelAsset.url,
   'Twelve Apostles Hotel & Spa': twelveApostlesAsset.url,
+  'The Marly': marlyAsset.url,
+  'First Beach 203 by CTHA': firstBeach203Asset.url,
+  'Camps Bay Studio': campsBayStudioAsset.url,
+  'Camps Bay Beach Front Apartment': campsBayBeachFrontAsset.url,
 };
 
 
