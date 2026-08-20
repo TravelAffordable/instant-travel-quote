@@ -24,7 +24,15 @@ import capeGraceAsset from '@/assets/hotels/capetown-capegracevawaterfront.jpg.a
 import waterfrontVillageAsset from '@/assets/hotels/capetown-waterfrontvillagevawater.jpg.asset.json';
 import presidentAsset from '@/assets/hotels/capetown-presidenthotel.jpg.asset.json';
 import bayHotelAsset from '@/assets/hotels/capetown-thebayhotelcampsbay.jpg.asset.json';
-import twelveApostlesAsset from '@/assets/hotels/capetown-twelveapostleshotelspa.jpg.asset.json';
+import marlyAsset from '@/assets/hotels/capetown-marly.jpg.asset.json';
+import twelveApostlesAsset from '@/assets/hotels/capetown-twelveapostles-new.jpg.asset.json';
+import capeGraceNewAsset from '@/assets/hotels/capetown-capegrace-new.jpg.asset.json';
+import radissonRedNewAsset from '@/assets/hotels/capetown-radissonred-new.png.asset.json';
+import firstBeach203Asset from '@/assets/hotels/capetown-firstbeach203.jpg.asset.json';
+import onomoForeshoreNewAsset from '@/assets/hotels/capetown-onomoforeshore-new.jpg.asset.json';
+import radissonForeshoreNewAsset from '@/assets/hotels/capetown-radissonforeshore-new.jpg.asset.json';
+import campsBayStudioAsset from '@/assets/hotels/capetown-campsbaystudio.jpg.asset.json';
+import campsBayBeachFrontAsset from '@/assets/hotels/capetown-campsbaybeachfront.jpg.asset.json';
 
 export const capeTownPremiumImageMap: Record<string, string> = {
   'Sea Point Apartment': seaPointApartmentAsset.url,
