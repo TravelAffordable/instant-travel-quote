@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
-import { ArrowLeft, ArrowRight, CalendarIcon, CheckCircle2, Clock, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BedDouble, CalendarIcon, Check, CheckCircle2, Clock, MapPin, Star, Users, Utensils } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -18,6 +18,7 @@ import { DestinationTile } from '@/components/cards/DestinationTile';
 import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
 import { BookingSummary } from '@/components/common/BookingSummary';
+import { ResponsiveImage } from '@/components/common/ResponsiveImage';
 import { TierSelector, type AccommodationTier } from '@/components/common/TierSelector';
 import { ErrorState } from '@/components/common/ErrorState';
 import { catalogueDestinations, getCatalogueDestination } from '@/data/destinationCatalogue';
@@ -28,6 +29,8 @@ import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
 import { cn } from '@/lib/utils';
+import { mealBasis, tierLabels } from '@/lib/accommodationTiers';
+
 
 
 type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'review' | 'received';
