@@ -193,6 +193,16 @@ export default function BookingPage() {
       dates={datesLabel}
       travellers={travellersLabel}
       accommodationName={oneDay ? 'Not needed for a 1 day experience' : selectedHotel?.name}
+      roomsLabel={
+        oneDay
+          ? undefined
+          : (() => {
+              const count = selectedHotel
+                ? roomsNeededFor(selectedHotel.capacity ?? 2)
+                : Math.max(1, rooms);
+              return `${count} room${count === 1 ? '' : 's'}`;
+            })()
+      }
       packageTotal={packageTotal}
       accommodationTotal={accommodationTotal}
       extrasTotal={extrasTotal}
