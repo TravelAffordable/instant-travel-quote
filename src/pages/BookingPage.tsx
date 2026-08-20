@@ -488,6 +488,13 @@ export default function BookingPage() {
                       {nights} night{nights === 1 ? '' : 's'} in {destination.name}. Your package price stays
                       the same — accommodation is added to it.
                     </p>
+                    {soldOutCount > 0 && (
+                      <p className="mt-2 text-sm font-medium text-destructive">
+                        {soldOutCount} {soldOutCount === 1 ? 'stay is' : 'stays are'} sold out for your selected
+                        dates and have been hidden. Change your dates to see more options.
+                      </p>
+                    )}
+
                     <div className="mt-6">
                       <TierSelector value={tier} onChange={setTier} />
                     </div>
