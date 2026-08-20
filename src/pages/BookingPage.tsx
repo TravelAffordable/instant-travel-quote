@@ -140,7 +140,7 @@ export default function BookingPage() {
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
 
   useEffect(() => {
-    if (hotelId && !availableHotels.some((h) => h.id === hotelId)) setHotelId(null);
+    if (hotelId && !availableHotels.some((h) => h.id === hotelId)) setHotelId(undefined);
   }, [hotelId, availableHotels]);
 
   const accommodationTotal =
