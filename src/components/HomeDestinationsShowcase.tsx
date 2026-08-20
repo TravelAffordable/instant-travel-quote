@@ -13,6 +13,7 @@ import { extractTourCode, getTourFromPrice } from '@/lib/packageTourPricing';
 // Order: Durban, Harties, Sun City, Magalies, Mpumalanga, Cape Town, Bela-Bela, Vaal River, Knysna
 const ORDERED_SLUGS = [
   'durban',
+  'umdloti',
   'hartbeespoort',
   'sun-city',
   'magaliesburg',
@@ -26,6 +27,7 @@ const ORDERED_SLUGS = [
 const NAV_ITEMS = [
   { slug: 'durban', label: 'Durban' },
   { slug: 'umhlanga', label: 'Umhlanga' },
+  { slug: 'umdloti', label: 'uMdloti' },
   { slug: 'cape-town', label: 'Cape Town' },
   { slug: 'sun-city', label: 'Sun City' },
   { slug: 'hartbeespoort', label: 'Harties' },

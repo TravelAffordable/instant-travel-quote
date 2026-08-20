@@ -8,6 +8,7 @@ import hartiesImg from '@/assets/destinations/hartbeespoort.jpg';
 import magaliesImg from '@/assets/destinations/magaliesberg.jpg';
 import mpumalangaImg from '@/assets/destinations/mpumalanga.jpg';
 import umhlangaImg from '@/assets/destinations/umhlanga.jpg';
+import umdlotiImg from '@/assets/destinations/umdloti.jpg';
 import vaalImg from '@/assets/destinations/vaal-river.jpg';
 import knysnaImg from '@/assets/destinations/knysna.jpg';
 import belaBelaImg from '@/assets/destinations/bela-bela.jpg';
@@ -85,6 +86,15 @@ export const catalogueDestinations: CatalogueDestination[] = [
     region: 'KwaZulu-Natal',
     tagline: 'Upmarket beachfront, promenade and lagoon',
     image: umhlangaImg,
+    featured: true,
+  },
+  {
+    slug: 'umdloti',
+    destinationId: 'umdloti',
+    name: 'uMdloti',
+    region: 'KwaZulu-Natal',
+    tagline: 'Quiet beach village, 3 beaches and casino nights',
+    image: umdlotiImg,
     featured: true,
   },
   {

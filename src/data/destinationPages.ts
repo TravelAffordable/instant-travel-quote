@@ -30,6 +30,7 @@ import umhlangaImg from '@/assets/destinations/umhlanga.jpg';
 import vaalImg from '@/assets/destinations/vaal-river.jpg';
 import knysnaImg from '@/assets/destinations/knysna.jpg';
 import krugerImg from '@/assets/destinations/kruger.jpg';
+import umdlotiImg from '@/assets/destinations/umdloti.jpg';
 
 export const destinationPages: DestinationPageData[] = [
   {
@@ -293,6 +294,34 @@ export const destinationPages: DestinationPageData[] = [
           'Yes — we frequently bundle a Kruger safari extension with Mpumalanga Panorama Route packages.',
       },
     ],
+  },
+  {
+    slug: 'umdloti',
+    destinationId: 'umdloti',
+    name: 'uMdloti',
+    region: 'KwaZulu-Natal',
+    metaTitle: 'uMdloti Weekend and Midweek Getaways Amazing Hotels blended with fun activities',
+    metaDescription:
+      'Affordable uMdloti holiday packages on the KZN north coast \u2014 beachfront self-catering apartments, three beaches and a night out at Isibaya Casino.',
+    keywords:
+      'umdloti holiday packages, umdloti beach accommodation, umdloti self catering apartments, north coast weekend getaway, isibaya casino getaway',
+    heroImage: umdlotiImg,
+    intro:
+      'uMdloti is the relaxed beach village on the KwaZulu-Natal north coast, minutes from Umhlanga and Ballito. Our packages pair spacious beachfront self-catering apartments with three of the coast\u2019s best beaches and a night out at Isibaya Casino.',
+    highlights: [
+      'Beachfront self-catering apartments and villas',
+      'uMdloti Beach, Ballito Beach and Umhlanga Main Beach',
+      'Night out at Isibaya Casino',
+      'Shuttle transport between beaches and your accommodation',
+      'Apartments sleeping 4, 6 and up to 10 guests',
+    ],
+    whyVisit:
+      'Space, sea views and self-catering value \u2014 uMdloti suits families and groups who want the north coast without Umhlanga prices.',
+    bestTime:
+      'Year-round. December\u2013January and Easter are peak; April\u2013May and September\u2013October offer the best rates with warm sea temperatures.',
+    whoFor: 'Families, friends, couples, social, sport and church groups and corporate companies.',
+    startingFrom: 1820,
+    faqs: [],
   },
   {
     slug: 'kruger-national-park',

@@ -17,6 +17,12 @@ export const SERVICE_FEES = {
 
 export type ChildBand = 'child0to2' | 'child3to12' | 'child13to17';
 
+export interface ChildAgeTier {
+  minAge: number;
+  maxAge: number;
+  price: number;
+}
+
 export interface PackagePrice {
   /** Per-adult package price (service fee included). */
   adult: number;
@@ -24,6 +30,10 @@ export interface PackagePrice {
   child3to12: number | null;
   /** Per-child price, ages 13–17 (service fee included). Null = price on request. */
   child13to17: number | null;
+  /** Optional custom age bands. When present they override the two bands above. */
+  childAgeTiers?: ChildAgeTier[];
+  /** Optional override for the "children travel free" upper age. */
+  freeChildMaxAge?: number;
 }
 
 /** Children 0–2 always travel free on the package. */
@@ -71,6 +81,18 @@ export const PACKAGE_PRICES: Record<string, PackagePrice> = {
   MP4: { adult: 3200, child3to12: 1400, child13to17: 1500 },
 
   // Kruger National Park Mpumalanga Budget Weekender — kids pricing on request
+  // uMdloti: R600 per child 2-6 years, R850 per child 7-17 years
+  UMDL001: {
+    adult: 1820,
+    child3to12: 600,
+    child13to17: 850,
+    freeChildMaxAge: 1,
+    childAgeTiers: [
+      { minAge: 2, maxAge: 6, price: 600 },
+      { minAge: 7, maxAge: 17, price: 850 },
+    ],
+  },
+
   KRUGER001: { adult: 1140, child3to12: null, child13to17: null },
 
   EMER1: { adult: 1500, child3to12: 1000, child13to17: 1100 },
@@ -152,7 +174,24 @@ export function calculatePackagePrice(code: string, travellers: Travellers): Pac
   let childPriceOnRequest = false;
   let freeChildren = 0;
 
+  const freeMaxAge = price.freeChildMaxAge ?? CHILD_FREE_MAX_AGE;
+
   for (const age of travellers.childrenAges ?? []) {
+    if (age <= freeMaxAge) {
+      freeChildren += 1;
+      continue;
+    }
+
+    if (price.childAgeTiers?.length) {
+      const tier = price.childAgeTiers.find((t) => age >= t.minAge && age <= t.maxAge);
+      if (tier) {
+        childrenTotal += tier.price;
+      } else {
+        childPriceOnRequest = true;
+      }
+      continue;
+    }
+
     const band = getChildBand(age);
     if (band === 'child0to2') {
       freeChildren += 1;
