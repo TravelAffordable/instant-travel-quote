@@ -7,6 +7,7 @@ export interface BookingSummaryProps {
   dates?: string;
   travellers: string;
   accommodationName?: string;
+  roomsLabel?: string;
   packageTotal: number;
   accommodationTotal: number;
   extrasTotal?: number;
@@ -23,6 +24,7 @@ export function BookingSummary({
   dates,
   travellers,
   accommodationName,
+  roomsLabel,
   packageTotal,
   accommodationTotal,
   extrasTotal = 0,
@@ -54,6 +56,12 @@ export function BookingSummary({
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">Accommodation</dt>
               <dd className="text-right font-medium text-foreground">{accommodationName}</dd>
+            </div>
+          )}
+          {roomsLabel && (
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted-foreground">Rooms</dt>
+              <dd className="text-right font-medium text-foreground">{roomsLabel}</dd>
             </div>
           )}
         </dl>
