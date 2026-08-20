@@ -166,6 +166,7 @@ export const packageImages: Record<string, string> = {
   'mp2': mp2ZipMpumalanga,
   'mp3': mp3Kruger,
   'mp4': mpumalangaGodsWindow,
+  'kruger001': mpumalangaKrugerSafari,
 
   // ============= BELA BELA =============
   'bela1': belabelaWaterpark,
