@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
-import { ArrowLeft, ArrowRight, CalendarIcon, CheckCircle2, Clock, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BedDouble, CalendarIcon, Check, CheckCircle2, Clock, MapPin, Star, Users, Utensils } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -18,6 +18,7 @@ import { DestinationTile } from '@/components/cards/DestinationTile';
 import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
 import { BookingSummary } from '@/components/common/BookingSummary';
+import { ResponsiveImage } from '@/components/common/ResponsiveImage';
 import { TierSelector, type AccommodationTier } from '@/components/common/TierSelector';
 import { ErrorState } from '@/components/common/ErrorState';
 import { catalogueDestinations, getCatalogueDestination } from '@/data/destinationCatalogue';
@@ -28,6 +29,8 @@ import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
 import { cn } from '@/lib/utils';
+import { mealBasis, tierLabels } from '@/lib/accommodationTiers';
+
 
 
 type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'review' | 'received';
@@ -186,29 +189,88 @@ export default function BookingPage() {
     childrenAges.length ? `, ${childrenAges.length} children` : ''
   }`;
 
+  const selectedRoomCount = selectedHotel
+    ? roomsNeededFor(selectedHotel.capacity ?? 2)
+    : Math.max(1, rooms);
+
+  const selectedAccommodationCard =
+    selectedHotel && !oneDay ? (
+      <Card className="mb-6 overflow-hidden rounded-2xl border-border shadow-md">
+        <div className="relative">
+          <ResponsiveImage src={selectedHotel.image} alt={selectedHotel.name} ratio="wide" />
+          <span className="absolute left-3 top-3 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-foreground">
+            {tierLabels[tierMap.get(selectedHotel.id) ?? 'standard']}
+          </span>
+        </div>
+        <CardContent className="p-5">
+          <h3 className="font-display text-lg font-bold text-foreground">{selectedHotel.name}</h3>
+          <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3 w-3" /> {destination?.name ?? 'Your destination'}
+          </p>
+          {selectedHotel.rating > 0 && (
+            <div className="mt-2 flex items-center gap-0.5" aria-label={`${selectedHotel.rating} star`}>
+              {Array.from({ length: Math.round(selectedHotel.rating) }).map((_, i) => (
+                <Star key={i} className="h-3.5 w-3.5 fill-gold text-gold" />
+              ))}
+            </div>
+          )}
+          <div className="mt-3 space-y-1 text-sm text-muted-foreground">
+            <p className="flex items-center gap-2">
+              <BedDouble className="h-4 w-4 text-primary" />
+              {selectedHotel.roomType || `${selectedHotel.capacity ?? 2}-sleeper room`}
+            </p>
+            <p className="flex items-center gap-2">
+              <Utensils className="h-4 w-4 text-primary" />
+              {mealBasis(selectedHotel)}
+            </p>
+          </div>
+          {selectedHotel.amenities?.length > 0 && (
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {selectedHotel.amenities.slice(0, 4).map((a) => (
+                <li
+                  key={a}
+                  className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground"
+                >
+                  <Check className="h-3 w-3 text-accent" /> {a}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="mt-4 border-t border-border pt-4">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-display text-2xl font-bold text-foreground">
+                R{Math.round(accommodationTotal).toLocaleString('en-ZA')}
+              </span>{' '}
+              for {Math.max(1, nights)} night{Math.max(1, nights) === 1 ? '' : 's'}
+              {selectedRoomCount > 1 ? `, ${selectedRoomCount} rooms` : ''}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    ) : null;
+
   const summary = (
-    <BookingSummary
-      destinationName={destination?.name ?? 'Your destination'}
-      packageTitle={pkg?.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '')}
-      dates={datesLabel}
-      travellers={travellersLabel}
-      accommodationName={oneDay ? 'Not needed for a 1 day experience' : selectedHotel?.name}
-      roomsLabel={
-        oneDay
-          ? undefined
-          : (() => {
-              const count = selectedHotel
-                ? roomsNeededFor(selectedHotel.capacity ?? 2)
-                : Math.max(1, rooms);
-              return `${count} room${count === 1 ? '' : 's'}`;
-            })()
-      }
-      packageTotal={packageTotal}
-      accommodationTotal={accommodationTotal}
-      extrasTotal={extrasTotal}
-      childPriceOnRequest={packagePricing?.childPriceOnRequest}
-    />
+    <>
+      {selectedAccommodationCard}
+      <BookingSummary
+        destinationName={destination?.name ?? 'Your destination'}
+        packageTitle={pkg?.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '')}
+        dates={datesLabel}
+        travellers={travellersLabel}
+        accommodationName={oneDay ? 'Not needed for a 1 day experience' : selectedHotel?.name}
+        roomsLabel={
+          oneDay
+            ? undefined
+            : `${selectedRoomCount} room${selectedRoomCount === 1 ? '' : 's'}`
+        }
+        packageTotal={packageTotal}
+        accommodationTotal={accommodationTotal}
+        extrasTotal={extrasTotal}
+        childPriceOnRequest={packagePricing?.childPriceOnRequest}
+      />
+    </>
   );
+
 
   const goto = (next: Step) => setStep(next);
 
