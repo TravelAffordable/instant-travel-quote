@@ -29,6 +29,7 @@ import mpumalangaImg from '@/assets/destinations/mpumalanga.jpg';
 import umhlangaImg from '@/assets/destinations/umhlanga.jpg';
 import vaalImg from '@/assets/destinations/vaal-river.jpg';
 import knysnaImg from '@/assets/destinations/knysna.jpg';
+import krugerImg from '@/assets/destinations/kruger.jpg';
 
 export const destinationPages: DestinationPageData[] = [
   {
@@ -292,6 +293,34 @@ export const destinationPages: DestinationPageData[] = [
           'Yes — we frequently bundle a Kruger safari extension with Mpumalanga Panorama Route packages.',
       },
     ],
+  },
+  {
+    slug: 'kruger-national-park',
+    destinationId: 'kruger-national-park',
+    name: 'Kruger National Park',
+    region: 'Mpumalanga / Limpopo',
+    metaTitle: 'Kruger National Park Weekend and Midweek Getaways Amazing Camps blended with game drives',
+    metaDescription:
+      'Affordable Kruger National Park budget weekenders — Pretoriuskop Rest Camp huts with guided sunrise, afternoon or sunset game drives. Conservation fees included.',
+    keywords:
+      'kruger national park packages, pretoriuskop rest camp, kruger game drive, affordable kruger safari, budget kruger weekender',
+    heroImage: krugerImg,
+    intro:
+      'The Kruger National Park is South Africa’s greatest safari destination — Big Five game viewing, guided drives and affordable rest camp accommodation inside the park.',
+    highlights: [
+      'Guided 3.5 hour game drives (sunrise, afternoon or sunset)',
+      'Pretoriuskop Rest Camp huts inside the park',
+      'Big Five game viewing',
+      'Conservation and community fees included',
+      'Braai facilities and Wimpy on site for meals',
+    ],
+    whyVisit:
+      'Stay inside the park at rest camp rates and wake up to the bush — a real safari without the private lodge price tag.',
+    bestTime:
+      'April–September is the dry season, with the best game viewing around waterholes.',
+    whoFor: 'Families, couples, friends and groups wanting an affordable Big Five safari.',
+    startingFrom: 2320,
+    faqs: [],
   },
   {
     slug: 'bela-bela',
