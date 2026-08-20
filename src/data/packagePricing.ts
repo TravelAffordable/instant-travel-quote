@@ -70,6 +70,9 @@ export const PACKAGE_PRICES: Record<string, PackagePrice> = {
   MP3: { adult: 2500, child3to12: 800, child13to17: 900 },
   MP4: { adult: 3200, child3to12: 1400, child13to17: 1500 },
 
+  // Kruger National Park Mpumalanga Budget Weekender — kids pricing on request
+  KRUGER001: { adult: 1140, child3to12: null, child13to17: null },
+
   EMER1: { adult: 1500, child3to12: 1000, child13to17: 1100 },
   EMER2: { adult: 1450, child3to12: 900, child13to17: 1000 },
   EMER3: { adult: 2100, child3to12: 1150, child13to17: 1250 },
