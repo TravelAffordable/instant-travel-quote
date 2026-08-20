@@ -51,7 +51,7 @@ export const KrugerAvailabilityCalendar = () => {
         </div>
 
         <p className="mt-1 text-center text-[11px] text-navy/70">
-          Pretoriuskop Rest Camp — Hut (EB2) · {formatCurrency(PRETORIUSKOP_NIGHTLY_RATE)} per night
+          Pretoriuskop Rest Camp — Hut (EB2) · {formatCurrency(PRETORIUSKOP_NIGHTLY_RATE)} per room per night incl. conservation &amp; community fees
         </p>
 
         <div className="mt-3 grid grid-cols-7 gap-1 text-center">
