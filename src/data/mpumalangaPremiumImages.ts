@@ -9,6 +9,7 @@ import angelsViewAsset from '@/assets/hotels/mpumalanga-AngelsView1.jpg.asset.js
 import pretoriuskopAsset from '@/assets/hotels/mpumalanga-PretoriuskopRestCamp.jpg.asset.json';
 import pretoriuskopEb3Asset from '@/assets/hotels/kruger-PretoriuskopEB3.jpg.asset.json';
 import pretoriuskopEb5Asset from '@/assets/hotels/kruger-PretoriuskopEB5.jpg.asset.json';
+import crystalSpringsAsset from '@/assets/hotels/mpumalanga-CrystalSprings1.jpg.asset.json';
 
 export const mpumalangaPremiumImageMap: Record<string, string> = {
   'Blyde Canyon Forever Resort': blydeCanyonAsset.url,
@@ -21,6 +22,7 @@ export const mpumalangaPremiumImageMap: Record<string, string> = {
   'Pretoriuskop Rest Camp': pretoriuskopAsset.url,
   'Pretoriuskop Rest Camp (3-Sleeper Hut - EB3)': pretoriuskopEb3Asset.url,
   'Pretoriuskop Rest Camp (4-Sleeper Hut - EB5)': pretoriuskopEb5Asset.url,
+  'Crystal Springs Mountain Lodge by MyResorts': crystalSpringsAsset.url,
 };
 
 export function getMpumalangaPremiumImage(hotelName: string): string | undefined {

@@ -315,6 +315,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Blyde Canyon Forever Resort', nightlyRate: 1400 },
     { name: 'Amafu Forest Lodge', nightlyRate: 1100 },
     { name: 'Blyde Mountain Lodge', nightlyRate: 1250 },
+    { name: 'Crystal Springs Mountain Lodge by MyResorts', nightlyRate: 1634, sleeps: 2, roomType: 'Studio with Patio (Self-Catering)', includesBreakfast: false },
   ],
   'knysna': [
     { name: 'The Russel Hotel', nightlyRate: 1200, includesBreakfast: true },
