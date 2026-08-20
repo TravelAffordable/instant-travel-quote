@@ -287,6 +287,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Royal Marang Hotel', nightlyRate: 1500 },
   ],
   'mpumalanga': [
+    { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180 },
     { name: 'Graskop Hotel', nightlyRate: 1100, includesBreakfast: true },
     { name: 'Laguna Lodge', nightlyRate: 950 },
     { name: 'Panorama Chalets and Rest Camp', nightlyRate: 800 },
@@ -1158,6 +1159,27 @@ export const packages: Package[] = [
     activitiesIncluded: ['Accommodation', 'Game drive in Kruger National Park', 'Full day Panorama Route tour', 'Gods Window & Wonderview', 'Berlin Falls, Pinnacle Rock, Bourkes Luck Potholes', 'Blyde River Canyon and Three Rondavels'],
     duration: '2 nights'
   },
+  {
+    id: 'kruger001',
+    name: 'KRUGER001 - MPUMALANGA WEEKENDER WITH KRUGER NATIONAL PARK GAME DRIVE',
+    shortName: 'Kruger Weekender',
+    description: 'Includes accommodation at Pretoriuskop Rest Camp (Hut - EB2), a 3.5 hour guided Kruger National Park game drive (early morning sunrise, afternoon or sunset drive), conservation and community fees included. Tours to other attractions are on a self drive basis and we can assist with bookings for self drive or scheduled tours should there be a need.',
+    destination: 'mpumalanga',
+    basePrice: 1315,
+    activitiesIncluded: [
+      'Accommodation at Pretoriuskop Rest Camp (Hut - EB2)',
+      '3.5 hour guided Kruger National Park game drive (sunrise, afternoon or sunset drive)',
+      'Conservation and community fees included',
+      'Hut has 1 bedroom with 2 single beds',
+      'Air-conditioned, fridge, braai facilities',
+      'Communal ablutions and communal kitchen (no utensils)',
+      'Wimpy on site for meals',
+      'No smoking',
+      'Self drive to other attractions, we assist with bookings for self drive or scheduled tours',
+    ],
+    duration: '2 nights'
+  },
+
 
   // ============= SUN CITY PACKAGES =============
   {
