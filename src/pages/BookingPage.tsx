@@ -137,7 +137,12 @@ export default function BookingPage() {
   const soldOutCount = hotels.length - availableHotels.length;
   const visibleHotels = availableHotels.filter((h) => tier === 'all' || tierMap.get(h.id) === tier);
 
-  const selectedHotel = hotels.find((h) => h.id === hotelId);
+  const selectedHotel = availableHotels.find((h) => h.id === hotelId);
+
+  useEffect(() => {
+    if (hotelId && !availableHotels.some((h) => h.id === hotelId)) setHotelId(null);
+  }, [hotelId, availableHotels]);
+
   const accommodationTotal =
     oneDay || !selectedHotel
       ? 0
