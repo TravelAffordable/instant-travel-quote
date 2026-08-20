@@ -24,6 +24,7 @@ export function BookingSummary({
   dates,
   travellers,
   accommodationName,
+  roomsLabel,
   packageTotal,
   accommodationTotal,
   extrasTotal = 0,
