@@ -695,8 +695,8 @@ function generateHotels(): Hotel[] {
           amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
           image: premiumImg,
           images: [premiumImg],
-          capacity: hotel.capacity === '4_sleeper' ? 4 : 2,
-          roomType: hotel.capacity === '4_sleeper' ? '4 Sleeper Room' : '2 Sleeper Room',
+          capacity: hotel.sleeps ?? (hotel.capacity === '4_sleeper' ? 4 : 2),
+          roomType: hotel.roomType ?? (hotel.capacity === '4_sleeper' ? '4 Sleeper Room' : '2 Sleeper Room'),
           includesBreakfast: hotel.includesBreakfast,
         });
       });
