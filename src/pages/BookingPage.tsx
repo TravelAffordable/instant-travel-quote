@@ -26,7 +26,9 @@ import { calculatePackagePrice } from '@/data/packagePricing';
 import { classifyHotels } from '@/lib/accommodationTiers';
 import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
+import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
 import { cn } from '@/lib/utils';
+
 
 type Step = 'destination' | 'experience' | 'dates' | 'travellers' | 'accommodation' | 'review' | 'received';
 
