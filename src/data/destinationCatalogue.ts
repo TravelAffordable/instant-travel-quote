@@ -134,12 +134,12 @@ export const catalogueDestinations: CatalogueDestination[] = [
   },
   {
     slug: 'kruger-national-park',
+    destinationId: 'kruger-national-park',
     name: 'Kruger National Park',
     region: 'Mpumalanga / Limpopo',
     tagline: 'Big Five safari, sunrise game drives',
     image: krugerImg,
     featured: true,
-    enquireOnly: true,
   },
   {
     slug: 'pilanesberg',

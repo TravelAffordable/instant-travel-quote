@@ -31,6 +31,7 @@ const NAV_ITEMS = [
   { slug: 'hartbeespoort', label: 'Harties' },
   { slug: 'magaliesburg', label: 'Magalies' },
   { slug: 'mpumalanga', label: 'Mpumalanga' },
+  { slug: 'kruger-national-park', label: 'Kruger National Park' },
   { slug: 'bela-bela', label: 'Bela-Bela' },
   { slug: 'vaal-river', label: 'Emerald Casino and Vaal Cruise' },
   { slug: 'knysna', label: 'Knysna' },
