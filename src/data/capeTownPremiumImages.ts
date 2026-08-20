@@ -11,7 +11,7 @@ export const capeTownPremiumImageMap: Record<string, string> = {
   'Spring Tide Inn by CTHA': springTideAsset.url,
   'Home Suite Hotels Sea Point': homeSuiteAsset.url,
   '3 On Camps Bay': threeOnCampsBayAsset.url,
-  'Camps Bay Village': tenOnCampsBayAsset.url,
+  '10 On Camps Bay': tenOnCampsBayAsset.url,
   'Cape Diamond Boutique Hotel': capeDiamondAsset.url,
 };
 
