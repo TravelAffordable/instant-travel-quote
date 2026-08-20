@@ -197,7 +197,7 @@ const affordablePrices = [1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 
 const premiumPrices = [2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100];
 
 // Premium Hotels with their actual names (prices will use premiumPrices array - 4 hotels per destination)
-const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean; capacity?: '2_sleeper' | '4_sleeper'; nightlyRate?: number }[]> = {
+const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean; capacity?: '2_sleeper' | '4_sleeper'; nightlyRate?: number; sleeps?: number; roomType?: string }[]> = {
   'harties': [
     { name: 'Indlovukazi Guesthouse', nightlyRate: 1150, includesBreakfast: true },
     { name: 'Villa Paradiso Hotel', nightlyRate: 1100 },
@@ -288,7 +288,9 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Royal Marang Hotel', nightlyRate: 1500 },
   ],
   'kruger-national-park': [
-    { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180 },
+    { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180, sleeps: 2, roomType: '2-Sleeper Hut (EB2)' },
+    { name: 'Pretoriuskop Rest Camp (3-Sleeper Hut - EB3)', nightlyRate: 1540, sleeps: 3, roomType: '3-Sleeper Hut (EB3)' },
+    { name: 'Pretoriuskop Rest Camp (4-Sleeper Hut - EB5)', nightlyRate: 1540, sleeps: 4, roomType: '4-Sleeper Hut (EB5)' },
   ],
   'mpumalanga': [
     { name: 'Graskop Hotel', nightlyRate: 1100, includesBreakfast: true },
@@ -693,8 +695,8 @@ function generateHotels(): Hotel[] {
           amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
           image: premiumImg,
           images: [premiumImg],
-          capacity: hotel.capacity === '4_sleeper' ? 4 : 2,
-          roomType: hotel.capacity === '4_sleeper' ? '4 Sleeper Room' : '2 Sleeper Room',
+          capacity: hotel.sleeps ?? (hotel.capacity === '4_sleeper' ? 4 : 2),
+          roomType: hotel.roomType ?? (hotel.capacity === '4_sleeper' ? '4 Sleeper Room' : '2 Sleeper Room'),
           includesBreakfast: hotel.includesBreakfast,
         });
       });
@@ -1167,14 +1169,16 @@ export const packages: Package[] = [
     id: 'kruger001',
     name: 'KRUGER001 - KRUGER NATIONAL PARK MPUMALANGA BUDGET WEEKENDER',
     shortName: 'Kruger Weekender',
-    description: 'Includes accommodation at Pretoriuskop Rest Camp (2-sleeper hut - EB2), a 3.5 hour guided Kruger National Park game drive (early morning sunrise, afternoon or sunset drive), conservation and community fees included. Tours to other attractions are on a self drive basis and we can assist with bookings for self drive or scheduled tours should there be a need.',
+    description: 'Includes accommodation at Pretoriuskop Rest Camp (2-sleeper hut EB2, 3-sleeper hut EB3 or 4-sleeper hut EB5), a 3.5 hour guided Kruger National Park game drive (early morning sunrise, afternoon or sunset drive), conservation and community fees included. Tours to other attractions are on a self drive basis and we can assist with bookings for self drive or scheduled tours should there be a need.',
     destination: 'kruger-national-park',
     basePrice: 1140,
     activitiesIncluded: [
-      'Accommodation at Pretoriuskop Rest Camp (2-sleeper hut - EB2) — R1 180 per room per night incl. conservation and community fees',
+      'Accommodation at Pretoriuskop Rest Camp — 2-sleeper hut (EB2) R1 180 per room per night incl. conservation and community fees',
+      '3-sleeper hut (EB3) R1 540 per room per night, same amenities as EB2',
+      '4-sleeper hut (EB5) R1 540 per room per night, same amenities as EB2',
       '3.5 hour guided Kruger National Park game drive (sunrise, afternoon or sunset drive)',
       'Conservation and community fees included',
-      'Hut has 1 bedroom with 2 single beds',
+      'Huts have single beds (EB2 sleeps 2, EB3 sleeps 3, EB5 sleeps 4)',
       'Air-conditioned, fridge, braai facilities',
       'Communal ablutions and communal kitchen (no utensils)',
       'Wimpy on site for meals',
