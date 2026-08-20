@@ -315,8 +315,6 @@ export default function BookingPage() {
 
   const goto = (next: Step) => setStep(next);
 
-  const goto = (next: Step) => setStep(next);
-
   const currentIndex = STEP_LABELS.findIndex((s) => s.id === step);
 
   return (
