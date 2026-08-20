@@ -125,7 +125,18 @@ export default function BookingPage() {
     return hotelPerNight * Math.max(1, nights) * Math.max(1, roomCount);
   };
 
-  const visibleHotels = hotels.filter((h) => tier === 'all' || tierMap.get(h.id) === tier);
+  const roomsNeededFor = (capacity: number) =>
+    Math.max(rooms, Math.ceil(totalGuests / Math.max(1, capacity)));
+
+  const isHotelAvailable = (hotelName: string, capacity: number) => {
+    if (!isAvailabilityTracked(hotelName)) return true;
+    return getStayAvailability(checkIn, Math.max(1, nights), roomsNeededFor(capacity)).available;
+  };
+
+  const availableHotels = hotels.filter((h) => isHotelAvailable(h.name, h.capacity ?? 2));
+  const soldOutCount = hotels.length - availableHotels.length;
+  const visibleHotels = availableHotels.filter((h) => tier === 'all' || tierMap.get(h.id) === tier);
+
   const selectedHotel = hotels.find((h) => h.id === hotelId);
   const accommodationTotal =
     oneDay || !selectedHotel
