@@ -1167,11 +1167,11 @@ export const packages: Package[] = [
     id: 'kruger001',
     name: 'KRUGER001 - KRUGER NATIONAL PARK MPUMALANGA BUDGET WEEKENDER',
     shortName: 'Kruger Weekender',
-    description: 'Includes accommodation at Pretoriuskop Rest Camp (Hut - EB2), a 3.5 hour guided Kruger National Park game drive (early morning sunrise, afternoon or sunset drive), conservation and community fees included. Tours to other attractions are on a self drive basis and we can assist with bookings for self drive or scheduled tours should there be a need.',
+    description: 'Includes accommodation at Pretoriuskop Rest Camp (2-sleeper hut - EB2), a 3.5 hour guided Kruger National Park game drive (early morning sunrise, afternoon or sunset drive), conservation and community fees included. Tours to other attractions are on a self drive basis and we can assist with bookings for self drive or scheduled tours should there be a need.',
     destination: 'kruger-national-park',
     basePrice: 1140,
     activitiesIncluded: [
-      'Accommodation at Pretoriuskop Rest Camp (Hut - EB2) — R1 180 per room per night incl. conservation and community fees',
+      'Accommodation at Pretoriuskop Rest Camp (2-sleeper hut - EB2) — R1 180 per room per night incl. conservation and community fees',
       '3.5 hour guided Kruger National Park game drive (sunrise, afternoon or sunset drive)',
       'Conservation and community fees included',
       'Hut has 1 bedroom with 2 single beds',
