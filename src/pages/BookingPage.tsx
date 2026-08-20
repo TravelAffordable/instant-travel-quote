@@ -135,7 +135,15 @@ export default function BookingPage() {
 
   const availableHotels = hotels.filter((h) => isHotelAvailable(h.name, h.capacity ?? 2));
   const soldOutCount = hotels.length - availableHotels.length;
-  const visibleHotels = availableHotels.filter((h) => tier === 'all' || tierMap.get(h.id) === tier);
+  // Stays that comfortably fit the whole group in one unit show first (cheapest first),
+  // smaller units that would need multiple rooms fall to the bottom.
+  const visibleHotels = availableHotels
+    .filter((h) => tier === 'all' || tierMap.get(h.id) === tier)
+    .slice()
+    .sort((a, b) => {
+      const fits = (h: typeof a) => ((h.capacity ?? 2) >= Math.max(1, totalGuests) ? 0 : 1);
+      return fits(a) - fits(b) || a.pricePerNight - b.pricePerNight;
+    });
 
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
 
