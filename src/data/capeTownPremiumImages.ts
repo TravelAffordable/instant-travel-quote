@@ -16,11 +16,7 @@ import casaOnKeiAsset from '@/assets/hotels/capetown-casaonkeibytotalstay.jpg.as
 import rivieraSuitesAsset from '@/assets/hotels/capetown-firstgrouprivierasuites.jpg.asset.json';
 import campsBayVillageAsset from '@/assets/hotels/capetown-campsbayvillage.jpg.asset.json';
 import fountainsAsset from '@/assets/hotels/capetown-fountainshotel.jpg.asset.json';
-import radissonForeshoreAsset from '@/assets/hotels/capetown-radissonhotelcapetownfor.jpg.asset.json';
-import onomoForeshoreAsset from '@/assets/hotels/capetown-onomohotelforeshorecapet.jpg.asset.json';
 import cliftonYoloAsset from '@/assets/hotels/capetown-cliftonyolospacescapetow.jpg.asset.json';
-import radissonRedAsset from '@/assets/hotels/capetown-radissonredhotelvawaterf.jpg.asset.json';
-import capeGraceAsset from '@/assets/hotels/capetown-capegracevawaterfront.jpg.asset.json';
 import waterfrontVillageAsset from '@/assets/hotels/capetown-waterfrontvillagevawater.jpg.asset.json';
 import presidentAsset from '@/assets/hotels/capetown-presidenthotel.jpg.asset.json';
 import bayHotelAsset from '@/assets/hotels/capetown-thebayhotelcampsbay.jpg.asset.json';
