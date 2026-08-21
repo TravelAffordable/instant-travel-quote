@@ -217,7 +217,7 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
   'magalies': [
     { name: 'Cocomo Boutique Hotel', nightlyRate: 1200 },
     { name: 'Mount Grace Hotel And Spa', nightlyRate: 2988, includesBreakfast: true },
-    { name: 'Cradle Boutique Hotel', nightlyRate: 1800, includesBreakfast: true },
+    { name: 'Cradle Boutique Hotel', nightlyRate: 4500, includesBreakfast: true },
     { name: 'Valley Lodge & Spa', nightlyRate: 2289, includesBreakfast: true },
     { name: 'Palmera Guest House', nightlyRate: 850, sleeps: 2, roomType: 'Double Room (1 full bed, sleeps 2)' },
     { name: 'Sleep Over Lanseria', nightlyRate: 1426, sleeps: 2, roomType: 'Standard Room (sleeps 2)' },
@@ -1226,16 +1226,9 @@ export const packages: Package[] = [
     destination: 'kruger-national-park',
     basePrice: 1140,
     activitiesIncluded: [
-      'Accommodation at Pretoriuskop Rest Camp — 2-sleeper hut (EB2) R1 180 per room per night incl. conservation and community fees',
-      '3-sleeper hut (EB3) R1 540 per room per night, same amenities as EB2',
-      '4-sleeper hut (EB5) R1 540 per room per night, same amenities as EB2',
+      '2 nights accommodation',
       '3.5 hour guided Kruger National Park game drive (sunrise, afternoon or sunset drive)',
       'Conservation and community fees included',
-      'Huts have single beds (EB2 sleeps 2, EB3 sleeps 3, EB5 sleeps 4)',
-      'Air-conditioned, fridge, braai facilities',
-      'Communal ablutions and communal kitchen (no utensils)',
-      'Wimpy on site for meals',
-      'No smoking',
       'Self drive to other attractions, we assist with bookings for self drive or scheduled tours',
     ],
     duration: '2 nights'
