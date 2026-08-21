@@ -23,14 +23,12 @@ export function FeaturedExperiences() {
           <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
             Experiences our travellers love
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Every package price is per person and includes the activities listed. Accommodation is
-            added in the next step, so you always see your complete holiday price.
+          <p className="mt-3 text-muted-foreground">
+            Every package price is per person and includes the activities listed. Accommodation is added
+            in the next step, so you always see your complete holiday price.
           </p>
         </div>
-
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-
+        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {cards.map(({ destination, pkg }) => (
             <ExperienceCard
               key={pkg.id}
