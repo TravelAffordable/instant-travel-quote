@@ -336,12 +336,21 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Issaquena Heights Boutique Hotel', nightlyRate: 1300 },
   ],
   'vaal-river': [
+    { name: 'Emerald Casino Hotel — Queen Room', nightlyRate: 3124, roomType: 'Queen Room, 1 queen bed, 33 m²', sleeps: 2 },
+    { name: 'Emerald Casino Hotel — Standard Twin Room', nightlyRate: 3124, roomType: 'Standard Twin Room, 2 twin beds, 33 m²', sleeps: 2 },
+    { name: 'Emerald Casino Hotel — One-Bedroom Chalet', nightlyRate: 1838, roomType: 'One-Bedroom Chalet, 1 full bed + sofa bed, 45 m², private kitchen', sleeps: 2 },
+    { name: 'Emerald Casino Hotel — Two-Bedroom Chalet', nightlyRate: 2836, roomType: 'Two-Bedroom Chalet, 1 full bed + 2 twin beds, 55 m², private kitchen', sleeps: 4 },
+    { name: 'Emerald Casino Hotel — Bungalow', nightlyRate: 3754, roomType: 'Bungalow, 1 queen bed, 99 m², private kitchen', sleeps: 2 },
+    { name: 'Emerald Casino Hotel — Two-Bedroom Bungalow', nightlyRate: 4332, roomType: 'Two-Bedroom Bungalow, 1 queen bed + 2 twin beds, 99 m², private kitchen', sleeps: 4 },
+    { name: 'Emerald Casino Hotel — One-Bedroom Apartment (Non-Smoking)', nightlyRate: 4930, roomType: 'One-Bedroom Apartment, 1 queen bed, 66 m², private kitchen', sleeps: 2 },
+    { name: 'Emerald Casino Hotel — King Suite', nightlyRate: 4930, roomType: 'King Suite, 1 king bed, 66 m², balcony with view', sleeps: 2 },
     { name: 'Riviera on the Vaal', nightlyRate: 2000, includesBreakfast: true },
     { name: 'Clivia Lodge', nightlyRate: 1100 },
     { name: 'Troas Boutique Hotel', nightlyRate: 1200 },
     { name: '12 On Vaal Drive Guesthouse', nightlyRate: 900 },
     { name: 'Casa Angelo', nightlyRate: 950 },
   ],
+
   'bela-bela': [
     { name: 'Mabalingwe Nature Reserve', nightlyRate: 1200 },
     { name: 'Mabula Game Lodge', nightlyRate: 3500, includesBreakfast: true },
