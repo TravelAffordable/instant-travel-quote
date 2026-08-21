@@ -10,11 +10,13 @@ import palmeraAsset from '@/assets/hotels/magalies-Palmera.jpg.asset.json';
 import mistyHillsAsset from '@/assets/hotels/magalies-MistyHills.jpg.asset.json';
 import aviantoAsset from '@/assets/hotels/magalies-Avianto.jpg.asset.json';
 import lesediAsset from '@/assets/hotels/magalies-lesedi_culturall_village.webp.asset.json';
+import maropengBoutiqueAsset from '@/assets/hotels/magalies-MaropengBoutique.jpg.asset.json';
 
 const cocomoImg = cocomoAsset.url;
 const mountGraceImg = mountGraceAsset.url;
 const cradleBoutiqueImg = cradleBoutiqueAsset.url;
 const valleyLodgeImg = valleyLodgeAsset.url;
+const maropengBoutiqueImg = maropengBoutiqueAsset.url;
 
 export const magaliesPremiumImageMap: Record<string, string> = {
   'Cocomo Boutique Hotel': cocomoImg,
@@ -31,6 +33,7 @@ export const magaliesPremiumImageMap: Record<string, string> = {
   'Misty Hills Country Hotel, Conference Centre & Spa': mistyHillsAsset.url,
   'Avianto': aviantoAsset.url,
   'aha Lesedi African Lodge & Cultural Village': lesediAsset.url,
+  'Maropeng Boutique Hotel': maropengBoutiqueImg,
 };
 
 export function getMagaliesPremiumImage(hotelName: string): string | undefined {
