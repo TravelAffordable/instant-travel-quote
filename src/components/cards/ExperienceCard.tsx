@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Calendar, Check, ArrowRight } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { ResponsiveImage } from '@/components/common/ResponsiveImage';
 import type { Package } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
@@ -25,42 +23,42 @@ export function ExperienceCard({
   const title = pkg.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '');
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden rounded-2xl border-border/70 shadow-md transition-shadow hover:shadow-xl">
-      <ResponsiveImage src={image} alt={title} ratio="wide" />
-      <CardContent className="flex flex-1 flex-col p-5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">{destinationName}</p>
-        <h3 className="mt-1 font-display text-lg font-bold leading-snug text-foreground">{title}</h3>
-        <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+    <Link
+      to={`/book?destination=${destinationSlug}&package=${pkg.id}`}
+      className="group relative block overflow-hidden rounded-2xl shadow-md ring-1 ring-border transition-shadow hover:shadow-xl"
+    >
+      <ResponsiveImage src={image} alt={title} ratio="photo" />
+      <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/60 to-navy/10" />
+      <div className="absolute inset-x-0 bottom-0 p-5">
+        <p className="text-xs font-medium uppercase tracking-wider text-white/80">{destinationName}</p>
+        <h3 className="font-display text-xl font-bold uppercase leading-snug text-white">{title}</h3>
+        <p className="mt-1 flex items-center gap-1 text-xs text-white/85">
           <Calendar className="h-3 w-3" /> {pkg.duration}
         </p>
         {pkg.activitiesIncluded?.length > 0 && (
           <ul className="mt-3 space-y-1">
             {pkg.activitiesIncluded.slice(0, 4).map((activity) => (
-              <li key={activity} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+              <li key={activity} className="flex items-start gap-2 text-sm text-white/90">
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
                 <span className="line-clamp-1">{activity}</span>
               </li>
             ))}
           </ul>
         )}
-        <div className="mt-auto pt-5">
-          {fromPrice !== null && (
-            <p className="text-sm text-muted-foreground">
-              Package from{' '}
-              <span className="font-display text-2xl font-bold text-sunset">
-                R{fromPrice.toLocaleString('en-ZA')}
-              </span>{' '}
-              per person
-            </p>
-          )}
-          <p className="mt-1 text-xs text-muted-foreground">Accommodation added in the next step</p>
-          <Button asChild className="mt-4 w-full">
-            <Link to={`/book?destination=${destinationSlug}&package=${pkg.id}`}>
-              Choose this experience <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
+        <div className="mt-3 flex items-end justify-between gap-3">
+          <div>
+            {fromPrice !== null && (
+              <p className="text-sm font-semibold text-white">
+                <span className="text-white/80">Package from </span>
+                <span className="text-gold">R{fromPrice.toLocaleString('en-ZA')}</span>
+                <span className="text-white/80"> per person</span>
+              </p>
+            )}
+            <p className="mt-1 text-xs text-white/75">Accommodation added in the next step</p>
+          </div>
+          <ArrowRight className="h-4 w-4 shrink-0 text-white transition-transform group-hover:translate-x-1" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </Link>
   );
 }
