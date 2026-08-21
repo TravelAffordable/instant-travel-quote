@@ -19,14 +19,16 @@ export function FeaturedExperiences() {
   return (
     <section id="experiences" className="bg-muted/60 py-16">
       <div className="container mx-auto px-4">
-        <div>
+        <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-            Experiences Our Travellers Love
+            Experiences our travellers love
           </h2>
-          <p className="mt-2 text-muted-foreground">
-            Every package price is per person and includes the activities listed.
+          <p className="mt-2 text-sm text-muted-foreground">
+            Every package price is per person and includes the activities listed. Accommodation is
+            added in the next step, so you always see your complete holiday price.
           </p>
         </div>
+
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 
           {cards.map(({ destination, pkg }) => (
