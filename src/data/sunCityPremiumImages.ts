@@ -9,6 +9,8 @@ import ivoryTreeAsset from '@/assets/hotels/suncity-real-ivory.jpg.asset.json';
 import pilanesbergAsset from '@/assets/hotels/suncity-real-pilanesberg.jpg.asset.json';
 import kedarAsset from '@/assets/hotels/suncity-real-kedar.jpg.asset.json';
 import royalMarangAsset from '@/assets/hotels/suncity-real-marang.jpg.asset.json';
+import cabanas2SleeperAsset from '@/assets/hotels/suncity-cabanas-2sleeper.jpg.asset.json';
+import cabanas4SleeperAsset from '@/assets/hotels/suncity-cabanas-4sleeper.webp.asset.json';
 
 export const sunCityPremiumImageMap: Record<string, string> = {
   'Bakubung Bush Lodge': bakubungAsset.url,
@@ -21,6 +23,8 @@ export const sunCityPremiumImageMap: Record<string, string> = {
   'Pilanesberg Hotel': pilanesbergAsset.url,
   'Kedar Heritage Lodge Conference Centre & Spa': kedarAsset.url,
   'Royal Marang Hotel': royalMarangAsset.url,
+  'Cabanas Hotel (Inside Sun City) — 2 Sleeper': cabanas2SleeperAsset.url,
+  'Cabanas Hotel (Inside Sun City) — 4 Sleeper Family': cabanas4SleeperAsset.url,
 };
 
 export function getSunCityPremiumImage(hotelName: string): string | undefined {

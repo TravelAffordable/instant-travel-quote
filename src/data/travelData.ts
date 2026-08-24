@@ -306,6 +306,8 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Pilanesberg Hotel', nightlyRate: 1800 },
     { name: 'Kedar Heritage Lodge Conference Centre & Spa', nightlyRate: 2200, includesBreakfast: true },
     { name: 'Royal Marang Hotel', nightlyRate: 1500 },
+    { name: 'Cabanas Hotel (Inside Sun City) — 2 Sleeper', nightlyRate: 2480, includesBreakfast: true, sleeps: 2, roomType: '2 Sleeper Room, Breakfast included, Minimum 2 nights' },
+    { name: 'Cabanas Hotel (Inside Sun City) — 4 Sleeper Family', nightlyRate: 3550, includesBreakfast: true, sleeps: 4, roomType: '4 Sleeper Family Room, Breakfast included, 2 Adults + 2 Kids below 17' },
   ],
   'kruger-national-park': [
     { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180, sleeps: 2, roomType: '2-Sleeper Hut (EB2)' },
