@@ -23,8 +23,8 @@ export const sunCityPremiumImageMap: Record<string, string> = {
   'Pilanesberg Hotel': pilanesbergAsset.url,
   'Kedar Heritage Lodge Conference Centre & Spa': kedarAsset.url,
   'Royal Marang Hotel': royalMarangAsset.url,
-  'Cabanas Hotel (Inside Sun City) — 2 Sleeper': cabanas2SleeperAsset.url,
-  'Cabanas Hotel (Inside Sun City) — 4 Sleeper Family': cabanas4SleeperAsset.url,
+  'Sun City Cabanas Hotel (Inside Sun City) — 2 Sleeper': cabanas2SleeperAsset.url,
+  'Sun City Cabanas Hotel (Inside Sun City) — 4 Sleeper Family': cabanas4SleeperAsset.url,
 };
 
 export function getSunCityPremiumImage(hotelName: string): string | undefined {
