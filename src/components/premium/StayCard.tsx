@@ -1,13 +1,12 @@
 import { BedDouble, Check, MapPin, Star, Utensils } from 'lucide-react';
 import type { Hotel } from '@/data/travelData';
 import { mealBasis } from '@/lib/accommodationTiers';
-import type { AccommodationTier } from '@/components/common/TierSelector';
-import { stayLabelClass, stayLabelFor } from '@/lib/stayLabels';
+import { stayLabelClass, type StayLabel } from '@/lib/stayLabels';
 import { cn } from '@/lib/utils';
 
 interface StayCardProps {
   hotel: Hotel;
-  tier: AccommodationTier;
+  label: StayLabel;
   destinationName: string;
   nights: number;
   rooms: number;
@@ -22,7 +21,7 @@ interface StayCardProps {
 
 export function StayCard({
   hotel,
-  tier,
+  label,
   destinationName,
   nights,
   rooms,
@@ -32,7 +31,6 @@ export function StayCard({
   selected,
   onSelect,
 }: StayCardProps) {
-  const label = stayLabelFor(tier);
   const perPerson = Math.round(resultingTotal / Math.max(1, guests));
 
   return (

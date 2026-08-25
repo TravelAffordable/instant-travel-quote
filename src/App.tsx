@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -15,10 +15,8 @@ import BusHirePage from "./pages/BusHirePage";
 import HotelProviderPage from "./pages/HotelProviderPage";
 import TravelAgentPage from "./pages/TravelAgentPage";
 import DurbanPremiumCalendars from "./pages/DurbanPremiumCalendars";
-import DestinationPage from "./pages/DestinationPage";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
-import BookingPage from "./pages/BookingPage";
 import QuotePage from "./pages/QuotePage";
 import GetawayPage from "./pages/GetawayPage";
 import PremiumDestinationPage from "./pages/PremiumDestinationPage";
@@ -35,7 +33,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/ads" element={<SocialAds />} />
-          <Route path="/book" element={<BookingPage />} />
+          <Route path="/book" element={<Navigate to="/" replace />} />
           <Route path="/quote" element={<QuotePage />} />
           <Route path="/build-package" element={<BuildPackage />} />
           <Route path="/rate-admin" element={<RateAdmin />} />
@@ -47,8 +45,7 @@ const App = () => (
           <Route path="/durban-premium-calendars" element={<DurbanPremiumCalendars />} />
           <Route path="/premium-live-calendars" element={<DurbanPremiumCalendars />} />
           <Route path="/getaway" element={<GetawayPage />} />
-          <Route path="/destinations/durban" element={<PremiumDestinationPage />} />
-          <Route path="/destinations/:slug" element={<DestinationPage />} />
+          <Route path="/destinations/:slug" element={<PremiumDestinationPage />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

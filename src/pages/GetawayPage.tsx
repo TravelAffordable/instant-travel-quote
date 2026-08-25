@@ -21,21 +21,13 @@ import { getHotelsByDestination, packages } from '@/data/travelData';
 import { calculatePackagePrice } from '@/data/packagePricing';
 import { getPackageImage } from '@/data/packageImages';
 import { extractTourCode } from '@/lib/packageTourPricing';
-import { classifyHotels } from '@/lib/accommodationTiers';
+import { classifyStayLabels, STAY_LABEL_ORDER, type StayLabel } from '@/lib/stayLabels';
 import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
-import { STAY_LABEL_ORDER, stayLabelFor, type StayLabel } from '@/lib/stayLabels';
 import { cn } from '@/lib/utils';
 
 type Step = 'experience' | 'plan' | 'stay' | 'book' | 'received';
-
-const STEPS: { id: Step; label: string }[] = [
-  { id: 'experience', label: 'Getaway' },
-  { id: 'plan', label: 'Dates & travellers' },
-  { id: 'stay', label: 'Your stay' },
-  { id: 'book', label: 'Book' },
-];
 
 function parseDate(value: string | null): Date | undefined {
   if (!value) return undefined;
@@ -106,8 +98,7 @@ export default function GetawayPage() {
   const [infants, setInfants] = useState(0);
   const [kids, setKids] = useState(0);
   const [teens, setTeens] = useState(0);
-  const [rooms, setRooms] = useState(1);
-  const [stayFilter, setStayFilter] = useState<StayLabel | 'all'>('all');
+  const rooms = 1;
   const [hotelId, setHotelId] = useState<string>();
   const [contact, setContact] = useState({ name: '', email: '', phone: '' });
   const [paymentOption, setPaymentOption] = useState<'50%' | 'full'>('50%');
@@ -149,7 +140,7 @@ export default function GetawayPage() {
     [destination?.destinationId],
   );
 
-  const tierMap = useMemo(() => classifyHotels(hotels), [hotels]);
+  const labelMap = useMemo(() => classifyStayLabels(hotels), [hotels]);
 
   const roomsNeededFor = (capacity: number) =>
     Math.max(rooms, Math.ceil(payingGuests / Math.max(1, capacity)));
@@ -166,7 +157,6 @@ export default function GetawayPage() {
   const soldOutCount = hotels.length - availableHotels.length;
 
   const visibleHotels = availableHotels
-    .filter((h) => stayFilter === 'all' || stayLabelFor(tierMap.get(h.id) ?? 'standard') === stayFilter)
     .slice()
     .sort((a, b) => {
       const fits = (h: typeof a) => ((h.capacity ?? 2) >= Math.max(1, payingGuests) ? 0 : 1);
@@ -297,8 +287,6 @@ export default function GetawayPage() {
     />
   );
 
-  const stepIndex = STEPS.findIndex((s) => s.id === step);
-
   return (
     <div className="min-h-screen bg-cream pb-28 lg:pb-0">
       <SEO
@@ -336,31 +324,6 @@ export default function GetawayPage() {
             </div>
           </section>
 
-          {/* Progress */}
-          <div className="border-b border-border bg-card">
-            <div className="container mx-auto flex gap-6 overflow-x-auto px-4 py-4">
-              {STEPS.map((s, i) => (
-                <div key={s.id} className="flex shrink-0 items-center gap-2">
-                  <span
-                    className={cn(
-                      'flex h-6 w-6 items-center justify-center rounded-full text-[0.68rem] font-bold',
-                      i <= stepIndex ? 'bg-burgundy text-white' : 'bg-muted text-muted-foreground',
-                    )}
-                  >
-                    {i + 1}
-                  </span>
-                  <span
-                    className={cn(
-                      'text-[0.68rem] font-bold uppercase tracking-[0.14em]',
-                      i <= stepIndex ? 'text-burgundy' : 'text-muted-foreground',
-                    )}
-                  >
-                    {s.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         </>
       )}
 
@@ -369,7 +332,7 @@ export default function GetawayPage() {
           <div className="mx-auto max-w-2xl pt-24 text-center">
             <CheckCircle2 className="mx-auto h-14 w-14 text-champagne" />
             <h1 className="mt-6 font-display text-3xl font-bold uppercase text-burgundy-dark md:text-4xl">
-              Your getaway is ready!
+              Your booking request is in!
             </h1>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground md:text-base">
               Thank you {contact.name.split(' ')[0]} — your {destination.name} getaway request is with our team.
@@ -440,9 +403,13 @@ export default function GetawayPage() {
               {step === 'plan' && (
                 <section className="space-y-8">
                   <div>
-                    <h2 className="font-display text-2xl font-bold text-burgundy-dark md:text-3xl">
-                      Your dates of travel
+                    <h2 className="font-display text-3xl font-bold uppercase text-burgundy-dark md:text-4xl">
+                      Make it your getaway
                     </h2>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Tell us when you're travelling and who's coming. We'll work out the rooms for you.
+                    </p>
+                    <h3 className="mt-8 font-display text-xl font-bold text-burgundy-dark">Your dates</h3>
                     <div className="mt-5 grid gap-4 sm:grid-cols-2">
                       {[
                         { label: 'Check in', value: checkIn, set: setCheckIn },
@@ -480,15 +447,12 @@ export default function GetawayPage() {
                   </div>
 
                   <div>
-                    <h2 className="font-display text-2xl font-bold text-burgundy-dark md:text-3xl">
-                      How many in your travel group
-                    </h2>
+                    <h3 className="font-display text-xl font-bold text-burgundy-dark">Who's travelling</h3>
                     <div className="mt-5 rounded-2xl bg-card px-5 shadow-sm ring-1 ring-border/60">
                       <Counter label="Adults" hint="18 years and older" value={adults} onChange={setAdults} min={1} />
                       <Counter label="Children 0–2" hint="Travel free" value={infants} onChange={setInfants} />
                       <Counter label="Children 3–12" value={kids} onChange={setKids} />
                       <Counter label="Children 13–17" value={teens} onChange={setTeens} />
-                      <Counter label="How many rooms" hint="We'll add more if needed" value={rooms} onChange={setRooms} min={1} />
                     </div>
                   </div>
 
@@ -505,7 +469,7 @@ export default function GetawayPage() {
                       disabled={!checkIn || !checkOut}
                       className="h-14 flex-1 rounded-xl bg-burgundy text-[0.72rem] font-bold uppercase tracking-[0.16em] text-white hover:bg-burgundy-dark"
                     >
-                      Choose your stay <ArrowRight className="ml-2 h-4 w-4" />
+                      Show me where I can stay <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </section>
@@ -513,8 +477,8 @@ export default function GetawayPage() {
 
               {step === 'stay' && (
                 <section>
-                  <h2 className="font-display text-2xl font-bold text-burgundy-dark md:text-3xl">
-                    Choose where you stay
+                  <h2 className="font-display text-3xl font-bold uppercase text-burgundy-dark md:text-4xl">
+                    Choose your stay
                   </h2>
                   <p className="mt-2 text-sm text-muted-foreground">
                     Your total updates instantly as you choose. {soldOutCount > 0 && `${soldOutCount} stay${
@@ -522,41 +486,38 @@ export default function GetawayPage() {
                     } sold out for your dates.`}
                   </p>
 
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {(['all', ...STAY_LABEL_ORDER] as const).map((label) => (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => setStayFilter(label as StayLabel | 'all')}
-                        className={cn(
-                          'rounded-full px-4 py-2 text-[0.66rem] font-bold uppercase tracking-[0.14em] transition-colors',
-                          stayFilter === label
-                            ? 'bg-burgundy text-white'
-                            : 'bg-card text-burgundy ring-1 ring-border/60 hover:bg-cream',
-                        )}
-                      >
-                        {label === 'all' ? 'All stays' : label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                    {visibleHotels.map((h) => {
-                      const price = hotelPrice(h.pricePerNight, h.capacity ?? 2);
+                  <div className="mt-8 space-y-10">
+                    {STAY_LABEL_ORDER.map((label) => {
+                      const group = visibleHotels.filter(
+                        (h) => (labelMap.get(h.id) ?? 'SMART STAY') === label,
+                      );
+                      if (!group.length) return null;
                       return (
-                        <StayCard
-                          key={h.id}
-                          hotel={h}
-                          tier={tierMap.get(h.id) ?? 'standard'}
-                          destinationName={destination.name}
-                          nights={Math.max(1, nights)}
-                          rooms={roomsNeededFor(h.capacity ?? 2)}
-                          price={price}
-                          resultingTotal={experienceTotal + price}
-                          guests={Math.max(1, payingGuests)}
-                          selected={hotelId === h.id}
-                          onSelect={setHotelId}
-                        />
+                        <div key={label}>
+                          <h3 className="font-display text-xl font-bold uppercase tracking-[0.12em] text-burgundy">
+                            {label}
+                          </h3>
+                          <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                            {group.map((h) => {
+                              const price = hotelPrice(h.pricePerNight, h.capacity ?? 2);
+                              return (
+                                <StayCard
+                                  key={h.id}
+                                  hotel={h}
+                                  label={label}
+                                  destinationName={destination.name}
+                                  nights={Math.max(1, nights)}
+                                  rooms={roomsNeededFor(h.capacity ?? 2)}
+                                  price={price}
+                                  resultingTotal={experienceTotal + price}
+                                  guests={Math.max(1, payingGuests)}
+                                  selected={hotelId === h.id}
+                                  onSelect={setHotelId}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
@@ -580,7 +541,7 @@ export default function GetawayPage() {
                       disabled={!selectedHotel}
                       className="h-14 flex-1 rounded-xl bg-burgundy text-[0.72rem] font-bold uppercase tracking-[0.16em] text-white hover:bg-burgundy-dark"
                     >
-                      See my total <ArrowRight className="ml-2 h-4 w-4" />
+                      My getaway is ready <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </section>
@@ -589,8 +550,20 @@ export default function GetawayPage() {
               {step === 'book' && (
                 <section className="space-y-8">
                   <div className="rounded-2xl bg-card p-6 shadow-sm ring-1 ring-border/60 md:p-8">
-                    <h2 className="font-display text-2xl font-bold uppercase text-burgundy-dark">My holiday</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">What my holiday includes</p>
+                    <p className="text-[0.66rem] font-bold uppercase tracking-[0.24em] text-champagne">
+                      {tourCode} · {destination.name}
+                    </p>
+                    <h2 className="mt-2 font-display text-3xl font-bold uppercase leading-tight text-burgundy-dark md:text-4xl">
+                      Your getaway
+                      <span className="block text-burgundy">is ready!</span>
+                    </h2>
+                    <p className="mt-4 text-sm font-semibold text-burgundy-dark">
+                      {packageTitle} · {datesLabel ?? `${nights} nights`} · {travellersLabel}
+                      {selectedHotel ? ` · ${selectedHotel.name}` : ''}
+                    </p>
+                    <p className="mt-6 text-[0.66rem] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                      What your getaway includes
+                    </p>
                     <ul className="mt-4 space-y-2">
                       {inclusions.map((item) => (
                         <li key={item} className="flex items-start gap-3 text-sm text-foreground/85">
@@ -694,7 +667,11 @@ export default function GetawayPage() {
           total={total}
           perPerson={total / Math.max(1, payingGuests)}
           ctaLabel={
-            step === 'plan' ? 'Choose your stay' : step === 'stay' ? 'See my total' : 'Request to confirm'
+            step === 'plan'
+              ? 'Show me where I can stay'
+              : step === 'stay'
+                ? 'My getaway is ready'
+                : 'Request to confirm'
           }
           onCta={
             step === 'plan'

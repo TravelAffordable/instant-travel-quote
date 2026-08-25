@@ -55,7 +55,7 @@ export function ExperienceCard({
           )}
           <p className="mt-1 text-xs text-muted-foreground">Accommodation added in the next step</p>
           <Button asChild className="mt-4 w-full">
-            <Link to={`/book?destination=${destinationSlug}&package=${pkg.id}`}>
+            <Link to={`/getaway?destination=${destinationSlug}&package=${pkg.id}`}>
               Choose this experience <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>

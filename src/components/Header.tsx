@@ -13,8 +13,8 @@ import { catalogueDestinations } from '@/data/destinationCatalogue';
 const navItems = [
   { label: 'Experiences', to: '/#experiences' },
   { label: 'Deals', to: '/#deals' },
-  { label: 'Family Travel', to: '/book' },
-  { label: 'Couples', to: '/book' },
+  { label: 'Family Travel', to: '/' },
+  { label: 'Couples', to: '/' },
   { label: 'About Us', to: '/#why-choose-us' },
   { label: 'Contact', to: '/#contact' },
 ];
@@ -44,7 +44,7 @@ export function Header() {
               <DropdownMenuContent align="start" className="max-h-80 overflow-y-auto">
                 {catalogueDestinations.map((d) => (
                   <DropdownMenuItem key={d.slug} asChild>
-                    <Link to={d.enquireOnly ? `/book?destination=${d.slug}` : `/destinations/${d.slug}`}>
+                    <Link to={`/destinations/${d.slug}`}>
                       {d.name}
                     </Link>
                   </DropdownMenuItem>
@@ -73,7 +73,7 @@ export function Header() {
               079 681 3869
             </a>
             <Button asChild className="font-semibold">
-              <Link to="/book">Plan my holiday</Link>
+              <Link to="/">Plan my holiday</Link>
             </Button>
           </div>
 
@@ -109,7 +109,7 @@ export function Header() {
                 </Link>
               ))}
               <Button asChild className="mt-2">
-                <Link to="/book" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
                   Plan my holiday
                 </Link>
               </Button>

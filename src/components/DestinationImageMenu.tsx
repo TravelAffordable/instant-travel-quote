@@ -19,7 +19,7 @@ export function DestinationImageMenu({ activeSlug }: { activeSlug?: string }) {
             return (
               <Link
                 key={d.slug}
-                to={d.enquireOnly ? `/book?destination=${d.slug}` : `/destinations/${d.slug}`}
+                to={`/destinations/${d.slug}`}
                 className={cn(
                   'group relative block overflow-hidden rounded-xl ring-1 transition-shadow hover:shadow-lg',
                   active ? 'ring-2 ring-primary' : 'ring-border',

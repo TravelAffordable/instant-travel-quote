@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -528,7 +527,6 @@ const BuildPackage = () => {
       />
       <Header />
       <div className="h-16" />
-      <DestinationImageMenu />
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-12 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10">

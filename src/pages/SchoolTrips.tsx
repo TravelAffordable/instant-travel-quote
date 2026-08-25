@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -229,7 +228,6 @@ export default function SchoolTrips() {
       />
       <Header />
       <div className="h-16" />
-      <DestinationImageMenu />
 
       {/* Hero Banner */}
       <section className="relative pt-20 pb-12 overflow-hidden">

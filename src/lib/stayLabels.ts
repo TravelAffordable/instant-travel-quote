@@ -26,3 +26,26 @@ export const stayLabelClass: Record<StayLabel, string> = {
 };
 
 export const STAY_LABEL_ORDER: StayLabel[] = ['SMART STAY', 'COMFORT', 'INDULGE'];
+
+/**
+ * Presentation-only positioning bands. Splits the available stays into three
+ * price terciles so the customer always sees a real comparison instead of a
+ * single repeated label. No pricing or supplier logic is changed.
+ */
+export function classifyStayLabels(
+  hotels: { id: string; pricePerNight: number }[],
+): Map<string, StayLabel> {
+  const map = new Map<string, StayLabel>();
+  if (!hotels.length) return map;
+  const prices = hotels.map((h) => h.pricePerNight).sort((a, b) => a - b);
+  const at = (f: number) => prices[Math.min(prices.length - 1, Math.floor(prices.length * f))];
+  const t1 = at(1 / 3);
+  const t2 = at(2 / 3);
+  for (const h of hotels) {
+    map.set(
+      h.id,
+      h.pricePerNight <= t1 ? 'SMART STAY' : h.pricePerNight <= t2 ? 'COMFORT' : 'INDULGE',
+    );
+  }
+  return map;
+}
