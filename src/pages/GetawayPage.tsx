@@ -667,7 +667,11 @@ export default function GetawayPage() {
           total={total}
           perPerson={total / Math.max(1, payingGuests)}
           ctaLabel={
-            step === 'plan' ? 'Choose your stay' : step === 'stay' ? 'See my total' : 'Request to confirm'
+            step === 'plan'
+              ? 'Show me where I can stay'
+              : step === 'stay'
+                ? 'My getaway is ready'
+                : 'Request to confirm'
           }
           onCta={
             step === 'plan'
