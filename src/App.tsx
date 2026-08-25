@@ -20,6 +20,8 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import BookingPage from "./pages/BookingPage";
 import QuotePage from "./pages/QuotePage";
+import GetawayPage from "./pages/GetawayPage";
+import PremiumDestinationPage from "./pages/PremiumDestinationPage";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +46,8 @@ const App = () => (
           <Route path="/travel-agent" element={<TravelAgentPage />} />
           <Route path="/durban-premium-calendars" element={<DurbanPremiumCalendars />} />
           <Route path="/premium-live-calendars" element={<DurbanPremiumCalendars />} />
+          <Route path="/getaway" element={<GetawayPage />} />
+          <Route path="/destinations/durban" element={<PremiumDestinationPage />} />
           <Route path="/destinations/:slug" element={<DestinationPage />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
