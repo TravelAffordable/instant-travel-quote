@@ -65,7 +65,8 @@ export default function PremiumDestinationPage() {
               <span className="block text-champagne">Your way.</span>
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-white/90">
-              Choose a getaway and we'll take care of the rest. You just focus on making memories.
+              Choose the experience that excites you most.
+              <br className="hidden sm:block" /> We'll take care of the rest.
             </p>
           </div>
         </div>
