@@ -21,7 +21,7 @@ import { getHotelsByDestination, packages } from '@/data/travelData';
 import { calculatePackagePrice } from '@/data/packagePricing';
 import { getPackageImage } from '@/data/packageImages';
 import { extractTourCode } from '@/lib/packageTourPricing';
-import { classifyHotels } from '@/lib/accommodationTiers';
+import { classifyStayLabels, STAY_LABEL_ORDER, type StayLabel } from '@/lib/stayLabels';
 import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
@@ -140,7 +140,7 @@ export default function GetawayPage() {
     [destination?.destinationId],
   );
 
-  const tierMap = useMemo(() => classifyHotels(hotels), [hotels]);
+  const labelMap = useMemo(() => classifyStayLabels(hotels), [hotels]);
 
   const roomsNeededFor = (capacity: number) =>
     Math.max(rooms, Math.ceil(payingGuests / Math.max(1, capacity)));
@@ -486,23 +486,38 @@ export default function GetawayPage() {
                     } sold out for your dates.`}
                   </p>
 
-                  <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                    {visibleHotels.map((h) => {
-                      const price = hotelPrice(h.pricePerNight, h.capacity ?? 2);
+                  <div className="mt-8 space-y-10">
+                    {STAY_LABEL_ORDER.map((label) => {
+                      const group = visibleHotels.filter(
+                        (h) => (labelMap.get(h.id) ?? 'SMART STAY') === label,
+                      );
+                      if (!group.length) return null;
                       return (
-                        <StayCard
-                          key={h.id}
-                          hotel={h}
-                          tier={tierMap.get(h.id) ?? 'standard'}
-                          destinationName={destination.name}
-                          nights={Math.max(1, nights)}
-                          rooms={roomsNeededFor(h.capacity ?? 2)}
-                          price={price}
-                          resultingTotal={experienceTotal + price}
-                          guests={Math.max(1, payingGuests)}
-                          selected={hotelId === h.id}
-                          onSelect={setHotelId}
-                        />
+                        <div key={label}>
+                          <h3 className="font-display text-xl font-bold uppercase tracking-[0.12em] text-burgundy">
+                            {label}
+                          </h3>
+                          <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                            {group.map((h) => {
+                              const price = hotelPrice(h.pricePerNight, h.capacity ?? 2);
+                              return (
+                                <StayCard
+                                  key={h.id}
+                                  hotel={h}
+                                  label={label}
+                                  destinationName={destination.name}
+                                  nights={Math.max(1, nights)}
+                                  rooms={roomsNeededFor(h.capacity ?? 2)}
+                                  price={price}
+                                  resultingTotal={experienceTotal + price}
+                                  guests={Math.max(1, payingGuests)}
+                                  selected={hotelId === h.id}
+                                  onSelect={setHotelId}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
