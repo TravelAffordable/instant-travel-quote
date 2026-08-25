@@ -1,5 +1,6 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { BusHireQuote } from '@/components/BusHireQuote';
 import { ChatBot } from '@/components/ChatBot';
 import { SEO } from '@/components/SEO';
@@ -18,6 +19,7 @@ const BusHirePage = () => {
       />
       <Header />
       <div className="h-16" />
+      <DestinationImageMenu />
       <div className="pt-20">
         <BusHireQuote />
       </div>

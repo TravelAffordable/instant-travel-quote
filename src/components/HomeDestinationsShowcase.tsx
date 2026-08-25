@@ -187,7 +187,7 @@ export function HomeDestinationsShowcase() {
                         )}
                         <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
                           <Button size="sm" asChild>
-                            <Link to={`/getaway?destination=${data.slug}&package=${pkg.id}`}>
+                            <Link to={`/book?destination=${data.slug}&package=${pkg.id}`}>
                               Book Now <ArrowRight className="ml-1 h-3 w-3" />
                             </Link>
                           </Button>

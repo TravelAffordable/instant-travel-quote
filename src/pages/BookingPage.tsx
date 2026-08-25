@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, BedDouble, CalendarIcon, Check, CheckCircle2, Cl
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { SEO } from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -325,6 +326,7 @@ export default function BookingPage() {
       />
       <Header />
       <div className="h-16" />
+      <DestinationImageMenu />
 
       <main className="container mx-auto px-4 pb-20 pt-24">
         {/* Progress */}

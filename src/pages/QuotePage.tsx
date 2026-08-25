@@ -1,6 +1,7 @@
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { Footer } from '@/components/Footer';
+import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { SEO } from '@/components/SEO';
 
 // Preserves the original instant-quote engine on its own route.
@@ -14,6 +15,7 @@ export default function QuotePage() {
       />
       <Header />
       <div className="h-16" />
+      <DestinationImageMenu />
       <Hero onGetQuote={() => {}} />
       <Footer />
     </div>

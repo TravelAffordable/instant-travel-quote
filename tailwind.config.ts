@@ -76,17 +76,6 @@ export default {
         earth: "hsl(var(--earth))",
         navy: "hsl(var(--navy))",
         gold: "hsl(var(--gold))",
-        burgundy: {
-          DEFAULT: "hsl(var(--burgundy))",
-          dark: "hsl(var(--burgundy-dark))",
-          light: "hsl(var(--burgundy-light))",
-        },
-        champagne: {
-          DEFAULT: "hsl(var(--champagne))",
-          light: "hsl(var(--champagne-light))",
-        },
-        cream: "hsl(var(--cream))",
-        ink: "hsl(var(--ink))",
       },
       borderRadius: {
         lg: "var(--radius)",

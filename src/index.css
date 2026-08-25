@@ -30,7 +30,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 15%;
 
-    --primary: 340 72% 23%;
+    --primary: 199 89% 48%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 36 100% 50%;
@@ -64,18 +64,6 @@
     --earth: 30 25% 30%;
     --navy: 210 52% 24%;
     --gold: 45 90% 61%;
-
-    /* Premium Travel Affordable identity (approved direction) */
-    --burgundy: 340 72% 23%;
-    --burgundy-dark: 340 74% 15%;
-    --burgundy-light: 340 55% 33%;
-    --champagne: 42 52% 56%;
-    --champagne-light: 42 68% 72%;
-    --cream: 38 40% 96%;
-    --ink: 340 12% 12%;
-
-    --gradient-premium: linear-gradient(135deg, hsl(340 74% 15%) 0%, hsl(340 72% 28%) 100%);
-    --shadow-premium: 0 24px 60px -24px hsl(340 74% 15% / 0.35);
 
     /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(199 89% 48%) 0%, hsl(220 70% 35%) 100%);
@@ -111,7 +99,7 @@
     --popover: 220 25% 12%;
     --popover-foreground: 45 20% 95%;
 
-    --primary: 340 55% 33%;
+    --primary: 199 89% 55%;
     --primary-foreground: 220 25% 8%;
 
     --secondary: 36 100% 55%;

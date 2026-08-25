@@ -459,7 +459,7 @@ function generateHotels(): Hotel[] {
     if (destId === 'durban') {
       // Add 2-sleeper rooms
       durbanBudgetHotels2Sleeper.forEach((hotel, index) => {
-        const letter = hotelLetters[index] ?? `${index + 1}`; // numeric slug once letters run out (keeps ids unique)
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         allHotels.push({
           id: `${destId}-very-affordable-2sleeper-${letter.toLowerCase()}`,
           name: hotel.name,
@@ -475,7 +475,7 @@ function generateHotels(): Hotel[] {
       });
       // Add 4-sleeper rooms
       durbanBudgetHotels4Sleeper.forEach((hotel, index) => {
-        const letter = hotelLetters[index] ?? `${index + 1}`; // numeric slug once letters run out (keeps ids unique)
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         allHotels.push({
           id: `${destId}-very-affordable-4sleeper-${letter.toLowerCase()}`,
           name: hotel.name,
@@ -526,7 +526,7 @@ function generateHotels(): Hotel[] {
     // Pretoria (The Blyde) and Harties use custom affordable hotels
     if (destId === 'pretoria') {
       pretoriaAffordableHotels.forEach((hotel, index) => {
-        const letter = hotelLetters[index] ?? `${index + 1}`; // numeric slug once letters run out (keeps ids unique)
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         allHotels.push({
           id: `${destId}-affordable-${hotel.capacity}sleeper-${letter.toLowerCase()}`,
           name: hotel.name,
@@ -576,7 +576,7 @@ function generateHotels(): Hotel[] {
     if (destId === 'durban') {
       // Add 2-sleeper premium hotels
       durbanPremiumHotels2Sleeper.forEach((hotel, index) => {
-        const letter = hotelLetters[index] ?? `${index + 1}`; // numeric slug once letters run out (keeps ids unique)
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         const hotelImg = durbanPremiumImageMap[hotel.name] || premiumImages[index % premiumImages.length];
         allHotels.push({
           id: `${destId}-premium-2s-${letter.toLowerCase()}`,
@@ -596,7 +596,7 @@ function generateHotels(): Hotel[] {
       
       // Add 4-sleeper premium hotels for adults-only groups
       durbanPremiumHotels4SleeperAdults.forEach((hotel, index) => {
-        const letter = hotelLetters[index] ?? `${index + 1}`; // numeric slug once letters run out (keeps ids unique)
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         const hotelImg = durbanPremiumImageMap[hotel.name] || premiumImages[index % premiumImages.length];
         allHotels.push({
           id: `${destId}-premium-4sa-${letter.toLowerCase()}`,
@@ -617,7 +617,7 @@ function generateHotels(): Hotel[] {
       
       // Add 4-sleeper premium hotels for family groups (with kids)
       durbanPremiumHotels4SleeperFamily.forEach((hotel, index) => {
-        const letter = hotelLetters[index] ?? `${index + 1}`; // numeric slug once letters run out (keeps ids unique)
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         const hotelImg = durbanPremiumImageMap[hotel.name] || premiumImages[index % premiumImages.length];
         allHotels.push({
           id: `${destId}-premium-4sf-${letter.toLowerCase()}`,
@@ -639,7 +639,7 @@ function generateHotels(): Hotel[] {
       // The Blyde: Only 2 specific hotels based on capacity
       const pretoriaHotels = premiumHotelNames['pretoria'] || [];
       pretoriaHotels.forEach((hotel, index) => {
-        const letter = hotelLetters[index] ?? `${index + 1}`; // numeric slug once letters run out (keeps ids unique)
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         allHotels.push({
           id: `${destId}-premium-${letter.toLowerCase()}`,
           name: hotel.name,
@@ -657,7 +657,7 @@ function generateHotels(): Hotel[] {
     } else if (destId === 'harties') {
       const hartiesHotels = premiumHotelNames['harties'] || [];
       hartiesHotels.forEach((hotel, index) => {
-        const letter = hotelLetters[index] ?? `${index + 1}`; // numeric slug once letters run out (keeps ids unique)
+        const letter = hotelLetters[index] || hotelLetters[index % hotelLetters.length];
         const isIndlovukazi = hotel.name === 'Indlovukazi Guesthouse';
         const premiumImg = hartiesPremiumImageMap[hotel.name] || premiumImages[index % premiumImages.length];
         const hotelImages = isIndlovukazi 
