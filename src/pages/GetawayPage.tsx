@@ -287,8 +287,6 @@ export default function GetawayPage() {
     />
   );
 
-  const stepIndex = STEPS.findIndex((s) => s.id === step);
-
   return (
     <div className="min-h-screen bg-cream pb-28 lg:pb-0">
       <SEO
@@ -334,7 +332,7 @@ export default function GetawayPage() {
           <div className="mx-auto max-w-2xl pt-24 text-center">
             <CheckCircle2 className="mx-auto h-14 w-14 text-champagne" />
             <h1 className="mt-6 font-display text-3xl font-bold uppercase text-burgundy-dark md:text-4xl">
-              Your getaway is ready!
+              Your booking request is in!
             </h1>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground md:text-base">
               Thank you {contact.name.split(' ')[0]} — your {destination.name} getaway request is with our team.
