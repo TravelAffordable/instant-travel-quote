@@ -29,7 +29,7 @@ export function PopularDestinations() {
           {items.map((d) => (
             <Link
               key={d.slug}
-              to={d.enquireOnly ? `/book?destination=${d.slug}` : `/destinations/${d.slug}`}
+              to={`/destinations/${d.slug}`}
               className="group relative block overflow-hidden rounded-2xl shadow-md transition-all duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-premium)]"
             >
               <div className="aspect-[4/5] overflow-hidden sm:aspect-[3/4]">

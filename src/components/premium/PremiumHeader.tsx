@@ -102,7 +102,7 @@ export function PremiumHeader({ overlay = false }: PremiumHeaderProps) {
               {catalogueDestinations.slice(0, 10).map((d) => (
                 <Link
                   key={d.slug}
-                  to={d.enquireOnly ? `/book?destination=${d.slug}` : `/destinations/${d.slug}`}
+                  to={`/destinations/${d.slug}`}
                   onClick={() => setOpen(false)}
                   className="rounded-lg px-3 py-2.5 text-sm text-white/80 hover:bg-white/10"
                 >

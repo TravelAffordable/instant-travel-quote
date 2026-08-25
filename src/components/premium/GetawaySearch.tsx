@@ -43,11 +43,7 @@ export function GetawaySearch({ className }: { className?: string }) {
     if (checkOut) qs.set('checkOut', format(checkOut, 'yyyy-MM-dd'));
     qs.set('adults', String(adults));
     qs.set('children', String(children));
-    navigate(
-      dest?.enquireOnly
-        ? `/book?destination=${target}&${qs.toString()}`
-        : `/destinations/${target}?${qs.toString()}`,
-    );
+    navigate(`/destinations/${target}?${qs.toString()}`);
   };
 
   return (

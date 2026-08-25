@@ -10,7 +10,7 @@ interface DestinationTileProps {
 
 export function DestinationTile({ destination, fromPrice }: DestinationTileProps) {
   const to = destination.enquireOnly
-    ? `/book?destination=${destination.slug}`
+    ? `/destinations/${destination.slug}`
     : `/destinations/${destination.slug}`;
 
   return (
