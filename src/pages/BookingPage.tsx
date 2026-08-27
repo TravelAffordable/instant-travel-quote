@@ -30,6 +30,7 @@ import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
 import { cn } from '@/lib/utils';
 import { mealBasis, tierLabels } from '@/lib/accommodationTiers';
+import { trackBookingConversion } from '@/lib/adsConversion';
 
 
 
