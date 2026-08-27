@@ -254,7 +254,7 @@ export default function BookingPage() {
     setReference(ref);
 
     try {
-      await supabase.functions.invoke('send-quote-request', {
+      const { error } = await supabase.functions.invoke('send-quote-request', {
         body: {
           guestName: contact.name,
           guestEmail: contact.email,
@@ -281,6 +281,9 @@ export default function BookingPage() {
           totalAmount: total,
         },
       });
+      if (error) throw error;
+      // Successful submission only — fires the Google Ads conversion once per reference.
+      trackBookingConversion(ref, total);
     } catch (err) {
       console.error('Failed to send booking notification:', err);
     }
