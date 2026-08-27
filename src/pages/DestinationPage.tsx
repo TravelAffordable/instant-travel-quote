@@ -183,6 +183,16 @@ const DestinationPage = () => {
         if (!pkgs.length) return null;
         return (
           <section className="container mx-auto px-4 py-12">
+            {slug === 'durban' && (
+              <>
+                <div id="packages" className="scroll-mt-24" />
+                <div id="beach-getaways" className="scroll-mt-24" />
+                <div id="weekend-getaways" className="scroll-mt-24" />
+                <div id="couples" className="scroll-mt-24" />
+                <div id="family" className="scroll-mt-24" />
+                <div id="holiday-price" className="scroll-mt-24" />
+              </>
+            )}
             <h2 className="font-display text-3xl font-bold text-navy mb-2">
               {data.name} Packages
             </h2>
