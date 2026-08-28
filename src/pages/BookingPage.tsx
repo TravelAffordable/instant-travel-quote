@@ -124,10 +124,16 @@ export default function BookingPage() {
   const tierMap = useMemo(() => classifyHotels(hotels), [hotels]);
   const totalGuests = adults + kids + teens;
 
-  const hotelPrice = (hotelPerNight: number, capacity: number) => {
+  // Golden Mile (Durban beachfront) hotels are priced night-by-night from the
+  // seasonal rate calendar; every other property keeps its flat nightly rate.
+  const stayRoomCost = (hotelName: string, hotelPerNight: number) =>
+    getGoldenMileStayTotal(hotelName, checkIn, Math.max(1, nights), hotelPerNight);
+
+  const hotelPrice = (hotelPerNight: number, capacity: number, hotelName = '') => {
     const roomCount = Math.max(rooms, Math.ceil(totalGuests / Math.max(1, capacity)));
-    return hotelPerNight * Math.max(1, nights) * Math.max(1, roomCount);
+    return stayRoomCost(hotelName, hotelPerNight) * Math.max(1, roomCount);
   };
+
 
   const roomsNeededFor = (capacity: number) =>
     Math.max(rooms, Math.ceil(totalGuests / Math.max(1, capacity)));
