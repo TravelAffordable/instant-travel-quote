@@ -31,6 +31,7 @@ import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailab
 import { cn } from '@/lib/utils';
 import { mealBasis, tierLabels } from '@/lib/accommodationTiers';
 import { trackBookingConversion } from '@/lib/adsConversion';
+import { getGoldenMileStayTotal } from '@/data/goldenMileRateCalendar';
 
 
 
@@ -124,10 +125,16 @@ export default function BookingPage() {
   const tierMap = useMemo(() => classifyHotels(hotels), [hotels]);
   const totalGuests = adults + kids + teens;
 
-  const hotelPrice = (hotelPerNight: number, capacity: number) => {
+  // Golden Mile (Durban beachfront) hotels are priced night-by-night from the
+  // seasonal rate calendar; every other property keeps its flat nightly rate.
+  const stayRoomCost = (hotelName: string, hotelPerNight: number) =>
+    getGoldenMileStayTotal(hotelName, checkIn, Math.max(1, nights), hotelPerNight);
+
+  const hotelPrice = (hotelPerNight: number, capacity: number, hotelName = '') => {
     const roomCount = Math.max(rooms, Math.ceil(totalGuests / Math.max(1, capacity)));
-    return hotelPerNight * Math.max(1, nights) * Math.max(1, roomCount);
+    return stayRoomCost(hotelName, hotelPerNight) * Math.max(1, roomCount);
   };
+
 
   const roomsNeededFor = (capacity: number) =>
     Math.max(rooms, Math.ceil(totalGuests / Math.max(1, capacity)));
@@ -146,7 +153,10 @@ export default function BookingPage() {
     .slice()
     .sort((a, b) => {
       const fits = (h: typeof a) => ((h.capacity ?? 2) >= Math.max(1, totalGuests) ? 0 : 1);
-      return fits(a) - fits(b) || a.pricePerNight - b.pricePerNight;
+      return (
+        fits(a) - fits(b) ||
+        stayRoomCost(a.name, a.pricePerNight) - stayRoomCost(b.name, b.pricePerNight)
+      );
     });
 
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
@@ -158,7 +168,7 @@ export default function BookingPage() {
   const accommodationTotal =
     oneDay || !selectedHotel
       ? 0
-      : hotelPrice(selectedHotel.pricePerNight, selectedHotel.capacity ?? 2);
+      : hotelPrice(selectedHotel.pricePerNight, selectedHotel.capacity ?? 2, selectedHotel.name);
 
   const extrasTotal = EXTRAS.filter((e) => selectedExtras.includes(e.id)).reduce(
     (sum, e) => sum + e.price * adults,
@@ -604,7 +614,7 @@ export default function BookingPage() {
                             destinationName={destination.name}
                             nights={Math.max(1, nights)}
                             rooms={Math.max(rooms, Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)))}
-                            price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2)}
+                            price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
                             selected={hotelId === hotel.id}
                             onSelect={(id) => {
                               setHotelId(id);
