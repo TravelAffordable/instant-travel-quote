@@ -80,6 +80,9 @@ export default function BookingPage() {
   const [promoCode, setPromoCode] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [reference, setReference] = useState<string>();
+  const [budgetInput, setBudgetInput] = useState('');
+  const [budget, setBudget] = useState<number | null>(null);
+  const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
 
   const destination = destinationSlug ? getCatalogueDestination(destinationSlug) : undefined;
   const destinationPackages = destination?.destinationId
