@@ -37,8 +37,11 @@ export function BookingSummary({
   childPriceOnRequest,
   onConfirm,
   confirmDisabled,
+  onRequestFinalQuote,
+  requestFinalQuoteDisabled,
 }: BookingSummaryProps) {
   const total = packageTotal + accommodationTotal + extrasTotal;
+
 
   return (
     <Card className="rounded-2xl border-border/70 shadow-md">
