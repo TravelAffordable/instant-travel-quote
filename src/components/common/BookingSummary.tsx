@@ -15,7 +15,10 @@ export interface BookingSummaryProps {
   childPriceOnRequest?: boolean;
   onConfirm?: () => void;
   confirmDisabled?: boolean;
+  onRequestFinalQuote?: () => void;
+  requestFinalQuoteDisabled?: boolean;
 }
+
 
 function rand(amount: number) {
   return `R${roundToNearest10(amount).toLocaleString('en-ZA')}`;
@@ -34,8 +37,11 @@ export function BookingSummary({
   childPriceOnRequest,
   onConfirm,
   confirmDisabled,
+  onRequestFinalQuote,
+  requestFinalQuoteDisabled,
 }: BookingSummaryProps) {
   const total = packageTotal + accommodationTotal + extrasTotal;
+
 
   return (
     <Card className="rounded-2xl border-border/70 shadow-md">
@@ -71,10 +77,30 @@ export function BookingSummary({
           )}
         </dl>
 
-        <div className="flex items-end justify-between border-t border-border pt-4">
-          <span className="text-sm font-semibold text-foreground">Complete holiday price</span>
-          <span className="font-display text-2xl font-bold text-sunset">{rand(total)}</span>
+        <div className="border-t border-border pt-4">
+          <div className="flex items-end justify-between gap-3">
+            <span className="text-sm font-semibold text-foreground">
+              Complete holiday price for your getaway package
+            </span>
+            <span className="font-display text-2xl font-bold text-sunset">{rand(total)}</span>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            (Accommodation including all the fun activities)
+          </p>
         </div>
+
+        {onRequestFinalQuote && (
+          <Button
+            size="lg"
+            className="w-full"
+            disabled={requestFinalQuoteDisabled}
+            onClick={onRequestFinalQuote}
+          >
+            Request Final quote for your getaway
+          </Button>
+        )}
+
+
 
         {onConfirm && (
           <Button

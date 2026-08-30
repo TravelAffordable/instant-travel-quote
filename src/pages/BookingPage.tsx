@@ -83,6 +83,8 @@ export default function BookingPage() {
   const [budgetInput, setBudgetInput] = useState('');
   const [budget, setBudget] = useState<number | null>(null);
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
+  const [budgetError, setBudgetError] = useState(false);
+
 
   const destination = destinationSlug ? getCatalogueDestination(destinationSlug) : undefined;
   const destinationPackages = destination?.destinationId
@@ -346,6 +348,9 @@ export default function BookingPage() {
         childPriceOnRequest={packagePricing?.childPriceOnRequest}
         onConfirm={step === 'review' ? submitBooking : undefined}
         confirmDisabled={step === 'review' ? !contact.name || !contact.email || !contact.phone : false}
+        onRequestFinalQuote={step === 'accommodation' ? () => goto('review') : undefined}
+        requestFinalQuoteDisabled={step === 'accommodation' ? !selectedHotel : false}
+
       />
     </>
   );
@@ -639,20 +644,29 @@ export default function BookingPage() {
                           <Button
                             onClick={() => {
                               const value = Number(budgetInput.replace(/[^\d]/g, ''));
-                              if (!value) return;
+                              if (!value) {
+                                setBudgetError(true);
+                                return;
+                              }
                               setBudget(value);
+                              setBudgetError(false);
                               setBudgetVisibleCount(4);
                             }}
-                            disabled={!Number(budgetInput.replace(/[^\d]/g, ''))}
                           >
                             Show stays within my budget
                           </Button>
                         </div>
+                        {budgetError && budget == null && (
+                          <p className="text-sm font-semibold text-destructive">
+                            Please complete the budget field to be able to proceed.
+                          </p>
+                        )}
                         {budget != null && (
                           <p className="text-sm font-medium text-foreground">
                             Showing stays from R{budget.toLocaleString('en-ZA')} upwards.
                           </p>
                         )}
+
                       </CardContent>
                     </Card>
 
@@ -692,10 +706,8 @@ export default function BookingPage() {
                                     )}
                                     price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
                                     selected={hotelId === hotel.id}
-                                    onSelect={(id) => {
-                                      setHotelId(id);
-                                      goto('review');
-                                    }}
+                                    onSelect={(id) => setHotelId(id)}
+
                                   />
                                 ))}
                               </div>
@@ -735,12 +747,13 @@ export default function BookingPage() {
                                 selected={hotelId === hotel.id}
                                 onSelect={(id) => {
                                   if (budget == null) {
+                                    setBudgetError(true);
                                     document.getElementById('holiday-budget')?.focus();
                                     return;
                                   }
                                   setHotelId(id);
-                                  goto('review');
                                 }}
+
                               />
                             ))}
                           </div>
