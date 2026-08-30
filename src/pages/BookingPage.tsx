@@ -706,10 +706,8 @@ export default function BookingPage() {
                                     )}
                                     price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
                                     selected={hotelId === hotel.id}
-                                    onSelect={(id) => {
-                                      setHotelId(id);
-                                      goto('review');
-                                    }}
+                                    onSelect={(id) => setHotelId(id)}
+
                                   />
                                 ))}
                               </div>
