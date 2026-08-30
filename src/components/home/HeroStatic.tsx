@@ -1,4 +1,3 @@
-import { HolidaySearch } from '@/components/home/HolidaySearch';
 import hero1 from '@/assets/hero/hero-1.jpg';
 
 /** Static hero (no rotating images) matching the approved homepage design. */
@@ -28,8 +27,6 @@ export function HeroStatic() {
               holiday price before you book.
             </p>
           </div>
-
-          <HolidaySearch className="mt-10 w-full max-w-5xl" />
         </div>
       </div>
     </section>
