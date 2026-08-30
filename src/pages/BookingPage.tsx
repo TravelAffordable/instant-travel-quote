@@ -644,20 +644,29 @@ export default function BookingPage() {
                           <Button
                             onClick={() => {
                               const value = Number(budgetInput.replace(/[^\d]/g, ''));
-                              if (!value) return;
+                              if (!value) {
+                                setBudgetError(true);
+                                return;
+                              }
                               setBudget(value);
+                              setBudgetError(false);
                               setBudgetVisibleCount(4);
                             }}
-                            disabled={!Number(budgetInput.replace(/[^\d]/g, ''))}
                           >
                             Show stays within my budget
                           </Button>
                         </div>
+                        {budgetError && budget == null && (
+                          <p className="text-sm font-semibold text-destructive">
+                            Please complete the budget field to be able to proceed.
+                          </p>
+                        )}
                         {budget != null && (
                           <p className="text-sm font-medium text-foreground">
                             Showing stays from R{budget.toLocaleString('en-ZA')} upwards.
                           </p>
                         )}
+
                       </CardContent>
                     </Card>
 
