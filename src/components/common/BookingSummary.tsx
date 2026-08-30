@@ -15,7 +15,10 @@ export interface BookingSummaryProps {
   childPriceOnRequest?: boolean;
   onConfirm?: () => void;
   confirmDisabled?: boolean;
+  onRequestFinalQuote?: () => void;
+  requestFinalQuoteDisabled?: boolean;
 }
+
 
 function rand(amount: number) {
   return `R${roundToNearest10(amount).toLocaleString('en-ZA')}`;
