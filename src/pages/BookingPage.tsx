@@ -162,6 +162,27 @@ export default function BookingPage() {
       );
     });
 
+  // Holiday price for a stay = package price + accommodation for the whole stay.
+  const holidayPriceFor = (hotel: (typeof visibleHotels)[number]) =>
+    packageTotal + hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name);
+
+  // The 5 most expensive stays in the destination — shown to inspire before a budget is set.
+  const aspirationalHotels = visibleHotels
+    .slice()
+    .sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
+    .slice(0, 5);
+
+  // Stays at or above the guest's budget, closest to the budget first.
+  const budgetHotels =
+    budget == null
+      ? []
+      : visibleHotels
+          .filter((h) => !aspirationalHotels.some((a) => a.id === h.id))
+          .filter((h) => holidayPriceFor(h) >= budget)
+          .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b));
+
+  const shownBudgetHotels = budgetHotels.slice(0, budgetVisibleCount);
+
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
 
   useEffect(() => {
