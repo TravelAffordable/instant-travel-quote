@@ -346,6 +346,9 @@ export default function BookingPage() {
         childPriceOnRequest={packagePricing?.childPriceOnRequest}
         onConfirm={step === 'review' ? submitBooking : undefined}
         confirmDisabled={step === 'review' ? !contact.name || !contact.email || !contact.phone : false}
+        onRequestFinalQuote={step === 'accommodation' ? () => goto('review') : undefined}
+        requestFinalQuoteDisabled={step === 'accommodation' ? !selectedHotel : false}
+
       />
     </>
   );
