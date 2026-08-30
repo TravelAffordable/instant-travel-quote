@@ -747,12 +747,13 @@ export default function BookingPage() {
                                 selected={hotelId === hotel.id}
                                 onSelect={(id) => {
                                   if (budget == null) {
+                                    setBudgetError(true);
                                     document.getElementById('holiday-budget')?.focus();
                                     return;
                                   }
                                   setHotelId(id);
-                                  goto('review');
                                 }}
+
                               />
                             ))}
                           </div>
