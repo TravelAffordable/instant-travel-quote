@@ -71,25 +71,6 @@ export function BookingSummary({
           )}
         </dl>
 
-        <div className="space-y-2 border-t border-border pt-4 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Experience package</span>
-            <span className="font-medium text-foreground">{rand(packageTotal)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Accommodation</span>
-            <span className="font-medium text-foreground">
-              {accommodationTotal > 0 ? rand(accommodationTotal) : 'Choose your stay'}
-            </span>
-          </div>
-          {extrasTotal > 0 && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Extras</span>
-              <span className="font-medium text-foreground">{rand(extrasTotal)}</span>
-            </div>
-          )}
-        </div>
-
         <div className="flex items-end justify-between border-t border-border pt-4">
           <span className="text-sm font-semibold text-foreground">Complete holiday price</span>
           <span className="font-display text-2xl font-bold text-sunset">{rand(total)}</span>

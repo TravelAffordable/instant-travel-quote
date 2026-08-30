@@ -80,6 +80,9 @@ export default function BookingPage() {
   const [promoCode, setPromoCode] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [reference, setReference] = useState<string>();
+  const [budgetInput, setBudgetInput] = useState('');
+  const [budget, setBudget] = useState<number | null>(null);
+  const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
 
   const destination = destinationSlug ? getCatalogueDestination(destinationSlug) : undefined;
   const destinationPackages = destination?.destinationId
@@ -158,6 +161,27 @@ export default function BookingPage() {
         stayRoomCost(a.name, a.pricePerNight) - stayRoomCost(b.name, b.pricePerNight)
       );
     });
+
+  // Holiday price for a stay = package price + accommodation for the whole stay.
+  const holidayPriceFor = (hotel: (typeof visibleHotels)[number]) =>
+    packageTotal + hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name);
+
+  // The 5 most expensive stays in the destination — shown to inspire before a budget is set.
+  const aspirationalHotels = visibleHotels
+    .slice()
+    .sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
+    .slice(0, 5);
+
+  // Stays at or above the guest's budget, closest to the budget first.
+  const budgetHotels =
+    budget == null
+      ? []
+      : visibleHotels
+          .filter((h) => !aspirationalHotels.some((a) => a.id === h.id))
+          .filter((h) => holidayPriceFor(h) >= budget)
+          .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b));
+
+  const shownBudgetHotels = budgetHotels.slice(0, budgetVisibleCount);
 
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
 
@@ -595,6 +619,43 @@ export default function BookingPage() {
                       <TierSelector value={tier} onChange={setTier} />
                     </div>
 
+                    <Card className="mt-6 rounded-2xl border-primary/30">
+                      <CardContent className="space-y-3 p-6">
+                        <Label htmlFor="holiday-budget" className="text-base font-semibold text-foreground">
+                          What would you like to spend for your amazing holiday?
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Required — tell us your budget and we'll show the stays that fit it.
+                        </p>
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                          <Input
+                            id="holiday-budget"
+                            inputMode="numeric"
+                            placeholder="e.g. R 8 000"
+                            value={budgetInput}
+                            onChange={(e) => setBudgetInput(e.target.value)}
+                            className="sm:max-w-xs"
+                          />
+                          <Button
+                            onClick={() => {
+                              const value = Number(budgetInput.replace(/[^\d]/g, ''));
+                              if (!value) return;
+                              setBudget(value);
+                              setBudgetVisibleCount(4);
+                            }}
+                            disabled={!Number(budgetInput.replace(/[^\d]/g, ''))}
+                          >
+                            Show stays within my budget
+                          </Button>
+                        </div>
+                        {budget != null && (
+                          <p className="text-sm font-medium text-foreground">
+                            Showing stays from R{budget.toLocaleString('en-ZA')} upwards.
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+
                     {visibleHotels.length === 0 ? (
                       <div className="mt-8">
                         <ErrorState
@@ -605,24 +666,86 @@ export default function BookingPage() {
                         />
                       </div>
                     ) : (
-                      <div className="mt-6 grid gap-6 md:grid-cols-2">
-                        {visibleHotels.map((hotel) => (
-                          <AccommodationCard
-                            key={hotel.id}
-                            hotel={hotel}
-                            tier={tierMap.get(hotel.id) ?? 'standard'}
-                            destinationName={destination.name}
-                            nights={Math.max(1, nights)}
-                            rooms={Math.max(rooms, Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)))}
-                            price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
-                            selected={hotelId === hotel.id}
-                            onSelect={(id) => {
-                              setHotelId(id);
-                              goto('review');
-                            }}
-                          />
-                        ))}
-                      </div>
+                      <>
+                        {budget != null && (
+                          <div className="mt-8">
+                            <h2 className="font-display text-xl font-bold text-foreground">
+                              Stays within your budget
+                            </h2>
+                            {shownBudgetHotels.length === 0 ? (
+                              <p className="mt-3 text-sm text-muted-foreground">
+                                No stays match that budget yet — the inspiring options below show what's
+                                possible, or adjust your budget above.
+                              </p>
+                            ) : (
+                              <div className="mt-6 grid gap-6 md:grid-cols-2">
+                                {shownBudgetHotels.map((hotel) => (
+                                  <AccommodationCard
+                                    key={hotel.id}
+                                    hotel={hotel}
+                                    tier={tierMap.get(hotel.id) ?? 'standard'}
+                                    destinationName={destination.name}
+                                    nights={Math.max(1, nights)}
+                                    rooms={Math.max(
+                                      rooms,
+                                      Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)),
+                                    )}
+                                    price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
+                                    selected={hotelId === hotel.id}
+                                    onSelect={(id) => {
+                                      setHotelId(id);
+                                      goto('review');
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                            {budgetHotels.length > shownBudgetHotels.length && (
+                              <Button
+                                variant="outline"
+                                className="mt-6 w-full"
+                                onClick={() => setBudgetVisibleCount((c) => c + 4)}
+                              >
+                                Click to view more hotels within budget
+                              </Button>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="mt-10">
+                          <h2 className="font-display text-xl font-bold text-foreground">
+                            Aspirational stays — see what's possible
+                          </h2>
+                          <p className="mt-2 text-sm text-muted-foreground">
+                            Our five most luxurious stays in {destination.name}.
+                          </p>
+                          <div className="mt-6 grid gap-6 md:grid-cols-2">
+                            {aspirationalHotels.map((hotel) => (
+                              <AccommodationCard
+                                key={hotel.id}
+                                hotel={hotel}
+                                tier={tierMap.get(hotel.id) ?? 'standard'}
+                                destinationName={destination.name}
+                                nights={Math.max(1, nights)}
+                                rooms={Math.max(
+                                  rooms,
+                                  Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)),
+                                )}
+                                price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
+                                selected={hotelId === hotel.id}
+                                onSelect={(id) => {
+                                  if (budget == null) {
+                                    document.getElementById('holiday-budget')?.focus();
+                                    return;
+                                  }
+                                  setHotelId(id);
+                                  goto('review');
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </>
                     )}
 
                     <Button variant="ghost" className="mt-8" onClick={() => goto('travellers')}>
