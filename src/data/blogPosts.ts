@@ -139,51 +139,95 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: 'sun-city-weekend-itinerary',
-    title: 'The Perfect Sun City Weekend Itinerary',
-    metaTitle: 'Sun City Weekend Itinerary | 2-Night Family Resort Plan',
+    title: 'Why Your Next Iconic Sun City Escape Is Closer (and More Affordable) Than You Think',
+    metaTitle: 'Sun City Getaways from R1,290pp | Travel Affordable',
     metaDescription:
-      'A two-night Sun City itinerary covering Valley of Waves, Pilanesberg safari and the Lost City. Tips, costs and packages from R2,500pp.',
+      'Valley of the Waves, Pilanesberg safaris, selected meals and shuttle options — complete Sun City getaway packages from R1,290 per person. Choose your own dates.',
     keywords:
-      'sun city itinerary, sun city weekend, valley of waves, pilanesberg safari, sun city family',
+      'sun city getaway, sun city packages, valley of the waves, pilanesberg safari, affordable sun city holiday',
     excerpt:
-      'A complete Sun City weekend plan — what to do hour-by-hour, where to eat and how to fit in a Pilanesberg safari without rushing.',
+      'Escape the city rush, dive into the iconic Valley of the Waves, embark on a sunset safari, and create unforgettable memories — all from just R1,290 per person.',
     heroImage: sunCityImg,
-    publishedAt: '2026-04-03',
-    readTime: '7 min',
-    category: 'Itinerary',
+    publishedAt: '2026-08-31',
+    readTime: '6 min',
+    category: 'Destination Guide',
     ctaDestinationSlug: 'sun-city',
     body: [
       {
         paragraphs: [
-          'Sun City is built for the long weekend — only two hours from Pretoria but immersive enough to feel like a far-flung resort. This itinerary makes the most of two nights without the kids melting down by Sunday lunch.',
+          'Escape the city rush, dive into the iconic Valley of the Waves, embark on a sunset safari, and create unforgettable memories — all starting from just R1,290 per person with Travel Affordable.',
+          'There is a reason Sun City remains South Africa’s crown jewel of holiday destinations. Tucked against the rugged, malaria-free backdrop of the Pilanesberg mountains, it offers a world of pure magic: tropical palm trees, world-class entertainment, roaring wave pools, and the thrilling call of the wild.',
+          'For many, planning a getaway to this legendary kingdom feels out of reach or overwhelming to coordinate. Between sourcing comfortable accommodation, securing park entry tickets, sorting out activities, and managing meals, costs quickly spiral.',
+          'At Travel Affordable, we’ve changed the game. We believe world-class travel experiences shouldn’t come with luxury-tier stress. With complete getaway packages starting from just R1,290 per person, your dream Sun City retreat is ready when you are.',
         ],
       },
       {
-        heading: 'Day 1 — Friday afternoon arrival',
+        heading: 'What Makes a Travel Affordable Sun City Getaway Unbeatable?',
         paragraphs: [
-          'Aim to check in by 3pm to give the kids time at the resort pools before sunset. Walk the Bridge of Time, take photos at the Lost City entrance, and have an early dinner at the Palace Plaza or one of the entertainment-centre restaurants.',
+          'When you book with Travel Affordable, you aren’t just getting a room key — you are securing an all-in-one curated holiday experience designed for couples, families, and groups of friends.',
         ],
       },
       {
-        heading: 'Day 2 — Saturday: Valley of Waves',
+        heading: '🌊 1. Unlimited Fun at the Valley of the Waves',
         paragraphs: [
-          'Be at Valley of Waves when the gates open. Hit the Roaring Lagoon and Tarantula slide before 11am, lunch poolside, then nap in the cabanas. Late afternoon try the Lazy River. Sunset cocktails at Sun Central, dinner at the Palace.',
+          'Feel the warm sand beneath your feet and hear the roar of the mechanical surf. Whether you’re plunging down the adrenaline-pumping slides, drifting peacefully along the Lazy River, or relaxing in a sun lounger cocktail in hand, full access to the iconic Valley of the Waves is the ultimate summer highlight.',
         ],
       },
       {
-        heading: 'Day 3 — Sunday: Pilanesberg morning safari, then home',
+        heading: '🐘 2. Thrilling Safari & Big 5 Wildlife Drives',
         paragraphs: [
-          'Book an open-vehicle safari into adjoining Pilanesberg leaving at 5:30am. You’ll be back at the resort by 10am for breakfast, with time to pack, pay any extras and hit the road by midday.',
+          'Sun City borders the world-renowned Pilanesberg National Park. Step aboard a guided safari open truck and journey through ancient volcanic landscapes to spot elephants, lions, rhinos, and towering giraffes in their natural habitat.',
         ],
       },
       {
-        heading: 'What it costs',
+        heading: '🍽️ 3. Gourmet Dining & Selected Meal Experiences',
         paragraphs: [
-          'A two-night Sun City weekend with Valley of Waves and a Pilanesberg morning safari typically lands between R5,500 and R9,500 per adult depending on hotel tier. Children under 4 stay free; ages 4–16 receive discounted rates.',
+          'Holidays are meant for indulgence. Our curated packages include delicious selected meal experiences — from hearty buffet spreads to relaxed resort dining — so you never have to worry about where your next great meal is coming from.',
+        ],
+      },
+      {
+        heading: '🚐 4. Stress-Free Shuttle Options',
+        paragraphs: [
+          'Leave the driving and navigation to us. On selected packages, we offer convenient, safe, and comfortable shuttle options connecting your accommodation directly to all activities and experiences.',
+        ],
+      },
+      {
+        heading: '🏨 5. Tailored Accommodation to Suit Every Budget',
+        paragraphs: [
+          'Whether you want a budget-smart local lodge nearby or a premium resort stay, we source and pair the best vetted accommodation options to fit your exact group size and preference.',
+        ],
+      },
+      {
+        heading: 'Travel on Your Terms: Freedom & Flexibility',
+        paragraphs: [
+          'We know that one size never fits all when it comes to planning getaways. That’s why every Travel Affordable package gives you complete control:',
+        ],
+        bullets: [
+          '📅 Choose Your Own Dates: Travel midweek for peace and quiet, or book a high-energy weekend retreat — you pick the check-in date that works for your schedule.',
+          '💳 Only 50% Deposit Secures Your Spot: You don’t need the full amount right away. Lock in your dates, rates, and activities today with just a 50% deposit.',
+          '✨ Complete Peace of Mind: Once booked, our team provides your full travel itinerary, hotel confirmation codes, and direct activity schedules so you can simply pack your bags and enjoy.',
+        ],
+      },
+      {
+        heading: 'Ready for More Experiences, More Memories, and More Time Together?',
+        paragraphs: [
+          'Life moves fast, but the memories you make with the people who matter most last forever. Don’t wait for “someday” — Sun City is calling.',
+        ],
+      },
+      {
+        heading: 'How to Book Your Getaway',
+        paragraphs: [
+          'Packages start from R1,290 p.p. Limited availability on peak dates — book early to secure your spot!',
+        ],
+        bullets: [
+          'Visit our website: www.travelaffordable.co.za',
+          'Call our travel desk: 079 681 3869',
+          'Chat instantly on WhatsApp: Send us a message on 079 681 3869 with your preferred dates and group size, and our team will build your custom quote in minutes.',
         ],
       },
     ],
   },
+
   {
     slug: 'hartbeespoort-family-getaway-guide',
     title: 'Harties Family Getaway Guide',
