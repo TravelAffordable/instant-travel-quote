@@ -17,7 +17,7 @@ export interface BlogPost {
   ctaDestinationSlug?: string;
 }
 
-import durbanImg from '@/assets/destinations/durban.jpg';
+
 import durbanAdAsset from '@/assets/durban-ad1.png.asset.json';
 import capeTownImg from '@/assets/destinations/cape-town.jpg';
 import sunCityImg from '@/assets/destinations/sun-city.jpg';
