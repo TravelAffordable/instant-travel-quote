@@ -20,7 +20,7 @@ export interface BlogPost {
 
 import durbanAdAsset from '@/assets/durban-ad1.png.asset.json';
 import capeTownImg from '@/assets/destinations/cape-town.jpg';
-import sunCityImg from '@/assets/destinations/sun-city.jpg';
+import sunCityAdAsset from '@/assets/suncity-ad2.png.asset.json';
 import hartiesImg from '@/assets/destinations/hartbeespoort.jpg';
 import magaliesImg from '@/assets/destinations/magaliesberg.jpg';
 import mpumalangaImg from '@/assets/destinations/mpumalanga.jpg';
