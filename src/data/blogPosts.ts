@@ -27,64 +27,95 @@ import mpumalangaImg from '@/assets/destinations/mpumalanga.jpg';
 export const blogPosts: BlogPost[] = [
   {
     slug: 'durban-golden-mile-holiday-guide-2026',
-    title: 'Durban Golden Mile Holiday Guide for 2026',
-    metaTitle: 'Durban Golden Mile Guide 2026 | Best Hotels & Activities',
+    title: 'Soak Up the Golden Coast: Why a Durban Beach Getaway Is Your Best Affordable Escape',
+    metaTitle: 'Durban Getaways from R950pp | Travel Affordable',
     metaDescription:
-      'Plan the perfect Durban Golden Mile holiday — best beachfront hotels, top activities, transport tips and how to score affordable packages from R1,400pp.',
+      'Warm Indian Ocean waves, uShaka Marine World, harbour boat cruises and the Golden Mile promenade — complete Durban getaway packages from R950 per person.',
     keywords:
-      'durban golden mile, durban beachfront hotels, durban holiday guide, ushaka marine, moses mabhida',
+      'durban getaway, durban packages, ushaka marine world, durban boat cruise, golden mile promenade, affordable durban holiday',
     excerpt:
-      'Everything you need to plan an affordable, memorable Durban beach holiday — where to stay, what to do, and how to save up to 40% on packages.',
-    heroImage: durbanImg,
-    publishedAt: '2026-04-01',
-    readTime: '8 min',
+      'Warm Indian Ocean waves, thrilling marine adventures, ocean breezes and coastal boat cruises — all starting from just R950 per person with Travel Affordable.',
+    heroImage: durbanAdAsset.url,
+    publishedAt: '2026-08-31',
+    readTime: '6 min',
     category: 'Destination Guide',
     ctaDestinationSlug: 'durban',
     body: [
       {
         paragraphs: [
-          'Durban’s Golden Mile is South Africa’s most iconic stretch of beach — six kilometres of warm-water surf, paved promenade, restaurants and family-friendly hotels stretching from uShaka Marine World in the south to the Suncoast Casino in the north. For locals planning a budget-friendly beach holiday, nothing beats it on price-per-experience.',
-          'In this guide we cover where to stay, the must-do activities, transport tips and how Travel Affordable packages bundle everything together for as little as R1,400 per person sharing.',
+          'Warm Indian Ocean waves, thrilling marine adventures, ocean breezes, and coastal boat cruises — all starting from just R950 per person with Travel Affordable.',
+          'There is an effortless magic to Durban that you simply won’t find anywhere else in South Africa. With its year-round sunshine, sub-tropical sea breeze, golden beachfront promenade, and rich cultural rhythm, Durban is the ultimate playground for anyone craving a coastal recharge.',
+          'Whether you’re looking for a romantic seaside weekend, a sun-drenched family adventure, or an unforgettable holiday with friends, organizing every piece of the puzzle shouldn’t feel like hard work.',
+          'Travel Affordable makes your coastal escape simple, stylish, and genuinely affordable. With all-inclusive packages starting from just R950 per person, the Golden Mile is ready for you.',
         ],
       },
       {
-        heading: 'Where to stay on the Golden Mile',
+        heading: 'What Awaits You on a Travel Affordable Durban Getaway?',
         paragraphs: [
-          'The Golden Mile is split into three loose zones: South Beach (closer to uShaka), North Beach (the surfing hub) and the Bay of Plenty. Budget travellers should target South Beach for the best room rates, while families lean toward North Beach for its calmer swimming bays and proximity to the open-top bus stops.',
+          'Our packages are designed to combine relaxing beachfront accommodation with Durban’s most iconic must-do activities. When you book with Travel Affordable, here is what’s waiting for you:',
+        ],
+      },
+      {
+        heading: '🐬 1. World-Class Thrills at uShaka Marine World',
+        paragraphs: [
+          'Step into South Africa’s favourite marine theme park. Marvel at sharks and exotic sea life in the underground aquarium shipwrecks, watch world-renowned dolphin and seal presentations, or turn up the excitement on the slides and splash zones at Wet ‘n Wild.',
+        ],
+      },
+      {
+        heading: '🛥️ 2. Scenic Durban Harbour & Coastal Boat Cruises',
+        paragraphs: [
+          'Take in the stunning Durban skyline from the water. Cruise through the bustling Durban harbour or head out to sea to feel the coastal swell, spot marine life, and take in panoramic views of the coast.',
+        ],
+      },
+      {
+        heading: '🌴 3. The Iconic Beachfront Promenade & City Culture',
+        paragraphs: [
+          'Stroll, cycle, or skate along the famous Golden Mile promenade. Enjoy authentic Durban street food, browse vibrant beachfront craft markets, explore Moses Mabhida Stadium, or dive into the bustling nightlife along Florida Road.',
+        ],
+      },
+      {
+        heading: '🚐 4. Convenient Shuttle Options on Selected Packages',
+        paragraphs: [
+          'Skip the stress of navigating city traffic or hunting for parking. On selected packages, we provide safe, comfortable shuttle services connecting your accommodation directly to your scheduled activities.',
+        ],
+      },
+      {
+        heading: '🏨 5. Accommodation Matched to Your Style and Budget',
+        paragraphs: [
+          'From budget-friendly stays close to the action to relaxing seaside hotels, we secure vetted accommodation options tailored to your exact group size and budget.',
+        ],
+      },
+      {
+        heading: 'Complete Flexibility: Travel When and How You Want',
+        paragraphs: [
+          'Your holiday should fit your schedule — not the other way around. With Travel Affordable, you enjoy complete freedom:',
         ],
         bullets: [
-          'Budget tier: from R1,400pp sharing — clean, simple, walking distance to the beach.',
-          'Affordable tier: from R2,200pp — beachfront views and breakfast included.',
-          'Premium tier: from R4,500pp — sea-facing suites with full resort amenities.',
+          '📅 Choose Your Own Dates: Whether it’s a quick weekend break or an extended coastal holiday, pick any travel dates that suit you.',
+          '💳 50% Deposit Secures Your Booking: Lock in your room, activities, and prices today with just a 50% deposit, and settle the balance before you travel.',
+          '📋 Zero-Stress Planning: We handle the itinerary, activity vouchers, and accommodation confirmations so all you have to do is pack your sunscreen and swimwear.',
         ],
       },
       {
-        heading: 'Top activities to add to your package',
+        heading: 'Ready for More Sunshine, More Fun, and More Memories?',
         paragraphs: [
-          'A great Durban holiday isn’t just hotels — it’s the activity stack. Our most popular bundle includes uShaka Marine World, Moses Mabhida Stadium SkyCar, an open-top bus tour and a sunset gondola cruise in Umhlanga, with optional spa treatments and Umhlanga day trips.',
+          'The ocean is calling, and your dream beachfront holiday is only a few clicks away.',
+        ],
+      },
+      {
+        heading: 'How to Book Your Durban Getaway',
+        paragraphs: [
+          'Getaway packages start from just R950 p.p. Availability fills up fast on weekends and holidays — secure your spot now!',
         ],
         bullets: [
-          'uShaka Marine World — Africa’s biggest aquarium and water park.',
-          'Moses Mabhida Stadium SkyCar and adventure walk.',
-          'Hop-on hop-off open-top bus through Durban’s historic core.',
-          'Sunset gondola or luxury canal cruise in Umhlanga.',
-          'Full-body spa treatments at hotel spas.',
-        ],
-      },
-      {
-        heading: 'When to visit Durban',
-        paragraphs: [
-          'Durban is a year-round destination — average winter days hover around 22°C and summers reach 30°C with warm Indian Ocean swimming. Avoid mid-December to mid-January if you dislike crowds; instead target April–May or September–October for the best weather-to-rate ratio.',
-        ],
-      },
-      {
-        heading: 'How much should a Durban holiday cost?',
-        paragraphs: [
-          'For a family of four travelling for three nights with activities included, expect a fair all-in cost of R8,000 to R18,000 depending on hotel tier. Travel Affordable packages strip out agency markup so you only pay one transparent, all-inclusive rate covering accommodation and activities.',
+          'Visit our website: www.travelaffordable.co.za',
+          'Call our travel desk: 079 681 3869',
+          'Chat instantly on WhatsApp: Send a WhatsApp message to 079 681 3869 with your preferred dates and guest count, and we’ll send you a tailored quote today.',
         ],
       },
     ],
   },
+
   {
     slug: 'cape-town-on-a-budget-2026',
     title: 'Cape Town on a Budget: How to Visit Without Breaking the Bank',
