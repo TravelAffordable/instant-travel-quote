@@ -20,7 +20,7 @@ export interface BlogPost {
 
 import durbanAdAsset from '@/assets/durban-ad1.png.asset.json';
 import capeTownImg from '@/assets/destinations/cape-town.jpg';
-import sunCityImg from '@/assets/destinations/sun-city.jpg';
+import sunCityAdAsset from '@/assets/suncity-ad2.png.asset.json';
 import hartiesImg from '@/assets/destinations/hartbeespoort.jpg';
 import magaliesImg from '@/assets/destinations/magaliesberg.jpg';
 import mpumalangaImg from '@/assets/destinations/mpumalanga.jpg';
@@ -179,7 +179,7 @@ export const blogPosts: BlogPost[] = [
       'sun city getaway, sun city packages, valley of the waves, pilanesberg safari, affordable sun city holiday',
     excerpt:
       'Escape the city rush, dive into the iconic Valley of the Waves, embark on a sunset safari, and create unforgettable memories — all from just R1,290 per person.',
-    heroImage: sunCityImg,
+    heroImage: sunCityAdAsset.url,
     publishedAt: '2026-08-31',
     readTime: '6 min',
     category: 'Destination Guide',
