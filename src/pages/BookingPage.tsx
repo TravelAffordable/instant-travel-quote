@@ -292,15 +292,6 @@ export default function BookingPage() {
               ))}
             </ul>
           )}
-          <div className="mt-4 border-t border-border pt-4">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-display text-2xl font-bold text-foreground">
-                R{Math.round(accommodationTotal).toLocaleString('en-ZA')}
-              </span>{' '}
-              for {Math.max(1, nights)} night{Math.max(1, nights) === 1 ? '' : 's'}
-              {selectedRoomCount > 1 ? `, ${selectedRoomCount} rooms` : ''}
-            </p>
-          </div>
         </CardContent>
       </Card>
     ) : null;
@@ -625,6 +616,9 @@ export default function BookingPage() {
 
                 {step === 'accommodation' && (
                   <section>
+                    <Button variant="ghost" className="mb-4 -ml-2" onClick={() => goto('travellers')}>
+                      <ArrowLeft className="mr-1 h-4 w-4" /> Back
+                    </Button>
                     <h1 className="font-display text-3xl font-bold text-foreground">
                       Choose your hotel
                     </h1>
@@ -940,7 +934,7 @@ export default function BookingPage() {
                 )}
               </div>
 
-              <aside className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pb-4">
+              <aside className="lg:sticky lg:top-20 lg:self-start lg:pb-4">
                 {summary}
               </aside>
             </div>
