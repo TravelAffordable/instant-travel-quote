@@ -71,7 +71,6 @@ export default function BookingPage() {
   const [infants, setInfants] = useState(Number(params.get('c02') ?? 0) || 0);
   const [kids, setKids] = useState(Number(params.get('c312') ?? 0) || 0);
   const [teens, setTeens] = useState(Number(params.get('c1317') ?? 0) || 0);
-  const [tier, setTier] = useState<AccommodationTier | 'all'>('all');
   const [hotelId, setHotelId] = useState<string>();
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [rooms, setRooms] = useState(1);
