@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ResponsiveImage } from '@/components/common/ResponsiveImage';
 import type { Hotel } from '@/data/travelData';
-import { mealBasis, tierLabels } from '@/lib/accommodationTiers';
+import { mealBasis } from '@/lib/accommodationTiers';
 import type { AccommodationTier } from '@/components/common/TierSelector';
 import { cn } from '@/lib/utils';
 
@@ -14,6 +14,8 @@ interface AccommodationCardProps {
   nights: number;
   rooms: number;
   price: number;
+  showPrice?: boolean;
+  luxuryBadge?: boolean;
   selected?: boolean;
   onSelect: (hotelId: string) => void;
 }
@@ -25,6 +27,8 @@ export function AccommodationCard({
   nights,
   rooms,
   price,
+  showPrice = false,
+  luxuryBadge = false,
   selected,
   onSelect,
 }: AccommodationCardProps) {
@@ -37,9 +41,11 @@ export function AccommodationCard({
     >
       <div className="relative">
         <ResponsiveImage src={hotel.image} alt={hotel.name} ratio="wide" />
-        <span className="absolute left-3 top-3 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-foreground">
-          {tierLabels[tier]}
-        </span>
+        {luxuryBadge && (
+          <span className="absolute left-3 top-3 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-foreground">
+            Luxury
+          </span>
+        )}
       </div>
       <CardContent className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-lg font-bold text-foreground">{hotel.name}</h3>
@@ -77,18 +83,22 @@ export function AccommodationCard({
         )}
         <div className="mt-auto pt-5">
           <p className="text-sm text-muted-foreground">
-            <span className="font-display text-2xl font-bold text-foreground">
-              R{Math.round(price).toLocaleString('en-ZA')}
-            </span>{' '}
-            for {nights} night{nights === 1 ? '' : 's'}
+            {showPrice && (
+              <>
+                <span className="font-display text-2xl font-bold text-foreground">
+                  R{Math.round(price).toLocaleString('en-ZA')}
+                </span>{' '}
+              </>
+            )}
+            {nights} night{nights === 1 ? '' : 's'}
             {rooms > 1 ? `, ${rooms} rooms` : ''}
           </p>
           <Button
-            className="mt-4 w-full"
+            className="mt-4 w-full whitespace-normal py-3 leading-snug"
             variant={selected ? 'secondary' : 'default'}
             onClick={() => onSelect(hotel.id)}
           >
-            {selected ? 'Selected' : 'Select accommodation'}
+            {selected ? 'Selected' : 'Select accommodation to see total price on the right'}
           </Button>
         </div>
       </CardContent>
