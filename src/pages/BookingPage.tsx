@@ -19,7 +19,6 @@ import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
 import { BookingSummary } from '@/components/common/BookingSummary';
 import { ResponsiveImage } from '@/components/common/ResponsiveImage';
-import type { AccommodationTier } from '@/components/common/TierSelector';
 import { ErrorState } from '@/components/common/ErrorState';
 import { catalogueDestinations, getCatalogueDestination } from '@/data/destinationCatalogue';
 import { getHotelsByDestination, getPackagesByDestination, packages } from '@/data/travelData';
@@ -29,7 +28,7 @@ import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
 import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
 import { cn } from '@/lib/utils';
-import { mealBasis, tierLabels } from '@/lib/accommodationTiers';
+import { mealBasis } from '@/lib/accommodationTiers';
 import { trackBookingConversion } from '@/lib/adsConversion';
 import { getGoldenMileStayTotal } from '@/data/goldenMileRateCalendar';
 
