@@ -429,6 +429,9 @@ export default function BookingPage() {
 
         {step === 'experience' && destination && (
           <section>
+            <Button variant="ghost" className="mb-4 -ml-2" onClick={() => goto('destination')}>
+              <ArrowLeft className="mr-1 h-4 w-4" /> Back
+            </Button>
             <h1 className="font-display text-3xl font-bold text-foreground">
               Choose your {destination.name} experience
             </h1>
@@ -479,6 +482,9 @@ export default function BookingPage() {
               <div>
                 {step === 'dates' && (
                   <section>
+                    <Button variant="ghost" className="mb-4 -ml-2" onClick={() => goto('experience')}>
+                      <ArrowLeft className="mr-1 h-4 w-4" /> Back
+                    </Button>
                     <h1 className="font-display text-3xl font-bold text-foreground">Your dates of travel</h1>
                     <label className="mt-6 flex cursor-pointer items-center gap-2 text-sm">
                       <Checkbox checked={oneDay} onCheckedChange={(v) => setOneDay(Boolean(v))} />
@@ -562,6 +568,9 @@ export default function BookingPage() {
 
                 {step === 'travellers' && (
                   <section>
+                    <Button variant="ghost" className="mb-4 -ml-2" onClick={() => goto('dates')}>
+                      <ArrowLeft className="mr-1 h-4 w-4" /> Back
+                    </Button>
                     <h1 className="font-display text-3xl font-bold text-foreground">How many in your travel group</h1>
                     <p className="mt-2 text-muted-foreground">
                       Children under 3 travel free on the experience.
@@ -773,6 +782,9 @@ export default function BookingPage() {
 
                 {step === 'review' && (
                   <section>
+                    <Button variant="ghost" className="mb-4 -ml-2" onClick={() => goto('accommodation')}>
+                      <ArrowLeft className="mr-1 h-4 w-4" /> Back
+                    </Button>
                     <h1 className="font-display text-3xl font-bold text-foreground">My Holiday</h1>
                     <div className="mt-6">
                       <h2 className="font-display text-xl font-bold text-foreground">
