@@ -19,7 +19,7 @@ import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
 import { BookingSummary } from '@/components/common/BookingSummary';
 import { ResponsiveImage } from '@/components/common/ResponsiveImage';
-import { TierSelector, type AccommodationTier } from '@/components/common/TierSelector';
+import type { AccommodationTier } from '@/components/common/TierSelector';
 import { ErrorState } from '@/components/common/ErrorState';
 import { catalogueDestinations, getCatalogueDestination } from '@/data/destinationCatalogue';
 import { getHotelsByDestination, getPackagesByDestination, packages } from '@/data/travelData';
@@ -149,12 +149,21 @@ export default function BookingPage() {
     return getStayAvailability(checkIn, Math.max(1, nights), roomsNeededFor(capacity)).available;
   };
 
-  const availableHotels = hotels.filter((h) => isHotelAvailable(h.name, h.capacity ?? 2));
+  // Guests per room drives which room capacities we show:
+  // 2 guests / 1 room -> 2-sleepers; 4 guests / 1 room -> 4-sleepers;
+  // 4 guests / 2 rooms -> 2-sleepers, quoted as 2 rooms.
+  const perRoomGuests = Math.max(1, Math.ceil(totalGuests / Math.max(1, rooms)));
+  const capacityMatched = (() => {
+    const fitting = hotels.filter((h) => (h.capacity ?? 2) >= perRoomGuests);
+    const exact = fitting.filter((h) => (h.capacity ?? 2) === perRoomGuests);
+    return exact.length > 0 ? exact : fitting;
+  })();
+
+  const availableHotels = capacityMatched.filter((h) => isHotelAvailable(h.name, h.capacity ?? 2));
   const soldOutCount = hotels.length - availableHotels.length;
   // Stays that comfortably fit the whole group in one unit show first (cheapest first),
   // smaller units that would need multiple rooms fall to the bottom.
   const visibleHotels = availableHotels
-    .filter((h) => tier === 'all' || tierMap.get(h.id) === tier)
     .slice()
     .sort((a, b) => {
       const fits = (h: typeof a) => ((h.capacity ?? 2) >= Math.max(1, totalGuests) ? 0 : 1);
@@ -186,6 +195,21 @@ export default function BookingPage() {
   const shownBudgetHotels = budgetHotels.slice(0, budgetVisibleCount);
 
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
+
+  const scrollToBudget = () =>
+    document
+      .getElementById('holiday-budget-heading')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const handleSelectHotel = (id: string) => {
+    scrollToBudget();
+    if (budget == null) {
+      setBudgetError(true);
+      document.getElementById('holiday-budget')?.focus();
+      return;
+    }
+    setHotelId(id);
+  };
 
   useEffect(() => {
     if (hotelId && !availableHotels.some((h) => h.id === hotelId)) setHotelId(undefined);
@@ -620,17 +644,17 @@ export default function BookingPage() {
                       </p>
                     )}
 
-                    <div className="mt-6">
-                      <TierSelector value={tier} onChange={setTier} />
-                    </div>
-
-                    <Card className="mt-6 rounded-2xl border-primary/30">
+                    <Card id="holiday-budget-heading" className="mt-6 scroll-mt-28 rounded-2xl border-primary/30">
                       <CardContent className="space-y-3 p-6">
-                        <Label htmlFor="holiday-budget" className="text-base font-semibold text-foreground">
+                        <h2 className="font-display text-2xl font-bold uppercase leading-tight text-destructive md:text-3xl">
+                          Holiday budget amount required in the box below before you can proceed to select
+                          your hotel stay
+                        </h2>
+                        <Label htmlFor="holiday-budget" className="block text-base font-semibold text-destructive">
                           What would you like to spend for your amazing holiday?
                         </Label>
-                        <p className="text-sm text-muted-foreground">
-                          Required — tell us your budget and we'll show the stays that fit it.
+                        <p className="text-sm font-medium text-destructive">
+                          Required — tell us your budget and we'll show the stays that fit.
                         </p>
                         <div className="flex flex-col gap-3 sm:flex-row">
                           <Input
@@ -675,8 +699,8 @@ export default function BookingPage() {
                         <ErrorState
                           title="No stays match that category yet"
                           message="Try another category, or contact us and we'll source the right property for you."
-                          actionLabel="Show all stays"
-                          onAction={() => setTier('all')}
+                          actionLabel="Back to travellers"
+                          onAction={() => goto('travellers')}
                         />
                       </div>
                     ) : (
@@ -700,13 +724,10 @@ export default function BookingPage() {
                                     tier={tierMap.get(hotel.id) ?? 'standard'}
                                     destinationName={destination.name}
                                     nights={Math.max(1, nights)}
-                                    rooms={Math.max(
-                                      rooms,
-                                      Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)),
-                                    )}
+                                    rooms={roomsNeededFor(hotel.capacity ?? 2)}
                                     price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
                                     selected={hotelId === hotel.id}
-                                    onSelect={(id) => setHotelId(id)}
+                                    onSelect={(id) => handleSelectHotel(id)}
 
                                   />
                                 ))}
@@ -737,22 +758,13 @@ export default function BookingPage() {
                                 key={hotel.id}
                                 hotel={hotel}
                                 tier={tierMap.get(hotel.id) ?? 'standard'}
+                                luxuryBadge
                                 destinationName={destination.name}
                                 nights={Math.max(1, nights)}
-                                rooms={Math.max(
-                                  rooms,
-                                  Math.ceil(totalGuests / Math.max(1, hotel.capacity ?? 2)),
-                                )}
+                                rooms={roomsNeededFor(hotel.capacity ?? 2)}
                                 price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
                                 selected={hotelId === hotel.id}
-                                onSelect={(id) => {
-                                  if (budget == null) {
-                                    setBudgetError(true);
-                                    document.getElementById('holiday-budget')?.focus();
-                                    return;
-                                  }
-                                  setHotelId(id);
-                                }}
+                                onSelect={(id) => handleSelectHotel(id)}
 
                               />
                             ))}
@@ -933,7 +945,9 @@ export default function BookingPage() {
                 )}
               </div>
 
-              <aside className="lg:sticky lg:top-24 lg:self-start">{summary}</aside>
+              <aside className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pb-4">
+                {summary}
+              </aside>
             </div>
           )}
 
