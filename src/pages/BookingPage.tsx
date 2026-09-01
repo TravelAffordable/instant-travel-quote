@@ -258,9 +258,6 @@ export default function BookingPage() {
       <Card className="mb-6 overflow-hidden rounded-2xl border-border shadow-md">
         <div className="relative">
           <ResponsiveImage src={selectedHotel.image} alt={selectedHotel.name} ratio="wide" />
-          <span className="absolute left-3 top-3 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-foreground">
-            {tierLabels[tierMap.get(selectedHotel.id) ?? 'standard']}
-          </span>
         </div>
         <CardContent className="p-5">
           <h3 className="font-display text-lg font-bold text-foreground">{selectedHotel.name}</h3>
