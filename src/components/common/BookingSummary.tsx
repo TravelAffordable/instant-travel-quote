@@ -14,6 +14,7 @@ export interface BookingSummaryProps {
   extrasTotal?: number;
   childPriceOnRequest?: boolean;
   onConfirm?: () => void;
+  confirmLabel?: string;
   confirmDisabled?: boolean;
   onRequestFinalQuote?: () => void;
   requestFinalQuoteDisabled?: boolean;
@@ -36,6 +37,7 @@ export function BookingSummary({
   extrasTotal = 0,
   childPriceOnRequest,
   onConfirm,
+  confirmLabel,
   confirmDisabled,
   onRequestFinalQuote,
   requestFinalQuoteDisabled,
@@ -109,7 +111,7 @@ export function BookingSummary({
             disabled={confirmDisabled}
             onClick={onConfirm}
           >
-            Request to confirm your booking
+            {confirmLabel ?? 'Request to confirm your booking'}
           </Button>
         )}
 

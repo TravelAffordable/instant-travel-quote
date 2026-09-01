@@ -74,7 +74,7 @@ export default function BookingPage() {
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [rooms, setRooms] = useState(1);
   const [contact, setContact] = useState({ name: '', email: '', phone: '' });
-  const [paymentOption, setPaymentOption] = useState<'50%' | 'full'>('50%');
+  const [paymentOption, setPaymentOption] = useState<'50%' | 'full' | 'quote'>('50%');
   const [promoCode, setPromoCode] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [reference, setReference] = useState<string>();
@@ -357,6 +357,7 @@ export default function BookingPage() {
         extrasTotal={extrasTotal}
         childPriceOnRequest={packagePricing?.childPriceOnRequest}
         onConfirm={step === 'review' ? submitBooking : undefined}
+        confirmLabel={paymentOption === 'quote' ? 'Request your quotation' : undefined}
         confirmDisabled={step === 'review' ? !contact.name || !contact.email || !contact.phone : false}
         onRequestFinalQuote={step === 'accommodation' ? () => goto('review') : undefined}
         requestFinalQuoteDisabled={step === 'accommodation' ? !selectedHotel : false}
@@ -832,6 +833,32 @@ export default function BookingPage() {
                           </button>
                           <button
                             type="button"
+                            onClick={() => setPaymentOption('quote')}
+                            className={cn(
+                              'rounded-xl border p-4 text-left text-sm font-medium transition-colors',
+                              paymentOption === 'quote'
+                                ? 'border-accent bg-accent/10 text-foreground'
+                                : 'border-border bg-card text-muted-foreground hover:bg-accent/5',
+                            )}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span
+                                className={cn(
+                                  'flex h-4 w-4 items-center justify-center rounded-full border',
+                                  paymentOption === 'quote'
+                                    ? 'border-accent bg-accent'
+                                    : 'border-muted-foreground',
+                                )}
+                              >
+                                {paymentOption === 'quote' && (
+                                  <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+                                )}
+                              </span>
+                              Please send me a quotation
+                            </span>
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => setPaymentOption('full')}
                             className={cn(
                               'rounded-xl border p-4 text-left text-sm font-medium transition-colors',
@@ -857,19 +884,27 @@ export default function BookingPage() {
                             </span>
                           </button>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          You won't be charged any amount now, we will send you a limited time payment link to
-                          secure booking.
-                        </p>
-                        <div className="flex items-center justify-between border-t border-border pt-4 text-sm">
-                          <span className="text-muted-foreground">Amount on payment link</span>
-                          <span className="font-display text-lg font-bold text-sunset">
-                            R{' '}
-                            {Math.round(
-                              paymentOption === '50%' ? total * 0.5 : total,
-                            ).toLocaleString('en-ZA')}
-                          </span>
-                        </div>
+                        {paymentOption === 'quote' ? (
+                          <p className="text-sm text-muted-foreground">
+                            We'll send you a detailed quotation for this holiday — no payment required now.
+                          </p>
+                        ) : (
+                          <>
+                            <p className="text-sm text-muted-foreground">
+                              You won't be charged any amount now, we will send you a limited time payment link
+                              to secure booking.
+                            </p>
+                            <div className="flex items-center justify-between border-t border-border pt-4 text-sm">
+                              <span className="text-muted-foreground">Amount on payment link</span>
+                              <span className="font-display text-lg font-bold text-sunset">
+                                R{' '}
+                                {Math.round(
+                                  paymentOption === '50%' ? total * 0.5 : total,
+                                ).toLocaleString('en-ZA')}
+                              </span>
+                            </div>
+                          </>
+                        )}
                         {paymentOption === 'full' && (
                           <p className="text-xs text-accent">
                             A limited-time discount will be applied to your payment link.
