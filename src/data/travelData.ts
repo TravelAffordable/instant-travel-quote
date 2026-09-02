@@ -1152,6 +1152,19 @@ export const packages: Package[] = [
     activitiesIncluded: ['Accommodation', 'Suncoast Casino outing', '3 hour open top bus city tour', 'Shuttle service between hotel and activities'],
     duration: '2 nights'
   },
+  {
+    id: 'dur9',
+    name: 'DUR9 - DURBAN BEACH GETAWAY WITH USHAKA MARINE WORLD, MOSES MABHIDA SKYCAR AND ISLE OF CAPRI BOAT CRUISE',
+    shortName: 'uShaka, SkyCar & Cruise',
+    description: 'Includes accommodation, entrance fees to uShaka Marine World, Moses Mabhida Stadium SkyCar, Isle of Capri Boat Cruise, and transport to shuttle you from the hotel to activities and back.',
+    destination: 'durban',
+    basePrice: 1150,
+    kidsPrice: 700,
+    activitiesIncluded: ['Accommodation', 'Entrance fees to uShaka Marine World', 'Moses Mabhida Stadium SkyCar', 'Isle of Capri Boat Cruise', 'Shuttle service between hotel and activities'],
+    duration: '2 nights'
+  },
+
+
 
   // ============= MPUMALANGA PACKAGES =============
   {
