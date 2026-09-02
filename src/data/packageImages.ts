@@ -15,6 +15,8 @@ import luxuryCanalCruise from '@/assets/activities/luxury-canal-boat-cruise.jpg'
 import gondolaBoatCruise from '@/assets/activities/gondola-boat-cruise.jpg';
 import romanticBirthdayRoom from '@/assets/activities/romantic-birthday-room.jpg';
 import ushakaMarineWorld from '@/assets/activities/ushaka-marine-world.jpg';
+import durbanBeachVolleyballAsset from '@/assets/activities/durban-beach-volleyball.jpg.asset.json';
+
 
 // Umhlanga Activities
 import umhlangaBeach from '@/assets/activities/umhlanga-beach.jpg';
