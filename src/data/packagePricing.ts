@@ -69,6 +69,8 @@ export const PACKAGE_PRICES: Record<string, PackagePrice> = {
   DUR6: { adult: 950, child3to12: 500, child13to17: 600 },
   DUR7: { adult: 800, child3to12: 400, child13to17: 500 },
   DUR8: { adult: 1000, child3to12: 550, child13to17: 650 },
+  DUR9: { adult: 1550, child3to12: 700, child13to17: 800 },
+
 
   UMHLA1: { adult: 900, child3to12: 380, child13to17: 480 },
   UMHLA2: { adult: 1850, child3to12: 1100, child13to17: 1200 },

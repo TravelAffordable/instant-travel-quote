@@ -15,6 +15,8 @@ import luxuryCanalCruise from '@/assets/activities/luxury-canal-boat-cruise.jpg'
 import gondolaBoatCruise from '@/assets/activities/gondola-boat-cruise.jpg';
 import romanticBirthdayRoom from '@/assets/activities/romantic-birthday-room.jpg';
 import ushakaMarineWorld from '@/assets/activities/ushaka-marine-world.jpg';
+import durbanBeachVolleyballAsset from '@/assets/activities/durban-beach-volleyball.jpg.asset.json';
+
 
 // Umhlanga Activities
 import umhlangaBeach from '@/assets/activities/umhlanga-beach.jpg';
@@ -116,6 +118,8 @@ export const packageImages: Record<string, string> = {
   'dur6': gondolaBoatCruise,        // Couple boat cruise
   'dur7': romanticBirthdayRoom,     // Couple nightlife escape
   'dur8': durbanMosesMabhida,       // Couple open top bus / city
+  'dur9': durbanBeachVolleyballAsset.url, // uShaka + SkyCar + Isle of Capri cruise
+
 
   // ============= UMHLANGA =============
   'umhla1': umhlangaGatewayMall,    // Gateway Mall + beach
