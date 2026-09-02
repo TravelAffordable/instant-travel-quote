@@ -119,8 +119,17 @@ export default function BookingPage() {
   const packagePricing = pkg ? calculatePackagePrice(pkg.id, { adults, childrenAges }) : null;
   const packageTotal = packagePricing?.total ?? 0;
 
-  const hotels = (destination?.destinationId ? getHotelsByDestination(destination.destinationId) : [])
-    .filter((h) => !isGenericHotelName(h.name))
+  const destinationId = destination?.destinationId;
+  const hotels = (destinationId ? getHotelsByDestination(destinationId) : [])
+    // Generic placeholder names were only ever created for Durban/Umhlanga real-name
+    // replacements — filtering elsewhere would wipe out budget/affordable stays.
+    .filter(
+      (h) =>
+        !(
+          (destinationId === 'durban' || destinationId === 'umhlanga') &&
+          isGenericHotelName(h.name)
+        ),
+    )
     .map((h) => {
       const stars = getDurbanHotelStars(h.name) ?? getUmhlangaHotelStars(h.name);
       return stars == null ? h : { ...h, rating: stars };
@@ -129,13 +138,16 @@ export default function BookingPage() {
   const totalGuests = adults + kids + teens;
 
   // Golden Mile (Durban beachfront) hotels are priced night-by-night from the
-  // seasonal rate calendar; every other property keeps its flat nightly rate.
-  const stayRoomCost = (hotelName: string, hotelPerNight: number) =>
-    getGoldenMileStayTotal(hotelName, checkIn, Math.max(1, nights), hotelPerNight);
+  // seasonal rate calendar. Those published rates are for standard 2-sleeper
+  // rooms, so larger family units keep their own nightly rate.
+  const stayRoomCost = (hotelName: string, hotelPerNight: number, capacity = 2) =>
+    capacity > 2
+      ? hotelPerNight * Math.max(1, nights)
+      : getGoldenMileStayTotal(hotelName, checkIn, Math.max(1, nights), hotelPerNight);
 
   const hotelPrice = (hotelPerNight: number, capacity: number, hotelName = '') => {
     const roomCount = Math.max(rooms, Math.ceil(totalGuests / Math.max(1, capacity)));
-    return stayRoomCost(hotelName, hotelPerNight) * Math.max(1, roomCount);
+    return stayRoomCost(hotelName, hotelPerNight, capacity) * Math.max(1, roomCount);
   };
 
 
@@ -158,7 +170,9 @@ export default function BookingPage() {
   })();
 
   const availableHotels = capacityMatched.filter((h) => isHotelAvailable(h.name, h.capacity ?? 2));
-  const soldOutCount = hotels.length - availableHotels.length;
+  // Only genuine date-driven sell-outs count here — rooms hidden because they don't
+  // fit the group are not "sold out".
+  const soldOutCount = capacityMatched.length - availableHotels.length;
   // Stays that comfortably fit the whole group in one unit show first (cheapest first),
   // smaller units that would need multiple rooms fall to the bottom.
   const visibleHotels = availableHotels
@@ -167,9 +181,11 @@ export default function BookingPage() {
       const fits = (h: typeof a) => ((h.capacity ?? 2) >= Math.max(1, totalGuests) ? 0 : 1);
       return (
         fits(a) - fits(b) ||
-        stayRoomCost(a.name, a.pricePerNight) - stayRoomCost(b.name, b.pricePerNight)
+        stayRoomCost(a.name, a.pricePerNight, a.capacity ?? 2) -
+          stayRoomCost(b.name, b.pricePerNight, b.capacity ?? 2)
       );
     });
+
 
   // Holiday price for a stay = package price + accommodation for the whole stay.
   const holidayPriceFor = (hotel: (typeof visibleHotels)[number]) =>
