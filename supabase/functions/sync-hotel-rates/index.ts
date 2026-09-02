@@ -46,7 +46,18 @@ Deno.serve(async (req) => {
 
     const summary: Record<string, { unique: number; matched: number; entries: number }> = {};
 
+    // Edge functions have a hard wall-clock limit and Firecrawl scraping is slow,
+    // so process destinations until the time budget runs out and report the rest.
+    const startedAt = Date.now();
+    const TIME_BUDGET_MS = 100_000;
+    const pending: string[] = [];
+
     for (const dest of destinations) {
+      if (Date.now() - startedAt > TIME_BUDGET_MS) {
+        pending.push(dest);
+        continue;
+      }
+
       const hotels = getHotelsForDestination(dest);
       const uniqueHotels = getUniqueRealNames(dest);
 
@@ -87,13 +98,15 @@ Deno.serve(async (req) => {
       };
     }
 
-    console.log('Sync complete:', JSON.stringify(summary));
+    console.log('Sync complete:', JSON.stringify(summary), 'pending:', pending.join(', '));
 
     return jsonResponse({
       success: true,
       synced_at: new Date().toISOString(),
       summary,
+      pending_destinations: pending,
     });
+
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('sync-hotel-rates error:', message);

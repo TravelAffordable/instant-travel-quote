@@ -6,18 +6,32 @@ import type { CatalogueDestination } from '@/data/destinationCatalogue';
 interface DestinationTileProps {
   destination: CatalogueDestination;
   fromPrice?: number | null;
+  /** When provided the tile acts as a button (no navigation) instead of a link. */
+  onSelect?: () => void;
 }
 
-export function DestinationTile({ destination, fromPrice }: DestinationTileProps) {
+export function DestinationTile({ destination, fromPrice, onSelect }: DestinationTileProps) {
   const to = destination.enquireOnly
     ? `/book?destination=${destination.slug}`
     : `/destinations/${destination.slug}`;
 
+  const className =
+    'group relative block w-full overflow-hidden rounded-2xl text-left shadow-md ring-1 ring-border transition-shadow hover:shadow-xl';
+
+  const Root = ({ children }: { children: React.ReactNode }) =>
+    onSelect ? (
+      <button type="button" onClick={onSelect} className={className}>
+        {children}
+      </button>
+    ) : (
+      <Link to={to} className={className}>
+        {children}
+      </Link>
+    );
+
   return (
-    <Link
-      to={to}
-      className="group relative block overflow-hidden rounded-2xl shadow-md ring-1 ring-border transition-shadow hover:shadow-xl"
-    >
+    <Root>
+
       <ResponsiveImage src={destination.image} alt={`${destination.name} holidays`} ratio="photo" />
       <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/25 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-5">
@@ -44,6 +58,7 @@ export function DestinationTile({ destination, fromPrice }: DestinationTileProps
           <ArrowRight className="h-4 w-4 text-white transition-transform group-hover:translate-x-1" />
         </div>
       </div>
-    </Link>
+    </Root>
+
   );
 }
