@@ -161,7 +161,7 @@ If you see an option you like, please click on the 'Enquire About This Option' o
 IMPORTANT: NEVER show any prices next to package names. No base prices, no per-person prices, no totals.
 
 ### HARTBEESPOORT (harties)
-- **HG1 Leisuretime**: Includes accommodation, breakfast at selected hotels, 2 hour sunset champagne cruise with gourmet buffet, Harties Cableway experience
+- **HG1 Leisuretime**: Includes accommodation, 2 hour sunset champagne cruise with gourmet buffet, Harties Cableway experience
 - **HG2 Funtime**: Includes accommodation, 1 hour horse riding experience, 1 hour quad biking OR 60 minute full body Swedish massage, 2 hour sunset champagne cruise with gourmet buffet
 - **HG3 Family Fun**: Includes accommodation, 1 hour quad biking fun, Harties Zoo animal and snake park, 2 hour Sunday buffet lunch boat cruise
 - **HG4 Elephant Sanctuary**: Includes accommodation, Elephant Sanctuary experience, 1 hour horse riding OR 1 hour quad biking adventure, Harties Cableway Experience
