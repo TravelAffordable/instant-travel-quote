@@ -98,13 +98,15 @@ Deno.serve(async (req) => {
       };
     }
 
-    console.log('Sync complete:', JSON.stringify(summary));
+    console.log('Sync complete:', JSON.stringify(summary), 'pending:', pending.join(', '));
 
     return jsonResponse({
       success: true,
       synced_at: new Date().toISOString(),
       summary,
+      pending_destinations: pending,
     });
+
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('sync-hotel-rates error:', message);
