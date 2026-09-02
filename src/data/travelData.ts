@@ -803,7 +803,7 @@ export const packages: Package[] = [
     destination: 'umhlanga',
     basePrice: 500,
     kidsPrice: 180,
-    activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', 'Gateway Theatre of Dreams Shopping Mall', 'Umhlanga Rocks Main Beach', 'The Oceans Mall', 'Shuttle transport'],
+    activitiesIncluded: ['Accommodation', 'Gateway Theatre of Dreams Shopping Mall', 'Umhlanga Rocks Main Beach', 'The Oceans Mall', 'Shuttle transport'],
     duration: '2 nights'
   },
   {
@@ -814,7 +814,7 @@ export const packages: Package[] = [
     destination: 'umhlanga',
     basePrice: 1450,
     kidsPrice: 900,
-    activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', 'uShaka Marine World full combo tickets', 'uShaka Marine Beach', 'Point Waterfront luxury canal boat cruise', 'uMhlanga Rocks Main Beach', 'Shuttle transport'],
+    activitiesIncluded: ['Accommodation', 'uShaka Marine World full combo tickets', 'uShaka Marine Beach', 'Point Waterfront luxury canal boat cruise', 'uMhlanga Rocks Main Beach', 'Shuttle transport'],
     duration: '2 nights'
   },
   {
@@ -825,7 +825,7 @@ export const packages: Package[] = [
     destination: 'umhlanga',
     basePrice: 1850,
     kidsPrice: 800,
-    activitiesIncluded: ['Accommodation', 'Buffet breakfast at selected hotels', 'uShaka Marine World full combo tickets', 'Boat cruise-Durban Harbour', 'Umhlanga Rocks Main Beach', 'Ballito Beach', 'Shuttle transport'],
+    activitiesIncluded: ['Accommodation', 'uShaka Marine World full combo tickets', 'Boat cruise-Durban Harbour', 'Umhlanga Rocks Main Beach', 'Ballito Beach', 'Shuttle transport'],
     duration: '2 nights'
   },
   {
@@ -836,7 +836,7 @@ export const packages: Package[] = [
     destination: 'umhlanga',
     basePrice: 2400,
     kidsPrice: 900,
-    activitiesIncluded: ['Accommodation', 'Buffet breakfast at selected hotels', 'Romantic dinner date', 'Romantic room decor', 'uShaka Marine World full combo tickets', 'Gondola boat canal cruise with picnic basket', 'Shuttle transport'],
+    activitiesIncluded: ['Accommodation', 'Romantic dinner date', 'Romantic room decor', 'uShaka Marine World full combo tickets', 'Gondola boat canal cruise with picnic basket', 'Shuttle transport'],
     duration: '2 nights'
   },
 
@@ -848,7 +848,7 @@ export const packages: Package[] = [
     description: 'Includes accommodation, breakfast, Knysna wine and oyster luxury lounger sunset cruise, boat cruise, Knysna Forest guided quad biking adventure.',
     destination: 'knysna',
     basePrice: 1550,
-    activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', 'Knysna wine and oyster luxury lounger sunset cruise', 'Knysna Forest guided quad biking adventure', 'Shuttle transport'],
+    activitiesIncluded: ['Accommodation', 'Knysna wine and oyster luxury lounger sunset cruise', 'Knysna Forest guided quad biking adventure', 'Shuttle transport'],
     duration: '2 nights'
   },
 
@@ -865,7 +865,7 @@ export const packages: Package[] = [
       { minAge: 15, maxAge: 17, price: 1010 }
     ],
     kidsMinAge: 4,
-    activitiesIncluded: ['Accommodation', 'Breakfast at selected hotels', '2 hour sunset champagne cruise with gourmet buffet', 'Harties Cableway experience'],
+    activitiesIncluded: ['Accommodation', '2 hour sunset champagne cruise with gourmet buffet', 'Harties Cableway experience'],
     duration: '2 nights'
   },
   {
