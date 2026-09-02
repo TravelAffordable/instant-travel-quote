@@ -216,14 +216,15 @@ export default function BookingPage() {
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   const handleSelectHotel = (id: string) => {
-    scrollToBudget();
     if (budget == null) {
       setBudgetError(true);
+      scrollToBudget();
       document.getElementById('holiday-budget')?.focus();
       return;
     }
     setHotelId(id);
   };
+
 
   useEffect(() => {
     if (hotelId && !availableHotels.some((h) => h.id === hotelId)) setHotelId(undefined);
