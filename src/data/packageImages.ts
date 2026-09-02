@@ -116,6 +116,8 @@ export const packageImages: Record<string, string> = {
   'dur6': gondolaBoatCruise,        // Couple boat cruise
   'dur7': romanticBirthdayRoom,     // Couple nightlife escape
   'dur8': durbanMosesMabhida,       // Couple open top bus / city
+  'dur9': durbanBeachVolleyballAsset.url, // uShaka + SkyCar + Isle of Capri cruise
+
 
   // ============= UMHLANGA =============
   'umhla1': umhlangaGatewayMall,    // Gateway Mall + beach
