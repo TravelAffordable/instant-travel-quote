@@ -58,6 +58,7 @@ export function DestinationTile({ destination, fromPrice, onSelect }: Destinatio
           <ArrowRight className="h-4 w-4 text-white transition-transform group-hover:translate-x-1" />
         </div>
       </div>
-    </Link>
+    </Root>
+
   );
 }
