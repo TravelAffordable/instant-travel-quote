@@ -82,8 +82,14 @@ serve(async (req) => {
       });
     }
 
+    // Sender must be on a verified domain — the Resend sandbox address can only
+    // deliver to the account owner, which silently dropped team enquiries.
+    const fromAddress =
+      Deno.env.get("QUOTE_FROM_EMAIL") || "quotes@travelaffordable.co.za";
+
     const emailPayload = {
-      from: "Travel Affordable <onboarding@resend.dev>",
+      from: `Travel Affordable <${fromAddress}>`,
+
       ...(guestEmail && /^\S+@\S+\.\S+$/.test(String(guestEmail))
         ? { reply_to: String(guestEmail) }
         : {}),
