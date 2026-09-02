@@ -410,19 +410,17 @@ export default function BookingPage() {
             <p className="mt-2 text-muted-foreground">Choose your destination to begin.</p>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {catalogueDestinations.map((d) => (
-                <button
+                <DestinationTile
                   key={d.slug}
-                  type="button"
-                  className="text-left"
-                  onClick={() => {
+                  destination={{ ...d, enquireOnly: false }}
+                  onSelect={() => {
                     setDestinationSlug(d.slug);
                     setPackageId('');
                     setHotelId(undefined);
                     goto('experience');
                   }}
-                >
-                  <DestinationTile destination={{ ...d, enquireOnly: false }} />
-                </button>
+                />
+
               ))}
             </div>
           </section>
