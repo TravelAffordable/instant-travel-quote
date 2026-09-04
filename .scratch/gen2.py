@@ -5,7 +5,7 @@ from PIL import Image
 NAMES = ["SolSands","Garden Court South Beach","Blue Waters","The Edward","Belaire","Elangeni","Suncoast","Parade Hotel","Silver Sands","Palace All-Suite","Durban Spa","Beachurst Apartment","Valley View","Metro Lodge","Impala","Apartment 4B","Tenbery503","BeachSide","UShaka Marina","Vitamin Sea","Shores 4C","Green 4A","Ocean Escape","WINDEMERE","1404","Serenity","GoldenMile","Yellow House","Chasing","57 Marlborough","Shaka shores","Sea View Escape","Ocean view @ 10","Tenbury 3","605 Tenbury","Coastal Crown","1102","Unit 706","Unit 707","UshakaViews","309 Marlborough","Mahalia","Beach Views at 10","Six Sleeper","806 Ocean"]
 
 os.makedirs('frames', exist_ok=True)
-if not glob.glob('frames/full*.png'):
+if not glob.glob('/dev-server/.scratch/frames/full*.png'):
     os.system("ffmpeg -v error -i /mnt/user-uploads/screen-20260903-203836.mp4 -vf fps=1 -q:v 2 frames/full%03d.png")
 
 def ocr(f):
@@ -29,7 +29,7 @@ def main():
     from multiprocessing import Pool
     found={}
     with Pool(8) as pool:
-        for res in pool.imap_unordered(ocr, sorted(glob.glob('frames/full*.png'))):
+        for res in pool.imap_unordered(ocr, sorted(glob.glob('/dev-server/.scratch/frames/full*.png'))):
             for n,f,top in res:
                 prev=found.get(n)
                 if prev is None or abs(top-500)<abs(prev[1]-500):
