@@ -101,67 +101,96 @@ const budgetPrices = [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
 
 // Custom Durban Budget Hotels with specific names, prices, and room types
 // 2-sleeper rooms (standard double occupancy)
-const durbanBudgetHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
-  { name: 'Durban Beachfront Budget Option SeaIMP', price: 574, roomType: 'Standard Room', capacity: 2 },
-  { name: 'Durban Beachfront Budget Option SeaNOMA', price: 640, roomType: 'Standard Room', capacity: 2 },
-  { name: 'Durban Beachfront Budget Option SeaESC', price: 720, roomType: 'Standard Room', capacity: 2 },
-  { name: 'Durban Beachfront Budget Option SeaShaka2B', price: 855, roomType: 'Standard Room', capacity: 2 },
-  { name: 'Durban Beachfront Budget Option SeaBV', price: 900, roomType: 'Standard Room', capacity: 2 },
-  { name: 'Durban Beachfront Budget Option SeaSOL', price: 920, roomType: 'Standard Room', capacity: 2 },
-  { name: 'Durban Beachfront Budget Option SeaLANC', price: 1152, roomType: 'Standard Room', capacity: 2 },
-  { name: 'Durban Beachfront Budget Option SeaWIND', price: 1275, roomType: 'Standard Room', capacity: 2 },
+const durbanBudgetHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
+  { name: 'Impala Holiday Flats & Apartments', price: 801, roomType: 'Studio Flat', capacity: 2 },
+  { name: 'Shaka Shores 4C', price: 855, roomType: 'Studio Apartment', capacity: 2 },
+  { name: 'Yellow House 1101', price: 900, roomType: 'One-Bedroom Apartment', capacity: 2 },
+  { name: 'Metro Lodge MP', price: 1148, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Serenity 905', price: 1211, roomType: 'One-Bedroom Apartment', capacity: 2 },
+  { name: 'Parade Hotel', price: 1231, roomType: 'Private Suite', capacity: 2, includesBreakfast: true },
+  { name: '605 Tenbury Beach Apartment', price: 1250, roomType: 'One-Bedroom Apartment', capacity: 2 },
+  { name: 'The Balmoral', price: 1287, roomType: 'Double or Twin Room', capacity: 2, includesBreakfast: true },
 ];
 
 // 4-sleeper rooms (family/group occupancy - 4 adults or 2 adults + 2 kids or 1 adult + 3 kids)
-const durbanBudgetHotels4Sleeper: { name: string; price: number; roomType: string; capacity: number }[] = [
-  { name: 'Durban Beachfront Budget Option SeaNOMA', price: 632, roomType: 'Two-Bedroom Apartment', capacity: 4 },
-  { name: 'Durban Beachfront Budget Option SeaIMP', price: 956, roomType: 'Apartment with Sea View', capacity: 4 },
-  { name: 'Durban Beachfront Budget Option SeaSOL', price: 1104, roomType: 'Family Apartment', capacity: 4 },
-  { name: 'Durban Beachfront Budget Option SeaLANC', price: 1152, roomType: 'One-Bedroom Apartment', capacity: 4 },
-  { name: 'Durban Beachfront Budget Option SeaWIND', price: 1233, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+const durbanBudgetHotels4Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
+  { name: 'Sea View Escape', price: 914, roomType: 'Four-Bed Apartment', capacity: 4 },
+  { name: 'Beachurst Apartment II', price: 972, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'SolSands Hotel & Self-Catering', price: 1021, roomType: 'Self-Catering Apartment', capacity: 4 },
+  { name: 'Sea View Apartment next to uShaka', price: 1088, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Tenbery 503', price: 1104, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Beachurst Apartment', price: 1118, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'uShaka Ocean Escape - Shaka Shores 5E', price: 1203, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Ocean View @ 10 South', price: 1215, roomType: 'Ocean View Apartment', capacity: 4 },
+  { name: 'Durban Beachfront 10 South Apartments 1404', price: 1269, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Durban Beach Front Six Sleeper Sea View Apartment', price: 1296, roomType: 'One-Bedroom Apartment', capacity: 4 },
 ];
 
 // Custom Durban Premium Hotels with specific names, prices, and room types
 // 2-sleeper rooms
 const durbanPremiumHotels2Sleeper: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
-  { name: 'The Balmoral', price: 979, roomType: 'Double or Twin Room', capacity: 2, includesBreakfast: true },
-  { name: 'Parade Hotel', price: 1146, roomType: 'Private Suite', capacity: 2, includesBreakfast: true },
-  { name: 'Blue Waters Hotel', price: 1494, roomType: 'Deluxe King or Twin Room', capacity: 2, includesBreakfast: true },
-  { name: 'Southern Sun Garden Court South Beach', price: 1496, roomType: 'Standard Queen Room', capacity: 2, includesBreakfast: true },
-  { name: 'Gooderson Tropicana Hotel', price: 1557, roomType: 'Family Double Room', capacity: 2 },
-  { name: 'SatSands Hotel & Self-Catering', price: 1599, roomType: 'Standard Room', capacity: 2 },
-  { name: 'Southern Sun The Edward', price: 1629, roomType: 'Standard Twin Room', capacity: 2, includesBreakfast: true },
-  { name: 'Southern Sun Garden Court Marine Parade', price: 1738, roomType: 'Standard King Room', capacity: 2, includesBreakfast: true },
-  { name: 'Southern Sun Elangeni & Maharani Hotel', price: 1814, roomType: 'Elangeni Standard Queen', capacity: 2, includesBreakfast: true },
-  { name: 'Suncoast Hotel & Towers', price: 1966, roomType: 'Standard Room Pool Facing', capacity: 2 },
-  { name: 'Belaire Suites Hotel', price: 2218, roomType: 'Superior Double or Twin Room', capacity: 2, includesBreakfast: true },
+  { name: 'Garden Court South Beach', price: 1302, roomType: 'Standard Hotel Room', capacity: 2, includesBreakfast: true },
+  { name: 'The Edward', price: 1357, roomType: 'Standard Twin Room', capacity: 2, includesBreakfast: true },
+  { name: 'Durban Luxury Apartments 204 Vitamin Sea', price: 1362, roomType: 'One-Bedroom Apartment', capacity: 2 },
+  { name: 'Southern Sun Elangeni & Maharani', price: 1401, roomType: 'Standard Queen Room', capacity: 2, includesBreakfast: true },
+  { name: 'Garden Court Marine Parade', price: 1656, roomType: 'Standard Hotel Room', capacity: 2, includesBreakfast: true },
+  { name: 'Belaire Suites Hotel', price: 1693, roomType: 'Superior Double Room', capacity: 2, includesBreakfast: true },
+  { name: 'Suncoast Hotel & Towers', price: 2016, roomType: 'Standard Room', capacity: 2 },
+  { name: 'Coastal Crown', price: 2178, roomType: 'One-Bedroom Apartment', capacity: 2 },
+  { name: 'Blue Waters Hotel', price: 2196, roomType: 'Deluxe Room', capacity: 2, includesBreakfast: true },
+  { name: 'First Group The Palace All-Suite', price: 2200, roomType: 'Studio Suite', capacity: 2, includesBreakfast: true },
+  { name: 'UshakaViews', price: 2520, roomType: 'One-Bedroom Apartment', capacity: 2 },
 ];
 
 
 // 4-sleeper rooms for 4 adults
 const durbanPremiumHotels4SleeperAdults: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
-  { name: 'Gooderson Tropicana Hotel', price: 1400, roomType: 'Family Double Room', capacity: 4 },
-  { name: 'Sea Esta Luxury Apartment 107', price: 1880, roomType: 'Deluxe Apartment', capacity: 4 },
-  { name: 'Blue Waters Hotel', price: 1930, roomType: 'Deluxe Quadruple Room', capacity: 4, includesBreakfast: true },
-  { name: 'Belaire Suites Hotel', price: 1949, roomType: 'Superior King Suite', capacity: 4, includesBreakfast: true },
-  { name: 'Beach Hurst 303', price: 2000, roomType: 'Two-Bedroom Apartment', capacity: 4 },
-  { name: 'Gooderson Leisure Silver Sands 2', price: 2086, roomType: 'One-Bedroom Apartment with Sea View', capacity: 4 },
-  { name: 'First Group The Palace All-Suite', price: 3736, roomType: 'Two-Bedroom Apartment', capacity: 4, includesBreakfast: true },
+  { name: 'T&N BeachSide Apartment', price: 1368, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Shaka Shores Apartment 4B', price: 1466, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'No 75 Windemere Holiday Flat', price: 1499, roomType: 'Two-Bedroom Flat', capacity: 4 },
+  { name: 'Durban Luxury Apartments 806 Ocean View', price: 1514, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Shaka Shores Beachfront', price: 1515, roomType: 'Four-Bed Apartment', capacity: 4 },
+  { name: 'Durban Spa', price: 1591, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Shaka Shores Green 4A', price: 1620, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: '1205 on The Golden Mile - 5 Sleeper Ocean View at 10 South', price: 1620, roomType: 'Ocean View Apartment', capacity: 4 },
+  { name: 'Mahalia Sea Views', price: 1620, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Valley View', price: 1652, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: '309 Marlborough Court', price: 1700, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Durban Luxury Apartments 107 Sea Esta', price: 1708, roomType: 'Deluxe Apartment', capacity: 4 },
+  { name: 'Durban Luxury Apartments 10 South 1102', price: 1781, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Durban Luxury Apartments 1101 Ocean Pearl', price: 1781, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: '57 Marlborough Court', price: 1800, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Gooderson Leisure Silver Sands 2', price: 1806, roomType: 'One-Bedroom Apartment with Sea View', capacity: 4 },
+  { name: 'Chasing The Sun', price: 1980, roomType: 'Four-Bed Apartment', capacity: 4 },
+  { name: '10 South Apartment Unit 706', price: 1980, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: '10 South Apartment Unit 707', price: 2025, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Tenbury 3 Bedroom', price: 2475, roomType: 'Three-Bedroom Apartment', capacity: 4 },
+  { name: 'Durban Beach Views at 10 South', price: 4536, roomType: 'Three-Bed Apartment', capacity: 4, includesBreakfast: true },
 ];
 
 // 4-sleeper rooms for 2 adults + 2 kids (family rooms)
 const durbanPremiumHotels4SleeperFamily: { name: string; price: number; roomType: string; capacity: number; includesBreakfast?: boolean }[] = [
-  { name: 'Gooderson Tropicana Hotel', price: 1400, roomType: 'Family Double Room', capacity: 4 },
-  { name: 'Gooderson Leisure Silver Sands 2', price: 1495, roomType: 'Studio with Sea View', capacity: 4 },
-  { name: 'Sea Esta Luxury Apartment 107', price: 1880, roomType: 'Deluxe Apartment', capacity: 4 },
-  { name: 'Garden Court Marine Parade', price: 1885, roomType: 'Standard Double Room with Two Double Beds', capacity: 4, includesBreakfast: true },
-  { name: 'Blue Waters Hotel', price: 1930, roomType: 'Deluxe Quadruple Room', capacity: 4, includesBreakfast: true },
-  { name: 'Belaire Suites Hotel', price: 1949, roomType: 'Family Room with Side Sea View', capacity: 4, includesBreakfast: true },
-  { name: 'The Balmoral', price: 2041, roomType: 'Large Twin Room', capacity: 4, includesBreakfast: true },
-  { name: 'Southern Sun Elangeni & Maharani', price: 2145, roomType: 'Elangeni Standard Side Sea Facing Double Double', capacity: 4, includesBreakfast: true },
-  { name: 'UshakaViews', price: 2520, roomType: 'Two-Bedroom Apartment', capacity: 4 },
-  { name: 'First Group The Palace All-Suite', price: 3502, roomType: 'Two-Bedroom Apartment', capacity: 4, includesBreakfast: true },
-  { name: 'The Edward', price: 3927, roomType: 'Superior Double Double Room', capacity: 4, includesBreakfast: true },
+  { name: 'T&N BeachSide Apartment', price: 1368, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Shaka Shores Apartment 4B', price: 1466, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'No 75 Windemere Holiday Flat', price: 1499, roomType: 'Two-Bedroom Flat', capacity: 4 },
+  { name: 'Durban Luxury Apartments 806 Ocean View', price: 1514, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Shaka Shores Beachfront', price: 1515, roomType: 'Four-Bed Apartment', capacity: 4 },
+  { name: 'Durban Spa', price: 1591, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Shaka Shores Green 4A', price: 1620, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: '1205 on The Golden Mile - 5 Sleeper Ocean View at 10 South', price: 1620, roomType: 'Ocean View Apartment', capacity: 4 },
+  { name: 'Mahalia Sea Views', price: 1620, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Valley View', price: 1652, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: '309 Marlborough Court', price: 1700, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Durban Luxury Apartments 107 Sea Esta', price: 1708, roomType: 'Deluxe Apartment', capacity: 4 },
+  { name: 'Durban Luxury Apartments 10 South 1102', price: 1781, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Durban Luxury Apartments 1101 Ocean Pearl', price: 1781, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: '57 Marlborough Court', price: 1800, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: 'Gooderson Leisure Silver Sands 2', price: 1806, roomType: 'One-Bedroom Apartment with Sea View', capacity: 4 },
+  { name: 'Chasing The Sun', price: 1980, roomType: 'Four-Bed Apartment', capacity: 4 },
+  { name: '10 South Apartment Unit 706', price: 1980, roomType: 'Three-Bed Apartment', capacity: 4 },
+  { name: '10 South Apartment Unit 707', price: 2025, roomType: 'Two-Bedroom Apartment', capacity: 4 },
+  { name: 'Tenbury 3 Bedroom', price: 2475, roomType: 'Three-Bedroom Apartment', capacity: 4 },
+  { name: 'Durban Beach Views at 10 South', price: 4536, roomType: 'Three-Bed Apartment', capacity: 4, includesBreakfast: true },
 ];
 
 // Real Umhlanga 2-sleeper properties. Existing properties are retained;
@@ -468,8 +497,10 @@ function generateHotels(): Hotel[] {
           rating: 3.5 + (Math.random() * 0.5),
           type: 'very-affordable',
           amenities: ['WiFi', 'Parking', 'TV'],
-          image: budgetImages[index % budgetImages.length],
+          image: durbanPremiumImageMap[hotel.name] || budgetImages[index % budgetImages.length],
+          images: [durbanPremiumImageMap[hotel.name] || budgetImages[index % budgetImages.length]],
           capacity: 2,
+          includesBreakfast: hotel.includesBreakfast,
           roomType: hotel.roomType,
         });
       });
@@ -484,8 +515,10 @@ function generateHotels(): Hotel[] {
           rating: 3.5 + (Math.random() * 0.5),
           type: 'very-affordable',
           amenities: ['WiFi', 'Parking', 'TV', 'Kitchen'],
-          image: budgetImages[index % budgetImages.length],
+          image: durbanPremiumImageMap[hotel.name] || budgetImages[index % budgetImages.length],
+          images: [durbanPremiumImageMap[hotel.name] || budgetImages[index % budgetImages.length]],
           capacity: 4,
+          includesBreakfast: hotel.includesBreakfast,
           roomType: hotel.roomType,
         });
       });
@@ -515,8 +548,10 @@ function generateHotels(): Hotel[] {
           rating: 3.5 + (Math.random() * 0.5),
           type: 'very-affordable',
           amenities: ['WiFi', 'Parking', 'TV'],
-          image: budgetImages[index % budgetImages.length],
+          image: durbanPremiumImageMap[hotel.name] || budgetImages[index % budgetImages.length],
+          images: [durbanPremiumImageMap[hotel.name] || budgetImages[index % budgetImages.length]],
           capacity: 2,
+          includesBreakfast: hotel.includesBreakfast,
           roomType: 'Standard Room',
         });
       });
