@@ -1,5 +1,4 @@
 // Durban Premium Hotel Images
-import { durbanVideoImageMap } from './durbanVideoImages';
 import blueWatersImg from '@/assets/hotels/durban-premium-blue-waters.jpg';
 import gardenCourtSouthBeachImg from '@/assets/hotels/durban-premium-garden-court-south-beach.jpg';
 import theEdwardImg from '@/assets/hotels/durban-premium-the-edward.jpg';
@@ -18,8 +17,6 @@ import satSandsImg from '@/assets/hotels/durban-premium-satsands.jpg';
 import paradeHotelImg from '@/assets/hotels/durban-premium-parade-hotel.jpg';
 
 export const durbanPremiumImageMap: Record<string, string> = {
-  // Photos captured from the supplied Booking.com listing video
-  ...durbanVideoImageMap,
   // 2-sleeper hotels
   'The Balmoral': balmoralImg,
   'Belaire Suites Hotel': belaireImg,
