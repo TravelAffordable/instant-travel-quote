@@ -548,10 +548,10 @@ function generateHotels(): Hotel[] {
           rating: 3.5 + (Math.random() * 0.5),
           type: 'very-affordable',
           amenities: ['WiFi', 'Parking', 'TV'],
-          image: durbanPremiumImageMap[hotel.name] || budgetImages[index % budgetImages.length],
-          images: [durbanPremiumImageMap[hotel.name] || budgetImages[index % budgetImages.length]],
+          image: budgetImages[index % budgetImages.length],
+          images: [budgetImages[index % budgetImages.length]],
           capacity: 2,
-          includesBreakfast: hotel.includesBreakfast,
+
           roomType: 'Standard Room',
         });
       });
