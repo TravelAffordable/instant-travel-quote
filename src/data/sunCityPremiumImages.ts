@@ -25,6 +25,16 @@ export const sunCityPremiumImageMap: Record<string, string> = {
   'Royal Marang Hotel': royalMarangAsset.url,
   'Sun City Cabanas Hotel (Inside Sun City) — 2 Sleeper': cabanas2SleeperAsset.url,
   'Sun City Cabanas Hotel (Inside Sun City) — 4 Sleeper Family': cabanas4SleeperAsset.url,
+  // 4-sleeper variants reuse the same real property photography
+  'Bakubung Bush Lodge — 4 Sleeper': bakubungAsset.url,
+  'Bakubung Villas': bakubungAsset.url,
+  'The Kingdom Resort — Two Bedroom Villa': kingdomAsset.url,
+  'Kwa Maritane Lodge — 4 Sleeper': kwaMaritaneAsset.url,
+  'Sundown Country Estate — Family Suite': sundownAsset.url,
+  "Getty's Bed and Breakfast — 4 Sleeper": gettysAsset.url,
+  'Ivory Tree Game Lodge — 4 Sleeper': ivoryTreeAsset.url,
+  'Kedar Heritage Lodge, Conference Centre & Spa — 4 Sleeper': kedarAsset.url,
+  'Royal Marang Hotel — 4 Sleeper': royalMarangAsset.url,
 };
 
 export function getSunCityPremiumImage(hotelName: string): string | undefined {
