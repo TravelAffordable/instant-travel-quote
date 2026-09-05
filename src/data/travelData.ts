@@ -549,6 +549,7 @@ function generateHotels(): Hotel[] {
           type: 'very-affordable',
           amenities: ['WiFi', 'Parking', 'TV'],
           image: budgetImages[index % budgetImages.length],
+          images: [budgetImages[index % budgetImages.length]],
           capacity: 2,
 
           roomType: 'Standard Room',
