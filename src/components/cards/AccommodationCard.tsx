@@ -64,10 +64,12 @@ export function AccommodationCard({
             <BedDouble className="h-4 w-4 text-primary" />
             {hotel.roomType || `${hotel.capacity ?? 2}-sleeper room`}
           </p>
-          <p className="flex items-center gap-2">
-            <Utensils className="h-4 w-4 text-primary" />
-            {mealBasis(hotel)}
-          </p>
+          {mealBasis(hotel) && (
+            <p className="flex items-center gap-2">
+              <Utensils className="h-4 w-4 text-primary" />
+              {mealBasis(hotel)}
+            </p>
+          )}
         </div>
         {hotel.amenities?.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-2">

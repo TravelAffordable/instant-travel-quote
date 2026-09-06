@@ -337,12 +337,7 @@ export function RMSHotelQuotes({
                                     <Coffee className="w-3 h-3 mr-1" />
                                     Breakfast Included
                                   </Badge>
-                                ) : (
-                                  <Badge variant="outline" className="bg-muted text-muted-foreground">
-                                    <Coffee className="w-3 h-3 mr-1" />
-                                    Breakfast optional extra
-                                  </Badge>
-                                )}
+                                ) : null}
                                 {busQuoteAmount > 0 && (
                                   <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-300">
                                     <Bus className="w-3 h-3 mr-1" />
