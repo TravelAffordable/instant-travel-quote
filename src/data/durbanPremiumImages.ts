@@ -43,7 +43,10 @@ export const durbanPremiumImageMap: Record<string, string> = {
   'The Balmoral - Halaal': balmoralImg,
   'SatSands Hotel & Self-Catering': satSandsImg,
   'Parade Hotel': paradeHotelImg,
+  // 4-sleeper property photos from listing screenshots
+  ...durban4SleeperImageMap,
 };
+
 
 export function getDurbanPremiumImage(hotelName: string): string | undefined {
   return durbanPremiumImageMap[hotelName];
