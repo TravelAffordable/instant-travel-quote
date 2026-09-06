@@ -48,7 +48,10 @@ export const durbanPremiumImageMap: Record<string, string> = {
   ...durban4SleeperImageMap,
   // 2-sleeper property photos from listing screenshots
   ...durban2SleeperImageMap,
+  // Client-supplied photos for the main beachfront hotels (highest priority)
+  ...durbanRealHotelImageMap,
 };
+
 
 
 export function getDurbanPremiumImage(hotelName: string): string | undefined {
