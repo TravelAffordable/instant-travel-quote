@@ -869,11 +869,16 @@ function generateHotels(): Hotel[] {
     }
   });
 
+  // Placeholder tier stays named "Budget"/"Affordable" are never shown to clients.
+  const withoutTierPlaceholders = allHotels.filter(
+    (hotel) => !/\b(budget|affordable)\b/i.test(hotel.name),
+  );
+
   // Guarantee unique ids: some destinations now list more rooms than the A–J
   // letter pool, which previously produced duplicate ids and made a selection
   // resolve to the wrong property.
   const seenIds = new Map<string, number>();
-  return allHotels.map((hotel) => {
+  return withoutTierPlaceholders.map((hotel) => {
     const count = (seenIds.get(hotel.id) ?? 0) + 1;
     seenIds.set(hotel.id, count);
     return count === 1 ? hotel : { ...hotel, id: `${hotel.id}-${count}` };
