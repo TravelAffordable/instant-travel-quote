@@ -17,6 +17,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DestinationTile } from '@/components/cards/DestinationTile';
 import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
+import { isPickMode } from '@/lib/pickMode';
+import { useFeaturedHotels } from '@/hooks/useFeaturedHotels';
+
 import { BookingSummary } from '@/components/common/BookingSummary';
 import { ResponsiveImage } from '@/components/common/ResponsiveImage';
 import { ErrorState } from '@/components/common/ErrorState';
@@ -83,6 +86,11 @@ export default function BookingPage() {
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
   const [budgetError, setBudgetError] = useState(false);
   const [hotelQuery, setHotelQuery] = useState('');
+  const pickMode = isPickMode();
+  const { isFeatured, featuredNames, toggle: togglePick } = useFeaturedHotels(
+    params.get('destination') ?? destinationSlug,
+  );
+
 
 
 
