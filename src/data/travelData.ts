@@ -1294,6 +1294,19 @@ function generateHotels(): Hotel[] {
     (hotel) => !/\b(budget|affordable)\b/i.test(hotel.name),
   );
 
+  // Durban lists the same property in several source arrays (2/4 sleeper,
+  // adults vs family). Keep one listing per property + room capacity so the
+  // booking flow never shows the same hotel twice.
+  const seenDurban = new Set<string>();
+  const deduped = withoutTierPlaceholders.filter((hotel) => {
+    if (hotel.destination !== 'durban') return true;
+    const key = `${hotel.name.trim().toLowerCase()}|${hotel.capacity ?? 2}`;
+    if (seenDurban.has(key)) return false;
+    seenDurban.add(key);
+    return true;
+  });
+
+
   // Guarantee unique ids: some destinations now list more rooms than the A–J
   // letter pool, which previously produced duplicate ids and made a selection
   // resolve to the wrong property.
