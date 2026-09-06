@@ -87,9 +87,8 @@ export default function BookingPage() {
   const [budgetError, setBudgetError] = useState(false);
   const [hotelQuery, setHotelQuery] = useState('');
   const pickMode = isPickMode();
-  const { isFeatured, featuredNames, toggle: togglePick } = useFeaturedHotels(
-    params.get('destination') ?? destinationSlug,
-  );
+  const { isFeatured, featuredNames, toggle: togglePick } = useFeaturedHotels(destinationSlug);
+
 
 
 
@@ -201,11 +200,17 @@ export default function BookingPage() {
   const holidayPriceFor = (hotel: (typeof visibleHotels)[number]) =>
     packageTotal + hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name);
 
-  // The 5 most expensive stays in the destination — shown to inspire before a budget is set.
-  const aspirationalHotels = visibleHotels
-    .slice()
-    .sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
-    .slice(0, 5);
+  // Luxury showcase stays: the owner's hand-picked list when it exists,
+  // otherwise fall back to the 5 most expensive stays in the destination.
+  const handPicked = visibleHotels.filter((h) => featuredNames.includes(h.name));
+  const aspirationalHotels =
+    handPicked.length > 0
+      ? handPicked.sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
+      : visibleHotels
+          .slice()
+          .sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
+          .slice(0, 5);
+
 
   // Stays at or above the guest's budget, closest to the budget first.
   // A hotel-name search overrides the budget filter so any named stay can be found.
