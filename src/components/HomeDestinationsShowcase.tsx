@@ -9,6 +9,8 @@ import { getPackagesByDestination } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 import { formatCurrency } from '@/lib/utils';
 import { extractTourCode, getTourFromPrice } from '@/lib/packageTourPricing';
+import { PackageCard } from '@/components/cards/PackageCard';
+
 
 // Order: Durban, Harties, Sun City, Magalies, Mpumalanga, Cape Town, Bela-Bela, Vaal River, Knysna
 const ORDERED_SLUGS = [
