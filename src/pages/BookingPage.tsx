@@ -774,7 +774,7 @@ export default function BookingPage() {
                             {budgetHotels.length > shownBudgetHotels.length && (
                               <Button
                                 variant="outline"
-                                className="mt-6 w-full"
+                                className="mt-6 w-full border-yellow-400 bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black"
                                 onClick={() => setBudgetVisibleCount((c) => c + 4)}
                               >
                                 Click to view more hotels within budget
@@ -783,10 +783,11 @@ export default function BookingPage() {
                           </div>
                         )}
 
-                        <div className="mt-10">
-                          <h2 className="font-display text-xl font-bold text-foreground">
-                            Aspirational stays — see what's possible
+                        <div className="mt-24">
+                          <h2 className="font-display text-3xl md:text-4xl font-bold text-yellow-400">
+                            See more luxury stays - see what's possible
                           </h2>
+
                           <p className="mt-2 text-sm text-muted-foreground">
                             Our five most luxurious stays in {destination.name}.
                           </p>
