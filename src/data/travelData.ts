@@ -14,6 +14,7 @@ import { vaalPremiumImageMap } from './vaalPremiumImages';
 import { magaliesPremiumImageMap } from './magaliesPremiumImages';
 import { magalies4SleeperImageMap } from './magalies4SleeperImages';
 import { mpumalangaPremiumImageMap } from './mpumalangaPremiumImages';
+import { mpumalanga2SleeperImageMap } from './mpumalanga2SleeperImages';
 import { capeTownPremiumImageMap } from './capeTownPremiumImages';
 import { umdlotiPremiumImageMap } from './umdlotiPremiumImages';
 import { belaBelaHotelImageMap } from './belaBelaHotelImages';
@@ -487,18 +488,58 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Pretoriuskop Rest Camp (4-Sleeper Hut - EB5)', nightlyRate: 1540, sleeps: 4, roomType: '4-Sleeper Hut (EB5)' },
   ],
   'mpumalanga': [
-    { name: 'Graskop Hotel', nightlyRate: 1100, includesBreakfast: true },
-    { name: 'Laguna Lodge', nightlyRate: 950 },
-    { name: 'Panorama Chalets and Rest Camp', nightlyRate: 800 },
-    { name: 'Lush', nightlyRate: 1200 },
-    { name: 'Panorama Villa', nightlyRate: 850 },
-    { name: 'Beach Island Graskop', nightlyRate: 750 },
-    { name: 'Panorama Boutique Guesthouse', nightlyRate: 1050 },
-    { name: 'Angels View Hotel', nightlyRate: 1300 },
-    { name: 'Blyde Canyon Forever Resort', nightlyRate: 1400 },
-    { name: 'Amafu Forest Lodge', nightlyRate: 1100 },
-    { name: 'Blyde Mountain Lodge', nightlyRate: 1250 },
+    // ===== 2-sleeper options (nightly rate = supplied 2-night total ÷ 2) =====
+    { name: 'Yello Guest House Graskop', nightlyRate: 525, sleeps: 2, roomType: 'Double Room with Shared Bathroom, 1 double bed' },
+    { name: 'African Dream Tents', nightlyRate: 632, sleeps: 2, roomType: 'Honeymoon Tent, 1 double bed' },
+    { name: "Elephant's Nest", nightlyRate: 618, sleeps: 2, starRating: 4, roomType: 'Deluxe Double Room' },
+    { name: 'Matibidi Guest Lodge', nightlyRate: 638, sleeps: 2, roomType: 'Double Room' },
+    { name: 'Ikhutseng Guesthouse', nightlyRate: 675, sleeps: 2, roomType: 'Double Room with Shared Bathroom, 1 double bed' },
+    { name: 'Havana Nights', nightlyRate: 728, sleeps: 2, roomType: 'One-Bedroom Chalet, 1 living room, kitchen, 72 m²' },
+    { name: '2K City Studios', nightlyRate: 750, sleeps: 2, starRating: 3, roomType: 'Apartment, 1 bedroom, 1 living room, kitchen, 34 m²' },
+    { name: 'Graskop Family Retreat and Backpackers', nightlyRate: 770, sleeps: 2, roomType: 'Family Bungalow' },
+    { name: 'Horizon View Chalets', nightlyRate: 806, sleeps: 2, starRating: 3, roomType: 'One-Bedroom Chalet, 1 living room, kitchen, 55 m²' },
+    { name: '41 on Clarendon', nightlyRate: 801, sleeps: 2, roomType: 'Four-Bedroom House, 1 living room, 2 bathrooms, kitchen, 1 000 m²' },
+    { name: 'Paradise View Guesthouse', nightlyRate: 810, sleeps: 2, starRating: 4, roomType: 'Standard Studio, 13 m²' },
+    { name: 'Chosen Glamping Tents', nightlyRate: 850, sleeps: 2, roomType: 'Tent, 1 large double bed' },
+    { name: 'Four Seasons Self-Catering Guest House', nightlyRate: 884, sleeps: 2, starRating: 3, roomType: 'Three-Bedroom Apartment, 2 bathrooms, kitchen, 250 m²' },
+    { name: 'Canimambo at The Old Post Office Inn', nightlyRate: 900, sleeps: 2, roomType: 'Queen Room, 1 double bed' },
+    { name: 'Log Cabin & Settlers Village', nightlyRate: 945, sleeps: 2, roomType: 'Double Room, 1 double bed' },
+    { name: 'Rustique', nightlyRate: 981, sleeps: 2, starRating: 3, roomType: 'Large Double Room, 1 double bed' },
+    { name: 'Thaba Tsweni Lodge & Safaris', nightlyRate: 985, sleeps: 2, starRating: 3, roomType: 'One-Bedroom Chalet, 2 beds' },
+    { name: 'Masingita Guest House', nightlyRate: 1000, sleeps: 2, starRating: 3, roomType: 'Budget Double Room, 1 double bed' },
+    { name: 'Duvha Guesthouse', nightlyRate: 1026, sleeps: 2, starRating: 3, roomType: 'Queen Room, air conditioning, 1 double bed' },
+    { name: 'Autumn Breeze Manor Guest House', nightlyRate: 1062, sleeps: 2, starRating: 3, roomType: 'Standard Double Room, air conditioning, 1 double bed' },
+    { name: 'Beach Island Graskop', nightlyRate: 1105, sleeps: 2, includesBreakfast: true, roomType: 'Standard Tent, 2 single beds' },
+    { name: 'Forest and Ferns', nightlyRate: 1200, sleeps: 2, starRating: 4, roomType: 'Luxury Twin Room, 2 single beds' },
+    { name: 'Lush', nightlyRate: 1200, sleeps: 2, starRating: 3, roomType: 'Double Room, 1 double bed' },
+    { name: 'Soulfenda Guest House', nightlyRate: 1215, sleeps: 2, roomType: 'Double Room, 1 double bed' },
+    { name: 'Blyde Lodge', nightlyRate: 1263, sleeps: 2, starRating: 4, roomType: 'Deluxe Junior Suite, 1 large double bed' },
+    { name: 'Panorama Chalets & Rest Camp', nightlyRate: 1300, sleeps: 2, starRating: 3, roomType: 'One-Bedroom Chalet, 1 living room, kitchen, 37 m²' },
+    { name: 'A Pilgrims Rest Guest House in Graskop', nightlyRate: 1336, sleeps: 2, starRating: 4, roomType: 'Deluxe Twin Room, air conditioning, 2 single beds' },
+    { name: 'Kanyane @ Graskop', nightlyRate: 1400, sleeps: 2, roomType: 'Deluxe Double or Twin Room, 1 extra-large double bed' },
+    { name: 'Cozy Guest', nightlyRate: 1400, sleeps: 2, starRating: 4, includesBreakfast: true, roomType: 'Deluxe Double Room with Shower, 1 large double bed' },
+    { name: 'Kloofsig Holiday Cottages', nightlyRate: 1440, sleeps: 2, starRating: 2, roomType: 'Two-Bedroom Chalet, 2 bathrooms, kitchen, 160 m²' },
+    { name: 'Panorama Home 19', nightlyRate: 1469, sleeps: 2, starRating: 3, roomType: 'Double or Twin Room, 3 beds' },
+    { name: "Graskop Harrie's Cottage", nightlyRate: 1470, sleeps: 2, starRating: 4, roomType: 'Holiday Home, 2 bedrooms, 2 bathrooms, kitchen, 250 m²' },
+    { name: 'Lisbon Eco Lodge', nightlyRate: 1520, sleeps: 2, starRating: 3, roomType: 'Chalet, 2 bedrooms, kitchen, 42 m²' },
+    { name: 'The Spear Guest Lodge', nightlyRate: 1560, sleeps: 2, starRating: 3, roomType: 'Apartment with Garden View, kitchen, 40 m²' },
+    { name: 'Panorama View', nightlyRate: 1620, sleeps: 2, starRating: 3, roomType: 'One-Bedroom Chalet, 1 living room, kitchen, 37 m²' },
     { name: 'Crystal Springs Mountain Lodge by MyResorts', nightlyRate: 1634, sleeps: 2, roomType: 'Studio with Patio (Self-Catering)', includesBreakfast: false },
+    { name: 'Graskop Cottage', nightlyRate: 1750, sleeps: 2, starRating: 4, roomType: 'Two-Bedroom House, 3 beds, kitchen, 14 m²' },
+    { name: 'Yello Guest House Chalets', nightlyRate: 1850, sleeps: 2, roomType: 'Deluxe Double Room, 1 double bed' },
+    { name: 'The Gem Emerald', nightlyRate: 1995, sleeps: 2, starRating: 3, roomType: 'Family Room, 3 beds' },
+    { name: 'Mosswood Bed & Breakfast', nightlyRate: 1998, sleeps: 2, starRating: 4, includesBreakfast: true, roomType: 'Queen Suite, private suite, 1 large double bed' },
+    { name: 'Le Bella Dons', nightlyRate: 2090, sleeps: 2, starRating: 4, roomType: 'Two-Bedroom House, 2 bathrooms, kitchen, 100 m²' },
+    { name: 'Panorama Boutique Guest House', nightlyRate: 2095, sleeps: 2, starRating: 4, roomType: 'Standard Queen Room, air conditioning, 1 large double bed' },
+    { name: 'Le Soleil', nightlyRate: 2185, sleeps: 2, starRating: 3, roomType: 'Two-Bedroom House, 1 living room, 2 bathrooms, kitchen, 90 m²' },
+    { name: 'Angelmalatji Guesthouse', nightlyRate: 2210, sleeps: 2, starRating: 3, roomType: 'Apartment, 4 bedrooms, 4 bathrooms, kitchen, 114 m²' },
+    { name: 'Graskop Hotel', nightlyRate: 2381, sleeps: 2, starRating: 4, includesBreakfast: true, roomType: 'Standard Family Room, 3 beds' },
+    { name: 'Boh-House', nightlyRate: 2400, sleeps: 2, starRating: 4, roomType: 'Four-Bedroom House, 3 living rooms, 3 bathrooms, kitchen, 140 m²' },
+    { name: '83 on De Lange', nightlyRate: 2400, sleeps: 2, roomType: 'Four-Bedroom House, 3 bathrooms, kitchen, 280 m²' },
+    { name: 'Panorama Villa', nightlyRate: 2655, sleeps: 2, starRating: 5, includesBreakfast: true, roomType: 'Standard Double Room, air conditioning, 1 double bed' },
+    { name: "Molly's Cottage", nightlyRate: 2980, sleeps: 2, starRating: 4, roomType: 'Holiday Home, 3 bedrooms, 2 bathrooms, kitchen, 120 m²' },
+    { name: 'Angels View Hotel', nightlyRate: 3323, sleeps: 2, starRating: 4, includesBreakfast: true, roomType: 'Superior Twin Room, air conditioning, 2 single beds' },
+    { name: 'Blyde Canyon Forever Resort', nightlyRate: 1400, sleeps: 2 },
     // ===== 4-sleeper options (nightly rate = supplied 2-night total ÷ 2) =====
     // Graskop area
     { name: 'Havana Nights — 4 Sleeper', nightlyRate: 1692, sleeps: 4, roomType: 'One-Bedroom Chalet, 3 beds, 1 living room, 2 bathrooms, kitchen, 72 m²' },
@@ -1113,7 +1154,7 @@ function generateHotels(): Hotel[] {
         ...(destId === 'sun-city' ? sunCityPremiumImageMap : {}),
         ...(destId === 'vaal-river' ? vaalPremiumImageMap : {}),
         ...(destId === 'magalies' ? { ...magaliesPremiumImageMap, ...magalies4SleeperImageMap } : {}),
-        ...(destId === 'mpumalanga' ? mpumalangaPremiumImageMap : {}),
+        ...(destId === 'mpumalanga' ? { ...mpumalangaPremiumImageMap, ...mpumalanga2SleeperImageMap } : {}),
         ...(destId === 'kruger-national-park' ? mpumalangaPremiumImageMap : {}),
         ...(destId === 'cape-town' ? capeTownPremiumImageMap : {}),
         ...(destId === 'umdloti' ? umdlotiPremiumImageMap : {}),
@@ -1121,7 +1162,7 @@ function generateHotels(): Hotel[] {
       };
       // Mpumalanga: only show properties with real property photography
       if (destId === 'mpumalanga') {
-        destPremiumHotels = destPremiumHotels.filter((h) => mpumalangaPremiumImageMap[h.name]);
+        destPremiumHotels = destPremiumHotels.filter((h) => mpumalangaPremiumImageMap[h.name] || mpumalanga2SleeperImageMap[h.name]);
       }
       destPremiumHotels.forEach((hotel, index) => {
         const slug = hotelLetters[index] ? hotelLetters[index].toLowerCase() : `${index + 1}`;
