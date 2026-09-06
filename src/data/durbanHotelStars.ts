@@ -24,6 +24,7 @@ export function getDurbanHotelStars(name: string): number | null | undefined {
 
 // Generic placeholder names that must never be shown to clients
 const GENERIC_NAME_PATTERNS = [
+  /\b(budget|affordable)\b/i,
   /beachfront\s+budget\s+option/i,
   /\b(budget|affordable|premium)\b.*\boption\s*\d+/i,
   /\bsleeper\s+option\b/i,
