@@ -200,12 +200,25 @@ export default function BookingPage() {
   const holidayPriceFor = (hotel: (typeof visibleHotels)[number]) =>
     packageTotal + hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name);
 
+  // Stays the owner asked to always show last in the luxury showcase.
+  const LAST_IN_LUXURY = ['silversands 2', 'windermere', 'the edward'];
+  const isLastInLuxury = (name: string) => {
+    const n = name.toLowerCase();
+    return LAST_IN_LUXURY.some((k) => n.includes(k));
+  };
+
   // Luxury showcase stays: the owner's hand-picked list when it exists,
   // otherwise fall back to the 5 most expensive stays in the destination.
   const handPicked = visibleHotels.filter((h) => featuredNames.includes(h.name));
   const aspirationalHotels =
     handPicked.length > 0
-      ? handPicked.sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
+      ? handPicked
+          .slice()
+          .sort(
+            (a, b) =>
+              Number(isLastInLuxury(a.name)) - Number(isLastInLuxury(b.name)) ||
+              holidayPriceFor(b) - holidayPriceFor(a),
+          )
       : visibleHotels
           .slice()
           .sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
