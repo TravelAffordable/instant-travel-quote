@@ -82,6 +82,8 @@ export default function BookingPage() {
   const [budget, setBudget] = useState<number | null>(null);
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
   const [budgetError, setBudgetError] = useState(false);
+  const [hotelQuery, setHotelQuery] = useState('');
+
 
 
   const destination = destinationSlug ? getCatalogueDestination(destinationSlug) : undefined;
