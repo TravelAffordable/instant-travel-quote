@@ -46,6 +46,8 @@ export const durbanPremiumImageMap: Record<string, string> = {
   'Parade Hotel': paradeHotelImg,
   // 4-sleeper property photos from listing screenshots
   ...durban4SleeperImageMap,
+  // 2-sleeper property photos from listing screenshots
+  ...durban2SleeperImageMap,
 };
 
 
