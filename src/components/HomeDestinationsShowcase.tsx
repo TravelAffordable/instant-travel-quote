@@ -9,6 +9,8 @@ import { getPackagesByDestination } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 import { formatCurrency } from '@/lib/utils';
 import { extractTourCode, getTourFromPrice } from '@/lib/packageTourPricing';
+import { PackageCard } from '@/components/cards/PackageCard';
+
 
 // Order: Durban, Harties, Sun City, Magalies, Mpumalanga, Cape Town, Bela-Bela, Vaal River, Knysna
 const ORDERED_SLUGS = [
@@ -122,81 +124,16 @@ export function HomeDestinationsShowcase() {
                 to request prices.
               </p>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {pkgs.map((pkg) => {
-                  const img = getPackageImage(pkg.id) || data.heroImage;
-                  const tourCode = extractTourCode(pkg.name);
-                  const fromPrice = getTourFromPrice(pkg.name);
-                  return (
-                    <Card key={pkg.id} className="overflow-hidden flex flex-col">
-                      <div className="h-44 overflow-hidden">
-                        <img
-                          src={img}
-                          alt={pkg.shortName}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      </div>
-                      <CardContent className="p-5 flex flex-col flex-1 text-center">
-                        {tourCode && (
-                          <p className="font-['Anton'] text-xs font-bold text-primary tracking-widest mb-1">
-                            TOUR CODE: {tourCode}
-                          </p>
-                        )}
-                        <h4 className="font-['Anton'] text-lg font-bold text-navy uppercase tracking-wide">
-                          {pkg.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '')}
-                        </h4>
-                        <p className="font-['Anton'] text-xs text-navy/70 mt-1 uppercase tracking-wide">
-                          <CalendarIcon className="inline h-3 w-3 mr-1" />
-                          {pkg.duration}
-                        </p>
-                        <p className="font-['Anton'] text-sm text-navy/80 mt-3 line-clamp-3 flex-1 uppercase">
-                          {pkg.description}
-                        </p>
-                        {pkg.activitiesIncluded?.length > 0 && (
-                          <ul className="mt-3 space-y-1">
-                            {pkg.activitiesIncluded.slice(0, 4).map((a) => (
-                              <li
-                                key={a}
-                                className="text-xs text-navy/80 flex items-center justify-center gap-1"
-                              >
-                                <Check className="h-3 w-3 text-primary shrink-0" />
-                                <span className="font-['Anton'] line-clamp-1 uppercase text-gold">
-                                  {a}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        {fromPrice !== null && (
-                          <div className="mt-4">
-                            <p className="font-['Anton'] text-navy">
-                              <span className="text-sm uppercase tracking-wide">From </span>
-                              <span className="text-2xl font-bold text-sunset">{formatCurrency(fromPrice)}</span>
-                              <span className="text-sm uppercase tracking-wide"> pp</span>
-                            </p>
-                            <p className="mt-1 text-sm text-navy/80">
-                              Select your preferred hotel to see the final price for your holiday
-                            </p>
-                            <p className="mt-1 text-[11px] text-navy/70">
-                              was <span className="line-through bg-blue-100 text-blue-900 px-1 rounded">{formatCurrency(fromPrice + 400)} pp</span>
-                            </p>
-                            <p className="text-[11px] text-navy/70 italic">
-                              discounts subject to availability at various hotels
-                            </p>
-                          </div>
-                        )}
-                        <div className="mt-4 pt-4 border-t flex items-center justify-center gap-4">
-                          <Button size="sm" asChild>
-                            <Link to={`/book?destination=${data.slug}&package=${pkg.id}`}>
-                              See your amazing options <ArrowRight className="ml-1 h-3 w-3" />
-                            </Link>
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+                {pkgs.map((pkg) => (
+                  <PackageCard
+                    key={pkg.id}
+                    pkg={pkg}
+                    destinationSlug={data.slug}
+                    fallbackImage={data.heroImage}
+                  />
+                ))}
               </div>
+
               {slug === 'durban' && (
                 <div className="mt-8 max-w-3xl mx-auto text-center">
                   <p className="text-sm md:text-base text-navy/80 leading-relaxed">
