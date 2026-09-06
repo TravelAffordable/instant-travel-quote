@@ -17,6 +17,8 @@ import satSandsImg from '@/assets/hotels/durban-premium-satsands.jpg';
 import paradeHotelImg from '@/assets/hotels/durban-premium-parade-hotel.jpg';
 import { durban4SleeperImageMap } from './durban4SleeperImages';
 import { durban2SleeperImageMap } from './durban2SleeperImages';
+import { durbanRealHotelImageMap } from './durbanRealHotelImages';
+
 
 export const durbanPremiumImageMap: Record<string, string> = {
 
@@ -48,7 +50,10 @@ export const durbanPremiumImageMap: Record<string, string> = {
   ...durban4SleeperImageMap,
   // 2-sleeper property photos from listing screenshots
   ...durban2SleeperImageMap,
+  // Client-supplied photos for the main beachfront hotels (highest priority)
+  ...durbanRealHotelImageMap,
 };
+
 
 
 export function getDurbanPremiumImage(hotelName: string): string | undefined {
