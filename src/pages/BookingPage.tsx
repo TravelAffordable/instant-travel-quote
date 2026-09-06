@@ -198,15 +198,22 @@ export default function BookingPage() {
     .slice(0, 5);
 
   // Stays at or above the guest's budget, closest to the budget first.
+  // A hotel-name search overrides the budget filter so any named stay can be found.
+  const query = hotelQuery.trim().toLowerCase();
   const budgetHotels =
     budget == null
       ? []
-      : visibleHotels
-          .filter((h) => !aspirationalHotels.some((a) => a.id === h.id))
-          .filter((h) => holidayPriceFor(h) >= budget)
-          .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b));
+      : query
+        ? visibleHotels
+            .filter((h) => h.name.toLowerCase().includes(query))
+            .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b))
+        : visibleHotels
+            .filter((h) => !aspirationalHotels.some((a) => a.id === h.id))
+            .filter((h) => holidayPriceFor(h) >= budget)
+            .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b));
 
-  const shownBudgetHotels = budgetHotels.slice(0, budgetVisibleCount);
+  const shownBudgetHotels = query ? budgetHotels : budgetHotels.slice(0, budgetVisibleCount);
+
 
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
 
