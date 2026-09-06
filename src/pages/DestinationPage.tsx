@@ -5,6 +5,8 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { DestinationImageMenu } from '@/components/DestinationImageMenu';
+import { PackageCard } from '@/components/cards/PackageCard';
+
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
