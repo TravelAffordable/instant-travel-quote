@@ -13,7 +13,7 @@ export function getPackageHeadline(name: string): string {
   title = title.split(/\s+with\s+accommodation/i)[0];
   title = title.split(/\s+including\s+/i)[0];
   title = title.split(/\s+includes\s+/i)[0];
-  title = title.split(',')[0];
+  if (title.length > 70) title = title.split(',')[0];
   title = title.replace(/\s+with\s+$/i, '').trim();
   return title;
 }
