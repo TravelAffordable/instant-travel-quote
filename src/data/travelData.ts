@@ -256,7 +256,7 @@ const affordablePrices = [1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 
 const premiumPrices = [2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100];
 
 // Premium Hotels with their actual names (prices will use premiumPrices array - 4 hotels per destination)
-const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean; capacity?: '2_sleeper' | '4_sleeper'; nightlyRate?: number; sleeps?: number; roomType?: string }[]> = {
+const premiumHotelNames: Record<string, { name: string; includesBreakfast?: boolean; capacity?: '2_sleeper' | '4_sleeper'; nightlyRate?: number; sleeps?: number; roomType?: string; starRating?: number }[]> = {
   'harties': [
     { name: 'Indlovukazi Guesthouse', nightlyRate: 1150, includesBreakfast: true },
     { name: 'Villa Paradiso Hotel', nightlyRate: 1100 },
