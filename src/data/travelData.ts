@@ -922,7 +922,13 @@ function generateHotels(): Hotel[] {
           name: hotel.name,
           destination: destId,
           pricePerNight: hotel.nightlyRate || premiumPrices[index % premiumPrices.length],
-          rating: 4.5 + (Math.random() * 0.5),
+          // Only show a star grading where the source listing states one.
+          rating:
+            hotel.starRating !== undefined
+              ? hotel.starRating
+              : destId === 'bela-bela'
+                ? 0
+                : 4.5 + Math.random() * 0.5,
           type: 'premium',
           amenities: ['WiFi', 'Pool', 'Spa', 'Restaurant', 'Fine Dining'],
           image: premiumImg,
