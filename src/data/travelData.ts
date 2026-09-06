@@ -869,7 +869,15 @@ function generateHotels(): Hotel[] {
     }
   });
 
-  return allHotels;
+  // Guarantee unique ids: some destinations now list more rooms than the A–J
+  // letter pool, which previously produced duplicate ids and made a selection
+  // resolve to the wrong property.
+  const seenIds = new Map<string, number>();
+  return allHotels.map((hotel) => {
+    const count = (seenIds.get(hotel.id) ?? 0) + 1;
+    seenIds.set(hotel.id, count);
+    return count === 1 ? hotel : { ...hotel, id: `${hotel.id}-${count}` };
+  });
 }
 
 export const hotels: Hotel[] = generateHotels();
