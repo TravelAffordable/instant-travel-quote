@@ -15,6 +15,7 @@ import { magaliesPremiumImageMap } from './magaliesPremiumImages';
 import { mpumalangaPremiumImageMap } from './mpumalangaPremiumImages';
 import { capeTownPremiumImageMap } from './capeTownPremiumImages';
 import { umdlotiPremiumImageMap } from './umdlotiPremiumImages';
+import { belaBelaHotelImageMap } from './belaBelaHotelImages';
 import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
 
@@ -1011,6 +1012,7 @@ function generateHotels(): Hotel[] {
         ...(destId === 'kruger-national-park' ? mpumalangaPremiumImageMap : {}),
         ...(destId === 'cape-town' ? capeTownPremiumImageMap : {}),
         ...(destId === 'umdloti' ? umdlotiPremiumImageMap : {}),
+        ...(destId === 'bela-bela' ? belaBelaHotelImageMap : {}),
       };
       // Mpumalanga: only show properties with real property photography
       if (destId === 'mpumalanga') {
