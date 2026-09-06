@@ -15,8 +15,10 @@ import beachHurstImg from '@/assets/hotels/durban-premium-beach-hurst.jpg';
 import ushakaViewsImg from '@/assets/hotels/durban-premium-ushakaviews.jpg';
 import satSandsImg from '@/assets/hotels/durban-premium-satsands.jpg';
 import paradeHotelImg from '@/assets/hotels/durban-premium-parade-hotel.jpg';
+import { durban4SleeperImageMap } from './durban4SleeperImages';
 
 export const durbanPremiumImageMap: Record<string, string> = {
+
   // 2-sleeper hotels
   'The Balmoral': balmoralImg,
   'Belaire Suites Hotel': belaireImg,
