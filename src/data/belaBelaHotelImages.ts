@@ -95,8 +95,44 @@ import i_kwelangaprivatebushlodge from '@/assets/hotels/bela/kwelanga-private-bu
 import i_fumanigamelodge from '@/assets/hotels/bela/fumani-game-lodge.jpg';
 import i_villaziziinbelabela from '@/assets/hotels/bela/villa-zizi-in-bela-bela.jpg';
 import i_bushvelddreamvilla100 from '@/assets/hotels/bela/bushveld-dream-villa-100.jpg';
+import i_belavic from '@/assets/hotels/bela/bela-vic.jpg';
+import i_indabush from '@/assets/hotels/bela/in-da-bush.jpg';
+import i_castledewildt from '@/assets/hotels/bela/castle-de-wildt.jpg';
+import i_lapaphanzigamelodge from '@/assets/hotels/bela/lapa-phanzi-game-lodge.jpg';
+import i_thandilerivercottages from '@/assets/hotels/bela/thandile-river-cottages.jpg';
+import i_falconlodgebela from '@/assets/hotels/bela/falcon-lodge-bela.jpg';
+import i_thutlwadithololodge from '@/assets/hotels/bela/thutlwaditholo-lodge.jpg';
+import i_unit89pendleberry from '@/assets/hotels/bela/unit-89-pendleberry-holiday-resort.jpg';
+import i_thegroveresidence from '@/assets/hotels/bela/the-grove-residence.jpg';
+import i_pendleberrygrove52 from '@/assets/hotels/bela/bela-bela-pendleberry-grove-52.jpg';
+import i_pendleberryunit49 from '@/assets/hotels/bela/49-bela-bela-pendleberry-grove.jpg';
+import i_pendleberrygrove91 from '@/assets/hotels/bela/91-pendleberry-grove-holidays.jpg';
+import i_leopardsrockbushboutique from '@/assets/hotels/bela/leopards-rock-bush-boutique.jpg';
+import i_elementsprivategolfreserve from '@/assets/hotels/bela/elements-private-golf-reserve.jpg';
+import i_serengetilodgemabalingwe from '@/assets/hotels/bela/serengeti-lodge-mabalingwe.jpg';
+import i_kwafubesitentedsafaricamp from '@/assets/hotels/bela/kwafubesi-tented-safari-camp.jpg';
+import i_klipenkristalguesthouse from '@/assets/hotels/bela/klip-en-kristal-guest-house.jpg';
 
 const rawMap: Record<string, string> = {
+  'BELA Vic': i_belavic,
+  'BELA Vic — One-Bedroom Chalet': i_belavic,
+  'In Da Bush': i_indabush,
+  'Castle de Wildt': i_castledewildt,
+  'Lapa Phanzi Game Lodge': i_lapaphanzigamelodge,
+  'Thandile River Cottages': i_thandilerivercottages,
+  'Falcon Lodge Bela': i_falconlodgebela,
+  'ThutlwaDitholo Lodge': i_thutlwadithololodge,
+  'Unit 89 Pendleberry Holiday Resort': i_unit89pendleberry,
+  'The Grove Residence - Family luxury resort by Warmbaths': i_thegroveresidence,
+  'Bela Bela Pendleberry Grove 52': i_pendleberrygrove52,
+  '49 Bela-Bela Pendleberry Grove Holiday Unit 49': i_pendleberryunit49,
+  '91 Pendleberry Grove Holidays': i_pendleberrygrove91,
+  'Leopards Rock Bush Boutique': i_leopardsrockbushboutique,
+  'Elements Private Golf Reserve': i_elementsprivategolfreserve,
+  'Serengeti Lodge Mabalingwe Nature Reserve': i_serengetilodgemabalingwe,
+  'Kwafubesi Tented Safari Camp': i_kwafubesitentedsafaricamp,
+  'Klip en Kristal Guest House': i_klipenkristalguesthouse,
+  'Mabula Game Lodge — Superior Room with 2 Game Drives': i_mabulagamelodge,
   'Eindskof Game Farm Flat': i_eindskofgamefarmflat,
   'MRH Self Check-In Express Homestay': i_mrhselfcheckinexpresshomestay,
   'My Bush Camp': i_mybushcamp,
