@@ -10,8 +10,10 @@ import pretoriuskopAsset from '@/assets/hotels/mpumalanga-PretoriuskopRestCamp.j
 import pretoriuskopEb3Asset from '@/assets/hotels/kruger-PretoriuskopEB3.jpg.asset.json';
 import pretoriuskopEb5Asset from '@/assets/hotels/kruger-PretoriuskopEB5.jpg.asset.json';
 import crystalSpringsAsset from '@/assets/hotels/mpumalanga-CrystalSprings1.jpg.asset.json';
+import { mpumalanga4SleeperImageMap } from './mpumalanga4SleeperImages';
 
 export const mpumalangaPremiumImageMap: Record<string, string> = {
+  ...mpumalanga4SleeperImageMap,
   'Blyde Canyon Forever Resort': blydeCanyonAsset.url,
   'Panorama Boutique Guesthouse': panoramaBoutiqueAsset.url,
   'Beach Island Graskop': beachIslandAsset.url,
