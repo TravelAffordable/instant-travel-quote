@@ -733,11 +733,26 @@ export default function BookingPage() {
                             <h2 className="font-display text-xl font-bold text-foreground">
                               Stays within your budget
                             </h2>
+                            <div className="mt-3 max-w-md">
+                              <Label htmlFor="hotel-search" className="text-sm text-muted-foreground">
+                                Looking for a specific hotel? Search by name — it will show whatever your
+                                budget.
+                              </Label>
+                              <Input
+                                id="hotel-search"
+                                className="mt-2"
+                                placeholder="e.g. Suncoast Hotel"
+                                value={hotelQuery}
+                                onChange={(e) => setHotelQuery(e.target.value)}
+                              />
+                            </div>
                             {shownBudgetHotels.length === 0 ? (
                               <p className="mt-3 text-sm text-muted-foreground">
-                                No stays match that budget yet — the inspiring options below show what's
-                                possible, or adjust your budget above.
+                                {query
+                                  ? `No stays match "${hotelQuery.trim()}" — try a different name or clear the search.`
+                                  : "No stays match that budget yet — the inspiring options below show what's possible, or adjust your budget above."}
                               </p>
+
                             ) : (
                               <div className="mt-6 grid gap-6 md:grid-cols-2">
                                 {shownBudgetHotels.map((hotel) => (
