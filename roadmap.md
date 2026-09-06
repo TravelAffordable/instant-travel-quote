@@ -8,3 +8,4 @@
 - Placeholder hotel names shown outside Durban/Umhlanga (BookingPage filter scope).
 - Durban ad anchors all resolve to the packages heading.
 - "The Blyde, Pretoria" destination link 404s.
+- Hand-picked featured ("luxury") hotels per destination: owner-only picking circles visible in editor preview, picks stored in backend and shown to all visitors.

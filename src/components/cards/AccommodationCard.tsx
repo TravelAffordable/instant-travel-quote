@@ -18,6 +18,10 @@ interface AccommodationCardProps {
   luxuryBadge?: boolean;
   selected?: boolean;
   onSelect: (hotelId: string) => void;
+  /** Owner-only picking circle (editor preview only) */
+  pickable?: boolean;
+  picked?: boolean;
+  onTogglePick?: (hotelName: string) => void;
 }
 
 export function AccommodationCard({
@@ -31,6 +35,9 @@ export function AccommodationCard({
   luxuryBadge = false,
   selected,
   onSelect,
+  pickable = false,
+  picked = false,
+  onTogglePick,
 }: AccommodationCardProps) {
   return (
     <Card
@@ -46,7 +53,27 @@ export function AccommodationCard({
             Luxury
           </span>
         )}
+        {pickable && (
+          <button
+            type="button"
+            aria-label={picked ? `Unpick ${hotel.name}` : `Pick ${hotel.name}`}
+            aria-pressed={picked}
+            onClick={(e) => {
+              e.stopPropagation();
+              onTogglePick?.(hotel.name);
+            }}
+            className={cn(
+              'absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border-2 shadow-md transition-colors',
+              picked
+                ? 'border-yellow-400 bg-yellow-400 text-black'
+                : 'border-white bg-card/80 text-transparent hover:bg-card',
+            )}
+          >
+            <Check className="h-5 w-5" />
+          </button>
+        )}
       </div>
+
       <CardContent className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-lg font-bold text-foreground">{hotel.name}</h3>
         <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">

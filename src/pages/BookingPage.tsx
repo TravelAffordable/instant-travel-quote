@@ -17,6 +17,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DestinationTile } from '@/components/cards/DestinationTile';
 import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
+import { isPickMode } from '@/lib/pickMode';
+import { useFeaturedHotels } from '@/hooks/useFeaturedHotels';
+
 import { BookingSummary } from '@/components/common/BookingSummary';
 import { ResponsiveImage } from '@/components/common/ResponsiveImage';
 import { ErrorState } from '@/components/common/ErrorState';
@@ -83,6 +86,10 @@ export default function BookingPage() {
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
   const [budgetError, setBudgetError] = useState(false);
   const [hotelQuery, setHotelQuery] = useState('');
+  const pickMode = isPickMode();
+  const { isFeatured, featuredNames, toggle: togglePick } = useFeaturedHotels(destinationSlug);
+
+
 
 
 
@@ -193,11 +200,17 @@ export default function BookingPage() {
   const holidayPriceFor = (hotel: (typeof visibleHotels)[number]) =>
     packageTotal + hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name);
 
-  // The 5 most expensive stays in the destination — shown to inspire before a budget is set.
-  const aspirationalHotels = visibleHotels
-    .slice()
-    .sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
-    .slice(0, 5);
+  // Luxury showcase stays: the owner's hand-picked list when it exists,
+  // otherwise fall back to the 5 most expensive stays in the destination.
+  const handPicked = visibleHotels.filter((h) => featuredNames.includes(h.name));
+  const aspirationalHotels =
+    handPicked.length > 0
+      ? handPicked.sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
+      : visibleHotels
+          .slice()
+          .sort((a, b) => holidayPriceFor(b) - holidayPriceFor(a))
+          .slice(0, 5);
+
 
   // Stays at or above the guest's budget, closest to the budget first.
   // A hotel-name search overrides the budget filter so any named stay can be found.
@@ -791,7 +804,9 @@ export default function BookingPage() {
                           </h2>
 
                           <p className="mt-2 text-sm text-muted-foreground">
-                            Our five most luxurious stays in {destination.name}.
+                            {handPicked.length > 0
+                              ? `Our featured stays in ${destination.name}.`
+                              : `Our most luxurious stays in ${destination.name}.`}
                           </p>
                           <div className="mt-6 grid gap-6 md:grid-cols-2">
                             {aspirationalHotels.map((hotel) => (
@@ -806,11 +821,44 @@ export default function BookingPage() {
                                 price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
                                 selected={hotelId === hotel.id}
                                 onSelect={(id) => handleSelectHotel(id)}
-
+                                pickable={pickMode}
+                                picked={isFeatured(hotel.name)}
+                                onTogglePick={togglePick}
                               />
                             ))}
                           </div>
                         </div>
+
+                        {pickMode && (
+                          <div className="mt-24 rounded-2xl border-2 border-dashed border-yellow-400 p-4">
+                            <h2 className="font-display text-2xl font-bold text-foreground">
+                              Pick the featured stays for {destination.name} (only you can see this)
+                            </h2>
+                            <p className="mt-2 text-sm text-muted-foreground">
+                              Tap the circle on the top right of any photo to add or remove it from the
+                              featured luxury stays shown to visitors. {featuredNames.length} picked so far.
+                            </p>
+                            <div className="mt-6 grid gap-6 md:grid-cols-2">
+                              {visibleHotels.map((hotel) => (
+                                <AccommodationCard
+                                  key={`pick-${hotel.id}`}
+                                  hotel={hotel}
+                                  tier={tierMap.get(hotel.id) ?? 'standard'}
+                                  destinationName={destination.name}
+                                  nights={Math.max(1, nights)}
+                                  rooms={roomsNeededFor(hotel.capacity ?? 2)}
+                                  price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
+                                  selected={hotelId === hotel.id}
+                                  onSelect={(id) => handleSelectHotel(id)}
+                                  pickable
+                                  picked={isFeatured(hotel.name)}
+                                  onTogglePick={togglePick}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                       </>
                     )}
 

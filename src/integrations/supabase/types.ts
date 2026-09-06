@@ -92,6 +92,27 @@ export type Database = {
         }
         Relationships: []
       }
+      featured_hotels: {
+        Row: {
+          created_at: string
+          destination: string
+          hotel_name: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          destination: string
+          hotel_name: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          destination?: string
+          hotel_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
       hotels: {
         Row: {
           address: string | null
