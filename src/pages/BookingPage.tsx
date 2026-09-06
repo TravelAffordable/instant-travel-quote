@@ -301,10 +301,12 @@ export default function BookingPage() {
               <BedDouble className="h-4 w-4 text-primary" />
               {selectedHotel.roomType || `${selectedHotel.capacity ?? 2}-sleeper room`}
             </p>
-            <p className="flex items-center gap-2">
-              <Utensils className="h-4 w-4 text-primary" />
-              {mealBasis(selectedHotel)}
-            </p>
+            {mealBasis(selectedHotel) && (
+              <p className="flex items-center gap-2">
+                <Utensils className="h-4 w-4 text-primary" />
+                {mealBasis(selectedHotel)}
+              </p>
+            )}
           </div>
           {selectedHotel.amenities?.length > 0 && (
             <ul className="mt-3 flex flex-wrap gap-2">

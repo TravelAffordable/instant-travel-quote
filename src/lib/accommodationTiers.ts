@@ -33,6 +33,10 @@ export const tierLabels: Record<AccommodationTier, string> = {
   luxury: 'Luxury',
 };
 
+/**
+ * Only mention meals when breakfast is confirmed for the property.
+ * An empty string means the caller should show no meal line at all.
+ */
 export function mealBasis(hotel: Hotel): string {
-  return hotel.includesBreakfast ? 'Bed & breakfast' : 'Breakfast optional extra';
+  return hotel.includesBreakfast ? 'Bed & breakfast' : '';
 }
