@@ -82,6 +82,8 @@ export default function BookingPage() {
   const [budget, setBudget] = useState<number | null>(null);
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
   const [budgetError, setBudgetError] = useState(false);
+  const [hotelQuery, setHotelQuery] = useState('');
+
 
 
   const destination = destinationSlug ? getCatalogueDestination(destinationSlug) : undefined;
@@ -198,15 +200,22 @@ export default function BookingPage() {
     .slice(0, 5);
 
   // Stays at or above the guest's budget, closest to the budget first.
+  // A hotel-name search overrides the budget filter so any named stay can be found.
+  const query = hotelQuery.trim().toLowerCase();
   const budgetHotels =
     budget == null
       ? []
-      : visibleHotels
-          .filter((h) => !aspirationalHotels.some((a) => a.id === h.id))
-          .filter((h) => holidayPriceFor(h) >= budget)
-          .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b));
+      : query
+        ? visibleHotels
+            .filter((h) => h.name.toLowerCase().includes(query))
+            .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b))
+        : visibleHotels
+            .filter((h) => !aspirationalHotels.some((a) => a.id === h.id))
+            .filter((h) => holidayPriceFor(h) >= budget)
+            .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b));
 
-  const shownBudgetHotels = budgetHotels.slice(0, budgetVisibleCount);
+  const shownBudgetHotels = query ? budgetHotels : budgetHotels.slice(0, budgetVisibleCount);
+
 
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
 
@@ -724,11 +733,26 @@ export default function BookingPage() {
                             <h2 className="font-display text-xl font-bold text-foreground">
                               Stays within your budget
                             </h2>
+                            <div className="mt-3 max-w-md">
+                              <Label htmlFor="hotel-search" className="text-sm text-muted-foreground">
+                                Looking for a specific hotel? Search by name — it will show whatever your
+                                budget.
+                              </Label>
+                              <Input
+                                id="hotel-search"
+                                className="mt-2"
+                                placeholder="e.g. Suncoast Hotel"
+                                value={hotelQuery}
+                                onChange={(e) => setHotelQuery(e.target.value)}
+                              />
+                            </div>
                             {shownBudgetHotels.length === 0 ? (
                               <p className="mt-3 text-sm text-muted-foreground">
-                                No stays match that budget yet — the inspiring options below show what's
-                                possible, or adjust your budget above.
+                                {query
+                                  ? `No stays match "${hotelQuery.trim()}" — try a different name or clear the search.`
+                                  : "No stays match that budget yet — the inspiring options below show what's possible, or adjust your budget above."}
                               </p>
+
                             ) : (
                               <div className="mt-6 grid gap-6 md:grid-cols-2">
                                 {shownBudgetHotels.map((hotel) => (
