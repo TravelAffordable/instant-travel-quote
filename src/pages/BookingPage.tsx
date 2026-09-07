@@ -798,7 +798,7 @@ export default function BookingPage() {
                                   mode="single"
                                   selected={checkOut}
                                   defaultMonth={checkOut ?? (checkIn ? addDays(checkIn, 1) : undefined)}
-                                  month={undefined}
+                                  
                                   onSelect={(d) => {
                                     setCheckOut(d);
                                     if (d) setCheckOutOpen(false);
