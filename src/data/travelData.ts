@@ -9,6 +9,7 @@ import {
 import { hartiesPremiumImageMap } from './hartiesPremiumImages';
 import { harties4SleeperImageMap } from './harties4SleeperImages';
 import { durbanPremiumImageMap } from './durbanPremiumImages';
+import { sunCity4SleeperImageMap } from './sunCity4SleeperImages';
 import { sunCityPremiumImageMap } from './sunCityPremiumImages';
 import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
 import { vaalPremiumImageMap } from './vaalPremiumImages';
@@ -568,6 +569,15 @@ const premiumHotelNames: Record<string, { name: string; includesBreakfast?: bool
     { name: 'Shepherds Tree Game Reserve', nightlyRate: 37000, sleeps: 4, roomType: '2× Standard Double or Twin Room, all-inclusive' },
     { name: 'Tshukudu Bush Lodge', nightlyRate: 37100, sleeps: 4, roomType: '2× Tshwene Deluxe Suite, all-inclusive' },
     { name: 'Mbazo Safari Collection', nightlyRate: 39000, sleeps: 4, roomType: 'Dzombo Camp Executive Suite + Premier Suite' },
+    { name: 'Village Kulture Guest House', nightlyRate: 1600, sleeps: 4, starRating: 3, roomType: '2× Deluxe Double Room' },
+    { name: 'Dithabeng View Guest House', nightlyRate: 1785, sleeps: 4, starRating: 3, roomType: 'Family Room with Shower, 3 beds' },
+    { name: 'Diphororo Guest House', nightlyRate: 1943, sleeps: 4, starRating: 3, roomType: 'Deluxe Double Room with Bath + Comfort Triple Room' },
+    { name: 'Connesione Mogwase', nightlyRate: 2300, sleeps: 4, starRating: 3, roomType: 'Deluxe Holiday Home, 3 bedrooms, 80 m²' },
+    { name: 'Cubes Ledig Luxury Apartments', nightlyRate: 2600, sleeps: 4, roomType: '2× One-Bedroom Apartment' },
+    { name: 'Rhino House (3 Bedroom House near Pilanesberg)', nightlyRate: 2738, sleeps: 4, starRating: 4, roomType: 'Holiday Home, 3 bedrooms, 89 m²' },
+    { name: 'Morokolo Safari Lodge Self-catering', nightlyRate: 20205, sleeps: 4, starRating: 4, roomType: 'Suite, 4 bedrooms, 1400 m²' },
+    { name: 'Buffalo Thorn Lodge', nightlyRate: 23200, sleeps: 4, roomType: 'Five-Bedroom House, entire vacation home, 700 m²' },
+    { name: 'Tambuti Lodge', nightlyRate: 25940, sleeps: 4, starRating: 4, roomType: 'Luxury King Room + Classic King Room' },
   ],
   'kruger-national-park': [
     { name: 'Pretoriuskop Rest Camp', nightlyRate: 1180, sleeps: 2, roomType: '2-Sleeper Hut (EB2)' },
@@ -1338,7 +1348,7 @@ function generateHotels(): Hotel[] {
       const destImageMap: Record<string, string> = {
         ...(destId === 'durban' ? durbanPremiumImageMap : {}),
         ...(destId === 'umhlanga' ? umhlangaPremiumImageMap : {}),
-        ...(destId === 'sun-city' ? sunCityPremiumImageMap : {}),
+        ...(destId === 'sun-city' ? { ...sunCity4SleeperImageMap, ...sunCityPremiumImageMap } : {}),
         ...(destId === 'vaal-river' ? { ...vaal4SleeperImageMap, ...vaalNewHotelImageMap, ...vaalPremiumImageMap } : {}),
         ...(destId === 'magalies' ? { ...magaliesPremiumImageMap, ...magalies4SleeperImageMap } : {}),
         ...(destId === 'mpumalanga' ? { ...mpumalangaPremiumImageMap, ...mpumalanga2SleeperImageMap } : {}),
