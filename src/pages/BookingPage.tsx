@@ -929,7 +929,7 @@ export default function BookingPage() {
                                   <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
                                 )}
                               </span>
-                              I'd like to pay 50% to secure my booking
+                              I'd like to secure my booking
                             </span>
                           </button>
                           <button
@@ -955,33 +955,7 @@ export default function BookingPage() {
                                   <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
                                 )}
                               </span>
-                              Please send me a quotation
-                            </span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setPaymentOption('full')}
-                            className={cn(
-                              'rounded-xl border p-4 text-left text-sm font-medium transition-colors',
-                              paymentOption === 'full'
-                                ? 'border-accent bg-accent/10 text-foreground'
-                                : 'border-border bg-card text-muted-foreground hover:bg-accent/5',
-                            )}
-                          >
-                            <span className="flex items-center gap-2">
-                              <span
-                                className={cn(
-                                  'flex h-4 w-4 items-center justify-center rounded-full border',
-                                  paymentOption === 'full'
-                                    ? 'border-accent bg-accent'
-                                    : 'border-muted-foreground',
-                                )}
-                              >
-                                {paymentOption === 'full' && (
-                                  <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
-                                )}
-                              </span>
-                              I'd like to make full payment with a discount
+                              Please send me this quote
                             </span>
                           </button>
                         </div>
@@ -998,10 +972,7 @@ export default function BookingPage() {
                             <div className="flex items-center justify-between border-t border-border pt-4 text-sm">
                               <span className="text-muted-foreground">Amount on payment link</span>
                               <span className="font-display text-lg font-bold text-sunset">
-                                R{' '}
-                                {Math.round(
-                                  paymentOption === '50%' ? total * 0.5 : total,
-                                ).toLocaleString('en-ZA')}
+                                R {Math.round(total * 0.5).toLocaleString('en-ZA')}
                               </span>
                             </div>
                           </>
