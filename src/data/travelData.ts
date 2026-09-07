@@ -9,6 +9,7 @@ import {
 import { hartiesPremiumImageMap } from './hartiesPremiumImages';
 import { harties4SleeperImageMap } from './harties4SleeperImages';
 import { durbanPremiumImageMap } from './durbanPremiumImages';
+import { sunCity4SleeperImageMap } from './sunCity4SleeperImages';
 import { sunCityPremiumImageMap } from './sunCityPremiumImages';
 import { umhlangaPremiumImageMap } from './umhlangaPremiumImages';
 import { vaalPremiumImageMap } from './vaalPremiumImages';
@@ -1347,7 +1348,7 @@ function generateHotels(): Hotel[] {
       const destImageMap: Record<string, string> = {
         ...(destId === 'durban' ? durbanPremiumImageMap : {}),
         ...(destId === 'umhlanga' ? umhlangaPremiumImageMap : {}),
-        ...(destId === 'sun-city' ? sunCityPremiumImageMap : {}),
+        ...(destId === 'sun-city' ? { ...sunCity4SleeperImageMap, ...sunCityPremiumImageMap } : {}),
         ...(destId === 'vaal-river' ? { ...vaal4SleeperImageMap, ...vaalNewHotelImageMap, ...vaalPremiumImageMap } : {}),
         ...(destId === 'magalies' ? { ...magaliesPremiumImageMap, ...magalies4SleeperImageMap } : {}),
         ...(destId === 'mpumalanga' ? { ...mpumalangaPremiumImageMap, ...mpumalanga2SleeperImageMap } : {}),
