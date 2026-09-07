@@ -121,8 +121,14 @@ export default function BookingPage() {
   const [step, setStep] = useState<Step>(initialStep);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const anchor = document.getElementById('booking-steps');
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, [step]);
+
 
   const nights = useMemo(() => {
     if (oneDay) return 0;
