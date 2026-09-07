@@ -704,9 +704,37 @@ export default function BookingPage() {
                     <Card id="holiday-budget-heading" className="mt-6 scroll-mt-28 rounded-2xl border-primary/30">
                       <CardContent className="space-y-3 p-6">
                         <h2 className="font-display text-2xl font-bold uppercase leading-tight text-destructive md:text-3xl">
-                          Holiday budget amount required in the box below before you can proceed to select
+                          Your details and holiday budget are required below before you can proceed to select
                           your hotel stay
                         </h2>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <div className="space-y-1.5">
+                            <Label htmlFor="guest-name" className="text-sm font-semibold text-destructive">
+                              Name *
+                            </Label>
+                            <Input
+                              id="guest-name"
+                              placeholder="Your full name"
+                              value={contact.name}
+                              onChange={(e) => setContact((c) => ({ ...c, name: e.target.value }))}
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label htmlFor="guest-email" className="text-sm font-semibold text-destructive">
+                              Email address *
+                            </Label>
+                            <Input
+                              id="guest-email"
+                              type="email"
+                              placeholder="you@email.com"
+                              value={contact.email}
+                              onChange={(e) => setContact((c) => ({ ...c, email: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          If you are unable to complete the process, we'll send you a quote.
+                        </p>
                         <Label htmlFor="holiday-budget" className="block text-base font-semibold text-destructive">
                           What would you like to spend for your amazing holiday?
                         </Label>
@@ -737,9 +765,9 @@ export default function BookingPage() {
                             Show stays within my budget
                           </Button>
                         </div>
-                        {budgetError && budget == null && (
+                        {budgetError && (detailsIncomplete || budget == null) && (
                           <p className="text-sm font-semibold text-destructive">
-                            Please complete the budget field to be able to proceed.
+                            Please fill your details and your travel budget to proceed.
                           </p>
                         )}
                         {budget != null && (
