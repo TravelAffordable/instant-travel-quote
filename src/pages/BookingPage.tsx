@@ -1060,23 +1060,28 @@ export default function BookingPage() {
                           </p>
                           <div className="mt-6 grid gap-6 md:grid-cols-2">
                             {aspirationalHotels.map((hotel) => (
-                              <AccommodationCard
-                                key={hotel.id}
-                                hotel={hotel}
-                                tier={tierMap.get(hotel.id) ?? 'standard'}
-                                destinationName={destination.name}
-                                nights={Math.max(1, nights)}
-                                rooms={roomsNeededFor(hotel.capacity ?? 2)}
-                                price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
-                                selected={hotelId === hotel.id}
-                                onSelect={(id) => handleSelectHotel(id)}
-                                pickable={pickMode}
-                                picked={isFeatured(hotel.name)}
-                                onTogglePick={togglePick}
-                              />
+                              <div key={hotel.id} className="space-y-4">
+                                <AccommodationCard
+                                  hotel={hotel}
+                                  tier={tierMap.get(hotel.id) ?? 'standard'}
+                                  destinationName={destination.name}
+                                  nights={Math.max(1, nights)}
+                                  rooms={roomsNeededFor(hotel.capacity ?? 2)}
+                                  price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
+                                  selected={hotelId === hotel.id}
+                                  onSelect={(id) => handleSelectHotel(id)}
+                                  pickable={pickMode}
+                                  picked={isFeatured(hotel.name)}
+                                  onTogglePick={togglePick}
+                                />
+                                {hotelId === hotel.id && (
+                                  <div className="lg:hidden">{summary}</div>
+                                )}
+                              </div>
                             ))}
                           </div>
                         </div>
+
 
                         {pickMode && (
                           <div className="mt-24 rounded-2xl border-2 border-dashed border-yellow-400 p-4">
