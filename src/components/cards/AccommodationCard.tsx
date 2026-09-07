@@ -6,6 +6,7 @@ import type { Hotel } from '@/data/travelData';
 import { mealBasis } from '@/lib/accommodationTiers';
 import type { AccommodationTier } from '@/components/common/TierSelector';
 import { cn } from '@/lib/utils';
+import { verifiedStars } from '@/lib/verifiedStars';
 
 interface AccommodationCardProps {
   hotel: Hotel;
