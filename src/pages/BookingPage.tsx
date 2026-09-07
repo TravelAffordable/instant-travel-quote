@@ -1061,7 +1061,7 @@ export default function BookingPage() {
                           </p>
                           <div className="mt-6 grid gap-6 md:grid-cols-2">
                             {aspirationalHotels.map((hotel) => (
-                              <div key={hotel.id} className="space-y-4">
+                              <Fragment key={hotel.id}>
                                 <AccommodationCard
                                   hotel={hotel}
                                   tier={tierMap.get(hotel.id) ?? 'standard'}
@@ -1078,7 +1078,8 @@ export default function BookingPage() {
                                 {hotelId === hotel.id && (
                                   <div className="lg:hidden">{summary}</div>
                                 )}
-                              </div>
+                              </Fragment>
+
                             ))}
                           </div>
                         </div>
