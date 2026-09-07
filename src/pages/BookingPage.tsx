@@ -733,7 +733,7 @@ export default function BookingPage() {
                       {oneDay ? (
                         <div className="space-y-1.5">
                           <Label>Tour date</Label>
-                          <Popover>
+                          <Popover open={tourDateOpen} onOpenChange={setTourDateOpen}>
                             <PopoverTrigger asChild>
                               <Button variant="outline" className="h-12 w-full justify-start font-normal">
                                 <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
@@ -741,7 +741,17 @@ export default function BookingPage() {
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
-                              <Calendar mode="single" selected={tourDate} onSelect={setTourDate} initialFocus />
+                              <Calendar
+                                mode="single"
+                                selected={tourDate}
+                                defaultMonth={tourDate}
+                                onSelect={(d) => {
+                                  setTourDate(d);
+                                  if (d) setTourDateOpen(false);
+                                }}
+                                initialFocus
+                                className="pointer-events-auto"
+                              />
                             </PopoverContent>
                           </Popover>
                         </div>
@@ -749,7 +759,7 @@ export default function BookingPage() {
                         <>
                           <div className="space-y-1.5">
                             <Label>Check-in</Label>
-                            <Popover>
+                            <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
                               <PopoverTrigger asChild>
                                 <Button variant="outline" className="h-12 w-full justify-start font-normal">
                                   <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
@@ -760,18 +770,23 @@ export default function BookingPage() {
                                 <Calendar
                                   mode="single"
                                   selected={checkIn}
+                                  defaultMonth={checkIn}
                                   onSelect={(d) => {
                                     setCheckIn(d);
-                                    if (d && (!checkOut || checkOut <= d)) setCheckOut(addDays(d, 2));
+                                    if (d) {
+                                      if (!checkOut || checkOut <= d) setCheckOut(addDays(d, 1));
+                                      setCheckInOpen(false);
+                                    }
                                   }}
                                   initialFocus
+                                  className="pointer-events-auto"
                                 />
                               </PopoverContent>
                             </Popover>
                           </div>
                           <div className="space-y-1.5">
                             <Label>Check-out</Label>
-                            <Popover>
+                            <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
                               <PopoverTrigger asChild>
                                 <Button variant="outline" className="h-12 w-full justify-start font-normal">
                                   <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
@@ -782,9 +797,15 @@ export default function BookingPage() {
                                 <Calendar
                                   mode="single"
                                   selected={checkOut}
-                                  onSelect={setCheckOut}
+                                  defaultMonth={checkOut ?? (checkIn ? addDays(checkIn, 1) : undefined)}
+                                  month={undefined}
+                                  onSelect={(d) => {
+                                    setCheckOut(d);
+                                    if (d) setCheckOutOpen(false);
+                                  }}
                                   disabled={checkIn ? { before: addDays(checkIn, 1) } : undefined}
                                   initialFocus
+                                  className="pointer-events-auto"
                                 />
                               </PopoverContent>
                             </Popover>
@@ -801,6 +822,7 @@ export default function BookingPage() {
                         Continue <ArrowRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
+
                   </section>
                 )}
 
