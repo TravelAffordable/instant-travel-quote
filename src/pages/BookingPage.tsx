@@ -78,7 +78,7 @@ export default function BookingPage() {
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [rooms, setRooms] = useState(1);
   const [contact, setContact] = useState({ name: '', email: '', phone: '' });
-  const [paymentOption, setPaymentOption] = useState<'50%' | 'full' | 'quote'>('50%');
+  const [paymentOption, setPaymentOption] = useState<'50%' | 'quote'>('50%');
   const [promoCode, setPromoCode] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [reference, setReference] = useState<string>();
@@ -87,6 +87,19 @@ export default function BookingPage() {
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
   const [budgetError, setBudgetError] = useState(false);
   const [hotelQuery, setHotelQuery] = useState('');
+  const [quoteMode, setQuoteMode] = useState<'none' | 'help' | 'self'>('none');
+  const [helpForm, setHelpForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    destination: '',
+    tourCode: '',
+    dates: '',
+    people: '',
+    kidsAges: '',
+  });
+  const [helpSending, setHelpSending] = useState(false);
+  const [helpSent, setHelpSent] = useState(false);
   const pickMode = isPickMode();
   const { isFeatured, featuredNames, toggle: togglePick } = useFeaturedHotels(destinationSlug);
 
@@ -251,11 +264,16 @@ export default function BookingPage() {
       .getElementById('holiday-budget-heading')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+  const detailsIncomplete =
+    !contact.name.trim() || !/^\S+@\S+\.\S+$/.test(contact.email.trim());
+
   const handleSelectHotel = (id: string) => {
-    if (budget == null) {
+    if (detailsIncomplete || budget == null) {
       setBudgetError(true);
       scrollToBudget();
-      document.getElementById('holiday-budget')?.focus();
+      document
+        .getElementById(detailsIncomplete ? 'guest-name' : 'holiday-budget')
+        ?.focus();
       return;
     }
     setHotelId(id);
@@ -350,6 +368,38 @@ export default function BookingPage() {
         </CardContent>
       </Card>
     ) : null;
+
+  const helpFormIncomplete =
+    !helpForm.name.trim() ||
+    !/^\S+@\S+\.\S+$/.test(helpForm.email.trim()) ||
+    !helpForm.phone.trim();
+
+  const submitHelpRequest = async () => {
+    if (helpFormIncomplete) return;
+    setHelpSending(true);
+    try {
+      await supabase.functions.invoke('send-quote-request', {
+        body: {
+          guestName: helpForm.name,
+          guestEmail: helpForm.email,
+          guestTel: helpForm.phone,
+          destination: helpForm.destination || destination?.name,
+          packageNames: helpForm.tourCode || pkg?.name,
+          checkIn: helpForm.dates,
+          adults: helpForm.people,
+          childrenAges: helpForm.kidsAges,
+          bookingType: 'Assisted Quote Request',
+          reference: `TA-H${Date.now().toString().slice(-6)}`,
+        },
+      });
+      setHelpSent(true);
+    } catch (err) {
+      console.error('Failed to send assisted quote request:', err);
+      setHelpSent(true);
+    } finally {
+      setHelpSending(false);
+    }
+  };
 
   const submitBooking = async () => {
     const ref = `TA-${Date.now().toString().slice(-6)}`;
@@ -539,6 +589,142 @@ export default function BookingPage() {
                     <Button variant="ghost" className="mb-4 -ml-2" onClick={() => goto('experience')}>
                       <ArrowLeft className="mr-1 h-4 w-4" /> Back
                     </Button>
+                    <Card className="mb-8 rounded-2xl border-primary/30">
+                      <CardContent className="space-y-4 p-6">
+                        <h2 className="font-display text-xl font-bold text-foreground">
+                          How would you like to get your quote?
+                        </h2>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {[
+                            { id: 'help' as const, label: 'I would like help to get a quote' },
+                            { id: 'self' as const, label: 'I will use the website to get a quotation' },
+                          ].map((opt) => (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() => setQuoteMode(opt.id)}
+                              className={cn(
+                                'rounded-xl border p-4 text-left text-sm font-medium transition-colors',
+                                quoteMode === opt.id
+                                  ? 'border-accent bg-accent/10 text-foreground'
+                                  : 'border-border bg-card text-muted-foreground hover:bg-accent/5',
+                              )}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span
+                                  className={cn(
+                                    'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border',
+                                    quoteMode === opt.id
+                                      ? 'border-accent bg-accent'
+                                      : 'border-muted-foreground',
+                                  )}
+                                >
+                                  {quoteMode === opt.id && (
+                                    <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+                                  )}
+                                </span>
+                                {opt.label}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {quoteMode === 'help' && (
+                          helpSent ? (
+                            <p className="rounded-xl bg-muted p-4 text-sm font-medium text-foreground">
+                              Thank you — we have your details and one of our consultants will send you a
+                              quote shortly.
+                            </p>
+                          ) : (
+                            <div className="space-y-4 border-t border-border pt-4">
+                              <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-name">Name *</Label>
+                                  <Input
+                                    id="help-name"
+                                    value={helpForm.name}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, name: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-email">Email *</Label>
+                                  <Input
+                                    id="help-email"
+                                    type="email"
+                                    value={helpForm.email}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, email: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-phone">Tel *</Label>
+                                  <Input
+                                    id="help-phone"
+                                    value={helpForm.phone}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, phone: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-destination">Destination</Label>
+                                  <Input
+                                    id="help-destination"
+                                    placeholder={destination?.name ?? 'e.g. Durban'}
+                                    value={helpForm.destination}
+                                    onChange={(e) =>
+                                      setHelpForm((f) => ({ ...f, destination: e.target.value }))
+                                    }
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-tourcode">Tour code</Label>
+                                  <Input
+                                    id="help-tourcode"
+                                    placeholder="e.g. DUR9"
+                                    value={helpForm.tourCode}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, tourCode: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-dates">Dates of travel</Label>
+                                  <Input
+                                    id="help-dates"
+                                    placeholder="e.g. 12 - 14 Dec 2026"
+                                    value={helpForm.dates}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, dates: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-people">Number of people</Label>
+                                  <Input
+                                    id="help-people"
+                                    placeholder="e.g. 2 adults, 2 kids"
+                                    value={helpForm.people}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, people: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-kids">Ages of the kids</Label>
+                                  <Input
+                                    id="help-kids"
+                                    placeholder="e.g. 5 and 11"
+                                    value={helpForm.kidsAges}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, kidsAges: e.target.value }))}
+                                  />
+                                </div>
+                              </div>
+                              <Button
+                                size="lg"
+                                className="w-full sm:w-auto"
+                                disabled={helpFormIncomplete || helpSending}
+                                onClick={submitHelpRequest}
+                              >
+                                {helpSending ? 'Sending…' : 'Send me a quote'}
+                              </Button>
+                            </div>
+                          )
+                        )}
+                      </CardContent>
+                    </Card>
+
                     <h1 className="font-display text-3xl font-bold text-foreground">Your dates of travel</h1>
                     <label className="mt-6 flex cursor-pointer items-center gap-2 text-sm">
                       <Checkbox checked={oneDay} onCheckedChange={(v) => setOneDay(Boolean(v))} />
@@ -699,9 +885,37 @@ export default function BookingPage() {
                     <Card id="holiday-budget-heading" className="mt-6 scroll-mt-28 rounded-2xl border-primary/30">
                       <CardContent className="space-y-3 p-6">
                         <h2 className="font-display text-2xl font-bold uppercase leading-tight text-destructive md:text-3xl">
-                          Holiday budget amount required in the box below before you can proceed to select
+                          Your details and holiday budget are required below before you can proceed to select
                           your hotel stay
                         </h2>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <div className="space-y-1.5">
+                            <Label htmlFor="guest-name" className="text-sm font-semibold text-destructive">
+                              Name *
+                            </Label>
+                            <Input
+                              id="guest-name"
+                              placeholder="Your full name"
+                              value={contact.name}
+                              onChange={(e) => setContact((c) => ({ ...c, name: e.target.value }))}
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label htmlFor="guest-email" className="text-sm font-semibold text-destructive">
+                              Email address *
+                            </Label>
+                            <Input
+                              id="guest-email"
+                              type="email"
+                              placeholder="you@email.com"
+                              value={contact.email}
+                              onChange={(e) => setContact((c) => ({ ...c, email: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          If you are unable to complete the process, we'll send you a quote.
+                        </p>
                         <Label htmlFor="holiday-budget" className="block text-base font-semibold text-destructive">
                           What would you like to spend for your amazing holiday?
                         </Label>
@@ -732,9 +946,9 @@ export default function BookingPage() {
                             Show stays within my budget
                           </Button>
                         </div>
-                        {budgetError && budget == null && (
+                        {budgetError && (detailsIncomplete || budget == null) && (
                           <p className="text-sm font-semibold text-destructive">
-                            Please complete the budget field to be able to proceed.
+                            Please fill your details and your travel budget to proceed.
                           </p>
                         )}
                         {budget != null && (
@@ -929,7 +1143,7 @@ export default function BookingPage() {
                                   <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
                                 )}
                               </span>
-                              I'd like to pay 50% to secure my booking
+                              I'd like to secure my booking
                             </span>
                           </button>
                           <button
@@ -955,33 +1169,7 @@ export default function BookingPage() {
                                   <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
                                 )}
                               </span>
-                              Please send me a quotation
-                            </span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setPaymentOption('full')}
-                            className={cn(
-                              'rounded-xl border p-4 text-left text-sm font-medium transition-colors',
-                              paymentOption === 'full'
-                                ? 'border-accent bg-accent/10 text-foreground'
-                                : 'border-border bg-card text-muted-foreground hover:bg-accent/5',
-                            )}
-                          >
-                            <span className="flex items-center gap-2">
-                              <span
-                                className={cn(
-                                  'flex h-4 w-4 items-center justify-center rounded-full border',
-                                  paymentOption === 'full'
-                                    ? 'border-accent bg-accent'
-                                    : 'border-muted-foreground',
-                                )}
-                              >
-                                {paymentOption === 'full' && (
-                                  <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
-                                )}
-                              </span>
-                              I'd like to make full payment with a discount
+                              Please send me this quote
                             </span>
                           </button>
                         </div>
@@ -998,18 +1186,10 @@ export default function BookingPage() {
                             <div className="flex items-center justify-between border-t border-border pt-4 text-sm">
                               <span className="text-muted-foreground">Amount on payment link</span>
                               <span className="font-display text-lg font-bold text-sunset">
-                                R{' '}
-                                {Math.round(
-                                  paymentOption === '50%' ? total * 0.5 : total,
-                                ).toLocaleString('en-ZA')}
+                                R {Math.round(total * 0.5).toLocaleString('en-ZA')}
                               </span>
                             </div>
                           </>
-                        )}
-                        {paymentOption === 'full' && (
-                          <p className="text-xs text-accent">
-                            A limited-time discount will be applied to your payment link.
-                          </p>
                         )}
                       </CardContent>
                     </Card>
