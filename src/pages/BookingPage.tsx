@@ -813,13 +813,11 @@ export default function BookingPage() {
 
                         <div className="mt-24">
                           <h2 className="font-display text-3xl md:text-4xl font-bold text-yellow-400">
-                            See more luxury stays - see what's possible
+                            Featured Stays - See what's possible
                           </h2>
 
                           <p className="mt-2 text-sm text-muted-foreground">
-                            {handPicked.length > 0
-                              ? `Our featured stays in ${destination.name}.`
-                              : `Our most luxurious stays in ${destination.name}.`}
+                            {`Our featured stays in ${destination.name}.`}
                           </p>
                           <div className="mt-6 grid gap-6 md:grid-cols-2">
                             {aspirationalHotels.map((hotel) => (
@@ -827,7 +825,6 @@ export default function BookingPage() {
                                 key={hotel.id}
                                 hotel={hotel}
                                 tier={tierMap.get(hotel.id) ?? 'standard'}
-                                luxuryBadge
                                 destinationName={destination.name}
                                 nights={Math.max(1, nights)}
                                 rooms={roomsNeededFor(hotel.capacity ?? 2)}
