@@ -1006,11 +1006,6 @@ export default function BookingPage() {
                             </div>
                           </>
                         )}
-                        {paymentOption === 'full' && (
-                          <p className="text-xs text-accent">
-                            A limited-time discount will be applied to your payment link.
-                          </p>
-                        )}
                       </CardContent>
                     </Card>
 
