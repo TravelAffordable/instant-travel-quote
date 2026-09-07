@@ -251,11 +251,16 @@ export default function BookingPage() {
       .getElementById('holiday-budget-heading')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+  const detailsIncomplete =
+    !contact.name.trim() || !/^\S+@\S+\.\S+$/.test(contact.email.trim());
+
   const handleSelectHotel = (id: string) => {
-    if (budget == null) {
+    if (detailsIncomplete || budget == null) {
       setBudgetError(true);
       scrollToBudget();
-      document.getElementById('holiday-budget')?.focus();
+      document
+        .getElementById(detailsIncomplete ? 'guest-name' : 'holiday-budget')
+        ?.focus();
       return;
     }
     setHotelId(id);
