@@ -488,7 +488,7 @@ export default function BookingPage() {
       <main className="container mx-auto px-4 pb-20 pt-24">
         {/* Progress */}
         {step !== 'received' && (
-          <ol className="mb-8 flex flex-wrap gap-2 text-xs font-medium">
+          <ol id="booking-steps" className="mb-8 flex scroll-mt-24 flex-wrap gap-2 text-xs font-medium">
             {STEP_LABELS.map((s, i) => (
               <li
                 key={s.id}
