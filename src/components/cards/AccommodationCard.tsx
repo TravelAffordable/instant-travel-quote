@@ -6,6 +6,7 @@ import type { Hotel } from '@/data/travelData';
 import { mealBasis } from '@/lib/accommodationTiers';
 import type { AccommodationTier } from '@/components/common/TierSelector';
 import { cn } from '@/lib/utils';
+import { verifiedStars } from '@/lib/verifiedStars';
 
 interface AccommodationCardProps {
   hotel: Hotel;
@@ -79,9 +80,9 @@ export function AccommodationCard({
         <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="h-3 w-3" /> {destinationName}
         </p>
-        {hotel.rating > 0 && (
-          <div className="mt-2 flex items-center gap-0.5" aria-label={`${hotel.rating} star`}>
-            {Array.from({ length: Math.round(hotel.rating) }).map((_, i) => (
+        {verifiedStars(hotel) != null && (
+          <div className="mt-2 flex items-center gap-0.5" aria-label={`${verifiedStars(hotel)} star`}>
+            {Array.from({ length: verifiedStars(hotel) as number }).map((_, i) => (
               <Star key={i} className="h-3.5 w-3.5 fill-gold text-gold" />
             ))}
           </div>

@@ -29,6 +29,7 @@ import { calculatePackagePrice } from '@/data/packagePricing';
 import { classifyHotels } from '@/lib/accommodationTiers';
 import { isGenericHotelName, getDurbanHotelStars } from '@/data/durbanHotelStars';
 import { getUmhlangaHotelStars } from '@/data/umhlangaHotelStars';
+import { verifiedStars } from '@/lib/verifiedStars';
 import { getStayAvailability, isAvailabilityTracked } from '@/data/krugerAvailability';
 import { cn } from '@/lib/utils';
 import { mealBasis } from '@/lib/accommodationTiers';
@@ -315,9 +316,9 @@ export default function BookingPage() {
           <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3 w-3" /> {destination?.name ?? 'Your destination'}
           </p>
-          {selectedHotel.rating > 0 && (
-            <div className="mt-2 flex items-center gap-0.5" aria-label={`${selectedHotel.rating} star`}>
-              {Array.from({ length: Math.round(selectedHotel.rating) }).map((_, i) => (
+          {verifiedStars(selectedHotel) != null && (
+            <div className="mt-2 flex items-center gap-0.5" aria-label={`${verifiedStars(selectedHotel)} star`}>
+              {Array.from({ length: verifiedStars(selectedHotel) as number }).map((_, i) => (
                 <Star key={i} className="h-3.5 w-3.5 fill-gold text-gold" />
               ))}
             </div>
@@ -813,13 +814,11 @@ export default function BookingPage() {
 
                         <div className="mt-24">
                           <h2 className="font-display text-3xl md:text-4xl font-bold text-yellow-400">
-                            See more luxury stays - see what's possible
+                            Featured Stays - See what's possible
                           </h2>
 
                           <p className="mt-2 text-sm text-muted-foreground">
-                            {handPicked.length > 0
-                              ? `Our featured stays in ${destination.name}.`
-                              : `Our most luxurious stays in ${destination.name}.`}
+                            {`Our featured stays in ${destination.name}.`}
                           </p>
                           <div className="mt-6 grid gap-6 md:grid-cols-2">
                             {aspirationalHotels.map((hotel) => (
@@ -827,7 +826,6 @@ export default function BookingPage() {
                                 key={hotel.id}
                                 hotel={hotel}
                                 tier={tierMap.get(hotel.id) ?? 'standard'}
-                                luxuryBadge
                                 destinationName={destination.name}
                                 nights={Math.max(1, nights)}
                                 rooms={roomsNeededFor(hotel.capacity ?? 2)}
