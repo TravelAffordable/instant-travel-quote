@@ -1291,7 +1291,13 @@ export default function BookingPage() {
                 )}
               </div>
 
-              <aside className="lg:sticky lg:top-20 lg:self-start lg:pb-4">
+              <aside
+                className={cn(
+                  'lg:sticky lg:top-20 lg:self-start lg:pb-4 lg:block',
+                  step === 'accommodation' && 'hidden',
+                )}
+              >
+
                 {summary}
               </aside>
             </div>
