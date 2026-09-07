@@ -98,24 +98,37 @@ serve(async (req) => {
       text,
     };
 
-    // Send to each recipient individually so a test-mode restriction on one
-    // address does not prevent delivery to the other.
+    const sendVia = async (from: string, to: string) => {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${resendApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...emailPayload, from, to: [to] }),
+      });
+      const result = await response.json();
+      return { ok: response.ok, status: response.status, result };
+    };
+
+    // Send to each recipient individually so a restriction on one address does
+    // not prevent delivery to the other. If the branded sender domain is not
+    // verified yet, fall back to Resend's always-verified onboarding sender so
+    // enquiries are never silently lost.
     const results = await Promise.all(
       RECIPIENTS.map(async (to) => {
-        const response = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${resendApiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...emailPayload, to: [to] }),
-        });
-        const result = await response.json();
-        if (!response.ok) {
-          console.error(`Resend error for ${to}:`, result);
-          return { to, ok: false, error: result };
+        let attempt = await sendVia(`Travel Affordable <${fromAddress}>`, to);
+        if (!attempt.ok) {
+          console.error(`Resend error for ${to}:`, attempt.result);
+          const msg = String(attempt.result?.message ?? "");
+          if (attempt.status === 403 && /not verified/i.test(msg)) {
+            attempt = await sendVia("Travel Affordable <onboarding@resend.dev>", to);
+            if (!attempt.ok) {
+              console.error(`Resend fallback error for ${to}:`, attempt.result);
+            }
+          }
         }
-        return { to, ok: true };
+        return { to, ok: attempt.ok, error: attempt.ok ? undefined : attempt.result };
       }),
     );
 
