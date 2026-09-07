@@ -87,6 +87,19 @@ export default function BookingPage() {
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
   const [budgetError, setBudgetError] = useState(false);
   const [hotelQuery, setHotelQuery] = useState('');
+  const [quoteMode, setQuoteMode] = useState<'none' | 'help' | 'self'>('none');
+  const [helpForm, setHelpForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    destination: '',
+    tourCode: '',
+    dates: '',
+    people: '',
+    kidsAges: '',
+  });
+  const [helpSending, setHelpSending] = useState(false);
+  const [helpSent, setHelpSent] = useState(false);
   const pickMode = isPickMode();
   const { isFeatured, featuredNames, toggle: togglePick } = useFeaturedHotels(destinationSlug);
 
