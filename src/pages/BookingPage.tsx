@@ -78,7 +78,7 @@ export default function BookingPage() {
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [rooms, setRooms] = useState(1);
   const [contact, setContact] = useState({ name: '', email: '', phone: '' });
-  const [paymentOption, setPaymentOption] = useState<'50%' | 'full' | 'quote'>('50%');
+  const [paymentOption, setPaymentOption] = useState<'50%' | 'quote'>('50%');
   const [promoCode, setPromoCode] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [reference, setReference] = useState<string>();
