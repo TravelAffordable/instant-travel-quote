@@ -260,9 +260,9 @@ export default function BookingPage() {
             .filter((h) => h.name.toLowerCase().includes(query))
             .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b))
         : visibleHotels
-            .filter((h) => !aspirationalHotels.some((a) => a.id === h.id))
             .filter((h) => holidayPriceFor(h) >= budget)
             .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b));
+
 
   const shownBudgetHotels = query ? budgetHotels : budgetHotels.slice(0, budgetVisibleCount);
 
