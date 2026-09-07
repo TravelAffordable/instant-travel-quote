@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
 import { ArrowLeft, ArrowRight, BedDouble, CalendarIcon, Check, CheckCircle2, Clock, MapPin, Star, Users, Utensils } from 'lucide-react';
