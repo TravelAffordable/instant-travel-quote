@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
 import { ArrowLeft, ArrowRight, BedDouble, CalendarIcon, Check, CheckCircle2, Clock, MapPin, Star, Users, Utensils } from 'lucide-react';
@@ -70,6 +70,10 @@ export default function BookingPage() {
   const [tourDate, setTourDate] = useState<Date | undefined>(parseDate(params.get('date')));
   const [checkIn, setCheckIn] = useState<Date | undefined>(parseDate(params.get('checkIn')));
   const [checkOut, setCheckOut] = useState<Date | undefined>(parseDate(params.get('checkOut')));
+  const [tourDateOpen, setTourDateOpen] = useState(false);
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [checkOutOpen, setCheckOutOpen] = useState(false);
+
   const [adults, setAdults] = useState(Number(params.get('adults') ?? 2) || 2);
   const [infants, setInfants] = useState(Number(params.get('c02') ?? 0) || 0);
   const [kids, setKids] = useState(Number(params.get('c312') ?? 0) || 0);
@@ -121,8 +125,14 @@ export default function BookingPage() {
   const [step, setStep] = useState<Step>(initialStep);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const anchor = document.getElementById('booking-steps');
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, [step]);
+
 
   const nights = useMemo(() => {
     if (oneDay) return 0;
@@ -478,7 +488,7 @@ export default function BookingPage() {
       <main className="container mx-auto px-4 pb-20 pt-24">
         {/* Progress */}
         {step !== 'received' && (
-          <ol className="mb-8 flex flex-wrap gap-2 text-xs font-medium">
+          <ol id="booking-steps" className="mb-8 flex scroll-mt-24 flex-wrap gap-2 text-xs font-medium">
             {STEP_LABELS.map((s, i) => (
               <li
                 key={s.id}
@@ -723,7 +733,7 @@ export default function BookingPage() {
                       {oneDay ? (
                         <div className="space-y-1.5">
                           <Label>Tour date</Label>
-                          <Popover>
+                          <Popover open={tourDateOpen} onOpenChange={setTourDateOpen}>
                             <PopoverTrigger asChild>
                               <Button variant="outline" className="h-12 w-full justify-start font-normal">
                                 <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
@@ -731,7 +741,17 @@ export default function BookingPage() {
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
-                              <Calendar mode="single" selected={tourDate} onSelect={setTourDate} initialFocus />
+                              <Calendar
+                                mode="single"
+                                selected={tourDate}
+                                defaultMonth={tourDate}
+                                onSelect={(d) => {
+                                  setTourDate(d);
+                                  if (d) setTourDateOpen(false);
+                                }}
+                                initialFocus
+                                className="pointer-events-auto"
+                              />
                             </PopoverContent>
                           </Popover>
                         </div>
@@ -739,7 +759,7 @@ export default function BookingPage() {
                         <>
                           <div className="space-y-1.5">
                             <Label>Check-in</Label>
-                            <Popover>
+                            <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
                               <PopoverTrigger asChild>
                                 <Button variant="outline" className="h-12 w-full justify-start font-normal">
                                   <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
@@ -750,18 +770,23 @@ export default function BookingPage() {
                                 <Calendar
                                   mode="single"
                                   selected={checkIn}
+                                  defaultMonth={checkIn}
                                   onSelect={(d) => {
                                     setCheckIn(d);
-                                    if (d && (!checkOut || checkOut <= d)) setCheckOut(addDays(d, 2));
+                                    if (d) {
+                                      if (!checkOut || checkOut <= d) setCheckOut(addDays(d, 1));
+                                      setCheckInOpen(false);
+                                    }
                                   }}
                                   initialFocus
+                                  className="pointer-events-auto"
                                 />
                               </PopoverContent>
                             </Popover>
                           </div>
                           <div className="space-y-1.5">
                             <Label>Check-out</Label>
-                            <Popover>
+                            <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
                               <PopoverTrigger asChild>
                                 <Button variant="outline" className="h-12 w-full justify-start font-normal">
                                   <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
@@ -772,9 +797,15 @@ export default function BookingPage() {
                                 <Calendar
                                   mode="single"
                                   selected={checkOut}
-                                  onSelect={setCheckOut}
+                                  defaultMonth={checkOut ?? (checkIn ? addDays(checkIn, 1) : undefined)}
+                                  
+                                  onSelect={(d) => {
+                                    setCheckOut(d);
+                                    if (d) setCheckOutOpen(false);
+                                  }}
                                   disabled={checkIn ? { before: addDays(checkIn, 1) } : undefined}
                                   initialFocus
+                                  className="pointer-events-auto"
                                 />
                               </PopoverContent>
                             </Popover>
@@ -791,6 +822,7 @@ export default function BookingPage() {
                         Continue <ArrowRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
+
                   </section>
                 )}
 
@@ -987,20 +1019,25 @@ export default function BookingPage() {
                             ) : (
                               <div className="mt-6 grid gap-6 md:grid-cols-2">
                                 {shownBudgetHotels.map((hotel) => (
-                                  <AccommodationCard
-                                    key={hotel.id}
-                                    hotel={hotel}
-                                    tier={tierMap.get(hotel.id) ?? 'standard'}
-                                    destinationName={destination.name}
-                                    nights={Math.max(1, nights)}
-                                    rooms={roomsNeededFor(hotel.capacity ?? 2)}
-                                    price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
-                                    selected={hotelId === hotel.id}
-                                    onSelect={(id) => handleSelectHotel(id)}
-
-                                  />
+                                  <Fragment key={hotel.id}>
+                                    <AccommodationCard
+                                      hotel={hotel}
+                                      tier={tierMap.get(hotel.id) ?? 'standard'}
+                                      destinationName={destination.name}
+                                      nights={Math.max(1, nights)}
+                                      rooms={roomsNeededFor(hotel.capacity ?? 2)}
+                                      price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
+                                      selected={hotelId === hotel.id}
+                                      onSelect={(id) => handleSelectHotel(id)}
+                                    />
+                                    {hotelId === hotel.id && (
+                                      <div className="lg:hidden">{summary}</div>
+                                    )}
+                                  </Fragment>
                                 ))}
+
                               </div>
+
                             )}
                             {budgetHotels.length > shownBudgetHotels.length && (
                               <Button
@@ -1024,23 +1061,29 @@ export default function BookingPage() {
                           </p>
                           <div className="mt-6 grid gap-6 md:grid-cols-2">
                             {aspirationalHotels.map((hotel) => (
-                              <AccommodationCard
-                                key={hotel.id}
-                                hotel={hotel}
-                                tier={tierMap.get(hotel.id) ?? 'standard'}
-                                destinationName={destination.name}
-                                nights={Math.max(1, nights)}
-                                rooms={roomsNeededFor(hotel.capacity ?? 2)}
-                                price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
-                                selected={hotelId === hotel.id}
-                                onSelect={(id) => handleSelectHotel(id)}
-                                pickable={pickMode}
-                                picked={isFeatured(hotel.name)}
-                                onTogglePick={togglePick}
-                              />
+                              <Fragment key={hotel.id}>
+                                <AccommodationCard
+                                  hotel={hotel}
+                                  tier={tierMap.get(hotel.id) ?? 'standard'}
+                                  destinationName={destination.name}
+                                  nights={Math.max(1, nights)}
+                                  rooms={roomsNeededFor(hotel.capacity ?? 2)}
+                                  price={hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name)}
+                                  selected={hotelId === hotel.id}
+                                  onSelect={(id) => handleSelectHotel(id)}
+                                  pickable={pickMode}
+                                  picked={isFeatured(hotel.name)}
+                                  onTogglePick={togglePick}
+                                />
+                                {hotelId === hotel.id && (
+                                  <div className="lg:hidden">{summary}</div>
+                                )}
+                              </Fragment>
+
                             ))}
                           </div>
                         </div>
+
 
                         {pickMode && (
                           <div className="mt-24 rounded-2xl border-2 border-dashed border-yellow-400 p-4">
@@ -1250,7 +1293,13 @@ export default function BookingPage() {
                 )}
               </div>
 
-              <aside className="lg:sticky lg:top-20 lg:self-start lg:pb-4">
+              <aside
+                className={cn(
+                  'lg:sticky lg:top-20 lg:self-start lg:pb-4 lg:block',
+                  step === 'accommodation' && 'hidden',
+                )}
+              >
+
                 {summary}
               </aside>
             </div>
