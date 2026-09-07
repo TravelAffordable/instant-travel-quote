@@ -99,18 +99,6 @@ export function AccommodationCard({
             </p>
           )}
         </div>
-        {hotel.amenities?.length > 0 && (
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {hotel.amenities.slice(0, 4).map((a) => (
-              <li
-                key={a}
-                className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground"
-              >
-                <Check className="h-3 w-3 text-accent" /> {a}
-              </li>
-            ))}
-          </ul>
-        )}
         <div className="mt-auto pt-5">
           <p className="text-sm text-muted-foreground">
             {showPrice && (
