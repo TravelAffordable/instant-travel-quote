@@ -315,9 +315,9 @@ export default function BookingPage() {
           <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3 w-3" /> {destination?.name ?? 'Your destination'}
           </p>
-          {selectedHotel.rating > 0 && (
-            <div className="mt-2 flex items-center gap-0.5" aria-label={`${selectedHotel.rating} star`}>
-              {Array.from({ length: Math.round(selectedHotel.rating) }).map((_, i) => (
+          {verifiedStars(selectedHotel) != null && (
+            <div className="mt-2 flex items-center gap-0.5" aria-label={`${verifiedStars(selectedHotel)} star`}>
+              {Array.from({ length: verifiedStars(selectedHotel) as number }).map((_, i) => (
                 <Star key={i} className="h-3.5 w-3.5 fill-gold text-gold" />
               ))}
             </div>
