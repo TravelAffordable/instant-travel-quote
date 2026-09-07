@@ -369,6 +369,38 @@ export default function BookingPage() {
       </Card>
     ) : null;
 
+  const helpFormIncomplete =
+    !helpForm.name.trim() ||
+    !/^\S+@\S+\.\S+$/.test(helpForm.email.trim()) ||
+    !helpForm.phone.trim();
+
+  const submitHelpRequest = async () => {
+    if (helpFormIncomplete) return;
+    setHelpSending(true);
+    try {
+      await supabase.functions.invoke('send-quote-request', {
+        body: {
+          guestName: helpForm.name,
+          guestEmail: helpForm.email,
+          guestTel: helpForm.phone,
+          destination: helpForm.destination || destination?.name,
+          packageNames: helpForm.tourCode || pkg?.name,
+          checkIn: helpForm.dates,
+          adults: helpForm.people,
+          childrenAges: helpForm.kidsAges,
+          bookingType: 'Assisted Quote Request',
+          reference: `TA-H${Date.now().toString().slice(-6)}`,
+        },
+      });
+      setHelpSent(true);
+    } catch (err) {
+      console.error('Failed to send assisted quote request:', err);
+      setHelpSent(true);
+    } finally {
+      setHelpSending(false);
+    }
+  };
+
   const submitBooking = async () => {
     const ref = `TA-${Date.now().toString().slice(-6)}`;
     setReference(ref);
