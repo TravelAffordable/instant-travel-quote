@@ -589,6 +589,142 @@ export default function BookingPage() {
                     <Button variant="ghost" className="mb-4 -ml-2" onClick={() => goto('experience')}>
                       <ArrowLeft className="mr-1 h-4 w-4" /> Back
                     </Button>
+                    <Card className="mb-8 rounded-2xl border-primary/30">
+                      <CardContent className="space-y-4 p-6">
+                        <h2 className="font-display text-xl font-bold text-foreground">
+                          How would you like to get your quote?
+                        </h2>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {[
+                            { id: 'help' as const, label: 'I would like help to get a quote' },
+                            { id: 'self' as const, label: 'I will use the website to get a quotation' },
+                          ].map((opt) => (
+                            <button
+                              key={opt.id}
+                              type="button"
+                              onClick={() => setQuoteMode(opt.id)}
+                              className={cn(
+                                'rounded-xl border p-4 text-left text-sm font-medium transition-colors',
+                                quoteMode === opt.id
+                                  ? 'border-accent bg-accent/10 text-foreground'
+                                  : 'border-border bg-card text-muted-foreground hover:bg-accent/5',
+                              )}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span
+                                  className={cn(
+                                    'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border',
+                                    quoteMode === opt.id
+                                      ? 'border-accent bg-accent'
+                                      : 'border-muted-foreground',
+                                  )}
+                                >
+                                  {quoteMode === opt.id && (
+                                    <span className="block h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+                                  )}
+                                </span>
+                                {opt.label}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {quoteMode === 'help' && (
+                          helpSent ? (
+                            <p className="rounded-xl bg-muted p-4 text-sm font-medium text-foreground">
+                              Thank you — we have your details and one of our consultants will send you a
+                              quote shortly.
+                            </p>
+                          ) : (
+                            <div className="space-y-4 border-t border-border pt-4">
+                              <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-name">Name *</Label>
+                                  <Input
+                                    id="help-name"
+                                    value={helpForm.name}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, name: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-email">Email *</Label>
+                                  <Input
+                                    id="help-email"
+                                    type="email"
+                                    value={helpForm.email}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, email: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-phone">Tel *</Label>
+                                  <Input
+                                    id="help-phone"
+                                    value={helpForm.phone}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, phone: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-destination">Destination</Label>
+                                  <Input
+                                    id="help-destination"
+                                    placeholder={destination?.name ?? 'e.g. Durban'}
+                                    value={helpForm.destination}
+                                    onChange={(e) =>
+                                      setHelpForm((f) => ({ ...f, destination: e.target.value }))
+                                    }
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-tourcode">Tour code</Label>
+                                  <Input
+                                    id="help-tourcode"
+                                    placeholder="e.g. DUR9"
+                                    value={helpForm.tourCode}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, tourCode: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-dates">Dates of travel</Label>
+                                  <Input
+                                    id="help-dates"
+                                    placeholder="e.g. 12 - 14 Dec 2026"
+                                    value={helpForm.dates}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, dates: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-people">Number of people</Label>
+                                  <Input
+                                    id="help-people"
+                                    placeholder="e.g. 2 adults, 2 kids"
+                                    value={helpForm.people}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, people: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-kids">Ages of the kids</Label>
+                                  <Input
+                                    id="help-kids"
+                                    placeholder="e.g. 5 and 11"
+                                    value={helpForm.kidsAges}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, kidsAges: e.target.value }))}
+                                  />
+                                </div>
+                              </div>
+                              <Button
+                                size="lg"
+                                className="w-full sm:w-auto"
+                                disabled={helpFormIncomplete || helpSending}
+                                onClick={submitHelpRequest}
+                              >
+                                {helpSending ? 'Sending…' : 'Send me a quote'}
+                              </Button>
+                            </div>
+                          )
+                        )}
+                      </CardContent>
+                    </Card>
+
                     <h1 className="font-display text-3xl font-bold text-foreground">Your dates of travel</h1>
                     <label className="mt-6 flex cursor-pointer items-center gap-2 text-sm">
                       <Checkbox checked={oneDay} onCheckedChange={(v) => setOneDay(Boolean(v))} />
