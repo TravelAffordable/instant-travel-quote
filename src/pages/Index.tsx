@@ -1,7 +1,6 @@
 import { Header } from '@/components/Header';
 import { HeroStatic } from '@/components/home/HeroStatic';
 import { DestinationGrid } from '@/components/home/DestinationGrid';
-import { FeaturedExperiences } from '@/components/home/FeaturedExperiences';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
 import { SEO } from '@/components/SEO';
@@ -22,7 +21,6 @@ const Index = () => {
       <Header />
       <HeroStatic />
       <DestinationGrid />
-      <FeaturedExperiences />
       <Footer />
       <ChatBot isOpen={isChatOpen} onToggle={() => setIsChatOpen(!isChatOpen)} />
     </div>
