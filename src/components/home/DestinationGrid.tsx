@@ -16,13 +16,17 @@ export function DestinationGrid() {
     <section id="destinations" className="py-16">
       <div className="container mx-auto px-4">
         <div>
-          <h2 className="font-display text-3xl font-bold text-foreground md:text-4xl">
-            Your Favourite Destinations
+          <h2 className="font-display text-4xl font-bold text-gold md:text-5xl">
+            Your Favourite Holiday Destinations
           </h2>
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 text-lg font-medium text-navy">
             South Africa's favourite getaways — with everything already arranged.
           </p>
+          <p className="mt-1 text-navy/80">
+            Click on the pictures below to be taken to your next holiday destination.
+          </p>
         </div>
+
 
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {catalogueDestinations.map((d) => (

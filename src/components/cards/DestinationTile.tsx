@@ -32,7 +32,7 @@ export function DestinationTile({ destination, fromPrice, onSelect }: Destinatio
   return (
     <Root>
 
-      <ResponsiveImage src={destination.image} alt={`${destination.name} holidays`} ratio="photo" />
+      <ResponsiveImage src={destination.image} alt={`${destination.name} holidays`} ratio="hero" />
       <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/25 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-5">
         <p className="flex items-center gap-1 text-xs font-medium text-white/80">
