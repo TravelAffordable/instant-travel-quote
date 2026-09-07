@@ -70,6 +70,10 @@ export default function BookingPage() {
   const [tourDate, setTourDate] = useState<Date | undefined>(parseDate(params.get('date')));
   const [checkIn, setCheckIn] = useState<Date | undefined>(parseDate(params.get('checkIn')));
   const [checkOut, setCheckOut] = useState<Date | undefined>(parseDate(params.get('checkOut')));
+  const [tourDateOpen, setTourDateOpen] = useState(false);
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [checkOutOpen, setCheckOutOpen] = useState(false);
+
   const [adults, setAdults] = useState(Number(params.get('adults') ?? 2) || 2);
   const [infants, setInfants] = useState(Number(params.get('c02') ?? 0) || 0);
   const [kids, setKids] = useState(Number(params.get('c312') ?? 0) || 0);
