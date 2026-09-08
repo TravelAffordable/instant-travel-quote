@@ -141,6 +141,7 @@ export const catalogueDestinations: CatalogueDestination[] = [
     tagline: 'Crystal lagoon beach day close to home',
     image: blydeImg,
     featured: false,
+    enquireOnly: true,
   },
   {
     slug: 'kruger-national-park',
