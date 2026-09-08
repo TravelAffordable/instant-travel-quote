@@ -7,7 +7,7 @@ import { mealBasis } from '@/lib/accommodationTiers';
 import type { AccommodationTier } from '@/components/common/TierSelector';
 import { cn } from '@/lib/utils';
 import { verifiedStars } from '@/lib/verifiedStars';
-import { hasGoldenMileCalendar } from '@/data/goldenMileRateCalendar';
+import { isGoldenMileBeachfront } from '@/data/goldenMileBeachfront';
 
 interface AccommodationCardProps {
   hotel: Hotel;
