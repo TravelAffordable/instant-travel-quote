@@ -154,15 +154,8 @@ export default function BookingPage() {
 
   const destinationId = destination?.destinationId;
   const hotels = (destinationId ? getHotelsByDestination(destinationId) : [])
-    // Generic placeholder names were only ever created for Durban/Umhlanga real-name
-    // replacements — filtering elsewhere would wipe out budget/affordable stays.
-    .filter(
-      (h) =>
-        !(
-          (destinationId === 'durban' || destinationId === 'umhlanga') &&
-          isGenericHotelName(h.name)
-        ),
-    )
+    // Generic placeholder names must never be shown to clients, in any destination.
+    .filter((h) => !isGenericHotelName(h.name))
     .map((h) => {
       const stars = getDurbanHotelStars(h.name) ?? getUmhlangaHotelStars(h.name);
       return stars == null ? h : { ...h, rating: stars };
