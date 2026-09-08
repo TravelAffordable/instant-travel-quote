@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Clock, Check, ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
-import { extractTourCode, getTourFromPrice } from '@/lib/packageTourPricing';
+import { extractTourCode, getTourFromPrice, TOUR_FROM_PRICES } from '@/lib/packageTourPricing';
 import type { Package } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 
