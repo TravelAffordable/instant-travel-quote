@@ -281,6 +281,39 @@ export default function BookingPage() {
       return;
     }
     setHotelId(id);
+    setQuotesOpen(true);
+  };
+
+  /** Quote card that opens right under each hotel so options can be compared side by side. */
+  const renderHotelQuote = (hotel: (typeof hotels)[number]) => {
+    const hotelTotal = hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name);
+    const grandTotal = packageTotal + hotelTotal + extrasTotal;
+    const guests = Math.max(1, adults + childrenAges.length);
+    const inclusions = [
+      ...(hotel.includesBreakfast ? ['Daily Breakfast'] : []),
+      ...(pkg?.activitiesIncluded ?? []),
+      ...EXTRAS.filter((e) => selectedExtras.includes(e.id)).map((e) => e.label),
+    ];
+    return (
+      <InlineHotelQuote
+        key={`quote-${hotel.id}`}
+        hotelName={hotel.name}
+        roomType={hotel.roomType}
+        destinationName={destination?.name ?? 'Your destination'}
+        nights={Math.max(1, nights)}
+        rooms={roomsNeededFor(hotel.capacity ?? 2)}
+        guestsLabel={`${travellersLabel} · ${Math.max(1, nights)} night${Math.max(1, nights) === 1 ? '' : 's'}`}
+        mealLabel={mealBasis(hotel) || undefined}
+        total={grandTotal}
+        perPerson={grandTotal / guests}
+        inclusions={inclusions}
+        selected={hotelId === hotel.id}
+        onRequestQuote={() => {
+          setHotelId(hotel.id);
+          goto('review');
+        }}
+      />
+    );
   };
 
 
