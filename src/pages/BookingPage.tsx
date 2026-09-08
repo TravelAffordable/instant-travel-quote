@@ -17,6 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DestinationTile } from '@/components/cards/DestinationTile';
 import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
+import { InlineHotelQuote } from '@/components/cards/InlineHotelQuote';
 import { isPickMode } from '@/lib/pickMode';
 import { useFeaturedHotels } from '@/hooks/useFeaturedHotels';
 
