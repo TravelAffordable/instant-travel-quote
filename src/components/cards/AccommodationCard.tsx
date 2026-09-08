@@ -7,7 +7,7 @@ import { mealBasis } from '@/lib/accommodationTiers';
 import type { AccommodationTier } from '@/components/common/TierSelector';
 import { cn } from '@/lib/utils';
 import { verifiedStars } from '@/lib/verifiedStars';
-import { hasGoldenMileCalendar } from '@/data/goldenMileRateCalendar';
+import { isGoldenMileBeachfront } from '@/data/goldenMileBeachfront';
 
 interface AccommodationCardProps {
   hotel: Hotel;
@@ -78,7 +78,7 @@ export function AccommodationCard({
 
       <CardContent className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-lg font-bold text-foreground">{hotel.name}</h3>
-        {hasGoldenMileCalendar(hotel.name) && (
+        {isGoldenMileBeachfront(hotel.name) && (
           <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             Right on the beach
           </span>
