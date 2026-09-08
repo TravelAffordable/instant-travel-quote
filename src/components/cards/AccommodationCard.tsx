@@ -122,7 +122,7 @@ export function AccommodationCard({
             variant={selected ? 'secondary' : 'default'}
             onClick={() => onSelect(hotel.id)}
           >
-            {selected ? 'Selected' : 'Select accommodation to see total price on the right'}
+            {selected ? 'Selected' : 'Select accommodation to see total price below'}
           </Button>
         </div>
       </CardContent>
