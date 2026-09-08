@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Clock, Check, ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
-import { extractTourCode, getTourFromPrice } from '@/lib/packageTourPricing';
+import { extractTourCode, getTourFromPrice, TOUR_FROM_PRICES } from '@/lib/packageTourPricing';
 import type { Package } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 
@@ -26,8 +26,10 @@ interface PackageCardProps {
 
 export function PackageCard({ pkg, destinationSlug, fallbackImage }: PackageCardProps) {
   const img = getPackageImage(pkg.id) || fallbackImage || '/placeholder.svg';
-  const tourCode = extractTourCode(pkg.name);
-  const fromPrice = getTourFromPrice(pkg.name);
+  const idCode = pkg.id.toUpperCase();
+  const idCodePrice = TOUR_FROM_PRICES[idCode] ?? null;
+  const tourCode = extractTourCode(pkg.name) ?? (idCodePrice !== null ? idCode : null);
+  const fromPrice = getTourFromPrice(pkg.name) ?? idCodePrice ?? pkg.fromPriceOverride ?? null;
   const headline = getPackageHeadline(pkg.name);
   const inclusions = pkg.activitiesIncluded ?? [];
 
