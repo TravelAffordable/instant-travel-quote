@@ -79,6 +79,7 @@ export default function BookingPage() {
   const [kids, setKids] = useState(Number(params.get('c312') ?? 0) || 0);
   const [teens, setTeens] = useState(Number(params.get('c1317') ?? 0) || 0);
   const [hotelId, setHotelId] = useState<string>();
+  const [quotesOpen, setQuotesOpen] = useState(false);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [rooms, setRooms] = useState(1);
   const [contact, setContact] = useState({ name: '', email: '', phone: '' });
@@ -1023,9 +1024,7 @@ export default function BookingPage() {
                                       selected={hotelId === hotel.id}
                                       onSelect={(id) => handleSelectHotel(id)}
                                     />
-                                    {hotelId === hotel.id && (
-                                      <div className="lg:hidden">{summary}</div>
-                                    )}
+                                    {quotesOpen && renderHotelQuote(hotel)}
                                   </Fragment>
                                 ))}
 
@@ -1068,9 +1067,7 @@ export default function BookingPage() {
                                   picked={isFeatured(hotel.name)}
                                   onTogglePick={togglePick}
                                 />
-                                {hotelId === hotel.id && (
-                                  <div className="lg:hidden">{summary}</div>
-                                )}
+                                {quotesOpen && renderHotelQuote(hotel)}
                               </Fragment>
 
                             ))}
