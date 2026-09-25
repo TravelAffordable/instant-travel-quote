@@ -696,7 +696,7 @@ export default function BookingPage() {
                                 </div>
                                 <div className="space-y-1.5">
                                   <Label htmlFor="help-budget" className="text-destructive">
-                                    Budget per person *
+                                    Budget *
                                   </Label>
                                   <Input
                                     id="help-budget"
