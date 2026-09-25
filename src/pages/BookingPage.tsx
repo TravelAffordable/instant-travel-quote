@@ -98,6 +98,7 @@ export default function BookingPage() {
     name: '',
     email: '',
     phone: '',
+    budget: '',
     destination: '',
     tourCode: '',
     dates: '',
