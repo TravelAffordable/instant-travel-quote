@@ -396,10 +396,13 @@ export default function BookingPage() {
       </Card>
     ) : null;
 
+  const helpFormBudget = Number(helpForm.budget.replace(/[^\d]/g, ''));
   const helpFormIncomplete =
     !helpForm.name.trim() ||
     !/^\S+@\S+\.\S+$/.test(helpForm.email.trim()) ||
-    !helpForm.phone.trim();
+    !helpForm.phone.trim() ||
+    !Number.isFinite(helpFormBudget) ||
+    helpFormBudget <= 0;
 
   const submitHelpRequest = async () => {
     if (helpFormIncomplete) return;
