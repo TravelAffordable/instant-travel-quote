@@ -98,6 +98,7 @@ export default function BookingPage() {
     name: '',
     email: '',
     phone: '',
+    budget: '',
     destination: '',
     tourCode: '',
     dates: '',
@@ -395,10 +396,13 @@ export default function BookingPage() {
       </Card>
     ) : null;
 
+  const helpFormBudget = Number(helpForm.budget.replace(/[^\d]/g, ''));
   const helpFormIncomplete =
     !helpForm.name.trim() ||
     !/^\S+@\S+\.\S+$/.test(helpForm.email.trim()) ||
-    !helpForm.phone.trim();
+    !helpForm.phone.trim() ||
+    !Number.isFinite(helpFormBudget) ||
+    helpFormBudget <= 0;
 
   const submitHelpRequest = async () => {
     if (helpFormIncomplete) return;
@@ -414,6 +418,7 @@ export default function BookingPage() {
           checkIn: helpForm.dates,
           adults: helpForm.people,
           childrenAges: helpForm.kidsAges,
+          budget: helpFormBudget || undefined,
           bookingType: 'Assisted Quote Request',
           reference: `TA-H${Date.now().toString().slice(-6)}`,
         },
@@ -687,6 +692,18 @@ export default function BookingPage() {
                                     id="help-phone"
                                     value={helpForm.phone}
                                     onChange={(e) => setHelpForm((f) => ({ ...f, phone: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="help-budget" className="text-destructive">
+                                    Budget *
+                                  </Label>
+                                  <Input
+                                    id="help-budget"
+                                    inputMode="numeric"
+                                    placeholder="e.g. R2,000"
+                                    value={helpForm.budget}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, budget: e.target.value }))}
                                   />
                                 </div>
                                 <div className="space-y-1.5">
