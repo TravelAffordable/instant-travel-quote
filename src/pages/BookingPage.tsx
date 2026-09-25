@@ -418,6 +418,7 @@ export default function BookingPage() {
           checkIn: helpForm.dates,
           adults: helpForm.people,
           childrenAges: helpForm.kidsAges,
+          budget: helpFormBudget || undefined,
           bookingType: 'Assisted Quote Request',
           reference: `TA-H${Date.now().toString().slice(-6)}`,
         },
