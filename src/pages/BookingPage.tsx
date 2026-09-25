@@ -695,6 +695,18 @@ export default function BookingPage() {
                                   />
                                 </div>
                                 <div className="space-y-1.5">
+                                  <Label htmlFor="help-budget" className="text-destructive">
+                                    Budget per person *
+                                  </Label>
+                                  <Input
+                                    id="help-budget"
+                                    inputMode="numeric"
+                                    placeholder="e.g. R2,000"
+                                    value={helpForm.budget}
+                                    onChange={(e) => setHelpForm((f) => ({ ...f, budget: e.target.value }))}
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
                                   <Label htmlFor="help-destination">Destination</Label>
                                   <Input
                                     id="help-destination"
