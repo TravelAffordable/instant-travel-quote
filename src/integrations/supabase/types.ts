@@ -163,6 +163,156 @@ export type Database = {
           },
         ]
       }
+      operator_profiles: {
+        Row: {
+          account_holder: string
+          account_number: string
+          bank_name: string
+          branch_code: string
+          company_name: string
+          contact_name: string
+          created_at: string
+          email: string
+          id: string
+          logo_url: string | null
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_holder?: string
+          account_number?: string
+          bank_name?: string
+          branch_code?: string
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          logo_url?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_holder?: string
+          account_number?: string
+          bank_name?: string
+          branch_code?: string
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          logo_url?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      operator_quotes: {
+        Row: {
+          accommodation_total: number
+          adults: number
+          bus_amount: number
+          bus_hire_code: string
+          check_in: string | null
+          check_out: string | null
+          children_ages: number[]
+          client_email: string
+          client_name: string
+          client_phone: string
+          commission: number
+          created_at: string
+          destination: string
+          flagged: boolean
+          grand_total: number
+          group_name: string
+          hotel_capacity: number
+          hotel_name: string
+          hotel_rate: number
+          hotel_source: string
+          id: string
+          operator_id: string
+          package_ids: string[]
+          package_total: number
+          reference: string
+          rooms: number
+          status: string
+          superior_room: boolean
+          superior_room_notes: string
+          updated_at: string
+        }
+        Insert: {
+          accommodation_total?: number
+          adults?: number
+          bus_amount?: number
+          bus_hire_code?: string
+          check_in?: string | null
+          check_out?: string | null
+          children_ages?: number[]
+          client_email?: string
+          client_name?: string
+          client_phone?: string
+          commission?: number
+          created_at?: string
+          destination?: string
+          flagged?: boolean
+          grand_total?: number
+          group_name?: string
+          hotel_capacity?: number
+          hotel_name?: string
+          hotel_rate?: number
+          hotel_source?: string
+          id?: string
+          operator_id: string
+          package_ids?: string[]
+          package_total?: number
+          reference?: string
+          rooms?: number
+          status?: string
+          superior_room?: boolean
+          superior_room_notes?: string
+          updated_at?: string
+        }
+        Update: {
+          accommodation_total?: number
+          adults?: number
+          bus_amount?: number
+          bus_hire_code?: string
+          check_in?: string | null
+          check_out?: string | null
+          children_ages?: number[]
+          client_email?: string
+          client_name?: string
+          client_phone?: string
+          commission?: number
+          created_at?: string
+          destination?: string
+          flagged?: boolean
+          grand_total?: number
+          group_name?: string
+          hotel_capacity?: number
+          hotel_name?: string
+          hotel_rate?: number
+          hotel_source?: string
+          id?: string
+          operator_id?: string
+          package_ids?: string[]
+          package_total?: number
+          reference?: string
+          rooms?: number
+          status?: string
+          superior_room?: boolean
+          superior_room_notes?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       rate_history: {
         Row: {
           created_at: string
@@ -363,6 +513,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -380,8 +548,16 @@ export type Database = {
         }
         Returns: number
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "operator"
       destination_code:
         | "durban"
         | "cape_town"
@@ -520,6 +696,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "operator"],
       destination_code: [
         "durban",
         "cape_town",

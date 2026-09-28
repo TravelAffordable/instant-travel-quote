@@ -20,6 +20,10 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import BookingPage from "./pages/BookingPage";
 import QuotePage from "./pages/QuotePage";
+import OperatorProfilePage from "./pages/operators/OperatorProfilePage";
+import OperatorNewQuotePage from "./pages/operators/OperatorNewQuotePage";
+import OperatorQuotesPage from "./pages/operators/OperatorQuotesPage";
+import OperatorAdminPage from "./pages/operators/OperatorAdminPage";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +51,10 @@ const App = () => (
           <Route path="/destinations/:slug" element={<DestinationPage />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/operators" element={<OperatorProfilePage />} />
+          <Route path="/operators/quote/new" element={<OperatorNewQuotePage />} />
+          <Route path="/operators/quotes" element={<OperatorQuotesPage />} />
+          <Route path="/operators/admin" element={<OperatorAdminPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
