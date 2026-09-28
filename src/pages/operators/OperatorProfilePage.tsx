@@ -26,13 +26,30 @@ function ProfileForm({ userId, profile, reload }: { userId: string; profile: Ope
     setForm(Object.fromEntries(fields.map(([k]) => [k, String(profile?.[k] ?? '')])));
   }, [profile]);
 
+  const [saved, setSaved] = useState('');
   const save = async () => {
+    const isNew = !profile;
     const payload = { ...form, user_id: userId };
     const { error } = profile
       ? await supabase.from('operator_profiles').update(form).eq('user_id', userId)
       : await supabase.from('operator_profiles').insert(payload);
     if (error) return toast({ title: 'Save failed', description: error.message, variant: 'destructive' });
-    toast({ title: 'Profile saved' });
+    if (isNew || profile?.status === 'pending') {
+      await supabase.functions.invoke('send-quote-request', {
+        body: {
+          guestName: `${form.contact_name || '—'} (${form.company_name})`,
+          guestEmail: form.email || '—',
+          guestTel: form.phone || '—',
+          bookingType: 'Bus Operator Registration — awaiting approval at /operators/admin',
+          specialRequests: `Company: ${form.company_name}. Bank: ${form.bank_name}, ${form.account_holder}, acc ${form.account_number}, branch ${form.branch_code}`,
+        },
+      }).catch(() => {});
+    }
+    const msg = profile?.status === 'approved'
+      ? 'Profile saved.'
+      : 'Profile saved and sent to Travel Affordable for approval. You will be able to create quotes once approved.';
+    setSaved(msg);
+    toast({ title: 'Profile saved', description: msg });
     reload();
   };
 
@@ -55,6 +72,7 @@ function ProfileForm({ userId, profile, reload }: { userId: string; profile: Ope
         <Button onClick={save} disabled={!form.company_name}>
           {profile ? 'Save profile' : 'Submit for approval'}
         </Button>
+        {saved && <p className="rounded-lg bg-muted p-3 text-sm font-medium text-foreground">{saved}</p>}
       </CardContent>
     </Card>
   );
