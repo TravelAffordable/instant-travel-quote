@@ -8,6 +8,8 @@ import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { getBlogPost, blogPosts } from '@/data/blogPosts';
 import { getDestinationPage } from '@/data/destinationPages';
 import NotFound from './NotFound';
+import { getPackagesByDestination } from '@/data/travelData';
+import { getHolidayTeaserPrice, withTeaserAccommodation } from '@/lib/holidayTeaserPricing';
 
 const SITE_URL = 'https://travelaffordable.co.za';
 
@@ -20,6 +22,10 @@ const BlogPost = () => {
 
   const canonical = `/blog/${post.slug}`;
   const ctaDest = post.ctaDestinationSlug ? getDestinationPage(post.ctaDestinationSlug) : undefined;
+  const advertisedPrices = ctaDest ? getPackagesByDestination(ctaDest.destinationId)
+    .map(getHolidayTeaserPrice).filter((price): price is number => price !== null) : [];
+  const advertisedStartingPrice = advertisedPrices.length ? Math.min(...advertisedPrices)
+    : ctaDest ? withTeaserAccommodation(ctaDest.startingFrom) : null;
 
   const jsonLd = [
     {
@@ -130,7 +136,7 @@ const BlogPost = () => {
                 Ready to book your {ctaDest.name} trip?
               </h3>
               <p className="mt-2 text-foreground/70">
-                Get an instant online quote — packages start from R{ctaDest.startingFrom.toLocaleString('en-ZA')} per
+                Get an instant online quote — packages start from R{advertisedStartingPrice?.toLocaleString('en-ZA')} per
                 person sharing.
               </p>
               <div className="mt-4 flex flex-wrap gap-3">

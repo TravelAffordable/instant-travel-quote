@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { getPackageImage } from '@/data/packageImages';
+import { getHolidayTeaserPrice, withTeaserAccommodation } from '@/lib/holidayTeaserPricing';
 
 // Genie destination images
 import vaalRiverImg from '@/assets/destinations/vaal-river.jpg';
@@ -176,39 +177,7 @@ function getPackageFromPrice(
   pkg: Package,
   cheapestNightlyByDestination: Record<string, number> = {},
 ): number {
-  // Manual override always wins so curated "From" prices stay accurate.
-  if (typeof pkg.fromPriceOverride === 'number' && pkg.fromPriceOverride > 0) {
-    return pkg.fromPriceOverride;
-  }
-
-  // Teaser is always based on a 2-night stay for 2 adults (weekend getaway baseline).
-  const TEASER_NIGHTS = 2;
-  const TEASER_ADULTS = 2;
-
-  const cachedNightly = cheapestNightlyByDestination[pkg.destination];
-
-  if (cachedNightly && cachedNightly > 0) {
-    const accommodationPerPerson = (cachedNightly * TEASER_NIGHTS) / TEASER_ADULTS;
-    return roundToNearest10(pkg.basePrice + accommodationPerPerson);
-  }
-
-  // Fallback to static budget hotel data only when no cached rate exists for the destination.
-  const cheapestBudgetHotel = hotels
-    .filter((hotel) => hotel.destination === pkg.destination && hotel.type === 'very-affordable')
-    .sort((a, b) => {
-      const aPriority = a.capacity === 2 ? 0 : 1;
-      const bPriority = b.capacity === 2 ? 0 : 1;
-
-      if (aPriority !== bPriority) return aPriority - bPriority;
-      return a.pricePerNight - b.pricePerNight;
-    })[0];
-
-  if (!cheapestBudgetHotel) {
-    return roundToNearest10(pkg.basePrice);
-  }
-
-  const accommodationPerPerson = (cheapestBudgetHotel.pricePerNight * TEASER_NIGHTS) / TEASER_ADULTS;
-  return roundToNearest10(pkg.basePrice + accommodationPerPerson);
+  return getHolidayTeaserPrice(pkg) ?? withTeaserAccommodation(pkg.basePrice) ?? pkg.basePrice;
 }
 
 function sortQuotesForBudgetDisplay(quotes: QuoteResult[], budgetAmount: number): QuoteResult[] {
