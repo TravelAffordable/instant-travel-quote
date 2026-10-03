@@ -77,5 +77,12 @@ There is no separate "+ R1,400 fees" line. Adding one double-charges the custome
 
 - Show the rounded **complete holiday price** and per-person price only — no line-item
   breakdown of fees, activities or accommodation in the customer-facing UI.
-- Package cards show "From R… pp" using the fixed adult price for that tour code.
+- Public package and destination teaser prices show "From R… per person" using the
+  fixed adult package price plus **R700 per person** for accommodation. This is a
+  standard **R1,400 for 3 days / 2 nights for two people sharing**, across destinations.
+  It is an advertising allowance only: final quotes use the actual selected hotel's
+  accommodation cost and must **not add this R700 again**.
+- Under package teaser prices show "Includes hotel and fun activities", then
+  "Select your preferred hotel to see the final price for your holiday", then
+  "discounts subject to availability at various hotels".
 - Quotes must list the full package description and inclusions.

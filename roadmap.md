@@ -1,5 +1,8 @@
 # Roadmap
 
+## Current request
+- [x] Add the standard accommodation allowance to public holiday starting prices and verify the requested wording, keeping final quote calculations unchanged.
+
 ## Open
 - Replace Durban hotel list with the ~55 Golden Mile properties from the uploaded video (nightly rates), and attach an image to each.
 - Answer/explain the project monitoring findings history (done in chat).

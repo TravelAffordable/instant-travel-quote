@@ -37,6 +37,7 @@ import { getPackageImage } from '@/data/packageImages';
 import { formatCurrency } from '@/lib/utils';
 import { extractTourCode, getTourFromPrice } from '@/lib/packageTourPricing';
 import NotFound from './NotFound';
+import { getHolidayTeaserPrice, withTeaserAccommodation } from '@/lib/holidayTeaserPricing';
 
 const SITE_URL = 'https://travelaffordable.co.za';
 
@@ -56,6 +57,12 @@ const DestinationPage = () => {
   if (!data) return <NotFound />;
 
   const canonical = `/destinations/${data.slug}`;
+  const advertisedPrices = getPackagesByDestination(data.destinationId)
+    .map(getHolidayTeaserPrice)
+    .filter((price): price is number => price !== null);
+  const advertisedStartingPrice = advertisedPrices.length
+    ? Math.min(...advertisedPrices)
+    : withTeaserAccommodation(data.startingFrom);
 
   const openRequest = (pkg: TravelPackage) => {
     setRequestPkg(pkg);
@@ -127,7 +134,7 @@ const DestinationPage = () => {
       offers: {
         '@type': 'Offer',
         priceCurrency: 'ZAR',
-        price: data.startingFrom,
+        price: advertisedStartingPrice,
         availability: 'https://schema.org/InStock',
         url: `${SITE_URL}${canonical}`,
       },

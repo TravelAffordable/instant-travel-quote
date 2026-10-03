@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { Clock, Check, ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
-import { extractTourCode, getTourFromPrice, TOUR_FROM_PRICES } from '@/lib/packageTourPricing';
+import { extractTourCode, TOUR_FROM_PRICES } from '@/lib/packageTourPricing';
+import { getHolidayTeaserPrice } from '@/lib/holidayTeaserPricing';
 import type { Package } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
 
@@ -29,7 +30,7 @@ export function PackageCard({ pkg, destinationSlug, fallbackImage }: PackageCard
   const idCode = pkg.id.toUpperCase();
   const idCodePrice = TOUR_FROM_PRICES[idCode] ?? null;
   const tourCode = extractTourCode(pkg.name) ?? (idCodePrice !== null ? idCode : null);
-  const fromPrice = getTourFromPrice(pkg.name) ?? idCodePrice ?? pkg.fromPriceOverride ?? null;
+  const fromPrice = getHolidayTeaserPrice(pkg);
   const headline = getPackageHeadline(pkg.name);
   const inclusions = pkg.activitiesIncluded ?? [];
 
@@ -96,7 +97,7 @@ export function PackageCard({ pkg, destinationSlug, fallbackImage }: PackageCard
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">From</p>
               <div className="flex flex-wrap items-baseline justify-center gap-2">
                 <span className="text-4xl font-black text-sunset">
-                  {formatCurrency(fromPrice)} <span className="text-base font-bold">pp</span>
+                  {formatCurrency(fromPrice)} <span className="text-base font-bold">per person</span>
                 </span>
                 <span className="text-sm text-muted-foreground">
                   was{' '}
@@ -105,6 +106,9 @@ export function PackageCard({ pkg, destinationSlug, fallbackImage }: PackageCard
                   </span>
                 </span>
               </div>
+              <p className="text-xs font-semibold text-muted-foreground">
+                Includes hotel and fun activities
+              </p>
               <p className="text-xs text-muted-foreground">
                 Select your preferred hotel to see the final price for your holiday
               </p>
