@@ -1,12 +1,12 @@
 import { DestinationTile } from '@/components/cards/DestinationTile';
 import { catalogueDestinations } from '@/data/destinationCatalogue';
 import { getPackagesByDestination } from '@/data/travelData';
-import { getPackageFromPrice } from '@/data/packagePricing';
+import { getHolidayTeaserPrice } from '@/lib/holidayTeaserPricing';
 
 function fromPriceFor(destinationId?: string): number | null {
   if (!destinationId) return null;
   const prices = getPackagesByDestination(destinationId)
-    .map((p) => getPackageFromPrice(p.id))
+    .map(getHolidayTeaserPrice)
     .filter((p): p is number => typeof p === 'number');
   return prices.length ? Math.min(...prices) : null;
 }

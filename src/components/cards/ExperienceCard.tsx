@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ResponsiveImage } from '@/components/common/ResponsiveImage';
 import type { Package } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
-import { getPackageFromPrice } from '@/data/packagePricing';
+import { getHolidayTeaserPrice } from '@/lib/holidayTeaserPricing';
 
 interface ExperienceCardProps {
   pkg: Package;
@@ -21,7 +21,7 @@ export function ExperienceCard({
   fallbackImage,
 }: ExperienceCardProps) {
   const image = getPackageImage(pkg.id) || fallbackImage || '/placeholder.svg';
-  const fromPrice = getPackageFromPrice(pkg.id);
+  const fromPrice = getHolidayTeaserPrice(pkg);
   const title = pkg.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '');
 
   return (
@@ -53,7 +53,9 @@ export function ExperienceCard({
               per person
             </p>
           )}
-          <p className="mt-1 text-xs text-muted-foreground">Accommodation added in the next step</p>
+          <p className="mt-1 text-xs font-semibold text-muted-foreground">Includes hotel and fun activities</p>
+          <p className="mt-1 text-xs text-muted-foreground">Select your preferred hotel to see the final price for your holiday</p>
+          <p className="mt-1 text-[10px] italic text-muted-foreground">discounts subject to availability at various hotels</p>
           <Button asChild className="mt-4 w-full">
             <Link to={`/book?destination=${destinationSlug}&package=${pkg.id}`}>
               Choose this experience <ArrowRight className="ml-1 h-4 w-4" />
