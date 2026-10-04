@@ -15,6 +15,7 @@ const magalies = magaliesAsset.url;
 const belaBela = belaBelaAsset.url;
 import { activitiesByDestination, Activity } from "@/data/activitiesData";
 import { durbanDealActivities, type DealActivity } from "@/data/durbanDealActivities";
+import { hartiesDealActivities, magaliesDealActivities, sunCityDealActivities, replacedNorthWestNames } from "@/data/northWestDealActivities";
 
 export interface HotelDeal {
   slug: string;
@@ -45,8 +46,14 @@ export const hotelDeals: HotelDeal[] = [
   { slug: "sun-city-guesthouse", title: "Sun City Area Luxury Guesthouse", destination: "Sun City", breakfast: "Breakfast included", pricePerPerson2Nights: 1550, soloPrice2Nights: 2900, image: sunCity, activityGroup: "Sun City Getaways" },
 ];
 
+const reviewedNorthWest: Record<string, DealActivity[]> = {
+  Harties: hartiesDealActivities, Magalies: magaliesDealActivities, "Sun City": sunCityDealActivities,
+};
+
 export const getDealActivities = (deal: HotelDeal): DealActivity[] => {
   const existing = activitiesByDestination[deal.activityGroup] || [];
+  const reviewed = reviewedNorthWest[deal.destination];
+  if (reviewed) return [...reviewed, ...existing.filter((a) => !replacedNorthWestNames.includes(a.name))];
   if (deal.destination !== "Durban") return existing;
   // Keep unrelated extras; replace only the experiences reviewed by the owner.
   const retained = existing.filter((a) => ![
