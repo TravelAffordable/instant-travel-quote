@@ -16,6 +16,13 @@ Service fees are already included in all hotel deal costs; never add them again.
 
 Magalies single occupancy was not supplied: request a quotation rather than invent a rate.
 
+## Single traveller notice
+
+When the group is one traveller, a pop-up must state that advertised rates are for people travelling
+together and sharing a hotel room, and that single occupant rates differ from the 2-sleeper options.
+The one-traveller figure is a quotation only until the single-occupancy rate is confirmed.
+
+
 ## Adult groups
 
 Allocate ceil(adults / 2) two-sleeper rooms. Each adult pair pays twice the existing advertised two-night sharing price per person. An unpaired adult occupies the final room at the supplied solo rate. This odd-group interpretation should be confirmed with the owner if changed.
