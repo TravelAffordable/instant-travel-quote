@@ -38,8 +38,8 @@ export const magaliesDealActivities: DealActivity[] = [
 ];
 
 export const sunCityDealActivities: DealActivity[] = [
-  a("Valley of the Waves — Sun City day visitor ticket", 520, 410, 3),
-  a("The Maze of the Lost City", 0, 0),
+  a("Sun City entrance ticket including Valley of the Waves, lunch and the Sun City Maze", 520, 410, 3),
+  a("5 Star buffet breakfast at the exclusive Sun City The Palace Hotel", 600),
   a("2 hour Sunday buffet lunch cruise", 700, 550),
   a("Quad biking", 500),
   shuttle("Shuttle from guesthouse to Sun City and back — 4 seater", 600, 4, "suncity-shuttle"),
