@@ -1,6 +1,6 @@
 # Durban hotel-deal activity rates
 
-Owner-supplied rates from screenshots dated 4 October 2026. Apply to Durban hotel deals only; do not change fixed DUR1–DUR9 package prices or other destinations. Accommodation deal rates remain unchanged. Keep the existing hidden R20 markup per adult per selected activity; never show activity prices individually.
+Owner-supplied rates from screenshots dated 4 October 2026. Apply to Durban hotel deals only; do not change fixed DUR1–DUR9 package prices or other destinations. Accommodation deal rates remain unchanged. These rates already include the markup — never add anything on top; never show activity prices individually.
 
 | Activity | Adult | Child / other rate |
 |---|---:|---|
@@ -21,4 +21,4 @@ Owner-supplied rates from screenshots dated 4 October 2026. Apply to Durban hote
 | Durban beachfront–Umhlanga Rocks Main Beach return: 4 seats | R800 per vehicle | |
 | Durban beachfront–Umhlanga Rocks Main Beach return: 6 seats | R1,200 per vehicle | |
 
-Show each cruise duration and shuttle size/itinerary as a separate option. Selecting an alternative replaces the previous selection for that experience. Vehicle total = rate × ceil(adults / seats), plus the existing R20 markup × adults. Child/senior rates are reference data; the current deal booking selector collects adults only. Unspecified child age rules are not established by these screenshots.
+Show each cruise duration and shuttle size/itinerary as a separate option. Selecting an alternative replaces the previous selection for that experience. Vehicle total = rate × ceil(adults / seats), no extra markup. Child/senior rates are reference data; the current deal booking selector collects adults only. Unspecified child age rules are not established by these screenshots.

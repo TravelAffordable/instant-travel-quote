@@ -33,4 +33,4 @@ Allocate ceil(adults / 2) two-sleeper rooms. Each adult pair pays twice the exis
 
 For other lengths of stay, retain the existing pro-rata nightly approach: two-night hotel total × nights / 2.
 
-Optional activities use adult rates plus the existing hidden R20 per adult markup, multiplied by the selected adult count. Existing shuttle base charges remain once per selection, with the markup applied per adult; shuttle vehicle capacity pricing is not specified.
+Optional activities use the owner-supplied adult rates exactly as given — the markup is already included, so never add anything on top. Rates are multiplied by the selected adult count; shuttle vehicle charges scale by capacity (rate × ceil(adults / seats)).
