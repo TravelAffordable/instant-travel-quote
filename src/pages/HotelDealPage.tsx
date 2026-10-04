@@ -121,6 +121,26 @@ const HotelDealPage = () => {
           <p className="text-sm text-muted-foreground">{total === null ? "Single-occupancy rate to be confirmed" : `${rand(Math.round(total / adults))} per person`} · discounts subject to availability</p>
           <Button className="mt-4 w-full" size="lg" onClick={book}>Book on WhatsApp</Button>
         </div>
+
+        <Dialog open={soloNoticeOpen} onOpenChange={setSoloNoticeOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Travelling on your own?</DialogTitle>
+              <DialogDescription>
+                The advertised rates are for people travelling together and sharing a hotel room.
+                Single occupant rates are different from the 2-sleeper options, so the price shown
+                for one traveller is a quotation only.
+              </DialogDescription>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Send us your dates and we&apos;ll confirm the single-occupancy rate for this deal before
+              you pay anything.
+            </p>
+            <DialogFooter>
+              <Button onClick={() => setSoloNoticeOpen(false)}>Got it</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
       <Footer />
     </div>
