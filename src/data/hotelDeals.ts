@@ -1,11 +1,16 @@
 import durbanAsset from "@/assets/deals/durban-deal.png.asset.json";
-import capeTown from "@/assets/deals/cape-town-deal.jpg";
-import mpumalanga from "@/assets/deals/mpumalanga-deal.jpg";
+import capeTownAsset from "@/assets/deals/cape-town-deal.png.asset.json";
+import mpumalangaAsset from "@/assets/deals/mpumalanga-deal.png.asset.json";
+import hartiesAsset from "@/assets/deals/harties-deal.png.asset.json";
+import magaliesAsset from "@/assets/deals/magalies-deal.png.asset.json";
+import belaBelaAsset from "@/assets/deals/bela-bela-deal.png.asset.json";
 import emerald from "@/assets/deals/emerald-deal.jpg";
-import harties from "@/assets/deals/harties-deal.jpg";
-import magalies from "@/assets/deals/magalies-deal.jpg";
-import belaBela from "@/assets/deals/bela-bela-deal.jpg";
 import sunCity from "@/assets/deals/sun-city-deal.jpg";
+const capeTown = capeTownAsset.url;
+const mpumalanga = mpumalangaAsset.url;
+const harties = hartiesAsset.url;
+const magalies = magaliesAsset.url;
+const belaBela = belaBelaAsset.url;
 import { activitiesByDestination, Activity } from "@/data/activitiesData";
 
 export interface HotelDeal {
