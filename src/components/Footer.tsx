@@ -75,6 +75,11 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
+                  <Link to="/hotel-deals" className="text-background/70 hover:text-primary text-sm transition-colors">
+                    Hotel Deals
+                  </Link>
+                </li>
+                <li>
                   <Link to="/build-package" className="text-background/70 hover:text-primary text-sm transition-colors">
                     Build Your Own Package
                   </Link>
