@@ -1,7 +1,7 @@
 # Roadmap
 
 ## Current request
-- [ ] Default hotel deals to hotel-only and replace the Durban airport shuttle with the R160 per-person, per-trip service; verify default selection and totals.
+- [x] Default hotel deals to hotel-only and replace the Durban airport shuttle with the R160 per-person, per-trip service; verified default selection, reveal/hide controls and totals for 2 and 4 adults.
 - [x] Update Durban hotel-deal activity rates from the supplied review, show cruise/shuttle variants, and verify selection and totals without changing other packages or destinations.
 - [x] Stack full hotel deal booking sections on the landing page with destination headings; verified per-person blue prices, small group totals, independent selections, solo notice and phone layout.
 - [x] Show a single-occupancy pop-up when a deal booking is set to one traveller; verify it opens only for that choice.
