@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Current request
+- [x] Stack full hotel deal booking sections on the landing page with destination headings; verified per-person blue prices, small group totals, independent selections, solo notice and phone layout.
 - [x] Show a single-occupancy pop-up when a deal booking is set to one traveller; verify it opens only for that choice.
 - [x] Apply hotel-deal solo rates, two-sleeper group allocation and passenger-based activity totals; verify booking summaries without adding service fees.
 - [x] Add the standard accommodation allowance to public holiday starting prices and verify the requested wording, keeping final quote calculations unchanged.
