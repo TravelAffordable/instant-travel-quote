@@ -57,6 +57,7 @@ export const getDealActivities = (deal: HotelDeal): DealActivity[] => {
   if (deal.destination !== "Durban") return existing;
   // Keep unrelated extras; replace only the experiences reviewed by the owner.
   const retained = existing.filter((a) => ![
+    "Airport shuttle to Durban Hotels",
     "USHAKA MARINE WORLD COMBO TICKET", "ISLE OF CAPRI BOAT CRUISE",
     "Moses Mabhida Stadium", "60 MINUTE FULL BODY MASSAGE", "Open top Bus 3 hours",
     "SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK",

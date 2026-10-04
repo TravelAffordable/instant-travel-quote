@@ -14,7 +14,7 @@ export const HotelDealBooking = ({ deal }: { deal: HotelDeal }) => {
   const [nights, setNights] = useState(2);
   const [adults, setAdults] = useState(DEAL_ADULTS);
   const [checkIn, setCheckIn] = useState("");
-  const [withActivities, setWithActivities] = useState(true);
+  const [withActivities, setWithActivities] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [soloNoticeOpen, setSoloNoticeOpen] = useState(false);
 

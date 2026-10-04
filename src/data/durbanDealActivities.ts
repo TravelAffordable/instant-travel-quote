@@ -17,6 +17,7 @@ const shuttle = (name: string, cost: number, capacity?: number, optionGroup?: st
 
 /** Owner-supplied rates from the Durban activity review; hotel deals only. */
 export const durbanDealActivities: DealActivity[] = [
+  activity("Affordable airport shuttle to Durban Beachfront past Umhlanga- leaves every 45 Min", 160, 160),
   activity("uShaka Marine World — Sea World & Wet ’n Wild combo ticket", 500, 380, 3),
   { ...activity("Isle of Capri — 30 minute harbour cruise", 160, 130, 3, "isle-of-capri"), rates: { adult: 160, child: 130, freeAge: 3, childAgeRange: { min: 3, max: 12 } } },
   { ...activity("Isle of Capri — 1 hour sea cruise", 220, 160, 3, "isle-of-capri"), rates: { adult: 220, child: 160, freeAge: 3, childAgeRange: { min: 3, max: 12 } } },
