@@ -127,15 +127,10 @@ const HotelDealPage = () => {
             <DialogHeader>
               <DialogTitle>Travelling on your own?</DialogTitle>
               <DialogDescription>
-                The advertised rates are for people travelling together and sharing a hotel room.
-                Single occupant rates are different from the 2-sleeper options, so the price shown
-                for one traveller is a quotation only.
+                The advertised rates are for people traveling together sharing a hotel room, single
+                occupant rates are different from the 2 sleeper options.
               </DialogDescription>
             </DialogHeader>
-            <p className="text-sm text-muted-foreground">
-              Send us your dates and we&apos;ll confirm the single-occupancy rate for this deal before
-              you pay anything.
-            </p>
             <DialogFooter>
               <Button onClick={() => setSoloNoticeOpen(false)}>Got it</Button>
             </DialogFooter>
