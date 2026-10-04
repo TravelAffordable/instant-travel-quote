@@ -29,7 +29,8 @@ export interface HotelDeal {
   activityGroup: string;
 }
 
-export const ACTIVITY_MARKUP = 20; // per person per activity — never shown to customers
+// Owner-supplied activity rates already include the markup — never add anything on top.
+export const ACTIVITY_MARKUP = 0;
 export const DEAL_ADULTS = 2;
 export const DEAL_WHATSAPP = "27796813869";
 
@@ -70,7 +71,7 @@ export const dealHotelTotal = (deal: HotelDeal, nights: number, adults = DEAL_AD
   return Math.round(twoNightTotal * nights / 2);
 };
 
-/** Activity total for the selected adults incl. hidden R20 pp markup. */
+/** Activity total for the selected adults at the owner-supplied rate (markup already included). */
 export const dealActivityTotal = (a: DealActivity, adults = DEAL_ADULTS) =>
   a.isShuttle && a.shuttleBaseCost
     ? a.shuttleBaseCost * (a.vehicleCapacity ? Math.ceil(adults / a.vehicleCapacity) : 1) + ACTIVITY_MARKUP * adults
