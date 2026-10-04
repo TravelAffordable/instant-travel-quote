@@ -1,7 +1,7 @@
 # Roadmap
 
 ## Current request
-- [ ] Apply hotel-deal solo rates, two-sleeper group allocation and passenger-based activity totals; verify booking summaries without adding service fees.
+- [x] Apply hotel-deal solo rates, two-sleeper group allocation and passenger-based activity totals; verify booking summaries without adding service fees.
 - [x] Add the standard accommodation allowance to public holiday starting prices and verify the requested wording, keeping final quote calculations unchanged.
 
 ## Open
