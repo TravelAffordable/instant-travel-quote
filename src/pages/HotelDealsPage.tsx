@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import SEO from "@/components/SEO";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { SEO } from "@/components/SEO";
 import { hotelDeals } from "@/data/hotelDeals";
 
 const HotelDealsPage = () => (
