@@ -7,7 +7,7 @@ import { SEO } from "@/components/SEO";
 import NotFound from "./NotFound";
 import { Button } from "@/components/ui/button";
 import {
-  hotelDeals, getDealActivities, dealHotelTotal, dealActivityTotal, DEAL_ADULTS, DEAL_WHATSAPP,
+  hotelDeals, getDealActivities, dealHotelTotal, dealActivityTotal, dealRoomsRequired, DEAL_ADULTS, DEAL_WHATSAPP,
 } from "@/data/hotelDeals";
 
 const rand = (n: number) => `R${n.toLocaleString("en-ZA")}`;
@@ -16,6 +16,7 @@ const HotelDealPage = () => {
   const { slug } = useParams();
   const deal = hotelDeals.find((d) => d.slug === slug);
   const [nights, setNights] = useState(2);
+  const [adults, setAdults] = useState(DEAL_ADULTS);
   const [checkIn, setCheckIn] = useState("");
   const [withActivities, setWithActivities] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
@@ -23,11 +24,12 @@ const HotelDealPage = () => {
   const activities = useMemo(() => (deal ? getDealActivities(deal) : []), [deal]);
   if (!deal) return <NotFound />;
 
-  const hotel = dealHotelTotal(deal, nights);
+  const rooms = dealRoomsRequired(adults);
+  const hotel = dealHotelTotal(deal, nights, adults);
   const extras = withActivities
-    ? activities.filter((a) => selected.includes(a.name)).reduce((s, a) => s + dealActivityTotal(a), 0)
+    ? activities.filter((a) => selected.includes(a.name)).reduce((s, a) => s + dealActivityTotal(a, adults), 0)
     : 0;
-  const total = hotel + extras;
+  const total = hotel === null ? null : hotel + extras;
   const chosen = withActivities ? selected : [];
 
   const toggle = (name: string) =>
@@ -37,9 +39,11 @@ const HotelDealPage = () => {
     const msg = [
       `Hi Travel Affordable, I'd like to book this hotel deal:`,
       deal.title,
-      `Check-in: ${checkIn || "flexible"} · ${nights} night(s) · ${DEAL_ADULTS} adults`,
+      `Check-in: ${checkIn || "flexible"} · ${nights} night(s) · ${adults} adult(s)`,
+      `Accommodation: ${rooms} two-sleeper room(s)${adults % 2 ? " (one room for single occupancy)" : ""}`,
       chosen.length ? `Activities: ${chosen.join(", ")}` : "Hotel only",
-      `Total: ${rand(total)} (${rand(Math.round(total / DEAL_ADULTS))} per person)`,
+      total === null ? "Please confirm the single-occupancy rate and full quotation."
+        : `Total: ${rand(total)} (${rand(Math.round(total / adults))} per person)`,
     ].join("\n");
     window.open(`https://wa.me/${DEAL_WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
   };
@@ -55,11 +59,16 @@ const HotelDealPage = () => {
         <img src={deal.image} alt={deal.title} width={1024} height={1024} className="w-full rounded-xl shadow-lg" />
 
         <h1 className="mt-6 text-2xl font-bold text-foreground">{deal.title}</h1>
-        <p className="text-muted-foreground">{deal.breakfast} · {DEAL_ADULTS} adults sharing</p>
+        <p className="text-muted-foreground">{deal.breakfast} · {adults} adult{adults > 1 ? "s" : ""} · {rooms} two-sleeper room{rooms > 1 ? "s" : ""}</p>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <label className="text-sm font-medium">Check-in date
             <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
+          </label>
+          <label className="text-sm font-medium">Number of adults
+            <select value={adults} onChange={(e) => setAdults(Number(e.target.value))} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2">
+              {Array.from({ length: 100 }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n} adult{n > 1 ? "s" : ""}</option>)}
+            </select>
           </label>
           <label className="text-sm font-medium">Number of nights
             <select value={nights} onChange={(e) => setNights(Number(e.target.value))} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2">
@@ -97,10 +106,10 @@ const HotelDealPage = () => {
 
         <div className="sticky bottom-0 mt-6 rounded-xl border bg-card p-5 shadow-lg">
           <p className="text-sm text-muted-foreground">
-            {chosen.length ? `Hotel + ${chosen.length} activit${chosen.length > 1 ? "ies" : "y"}` : "Hotel only"} · {nights} night{nights > 1 ? "s" : ""} · {DEAL_ADULTS} adults
+            {chosen.length ? `Hotel + ${chosen.length} activit${chosen.length > 1 ? "ies" : "y"}` : "Hotel only"} · {nights} night{nights > 1 ? "s" : ""} · {adults} adult{adults > 1 ? "s" : ""} · {rooms} room{rooms > 1 ? "s" : ""}
           </p>
-          <p className="text-4xl font-bold text-primary mt-1">{rand(total)}</p>
-          <p className="text-sm text-muted-foreground">{rand(Math.round(total / DEAL_ADULTS))} per person · discounts subject to availability</p>
+          <p className="text-4xl font-bold text-primary mt-1">{total === null ? "Price on request" : rand(total)}</p>
+          <p className="text-sm text-muted-foreground">{total === null ? "Single-occupancy rate to be confirmed" : `${rand(Math.round(total / adults))} per person`} · discounts subject to availability</p>
           <Button className="mt-4 w-full" size="lg" onClick={book}>Book on WhatsApp</Button>
         </div>
       </main>
