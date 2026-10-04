@@ -14,6 +14,7 @@ const harties = hartiesAsset.url;
 const magalies = magaliesAsset.url;
 const belaBela = belaBelaAsset.url;
 import { activitiesByDestination, Activity } from "@/data/activitiesData";
+import { durbanDealActivities, type DealActivity } from "@/data/durbanDealActivities";
 
 export interface HotelDeal {
   slug: string;
@@ -43,8 +44,18 @@ export const hotelDeals: HotelDeal[] = [
   { slug: "sun-city-guesthouse", title: "Sun City Area Luxury Guesthouse", destination: "Sun City", breakfast: "Breakfast included", pricePerPerson2Nights: 1550, soloPrice2Nights: 2900, image: sunCity, activityGroup: "Sun City Getaways" },
 ];
 
-export const getDealActivities = (deal: HotelDeal): Activity[] =>
-  activitiesByDestination[deal.activityGroup] || [];
+export const getDealActivities = (deal: HotelDeal): DealActivity[] => {
+  const existing = activitiesByDestination[deal.activityGroup] || [];
+  if (deal.destination !== "Durban") return existing;
+  // Keep unrelated extras; replace only the experiences reviewed by the owner.
+  const retained = existing.filter((a) => ![
+    "USHAKA MARINE WORLD COMBO TICKET", "ISLE OF CAPRI BOAT CRUISE",
+    "Moses Mabhida Stadium", "60 MINUTE FULL BODY MASSAGE", "Open top Bus 3 hours",
+    "SHUTTLE TO TAKE YOU FROM THE HOTEL TO THE ACTIVITIES AND BACK",
+    "Trip from Durban Beachfront to Umhlanga main beach and The Oceans Mall",
+  ].includes(a.name));
+  return [...durbanDealActivities, ...retained];
+};
 
 export const dealRoomsRequired = (adults: number) => Math.ceil(adults / 2);
 
@@ -60,7 +71,7 @@ export const dealHotelTotal = (deal: HotelDeal, nights: number, adults = DEAL_AD
 };
 
 /** Activity total for the selected adults incl. hidden R20 pp markup. */
-export const dealActivityTotal = (a: Activity, adults = DEAL_ADULTS) =>
+export const dealActivityTotal = (a: DealActivity, adults = DEAL_ADULTS) =>
   a.isShuttle && a.shuttleBaseCost
-    ? a.shuttleBaseCost + ACTIVITY_MARKUP * adults
+    ? a.shuttleBaseCost * (a.vehicleCapacity ? Math.ceil(adults / a.vehicleCapacity) : 1) + ACTIVITY_MARKUP * adults
     : (a.rates.adult + ACTIVITY_MARKUP) * adults;
