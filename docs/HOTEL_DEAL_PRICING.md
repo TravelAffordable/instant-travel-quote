@@ -2,6 +2,10 @@
 
 Service fees are already included in all hotel deal costs; never add them again.
 
+## Landing page and price presentation
+
+Present all deals as vertically stacked booking sections, each with its destination heading, supplied deal image and independent booking choices. The prominent blue amount is the rounded per-person price (full hotel plus selected activities divided by adult count). Show the full group total in smaller text below it. Adult counts still determine room allocation and solo rates; do not replace the actual total with the advertised sharing rate. Apply the same display on individual deal pages.
+
 ## Solo rates for two nights
 
 | Destination | Single occupancy total |
