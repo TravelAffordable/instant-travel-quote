@@ -33,8 +33,16 @@ export const HotelDealBooking = ({ deal }: { deal: HotelDeal }) => {
   const total = hotel === null ? null : hotel + extras;
   const chosen = withActivities ? selected : [];
 
-  const toggle = (name: string) =>
-    setSelected((s) => (s.includes(name) ? s.filter((x) => x !== name) : [...s, name]));
+  const toggle = (name: string) => {
+    const activity = activities.find((a) => a.name === name);
+    setSelected((s) => {
+      if (s.includes(name)) return s.filter((x) => x !== name);
+      const alternatives = activity?.optionGroup
+        ? activities.filter((a) => a.optionGroup === activity.optionGroup).map((a) => a.name)
+        : [];
+      return [...s.filter((x) => !alternatives.includes(x)), name];
+    });
+  };
 
   const book = () => {
     const msg = [
