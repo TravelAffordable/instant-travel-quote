@@ -24,6 +24,8 @@ import OperatorProfilePage from "./pages/operators/OperatorProfilePage";
 import OperatorNewQuotePage from "./pages/operators/OperatorNewQuotePage";
 import OperatorQuotesPage from "./pages/operators/OperatorQuotesPage";
 import OperatorAdminPage from "./pages/operators/OperatorAdminPage";
+import HotelDealsPage from "./pages/HotelDealsPage";
+import HotelDealPage from "./pages/HotelDealPage";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +57,8 @@ const App = () => (
           <Route path="/operators/quote/new" element={<OperatorNewQuotePage />} />
           <Route path="/operators/quotes" element={<OperatorQuotesPage />} />
           <Route path="/operators/admin" element={<OperatorAdminPage />} />
+          <Route path="/hotel-deals" element={<HotelDealsPage />} />
+          <Route path="/hotel-deals/:slug" element={<HotelDealPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
