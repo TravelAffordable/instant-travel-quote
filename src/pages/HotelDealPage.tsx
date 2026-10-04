@@ -7,6 +7,9 @@ import { SEO } from "@/components/SEO";
 import NotFound from "./NotFound";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
+import {
   hotelDeals, getDealActivities, dealHotelTotal, dealActivityTotal, dealRoomsRequired, DEAL_ADULTS, DEAL_WHATSAPP,
 } from "@/data/hotelDeals";
 
@@ -20,6 +23,12 @@ const HotelDealPage = () => {
   const [checkIn, setCheckIn] = useState("");
   const [withActivities, setWithActivities] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
+  const [soloNoticeOpen, setSoloNoticeOpen] = useState(false);
+
+  const pickAdults = (n: number) => {
+    setAdults(n);
+    if (n === 1) setSoloNoticeOpen(true);
+  };
 
   const activities = useMemo(() => (deal ? getDealActivities(deal) : []), [deal]);
   if (!deal) return <NotFound />;
@@ -66,7 +75,7 @@ const HotelDealPage = () => {
             <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2" />
           </label>
           <label className="text-sm font-medium">Number of adults
-            <select value={adults} onChange={(e) => setAdults(Number(e.target.value))} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2">
+            <select value={adults} onChange={(e) => pickAdults(Number(e.target.value))} className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2">
               {Array.from({ length: 100 }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n} adult{n > 1 ? "s" : ""}</option>)}
             </select>
           </label>
