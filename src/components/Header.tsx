@@ -12,7 +12,7 @@ import { catalogueDestinations } from '@/data/destinationCatalogue';
 
 const navItems = [
   { label: 'Experiences', to: '/#experiences' },
-  { label: 'Deals', to: '/#deals' },
+  { label: 'Hotel Deals', to: '/hotel-deals' },
   { label: 'Family Travel', to: '/book' },
   { label: 'Couples', to: '/book' },
   { label: 'About Us', to: '/#why-choose-us' },
