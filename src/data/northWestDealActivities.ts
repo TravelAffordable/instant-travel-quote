@@ -25,15 +25,13 @@ export const hartiesDealActivities: DealActivity[] = [
 ];
 
 export const magaliesDealActivities: DealActivity[] = [
-  a("Cradle of Mankind — Maropeng / Origins Centre", 200, 150, 6, undefined, { min: 6, max: 11 }),
-  a("Game drive in Rhino Lion Park incl. reptile show, Predator World and predator enclosure — 2 hours", 740, 970, 5, "rhino-lion", { min: 5, max: 12 }),
-  a("Game drive in Rhino Lion Park incl. reptile show, Predator World and predator enclosure — 3 hours", 1350, 970, 5, "rhino-lion", { min: 5, max: 12 }),
+  a("Maropeng Cradle Of Mankind origins centre", 200, 150, 6, undefined, { min: 6, max: 11 }),
+  a("Game drive in Rhino Lion Park incl. reptile show, Predator World and predator enclosure", 740, 970, 5, undefined, { min: 5, max: 12 }),
   a("2 hour buffet lunch cruise", 700),
-  a("2 hour champagne sunset cruise", 700, 580, 6, undefined, { min: 6, max: 12 }),
-  a("60 minute full body massage with hydro facilities and welcome drinks", 700, 0, 0, "spa"),
-  a("Half-day spa experience", 1200, 0, 0, "spa"),
-  a("60 minute horse riding / horse trail", 400),
-  a("Quad biking adventure", 500),
+  a("2 hour Sunset Champagne Cruise with delicious buffet", 700, 580, 6, undefined, { min: 6, max: 12 }),
+  a("60 minute full body massage with hydro facilities and welcome drinks", 700),
+  a("60 minute horse riding experience", 400),
+  a("quad biking fun adventure", 500),
   a("Private romantic picnic setup with champagne", 600),
 ];
 
