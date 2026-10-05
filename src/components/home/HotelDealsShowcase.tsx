@@ -10,7 +10,7 @@ export function HotelDealsShowcase() {
   return (
     <section id="hotel-deals" className="bg-muted/30 py-16">
       <div className="container mx-auto max-w-3xl px-4">
-        <h2 className="font-display text-center text-4xl font-bold text-[hsl(199,80%,35%)] md:text-5xl">
+        <h2 className="font-display text-center text-4xl font-bold text-navy md:text-5xl">
           Our curated, discounted hotel deals. Make it possible for you and those special ones
         </h2>
 
