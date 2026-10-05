@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Current request
+- [x] Apply the supplied Cape Town hotel-deal activity names and final adult/child rates; verified all eight exact names, adult price updates, deselection and four-adult totals without markup; shared package rates unchanged.
 - [x] Default hotel deals to hotel-only and replace the Durban airport shuttle with the R160 per-person, per-trip service; verified default selection, reveal/hide controls and totals for 2 and 4 adults.
 - [x] Update Durban hotel-deal activity rates from the supplied review, show cruise/shuttle variants, and verify selection and totals without changing other packages or destinations.
 - [x] Stack full hotel deal booking sections on the landing page with destination headings; verified per-person blue prices, small group totals, independent selections, solo notice and phone layout.
