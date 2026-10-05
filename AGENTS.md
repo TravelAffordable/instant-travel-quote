@@ -4,3 +4,4 @@
 - Hotel deal room allocation and totals use the helpers in hotelDeals; pair adults in two-sleeper rooms and price an unpaired adult at single occupancy, returning price-on-request for missing rates to avoid invented quotes.
 - Hotel deals landing and individual pages share HotelDealBooking with independent per-deal state; display total divided by adults as the prominent per-person price and the unchanged group total beneath it to keep both views consistent.
 - Durban hotel-deal activity overrides live separately from shared package rates; mutually exclusive variants use optionGroup and vehicle charges scale by capacity to avoid double-booking alternatives or underquoting larger groups.
+- Cape Town hotel-deal activity overrides are isolated from shared package rates and retain owner-supplied name casing in the booking control, so reviewed deal prices and wording do not change fixed packages.

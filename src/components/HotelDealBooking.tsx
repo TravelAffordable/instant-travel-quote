@@ -99,7 +99,7 @@ export const HotelDealBooking = ({ deal }: { deal: HotelDeal }) => {
                   <Button key={a.name} variant="outline" type="button" onClick={() => toggle(a.name)} aria-pressed={on}
                     className={`inline-flex h-auto whitespace-normal text-left items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${on ? "bg-primary text-primary-foreground border-primary" : "bg-background text-foreground border-input hover:bg-muted"}`}>
                     {on && <Check className="h-3.5 w-3.5" />}
-                    {a.name.charAt(0) + a.name.slice(1).toLowerCase()}
+                    {deal.destination === "Cape Town" ? a.name : a.name.charAt(0) + a.name.slice(1).toLowerCase()}
                   </Button>
                 );
               })}
