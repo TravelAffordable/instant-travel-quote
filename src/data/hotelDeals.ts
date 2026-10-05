@@ -15,7 +15,8 @@ const magalies = magaliesAsset.url;
 const belaBela = belaBelaAsset.url;
 import { activitiesByDestination, Activity } from "@/data/activitiesData";
 import { durbanDealActivities, type DealActivity } from "@/data/durbanDealActivities";
-import { capeTownDealActivities, replacedCapeTownNames } from "@/data/capeTownDealActivities";
+import { capeTownDealActivities } from "@/data/capeTownDealActivities";
+import { vaalDealActivities, belaBelaDealActivities, replacedBelaBelaNames } from "@/data/vaalBelaDealActivities";
 import { hartiesDealActivities, magaliesDealActivities, sunCityDealActivities, replacedNorthWestNames } from "@/data/northWestDealActivities";
 
 export interface HotelDeal {
@@ -53,7 +54,10 @@ const reviewedNorthWest: Record<string, DealActivity[]> = {
 
 export const getDealActivities = (deal: HotelDeal): DealActivity[] => {
   const existing = activitiesByDestination[deal.activityGroup] || [];
-  if (deal.destination === "Cape Town") return [...capeTownDealActivities, ...existing.filter((a) => !replacedCapeTownNames.includes(a.name))];
+  // Cape Town and Vaal lists are exactly as supplied by the owner — no leftovers.
+  if (deal.destination === "Cape Town") return capeTownDealActivities;
+  if (deal.destination === "Vaal / Emerald Casino") return vaalDealActivities;
+  if (deal.destination === "Bela-Bela") return [...belaBelaDealActivities, ...existing.filter((a) => !replacedBelaBelaNames.includes(a.name))];
   const reviewed = reviewedNorthWest[deal.destination];
   if (reviewed) return [...reviewed, ...existing.filter((a) => !replacedNorthWestNames.includes(a.name))];
   if (deal.destination !== "Durban") return existing;
