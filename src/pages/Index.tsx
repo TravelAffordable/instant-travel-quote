@@ -1,6 +1,7 @@
 import { Header } from '@/components/Header';
 import { HeroStatic } from '@/components/home/HeroStatic';
 import { DestinationGrid } from '@/components/home/DestinationGrid';
+import { HotelDealsShowcase } from '@/components/home/HotelDealsShowcase';
 import { Footer } from '@/components/Footer';
 import { ChatBot } from '@/components/ChatBot';
 import { SEO } from '@/components/SEO';
