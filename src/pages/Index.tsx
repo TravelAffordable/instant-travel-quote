@@ -22,6 +22,7 @@ const Index = () => {
       <Header />
       <HeroStatic />
       <DestinationGrid />
+      <HotelDealsShowcase />
       <Footer />
       <ChatBot isOpen={isChatOpen} onToggle={() => setIsChatOpen(!isChatOpen)} />
     </div>
