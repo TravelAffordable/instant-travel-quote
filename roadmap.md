@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Current request
+- [ ] Require name on dates and WhatsApp on travellers; simplify hotel-selection contact fields.
+- [ ] Show budget-window hotels in batches of 10, delay featured stays, and offer budget increases after results are exhausted.
+- [ ] Reduce advertised From prices only by R650/person and remove was amounts and preferred-hotel instruction; verify booking calculations unchanged.
 - [x] Apply the supplied Cape Town hotel-deal activity names and final adult/child rates; verified all eight exact names, adult price updates, deselection and four-adult totals without markup; shared package rates unchanged.
 - [x] Default hotel deals to hotel-only and replace the Durban airport shuttle with the R160 per-person, per-trip service; verified default selection, reveal/hide controls and totals for 2 and 4 adults.
 - [x] Update Durban hotel-deal activity rates from the supplied review, show cruise/shuttle variants, and verify selection and totals without changing other packages or destinations.
