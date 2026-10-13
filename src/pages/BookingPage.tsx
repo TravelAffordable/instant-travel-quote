@@ -97,8 +97,11 @@ export default function BookingPage() {
   const [promoCode, setPromoCode] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [reference, setReference] = useState<string>();
-  const [budgetInput, setBudgetInput] = useState('');
-  const [budget, setBudget] = useState<number | null>(null);
+  const [budgetInput, setBudgetInput] = useState(() => localStorage.getItem('ta-booking-budget') ?? '');
+  const [budget, setBudget] = useState<number | null>(() => {
+    const saved = Number(localStorage.getItem('ta-booking-budget'));
+    return saved > 0 ? saved : null;
+  });
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(HOTEL_BATCH_SIZE);
   const [budgetError, setBudgetError] = useState(false);
   const [hotelQuery, setHotelQuery] = useState('');
