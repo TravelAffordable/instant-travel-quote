@@ -6,3 +6,4 @@
 - Durban hotel-deal activity overrides live separately from shared package rates; mutually exclusive variants use optionGroup and vehicle charges scale by capacity to avoid double-booking alternatives or underquoting larger groups.
 - Cape Town hotel-deal activity overrides are isolated from shared package rates and retain owner-supplied name casing in the booking control, so reviewed deal prices and wording do not change fixed packages.
 - Booking step contact validation and budget matching use bookingSelection helpers, keeping progression and hotel pagination rules independently testable without changing quote totals.
+- Vite deduplicates React and pre-optimizes shared validation dependencies to prevent mixed React instances during preview dependency reloads.
