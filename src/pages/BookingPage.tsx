@@ -119,6 +119,18 @@ export default function BookingPage() {
   });
   const [helpSending, setHelpSending] = useState(false);
   const [helpSent, setHelpSent] = useState(false);
+  // Remember the traveller's contact details and budget across destinations/searches.
+  useEffect(() => {
+    try {
+      localStorage.setItem('ta-booking-contact', JSON.stringify(contact));
+    } catch { /* ignore */ }
+  }, [contact]);
+  useEffect(() => {
+    try {
+      localStorage.setItem('ta-booking-budget', budgetInput);
+    } catch { /* ignore */ }
+  }, [budgetInput]);
+
   const pickMode = isPickMode();
   const { isFeatured, featuredNames, toggle: togglePick } = useFeaturedHotels(destinationSlug);
 
