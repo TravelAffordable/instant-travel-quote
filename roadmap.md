@@ -1,7 +1,7 @@
 # Roadmap
 
 ## Current request
-- [ ] Show the complete holiday price and inclusions beneath every budget-matched hotel immediately after budget submission; verify before hotel selection.
+- [x] Show the complete holiday price and inclusions beneath every budget-matched hotel immediately after budget submission; verified all four Cape Town matches before selection and quote button progression to review; six pricing/budget tests pass.
 - [x] Require name on dates and WhatsApp on travellers; simplify hotel-selection contact fields. Verified progression gates and contact retention through hotel selection to review; invalid server contact input returns 400.
 - [x] Show budget-window hotels in batches of 10, delay featured stays, and offer budget increases after results are exhausted. Verified initial 10, next batch and increased budget resetting the inclusive ±R1,000 window.
 - [x] Reduce advertised From prices only by R650/person and remove was amounts and preferred-hotel instruction; six rule tests pass, including unchanged DUR5 booking charges.
