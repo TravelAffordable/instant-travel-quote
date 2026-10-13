@@ -285,7 +285,7 @@ export default function BookingPage() {
     setQuotesOpen(true);
   };
 
-  /** Quote card that opens right under each hotel so options can be compared side by side. */
+  /** Complete holiday quote shown beneath each budget match immediately. */
   const renderHotelQuote = (hotel: (typeof hotels)[number]) => {
     const hotelTotal = hotelPrice(hotel.pricePerNight, hotel.capacity ?? 2, hotel.name);
     const grandTotal = packageTotal + hotelTotal + extrasTotal;
@@ -1044,7 +1044,7 @@ export default function BookingPage() {
                                       selected={hotelId === hotel.id}
                                       onSelect={(id) => handleSelectHotel(id)}
                                     />
-                                    {quotesOpen && renderHotelQuote(hotel)}
+                                    {renderHotelQuote(hotel)}
                                   </Fragment>
                                 ))}
 
