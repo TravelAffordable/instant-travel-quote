@@ -9,6 +9,7 @@ import durbanMosesMabhida from '@/assets/activities/durban-moses-mabhida.jpg';
 import durbanBeachfrontSegway from '@/assets/activities/durban-beachfront-segway.jpg';
 import durbanUmhlangaTrip from '@/assets/activities/durban-umhlanga-trip.jpg';
 import dur1UshakaSign from '@/assets/activities/dur1-ushaka-sign.jpg.asset.json';
+import dur3CouplePool from '@/assets/activities/dur3-couple-pool.jpg.asset.json';
 import luxuryCanalCruise from '@/assets/activities/luxury-canal-boat-cruise.jpg';
 import dur4FloridaRoad from '@/assets/activities/dur4-florida-road-night.jpg.asset.json';
 import dur6GondolaCanal from '@/assets/activities/dur6-gondola-canal.jpg.asset.json';
