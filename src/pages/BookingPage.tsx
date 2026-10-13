@@ -84,7 +84,15 @@ export default function BookingPage() {
   const [quotesOpen, setQuotesOpen] = useState(false);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [rooms, setRooms] = useState(1);
-  const [contact, setContact] = useState({ name: '', email: '', phone: '' });
+  const [contact, setContact] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('ta-booking-contact') ?? 'null');
+      if (saved && typeof saved === 'object') {
+        return { name: saved.name ?? '', email: saved.email ?? '', phone: saved.phone ?? '' };
+      }
+    } catch { /* ignore */ }
+    return { name: '', email: '', phone: '' };
+  });
   const [paymentOption, setPaymentOption] = useState<'50%' | 'quote'>('50%');
   const [promoCode, setPromoCode] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
