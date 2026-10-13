@@ -99,18 +99,9 @@ export function PackageCard({ pkg, destinationSlug, fallbackImage }: PackageCard
                 <span className="text-4xl font-black text-sunset">
                   {formatCurrency(fromPrice)} <span className="text-base font-bold">per person</span>
                 </span>
-                <span className="text-sm text-muted-foreground">
-                  was{' '}
-                  <span className="rounded bg-blue-100 px-1 text-blue-900 line-through">
-                    {formatCurrency(fromPrice + 400)} pp
-                  </span>
-                </span>
               </div>
               <p className="text-xs font-semibold text-muted-foreground">
                 Includes hotel and fun activities
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Select your preferred hotel to see the final price for your holiday
               </p>
               <p className="text-[10px] italic text-muted-foreground">
                 discounts subject to availability at various hotels

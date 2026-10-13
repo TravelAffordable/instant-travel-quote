@@ -54,7 +54,6 @@ export function ExperienceCard({
             </p>
           )}
           <p className="mt-1 text-xs font-semibold text-muted-foreground">Includes hotel and fun activities</p>
-          <p className="mt-1 text-xs text-muted-foreground">Select your preferred hotel to see the final price for your holiday</p>
           <p className="mt-1 text-[10px] italic text-muted-foreground">discounts subject to availability at various hotels</p>
           <Button asChild className="mt-4 w-full">
             <Link to={`/book?destination=${destinationSlug}&package=${pkg.id}`}>

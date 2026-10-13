@@ -5,9 +5,10 @@ import { getTourFromPrice, TOUR_FROM_PRICES } from '@/lib/packageTourPricing';
 /** Advertising allowance only; never use this in final booking calculations. */
 export const TEASER_ACCOMMODATION_TOTAL = 1400;
 export const TEASER_SHARING_ADULTS = 2;
+export const ADVERTISED_PRICE_REDUCTION = 650;
 
 export function withTeaserAccommodation(packagePrice: number | null): number | null {
-  return packagePrice === null ? null : packagePrice + TEASER_ACCOMMODATION_TOTAL / TEASER_SHARING_ADULTS;
+  return packagePrice === null ? null : Math.max(0, packagePrice + TEASER_ACCOMMODATION_TOTAL / TEASER_SHARING_ADULTS - ADVERTISED_PRICE_REDUCTION);
 }
 
 export function getHolidayTeaserPrice(pkg: Package): number | null {
