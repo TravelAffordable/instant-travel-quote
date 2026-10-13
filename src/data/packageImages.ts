@@ -4,15 +4,15 @@
 
 // Durban Activities
 import durbanUshaka from '@/assets/activities/durban-ushaka-marine.jpg';
-import durbanBoatCruise from '@/assets/activities/durban-boat-cruise.jpg';
 import durbanOpenTopBus from '@/assets/activities/durban-open-top-bus.jpg';
-import durbanSpaMassage from '@/assets/activities/durban-spa-massage.jpg';
 import durbanMosesMabhida from '@/assets/activities/durban-moses-mabhida.jpg';
 import durbanBeachfrontSegway from '@/assets/activities/durban-beachfront-segway.jpg';
 import durbanUmhlangaTrip from '@/assets/activities/durban-umhlanga-trip.jpg';
-import isleOfCapriCruise from '@/assets/activities/isle-of-capri-boat-cruise.jpg';
+import dur1UshakaSign from '@/assets/activities/dur1-ushaka-sign.jpg.asset.json';
+import dur3CouplePool from '@/assets/activities/dur3-couple-pool.jpg.asset.json';
 import luxuryCanalCruise from '@/assets/activities/luxury-canal-boat-cruise.jpg';
-import gondolaBoatCruise from '@/assets/activities/gondola-boat-cruise.jpg';
+import dur4FloridaRoad from '@/assets/activities/dur4-florida-road-night.jpg.asset.json';
+import dur6GondolaCanal from '@/assets/activities/dur6-gondola-canal.jpg.asset.json';
 import romanticBirthdayRoom from '@/assets/activities/romantic-birthday-room.jpg';
 import ushakaMarineWorld from '@/assets/activities/ushaka-marine-world.jpg';
 import durbanBeachVolleyballAsset from '@/assets/activities/durban-beach-volleyball.jpg.asset.json';
@@ -110,12 +110,12 @@ import phuketBeach from '@/assets/activities/phuket-beach.jpg';
 
 export const packageImages: Record<string, string> = {
   // ============= DURBAN =============
-  'dur1': isleOfCapriCruise,        // Ushaka + Isle of Capri cruise + spa
+  'dur1': dur1UshakaSign.url,       // Ushaka + Isle of Capri cruise + spa
   'dur2': durbanOpenTopBus,         // Open bus city tour
-  'dur3': durbanSpaMassage,         // Spa day + canal cruise
-  'dur4': durbanBoatCruise,         // Nightlife + canal boat
+  'dur3': dur3CouplePool.url,       // Spa day + canal cruise
+  'dur4': dur4FloridaRoad.url,      // Nightlife + canal boat
   'dur5': durbanUshaka,             // Couple beach + Ushaka
-  'dur6': gondolaBoatCruise,        // Couple boat cruise
+  'dur6': dur6GondolaCanal.url,     // Couple boat cruise
   'dur7': romanticBirthdayRoom,     // Couple nightlife escape
   'dur8': durbanMosesMabhida,       // Couple open top bus / city
   'dur9': durbanBeachVolleyballAsset.url, // uShaka + SkyCar + Isle of Capri cruise
