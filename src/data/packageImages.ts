@@ -4,15 +4,14 @@
 
 // Durban Activities
 import durbanUshaka from '@/assets/activities/durban-ushaka-marine.jpg';
-import durbanBoatCruise from '@/assets/activities/durban-boat-cruise.jpg';
 import durbanOpenTopBus from '@/assets/activities/durban-open-top-bus.jpg';
-import durbanSpaMassage from '@/assets/activities/durban-spa-massage.jpg';
 import durbanMosesMabhida from '@/assets/activities/durban-moses-mabhida.jpg';
 import durbanBeachfrontSegway from '@/assets/activities/durban-beachfront-segway.jpg';
 import durbanUmhlangaTrip from '@/assets/activities/durban-umhlanga-trip.jpg';
-import isleOfCapriCruise from '@/assets/activities/isle-of-capri-boat-cruise.jpg';
-import luxuryCanalCruise from '@/assets/activities/luxury-canal-boat-cruise.jpg';
-import gondolaBoatCruise from '@/assets/activities/gondola-boat-cruise.jpg';
+import dur1UshakaSign from '@/assets/activities/dur1-ushaka-sign.jpg.asset.json';
+import dur3CouplePool from '@/assets/activities/dur3-couple-pool.jpg.asset.json';
+import dur4FloridaRoad from '@/assets/activities/dur4-florida-road-night.jpg.asset.json';
+import dur6GondolaCanal from '@/assets/activities/dur6-gondola-canal.jpg.asset.json';
 import romanticBirthdayRoom from '@/assets/activities/romantic-birthday-room.jpg';
 import ushakaMarineWorld from '@/assets/activities/ushaka-marine-world.jpg';
 import durbanBeachVolleyballAsset from '@/assets/activities/durban-beach-volleyball.jpg.asset.json';
