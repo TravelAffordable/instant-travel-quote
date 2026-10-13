@@ -1,4 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { z } from "https://esm.sh/zod@3.25.76";
+
+const contactSchema = z.object({
+  guestName: z.string().trim().min(1).max(100).regex(/^[^\x00-\x1f<>]+$/),
+  guestEmail: z.string().trim().email().max(255),
+  guestTel: z.string().trim().max(20).regex(/^\+?[\d\s()-]+$/)
+    .refine((value) => { const digits = value.replace(/\D/g, ''); return digits.length >= 10 && digits.length <= 15; }),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,7 +29,14 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const body = await req.json();
+    const rawBody = await req.json();
+    const validated = contactSchema.safeParse(rawBody);
+    if (!validated.success) {
+      return new Response(JSON.stringify({ success: false, error: "Please provide a valid name, email and telephone number" }), {
+        status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+    const body = { ...rawBody, ...validated.data };
     const {
       guestName, guestEmail, guestTel,
       destination, packageNames,

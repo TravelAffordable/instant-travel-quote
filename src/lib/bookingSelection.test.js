@@ -1,7 +1,15 @@
 import { describe, expect, test } from 'bun:test';
 import { bookingNameSchema, bookingWhatsAppSchema, bookingBudgetSchema, HOTEL_BATCH_SIZE, matchBudgetHotels } from './bookingSelection';
+import { withTeaserAccommodation } from './holidayTeaserPricing';
+import { calculatePackagePrice } from '../data/packagePricing';
 
 describe('booking selection rules', () => {
+  test('advertised prices reduce by R650 without discounting bookings', () => {
+    expect(withTeaserAccommodation(800)).toBe(1500 - 650);
+    expect(withTeaserAccommodation(1250)).toBe(1950 - 650);
+    expect(withTeaserAccommodation(null)).toBeNull();
+    expect(calculatePackagePrice('dur5', { adults: 2, childrenAges: [] }).total).toBe(2500);
+  });
   test('dates require a nonempty name', () => {
     expect(bookingNameSchema.safeParse('   ').success).toBe(false);
     expect(bookingNameSchema.parse(' Mosidi ')).toBe('Mosidi');
