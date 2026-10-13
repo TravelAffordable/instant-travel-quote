@@ -84,13 +84,24 @@ export default function BookingPage() {
   const [quotesOpen, setQuotesOpen] = useState(false);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [rooms, setRooms] = useState(1);
-  const [contact, setContact] = useState({ name: '', email: '', phone: '' });
+  const [contact, setContact] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('ta-booking-contact') ?? 'null');
+      if (saved && typeof saved === 'object') {
+        return { name: saved.name ?? '', email: saved.email ?? '', phone: saved.phone ?? '' };
+      }
+    } catch { /* ignore */ }
+    return { name: '', email: '', phone: '' };
+  });
   const [paymentOption, setPaymentOption] = useState<'50%' | 'quote'>('50%');
   const [promoCode, setPromoCode] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [reference, setReference] = useState<string>();
-  const [budgetInput, setBudgetInput] = useState('');
-  const [budget, setBudget] = useState<number | null>(null);
+  const [budgetInput, setBudgetInput] = useState(() => localStorage.getItem('ta-booking-budget') ?? '');
+  const [budget, setBudget] = useState<number | null>(() => {
+    const saved = Number(localStorage.getItem('ta-booking-budget'));
+    return saved > 0 ? saved : null;
+  });
   const [budgetVisibleCount, setBudgetVisibleCount] = useState(HOTEL_BATCH_SIZE);
   const [budgetError, setBudgetError] = useState(false);
   const [hotelQuery, setHotelQuery] = useState('');
@@ -108,6 +119,18 @@ export default function BookingPage() {
   });
   const [helpSending, setHelpSending] = useState(false);
   const [helpSent, setHelpSent] = useState(false);
+  // Remember the traveller's contact details and budget across destinations/searches.
+  useEffect(() => {
+    try {
+      localStorage.setItem('ta-booking-contact', JSON.stringify(contact));
+    } catch { /* ignore */ }
+  }, [contact]);
+  useEffect(() => {
+    try {
+      localStorage.setItem('ta-booking-budget', budgetInput);
+    } catch { /* ignore */ }
+  }, [budgetInput]);
+
   const pickMode = isPickMode();
   const { isFeatured, featuredNames, toggle: togglePick } = useFeaturedHotels(destinationSlug);
 
