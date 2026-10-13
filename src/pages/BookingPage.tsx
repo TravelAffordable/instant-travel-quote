@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
+import { bookingNameSchema, bookingWhatsAppSchema, bookingBudgetSchema, HOTEL_BATCH_SIZE, matchBudgetHotels } from '@/lib/bookingSelection';
 import { Link, useSearchParams } from 'react-router-dom';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
 import { ArrowLeft, ArrowRight, BedDouble, CalendarIcon, Check, CheckCircle2, Clock, MapPin, Star, Users, Utensils } from 'lucide-react';
@@ -90,7 +91,7 @@ export default function BookingPage() {
   const [reference, setReference] = useState<string>();
   const [budgetInput, setBudgetInput] = useState('');
   const [budget, setBudget] = useState<number | null>(null);
-  const [budgetVisibleCount, setBudgetVisibleCount] = useState(4);
+  const [budgetVisibleCount, setBudgetVisibleCount] = useState(HOTEL_BATCH_SIZE);
   const [budgetError, setBudgetError] = useState(false);
   const [hotelQuery, setHotelQuery] = useState('');
   const [quoteMode, setQuoteMode] = useState<'none' | 'help' | 'self'>('none');
@@ -245,23 +246,22 @@ export default function BookingPage() {
           .slice(0, 5);
 
 
-  // Stays at or above the guest's budget, closest to the budget first.
-  // A hotel-name search overrides the budget filter so any named stay can be found.
   const query = hotelQuery.trim().toLowerCase();
-  const budgetHotels =
-    budget == null
-      ? []
-      : query
-        ? visibleHotels
-            .filter((h) => h.name.toLowerCase().includes(query))
-            .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b))
-        : visibleHotels
-            .filter((h) => holidayPriceFor(h) >= budget)
-            .sort((a, b) => holidayPriceFor(a) - holidayPriceFor(b));
-
-
-  const shownBudgetHotels = query ? budgetHotels : budgetHotels.slice(0, budgetVisibleCount);
-
+  const budgetHotels = budget == null ? [] : matchBudgetHotels(visibleHotels, budget, holidayPriceFor)
+    .filter((h) => !query || h.name.toLowerCase().includes(query));
+  const shownBudgetHotels = budgetHotels.slice(0, budgetVisibleCount);
+  const nameValid = bookingNameSchema.safeParse(contact.name).success;
+  const whatsAppValid = bookingWhatsAppSchema.safeParse(contact.phone).success;
+  const applyBudget = () => {
+    const parsed = bookingBudgetSchema.safeParse(budgetInput.replace(/[R\s,]/g, ''));
+    if (!parsed.success) { setBudgetError(true); return; }
+    setBudget(parsed.data);
+    setBudgetError(false);
+    setBudgetVisibleCount(HOTEL_BATCH_SIZE);
+    setHotelQuery('');
+    setHotelId(undefined);
+    setQuotesOpen(false);
+  };
 
   const selectedHotel = availableHotels.find((h) => h.id === hotelId);
 
@@ -270,15 +270,14 @@ export default function BookingPage() {
       .getElementById('holiday-budget-heading')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  const detailsIncomplete =
-    !contact.name.trim() || !/^\S+@\S+\.\S+$/.test(contact.email.trim());
+  const detailsIncomplete = !nameValid || !whatsAppValid;
 
   const handleSelectHotel = (id: string) => {
     if (detailsIncomplete || budget == null) {
       setBudgetError(true);
       scrollToBudget();
       document
-        .getElementById(detailsIncomplete ? 'guest-name' : 'holiday-budget')
+        .getElementById('holiday-budget')
         ?.focus();
       return;
     }
@@ -859,11 +858,16 @@ export default function BookingPage() {
                       )}
                     </div>
 
-                    <div className="mt-8 flex gap-3">
+                    <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end">
                       <Button variant="ghost" onClick={() => goto('experience')}>
                         <ArrowLeft className="mr-1 h-4 w-4" /> Back
                       </Button>
-                      <Button onClick={() => goto('travellers')}>
+                      <div className="flex-1 space-y-2">
+                        <Label htmlFor="dates-name">please provide your name to continue</Label>
+                        <Input id="dates-name" required autoComplete="name" maxLength={100}
+                          value={contact.name} onChange={(e) => setContact((c) => ({ ...c, name: e.target.value }))} />
+                      </div>
+                      <Button disabled={!nameValid} onClick={() => { if (nameValid) goto('travellers'); }}>
                         Continue <ArrowRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
@@ -917,11 +921,16 @@ export default function BookingPage() {
                         </div>
                       ))}
                     </div>
-                    <div className="mt-8 flex gap-3">
+                    <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end">
                       <Button variant="ghost" onClick={() => goto('dates')}>
                         <ArrowLeft className="mr-1 h-4 w-4" /> Back
                       </Button>
-                      <Button onClick={() => goto(oneDay ? 'review' : 'accommodation')}>
+                      <div className="flex-1 space-y-2">
+                        <Label htmlFor="travellers-whatsapp">please provide your WhatsApp number to continue</Label>
+                        <Input id="travellers-whatsapp" required type="tel" autoComplete="tel" maxLength={20}
+                          value={contact.phone} onChange={(e) => setContact((c) => ({ ...c, phone: e.target.value }))} />
+                      </div>
+                      <Button disabled={!whatsAppValid} onClick={() => { if (whatsAppValid) goto(oneDay ? 'review' : 'accommodation'); }}>
                         Continue <ArrowRight className="ml-1 h-4 w-4" />
                       </Button>
                     </div>
@@ -949,38 +958,6 @@ export default function BookingPage() {
 
                     <Card id="holiday-budget-heading" className="mt-6 scroll-mt-28 rounded-2xl border-primary/30">
                       <CardContent className="space-y-3 p-6">
-                        <h2 className="font-display text-2xl font-bold uppercase leading-tight text-destructive md:text-3xl">
-                          Your details and holiday budget are required below before you can proceed to select
-                          your hotel stay
-                        </h2>
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="space-y-1.5">
-                            <Label htmlFor="guest-name" className="text-sm font-semibold text-destructive">
-                              Name *
-                            </Label>
-                            <Input
-                              id="guest-name"
-                              placeholder="Your full name"
-                              value={contact.name}
-                              onChange={(e) => setContact((c) => ({ ...c, name: e.target.value }))}
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <Label htmlFor="guest-email" className="text-sm font-semibold text-destructive">
-                              Email address *
-                            </Label>
-                            <Input
-                              id="guest-email"
-                              type="email"
-                              placeholder="you@email.com"
-                              value={contact.email}
-                              onChange={(e) => setContact((c) => ({ ...c, email: e.target.value }))}
-                            />
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          If you are unable to complete the process, we'll send you a quote.
-                        </p>
                         <Label htmlFor="holiday-budget" className="block text-base font-semibold text-destructive">
                           What would you like to spend for your amazing holiday?
                         </Label>
@@ -990,6 +967,7 @@ export default function BookingPage() {
                         <div className="flex flex-col gap-3 sm:flex-row">
                           <Input
                             id="holiday-budget"
+                            maxLength={12}
                             inputMode="numeric"
                             placeholder="e.g. R 8 000"
                             value={budgetInput}
@@ -997,28 +975,19 @@ export default function BookingPage() {
                             className="sm:max-w-xs"
                           />
                           <Button
-                            onClick={() => {
-                              const value = Number(budgetInput.replace(/[^\d]/g, ''));
-                              if (!value) {
-                                setBudgetError(true);
-                                return;
-                              }
-                              setBudget(value);
-                              setBudgetError(false);
-                              setBudgetVisibleCount(4);
-                            }}
+                            onClick={applyBudget}
                           >
                             Show stays within my budget
                           </Button>
                         </div>
-                        {budgetError && (detailsIncomplete || budget == null) && (
+                        {budgetError && (
                           <p className="text-sm font-semibold text-destructive">
-                            Please fill your details and your travel budget to proceed.
+                            Please provide a valid holiday budget to proceed.
                           </p>
                         )}
                         {budget != null && (
                           <p className="text-sm font-medium text-foreground">
-                            Showing stays from R{budget.toLocaleString('en-ZA')} upwards.
+                            Showing stays from R{Math.max(0, budget - 1000).toLocaleString('en-ZA')} to R{(budget + 1000).toLocaleString('en-ZA')} for your whole group.
                           </p>
                         )}
 
@@ -1043,15 +1012,15 @@ export default function BookingPage() {
                             </h2>
                             <div className="mt-3 max-w-md">
                               <Label htmlFor="hotel-search" className="text-sm text-muted-foreground">
-                                Looking for a specific hotel? Search by name — it will show whatever your
-                                budget.
+                                Looking for a specific hotel within your budget? Search by name.
                               </Label>
                               <Input
                                 id="hotel-search"
                                 className="mt-2"
                                 placeholder="e.g. Suncoast Hotel"
                                 value={hotelQuery}
-                                onChange={(e) => setHotelQuery(e.target.value)}
+                                maxLength={100}
+                                onChange={(e) => { setHotelQuery(e.target.value); setBudgetVisibleCount(HOTEL_BATCH_SIZE); }}
                               />
                             </div>
                             {shownBudgetHotels.length === 0 ? (
@@ -1085,16 +1054,27 @@ export default function BookingPage() {
                             {budgetHotels.length > shownBudgetHotels.length && (
                               <Button
                                 variant="outline"
-                                className="mt-6 w-full border-yellow-400 bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black"
-                                onClick={() => setBudgetVisibleCount((c) => c + 4)}
+                                className="mt-8 h-auto min-h-16 w-full whitespace-normal border-gold bg-gold px-6 py-5 text-xl font-bold text-navy hover:bg-gold/90 hover:text-navy"
+                                onClick={() => setBudgetVisibleCount((c) => c + HOTEL_BATCH_SIZE)}
                               >
                                 Click to view more hotels within budget
                               </Button>
                             )}
+                            {!query && budgetHotels.length <= shownBudgetHotels.length && (
+                              <div className="mt-8 space-y-3">
+                                <Label htmlFor="increase-budget" className="text-lg font-bold">Increase your budget to see more options</Label>
+                                <div className="flex flex-col gap-3 sm:flex-row">
+                                  <Input id="increase-budget" inputMode="numeric" maxLength={12} placeholder="Your new holiday budget"
+                                    value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)} />
+                                  <Button onClick={applyBudget}>Show stays within my budget</Button>
+                                </div>
+                                {budgetError && <p className="text-sm text-destructive">Please provide a valid holiday budget.</p>}
+                              </div>
+                            )}
                           </div>
                         )}
 
-                        <div className="mt-24">
+                        {budget != null && <div className="mt-44">
                           <h2 className="font-display text-3xl md:text-4xl font-bold text-yellow-400">
                             Featured Stays - See what's possible
                           </h2>
@@ -1123,7 +1103,7 @@ export default function BookingPage() {
 
                             ))}
                           </div>
-                        </div>
+                        </div>}
 
 
                         {pickMode && (
