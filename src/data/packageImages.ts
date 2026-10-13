@@ -109,12 +109,12 @@ import phuketBeach from '@/assets/activities/phuket-beach.jpg';
 
 export const packageImages: Record<string, string> = {
   // ============= DURBAN =============
-  'dur1': isleOfCapriCruise,        // Ushaka + Isle of Capri cruise + spa
+  'dur1': dur1UshakaSign.url,       // Ushaka + Isle of Capri cruise + spa
   'dur2': durbanOpenTopBus,         // Open bus city tour
-  'dur3': durbanSpaMassage,         // Spa day + canal cruise
-  'dur4': durbanBoatCruise,         // Nightlife + canal boat
+  'dur3': dur3CouplePool.url,       // Spa day + canal cruise
+  'dur4': dur4FloridaRoad.url,      // Nightlife + canal boat
   'dur5': durbanUshaka,             // Couple beach + Ushaka
-  'dur6': gondolaBoatCruise,        // Couple boat cruise
+  'dur6': dur6GondolaCanal.url,     // Couple boat cruise
   'dur7': romanticBirthdayRoom,     // Couple nightlife escape
   'dur8': durbanMosesMabhida,       // Couple open top bus / city
   'dur9': durbanBeachVolleyballAsset.url, // uShaka + SkyCar + Isle of Capri cruise
