@@ -1,11 +1,13 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { z } from "https://esm.sh/zod@3.25.76";
 
+// Lenient on purpose: a typo in a customer's email/phone must never drop a booking.
+// Only block control characters and HTML brackets.
+const safeText = (max: number) => z.string().trim().max(max).regex(/^[^\x00-\x1f<>]*$/);
 const contactSchema = z.object({
-  guestName: z.string().trim().min(1).max(100).regex(/^[^\x00-\x1f<>]+$/),
-  guestEmail: z.string().trim().email().max(255),
-  guestTel: z.string().trim().max(20).regex(/^\+?[\d\s()-]+$/)
-    .refine((value) => { const digits = value.replace(/\D/g, ''); return digits.length >= 10 && digits.length <= 15; }),
+  guestName: safeText(150).min(1),
+  guestEmail: safeText(255),
+  guestTel: safeText(40),
 });
 
 const corsHeaders = {
