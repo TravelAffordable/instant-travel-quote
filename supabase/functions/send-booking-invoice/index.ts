@@ -114,7 +114,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
       body: JSON.stringify({
         from: "Travel Affordable Bookings <onboarding@resend.dev>",
-        to: ["travelaffordable2017@gmail.com"],
+        to: ["info@travelaffordable.co.za", "travelaffordable2017@gmail.com"],
         reply_to: data.guestEmail,
         subject: `🎫 New Booking: ${safeGuestName} - ${safeHotelName} (${safeQuoteRef})`,
         html: htmlContent,
