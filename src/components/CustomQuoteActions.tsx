@@ -6,7 +6,6 @@ import { FileDown, Mail, MessageCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
-import { openEmailDraft } from '@/lib/emailOpener';
 
 interface CustomQuote {
   hotelName: string;
@@ -505,11 +504,7 @@ Web: www.travelaffordable.co.za
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
     const subject = `Quote Request - ${destination} - ${quotesToExport.length} Custom Hotel Option${quotesToExport.length > 1 ? 's' : ''}`;
-    openEmailDraft({
-      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
-      subject,
-      body,
-    });
+    window.location.href = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     toast.success('Opening email');
   };
 

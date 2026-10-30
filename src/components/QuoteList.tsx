@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { type QuoteResult } from '@/data/travelData';
 import { toast } from 'sonner';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
-import { openEmailDraft } from '@/lib/emailOpener';
 import { QuoteCard } from './QuoteCard';
 
 interface QuoteListProps {
@@ -119,14 +118,8 @@ Web: www.travelaffordable.co.za`;
   const handleRequestToBook = async (quote: QuoteResult) => {
     const quoteText = generateQuoteText(quote);
     const subject = `Quote Request - ${quote.destination} - ${quote.hotelName}`;
-    const body = encodeURIComponent(quoteText);
     
-    // Open email (Gmail app or web, per visitor's saved choice)
-    openEmailDraft({
-      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
-      subject,
-      body: quoteText,
-    });
+    window.location.href = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quoteText)}`;
 
     toast.success('Opening email with your quote request');
     onQuoteSelected?.(quote);
@@ -149,11 +142,7 @@ Web: www.travelaffordable.co.za`;
     
     if (method === 'email') {
       const subject = `Quote Requests - ${selected.length} option(s) selected`;
-      openEmailDraft({
-        to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
-        subject,
-        body: quotesText,
-      });
+      window.location.href = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
       toast.success('Opening email with selected quotes');
     } else {
       const text = `Hi! I'm interested in these quotes:\n\n${quotesText}`;
@@ -164,11 +153,7 @@ Web: www.travelaffordable.co.za`;
   const handleSendAllQuotes = () => {
     const quotesText = quotes.map(q => generateQuoteText(q)).join('\n\n---\n\n');
     const subject = `Quote Requests - ${quotes.length} option(s)`;
-    openEmailDraft({
-      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
-      subject,
-      body: quotesText,
-    });
+    window.location.href = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
     toast.success('Opening email with all quotes');
   };
 
