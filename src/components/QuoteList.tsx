@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { type QuoteResult } from '@/data/travelData';
 import { toast } from 'sonner';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { openEmailDraft } from '@/lib/emailOpener';
 import { QuoteCard } from './QuoteCard';
 
 interface QuoteListProps {
@@ -120,11 +121,14 @@ Web: www.travelaffordable.co.za`;
     const subject = `Quote Request - ${quote.destination} - ${quote.hotelName}`;
     const body = encodeURIComponent(quoteText);
     
-    // Open email client
-    const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
-    window.open(mailtoLink, '_blank');
-    
-    toast.success('Opening email client with your quote request');
+    // Open email (Gmail app or web, per visitor's saved choice)
+    openEmailDraft({
+      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
+      subject,
+      body: quoteText,
+    });
+
+    toast.success('Opening email with your quote request');
     onQuoteSelected?.(quote);
   };
 
@@ -145,9 +149,12 @@ Web: www.travelaffordable.co.za`;
     
     if (method === 'email') {
       const subject = `Quote Requests - ${selected.length} option(s) selected`;
-      const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
-      window.open(mailtoLink, '_blank');
-      toast.success('Opening email client with selected quotes');
+      openEmailDraft({
+        to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
+        subject,
+        body: quotesText,
+      });
+      toast.success('Opening email with selected quotes');
     } else {
       const text = `Hi! I'm interested in these quotes:\n\n${quotesText}`;
       window.open(`https://wa.me/27796813869?text=${encodeURIComponent(text)}`, '_blank');
@@ -157,9 +164,12 @@ Web: www.travelaffordable.co.za`;
   const handleSendAllQuotes = () => {
     const quotesText = quotes.map(q => generateQuoteText(q)).join('\n\n---\n\n');
     const subject = `Quote Requests - ${quotes.length} option(s)`;
-    const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
-    window.open(mailtoLink, '_blank');
-    toast.success('Opening email client with all quotes');
+    openEmailDraft({
+      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
+      subject,
+      body: quotesText,
+    });
+    toast.success('Opening email with all quotes');
   };
 
   if (quotes.length === 0) {
