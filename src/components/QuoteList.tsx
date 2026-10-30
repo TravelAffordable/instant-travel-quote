@@ -120,7 +120,7 @@ Web: www.travelaffordable.co.za`;
     const subject = `Quote Request - ${quote.destination} - ${quote.hotelName}`;
     const body = encodeURIComponent(quoteText);
     
-    window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quoteText)}`;
+    window.location.href = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quoteText)}`;
 
     toast.success('Opening email with your quote request');
     onQuoteSelected?.(quote);
