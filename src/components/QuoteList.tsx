@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { type QuoteResult } from '@/data/travelData';
 import { toast } from 'sonner';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { openEmailDraft } from '@/lib/emailOpener';
 import { QuoteCard } from './QuoteCard';
 
 interface QuoteListProps {

@@ -6,6 +6,7 @@ import { FileDown, Mail, MessageCircle, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import { formatCurrency, roundToNearest10 } from '@/lib/utils';
+import { openEmailDraft } from '@/lib/emailOpener';
 
 interface CustomQuote {
   hotelName: string;
