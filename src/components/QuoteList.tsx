@@ -153,11 +153,7 @@ Web: www.travelaffordable.co.za`;
   const handleSendAllQuotes = () => {
     const quotesText = quotes.map(q => generateQuoteText(q)).join('\n\n---\n\n');
     const subject = `Quote Requests - ${quotes.length} option(s)`;
-    openEmailDraft({
-      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
-      subject,
-      body: quotesText,
-    });
+    window.location.href = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
     toast.success('Opening email with all quotes');
   };
 
