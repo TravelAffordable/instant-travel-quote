@@ -118,7 +118,6 @@ Web: www.travelaffordable.co.za`;
   const handleRequestToBook = async (quote: QuoteResult) => {
     const quoteText = generateQuoteText(quote);
     const subject = `Quote Request - ${quote.destination} - ${quote.hotelName}`;
-    const body = encodeURIComponent(quoteText);
     
     window.location.href = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quoteText)}`;
 
@@ -143,11 +142,7 @@ Web: www.travelaffordable.co.za`;
     
     if (method === 'email') {
       const subject = `Quote Requests - ${selected.length} option(s) selected`;
-      openEmailDraft({
-        to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
-        subject,
-        body: quotesText,
-      });
+      window.location.href = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
       toast.success('Opening email with selected quotes');
     } else {
       const text = `Hi! I'm interested in these quotes:\n\n${quotesText}`;
