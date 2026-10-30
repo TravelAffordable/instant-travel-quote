@@ -148,9 +148,12 @@ Web: www.travelaffordable.co.za`;
     
     if (method === 'email') {
       const subject = `Quote Requests - ${selected.length} option(s) selected`;
-      const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
-      window.open(mailtoLink, '_blank');
-      toast.success('Opening email client with selected quotes');
+      openEmailDraft({
+        to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
+        subject,
+        body: quotesText,
+      });
+      toast.success('Opening email with selected quotes');
     } else {
       const text = `Hi! I'm interested in these quotes:\n\n${quotesText}`;
       window.open(`https://wa.me/27796813869?text=${encodeURIComponent(text)}`, '_blank');
@@ -160,9 +163,12 @@ Web: www.travelaffordable.co.za`;
   const handleSendAllQuotes = () => {
     const quotesText = quotes.map(q => generateQuoteText(q)).join('\n\n---\n\n');
     const subject = `Quote Requests - ${quotes.length} option(s)`;
-    const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(quotesText)}`;
-    window.open(mailtoLink, '_blank');
-    toast.success('Opening email client with all quotes');
+    openEmailDraft({
+      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
+      subject,
+      body: quotesText,
+    });
+    toast.success('Opening email with all quotes');
   };
 
   if (quotes.length === 0) {

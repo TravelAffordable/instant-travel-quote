@@ -504,9 +504,12 @@ Web: www.travelaffordable.co.za
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
     const subject = `Quote Request - ${destination} - ${quotesToExport.length} Custom Hotel Option${quotesToExport.length > 1 ? 's' : ''}`;
-    const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink, '_blank');
-    toast.success('Opening email client');
+    openEmailDraft({
+      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
+      subject,
+      body,
+    });
+    toast.success('Opening email');
   };
 
   const handleWhatsApp = () => {
