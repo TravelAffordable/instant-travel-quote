@@ -120,11 +120,14 @@ Web: www.travelaffordable.co.za`;
     const subject = `Quote Request - ${quote.destination} - ${quote.hotelName}`;
     const body = encodeURIComponent(quoteText);
     
-    // Open email client
-    const mailtoLink = `mailto:info@travelaffordable.co.za,travelaffordable2017@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
-    window.open(mailtoLink, '_blank');
-    
-    toast.success('Opening email client with your quote request');
+    // Open email (Gmail app or web, per visitor's saved choice)
+    openEmailDraft({
+      to: 'info@travelaffordable.co.za,travelaffordable2017@gmail.com',
+      subject,
+      body: quoteText,
+    });
+
+    toast.success('Opening email with your quote request');
     onQuoteSelected?.(quote);
   };
 
