@@ -41,6 +41,7 @@ export function AccommodationCard({
   picked = false,
   onTogglePick,
 }: AccommodationCardProps) {
+  const displayName = hotel.displayName ?? hotel.name;
   return (
     <Card
       className={cn(
@@ -49,7 +50,7 @@ export function AccommodationCard({
       )}
     >
       <div className="relative">
-        <ResponsiveImage src={hotel.image} alt={hotel.name} ratio="wide" />
+        <ResponsiveImage src={hotel.image} alt={displayName} ratio="wide" />
         {luxuryBadge && (
           <span className="absolute left-3 top-3 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-foreground">
             Luxury
@@ -58,7 +59,7 @@ export function AccommodationCard({
         {pickable && (
           <button
             type="button"
-            aria-label={picked ? `Unpick ${hotel.name}` : `Pick ${hotel.name}`}
+            aria-label={picked ? `Unpick ${displayName}` : `Pick ${displayName}`}
             aria-pressed={picked}
             onClick={(e) => {
               e.stopPropagation();
@@ -77,7 +78,7 @@ export function AccommodationCard({
       </div>
 
       <CardContent className="flex flex-1 flex-col p-5">
-        <h3 className="font-display text-lg font-bold text-foreground">{hotel.name}</h3>
+        <h3 className="font-display text-lg font-bold text-foreground">{displayName}</h3>
         {isGoldenMileBeachfront(hotel.name) && (
           <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             Right on the beach

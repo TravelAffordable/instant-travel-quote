@@ -187,6 +187,7 @@ export default function BookingPage() {
       const stars = getDurbanHotelStars(h.name) ?? getUmhlangaHotelStars(h.name);
       return stars == null ? h : { ...h, rating: stars };
     });
+  const hotelDisplayName = (hotel: (typeof hotels)[number]) => hotel.displayName ?? hotel.name;
   const tierMap = useMemo(() => classifyHotels(hotels), [hotels]);
   const totalGuests = adults + kids + teens;
 
@@ -321,7 +322,7 @@ export default function BookingPage() {
     return (
       <InlineHotelQuote
         key={`quote-${hotel.id}`}
-        hotelName={hotel.name}
+        hotelName={hotelDisplayName(hotel)}
         roomType={hotel.roomType}
         destinationName={destination?.name ?? 'Your destination'}
         nights={Math.max(1, nights)}
@@ -388,10 +389,10 @@ export default function BookingPage() {
     selectedHotel && !oneDay ? (
       <Card className="mb-6 overflow-hidden rounded-2xl border-border shadow-md">
         <div className="relative">
-          <ResponsiveImage src={selectedHotel.image} alt={selectedHotel.name} ratio="wide" />
+          <ResponsiveImage src={selectedHotel.image} alt={hotelDisplayName(selectedHotel)} ratio="wide" />
         </div>
         <CardContent className="p-5">
-          <h3 className="font-display text-lg font-bold text-foreground">{selectedHotel.name}</h3>
+          <h3 className="font-display text-lg font-bold text-foreground">{hotelDisplayName(selectedHotel)}</h3>
           <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3 w-3" /> {destination?.name ?? 'Your destination'}
           </p>
@@ -504,7 +505,7 @@ export default function BookingPage() {
         packageTitle={pkg?.name.replace(/^[A-Z]+\d*[A-Z]*\s*-\s*/, '')}
         dates={datesLabel}
         travellers={travellersLabel}
-        accommodationName={oneDay ? 'Not needed for a 1 day experience' : selectedHotel?.name}
+        accommodationName={oneDay ? 'Not needed for a 1 day experience' : selectedHotel ? hotelDisplayName(selectedHotel) : undefined}
         roomsLabel={
           oneDay
             ? undefined

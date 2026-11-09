@@ -21,7 +21,7 @@ export function assignHotelDisplayNames<T extends HotelNameRecord>(hotels: T[]):
   return hotels.map((hotel) => {
     const prefix = aliasPrefixByDestination[hotel.destination];
     if (!prefix || (hotel.destination === 'sun-city' && keepSunCityRealName(hotel.name))) {
-      return { ...hotel, displayName: undefined };
+      return { ...hotel };
     }
 
     const propertyKey = `${hotel.destination}:${hotel.name.trim().toLocaleLowerCase()}`;
