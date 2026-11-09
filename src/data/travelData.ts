@@ -24,10 +24,12 @@ import { umdlotiPremiumImageMap } from './umdlotiPremiumImages';
 import { belaBelaHotelImageMap } from './belaBelaHotelImages';
 import { getUmhlangaHotelStars } from './umhlangaHotelStars';
 import { getChildServiceFeeForAge } from '@/lib/childServiceFees';
+import { assignHotelDisplayNames } from '@/lib/hotelDisplayNames';
 
 export interface Hotel {
   id: string;
   name: string;
+  displayName?: string;
   destination: string;
   pricePerNight: number; // Base price per room per night
   rating: number;
@@ -1423,7 +1425,8 @@ function generateHotels(): Hotel[] {
   // letter pool, which previously produced duplicate ids and made a selection
   // resolve to the wrong property.
   const seenIds = new Map<string, number>();
-  return deduped.map((hotel) => {
+  const withDisplayNames = assignHotelDisplayNames(deduped);
+  return withDisplayNames.map((hotel) => {
     const count = (seenIds.get(hotel.id) ?? 0) + 1;
     seenIds.set(hotel.id, count);
     return count === 1 ? hotel : { ...hotel, id: `${hotel.id}-${count}` };
