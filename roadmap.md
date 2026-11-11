@@ -22,3 +22,6 @@
 - Durban ad anchors all resolve to the packages heading.
 - "The Blyde, Pretoria" destination link 404s.
 - Hand-picked featured ("luxury") hotels per destination: owner-only picking circles visible in editor preview, picks stored in backend and shown to all visitors.
+
+- [x] Rename public Durban/Sun City/Harties hotel labels (#101…), real names kept internally
+- [x] Add "Send this quote via WhatsApp" and "Send this quote via Gmail" buttons below every generated quotation

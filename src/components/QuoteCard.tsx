@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
+import { QuoteShareButtons } from './QuoteShareButtons';
 import { Home, Package, MessageCircle, Mail, BedDouble, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -15,6 +16,9 @@ interface QuoteCardProps {
   onToggleSelection: () => void;
   onRequestToBook: () => void;
   onWhatsApp: () => void;
+  clientName?: string;
+  clientPhone?: string;
+  clientEmail?: string;
 }
 
 // Get activity images based on destination, staggered by card index
@@ -32,8 +36,12 @@ export function QuoteCard({
   isSelected, 
   onToggleSelection, 
   onRequestToBook, 
-  onWhatsApp 
+  onWhatsApp,
+  clientName,
+  clientPhone,
+  clientEmail,
 }: QuoteCardProps) {
+  const quoteRef = useRef<HTMLDivElement>(null);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -60,6 +68,7 @@ export function QuoteCard({
 
   return (
     <Card 
+      ref={quoteRef}
       className={`border-0 shadow-soft transition-all overflow-hidden ${
         isSelected 
           ? 'ring-2 ring-primary bg-primary/5' 
@@ -253,6 +262,13 @@ export function QuoteCard({
             WhatsApp Us
           </Button>
         </div>
+        <QuoteShareButtons
+          quoteRef={quoteRef}
+          clientName={clientName}
+          clientPhone={clientPhone}
+          clientEmail={clientEmail}
+          destination={quote.destination}
+        />
       </CardContent>
     </Card>
   );

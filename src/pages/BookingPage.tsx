@@ -333,6 +333,9 @@ export default function BookingPage() {
         perPerson={grandTotal / guests}
         inclusions={inclusions}
         selected={hotelId === hotel.id}
+        clientName={contact.name}
+        clientPhone={contact.phone}
+        clientEmail={contact.email}
         onRequestQuote={() => {
           setHotelId(hotel.id);
           goto('review');

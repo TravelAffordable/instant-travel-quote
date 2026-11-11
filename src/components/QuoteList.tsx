@@ -261,6 +261,9 @@ Web: www.travelaffordable.co.za`;
                   onToggleSelection={() => toggleQuoteSelection(quote.hotelId)}
                   onRequestToBook={() => handleRequestToBook(quote)}
                   onWhatsApp={() => handleWhatsApp(quote)}
+                  clientName={propGuestName}
+                  clientPhone={guestTel}
+                  clientEmail={guestEmail}
                 />
               );
             })}

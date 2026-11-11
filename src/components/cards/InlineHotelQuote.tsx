@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { Check, X, BedDouble, Utensils } from 'lucide-react';
+import { QuoteShareButtons } from '@/components/QuoteShareButtons';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn, roundToNearest10 } from '@/lib/utils';
@@ -17,6 +19,9 @@ export interface InlineHotelQuoteProps {
   selected?: boolean;
   onRequestQuote: () => void;
   onClose?: () => void;
+  clientName?: string;
+  clientPhone?: string;
+  clientEmail?: string;
 }
 
 const rand = (amount: number) => `R${roundToNearest10(amount).toLocaleString('en-ZA')}`;
@@ -35,7 +40,11 @@ export function InlineHotelQuote({
   selected = false,
   onRequestQuote,
   onClose,
+  clientName,
+  clientPhone,
+  clientEmail,
 }: InlineHotelQuoteProps) {
+  const quoteRef = useRef<HTMLDivElement>(null);
   return (
     <Card
       className={cn(
@@ -44,6 +53,7 @@ export function InlineHotelQuote({
       )}
     >
       <CardContent className="p-5 md:p-6">
+        <div ref={quoteRef}>
         <div className="flex items-start justify-between gap-4">
           <div>
             <h3 className="font-display text-lg font-bold text-primary">
@@ -118,6 +128,14 @@ export function InlineHotelQuote({
             </ul>
           </div>
         </div>
+        </div>
+        <QuoteShareButtons
+          quoteRef={quoteRef}
+          clientName={clientName}
+          clientPhone={clientPhone}
+          clientEmail={clientEmail}
+          destination={destinationName}
+        />
       </CardContent>
     </Card>
   );

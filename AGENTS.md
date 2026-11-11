@@ -7,3 +7,5 @@
 - Cape Town hotel-deal activity overrides are isolated from shared package rates and retain owner-supplied name casing in the booking control, so reviewed deal prices and wording do not change fixed packages.
 - Booking step contact validation and budget matching use bookingSelection helpers, keeping progression and hotel pagination rules independently testable without changing quote totals.
 - Vite deduplicates React and pre-optimizes shared validation dependencies to prevent mixed React instances during preview dependency reloads.
+- Public hotel aliases (e.g. "Area Hotel #101") come from assignHotelDisplayNames as displayName; Hotel.name stays the real property name for pricing, images, picks and internal booking emails.
+- Quote WhatsApp/Gmail sharing uses QuoteShareButtons, reading the rendered quote container text plus the quote's own client contact, so shared text always matches what is on screen.
