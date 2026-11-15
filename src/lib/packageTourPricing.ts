@@ -18,13 +18,12 @@ export const TOUR_FROM_PRICES: Record<string, number> = {
   'BALI-UBUD': 3800, 'DUBAI-1': 4800, 'PHUKET-1': 4200,
 };
 
-export function extractTourCode(name: string): string | null {
-  const m = name.match(/^([A-Z]+\d*[A-Z]*)\s*-\s*/);
-  return m ? m[1] : null;
-}
-
-export function getTourFromPrice(name: string): number | null {
-  const code = extractTourCode(name);
-  if (!code) return null;
-  return TOUR_FROM_PRICES[code] ?? null;
+export function extractTourCode(pkg: any): string {
+  if (!pkg) return '';
+  // Safely extract from name, tourCode, or id, ensuring we never call .match() on non-strings
+  const target = pkg.tourCode ?? pkg.name ?? pkg.id ?? '';
+  const str = typeof target === 'string' ? target : String(target);
+  
+  const match = str.match(/(?:HG|MAG|DUR|UMHLA|MP|UMDL|KRUGER|EMER|KNY|BELA|BLY|CPT|SUN|BALI|DUBAI|PHUKET)-?\d+/i);
+  return match ? match[0].toUpperCase() : '';
 }
