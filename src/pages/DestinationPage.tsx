@@ -7,7 +7,6 @@ import { SEO } from '@/components/SEO';
 import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { PackageCard } from '@/components/cards/PackageCard';
 
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -38,6 +37,9 @@ import { formatCurrency } from '@/lib/utils';
 import { extractTourCode, getTourFromPrice } from '@/lib/packageTourPricing';
 import NotFound from './NotFound';
 import { getHolidayTeaserPrice, withTeaserAccommodation } from '@/lib/holidayTeaserPricing';
+import { useTravelSearch } from '@/hooks/useTravelSearch';
+import { calculatePackagePrice } from '@/data/packagePricing';
+import { hotelDeals, dealHotelTotal } from '@/data/hotelDeals';
 
 const SITE_URL = 'https://travelaffordable.co.za';
 
@@ -45,6 +47,9 @@ const DestinationPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const data = slug ? getDestinationPage(slug) : undefined;
+
+  // Persistent Search Hook state across destinations
+  const { searchState, updateSearch, setKidsCount, setKidAge } = useTravelSearch(slug || 'cape-town');
 
   const [requestPkg, setRequestPkg] = useState<TravelPackage | null>(null);
   const [checkIn, setCheckIn] = useState<Date | undefined>();
@@ -57,7 +62,14 @@ const DestinationPage = () => {
   if (!data) return <NotFound />;
 
   const canonical = `/destinations/${data.slug}`;
-  const advertisedPrices = getPackagesByDestination(data.destinationId)
+  const pkgs = getPackagesByDestination(data.destinationId);
+
+  // Relevant hotels for cheapest price calculation in this destination
+  const destinationHotels = hotelDeals.filter(
+    (h) => h.destination.toLowerCase() === data.name.toLowerCase() || h.destination.toLowerCase().includes(data.slug.replace('-', ' '))
+  );
+
+  const advertisedPrices = pkgs
     .map(getHolidayTeaserPrice)
     .filter((price): price is number => price !== null);
   const advertisedStartingPrice = advertisedPrices.length
@@ -68,7 +80,7 @@ const DestinationPage = () => {
     setRequestPkg(pkg);
     setCheckIn(undefined);
     setCheckOut(undefined);
-    setForm({ name: '', tel: '', email: '', adults: 2, kids: 0, rooms: 1, budget: '', childAges: [] });
+    setForm({ name: '', tel: '', email: '', adults: searchState.adults, kids: searchState.kids, rooms: 1, budget: '', childAges: searchState.kidAges });
   };
 
   const closeRequest = () => {
@@ -84,14 +96,14 @@ const DestinationPage = () => {
     const body = [
       `Package: ${requestPkg.name}`,
       `Destination: ${data.name}`,
-      `Check-in: ${checkIn ? format(checkIn, 'PPP') : '-'}`,
+      `Check-in: ${checkIn ? format(checkIn, 'PPP') : searchState.travelDate || '-'}`,
       `Check-out: ${checkOut ? format(checkOut, 'PPP') : '-'}`,
       `Name: ${form.name}`,
       `Tel: ${form.tel}`,
       `Email: ${form.email}`,
-      `Adults: ${form.adults}`,
-      `Kids: ${form.kids}`,
-      `Child Ages: ${form.childAges.length ? form.childAges.map((a, i) => `Child ${i + 1}: ${a} yrs`).join(', ') : '-'}`,
+      `Adults: ${searchState.adults}`,
+      `Kids: ${searchState.kids}`,
+      `Child Ages: ${searchState.kidAges.length ? searchState.kidAges.map((a, i) => `Child ${i + 1}: ${a} yrs`).join(', ') : '-'}`,
       `Rooms: ${form.rooms}`,
       `Budget (ZAR): ${form.budget || '-'}`,
     ].join('\n');
@@ -100,8 +112,6 @@ const DestinationPage = () => {
     )}&body=${encodeURIComponent(body)}`;
     closeRequest();
   };
-
-
 
   // JSON-LD: TouristDestination + Breadcrumb + FAQ
   const jsonLd = [
@@ -141,8 +151,6 @@ const DestinationPage = () => {
     },
   ];
 
-  const goToQuote = () => navigate(`/?destination=${data.destinationId}#quote`);
-
   return (
     <div className="min-h-screen bg-background">
       <SEO
@@ -177,52 +185,138 @@ const DestinationPage = () => {
         </div>
       </section>
 
-      {/* Intro removed per request — packages section below */}
-
-      {/* Destinations image menu — same position on every page */}
+      {/* Destinations image menu */}
       <DestinationImageMenu activeSlug={data.slug} />
 
+      {/* Packages & Group Search Section */}
+      <section className="container mx-auto px-4 py-12">
+        <h2 className="font-display text-3xl font-bold text-navy mb-2">
+          {data.name} Packages
+        </h2>
+        <p className="text-navy/80 mb-6">
+          All available packages for {data.name}. Click any package to get an instant quote.
+        </p>
 
+        {/* Group Search Bar */}
+        <div className="mb-10 bg-card border border-border rounded-3xl p-6 shadow-soft grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end">
+          <div>
+            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">
+              Date of Travel
+            </Label>
+            <Input
+              type="date"
+              value={searchState.travelDate}
+              onChange={(e) => updateSearch({ travelDate: e.target.value })}
+              className="w-full rounded-xl"
+            />
+          </div>
 
+          <div>
+            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">
+              Adult Travellers
+            </Label>
+            <Select
+              value={String(searchState.adults)}
+              onValueChange={(v) => updateSearch({ adults: Number(v) })}
+            >
+              <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                  <SelectItem key={n} value={String(n)}>{n} Adult{n > 1 ? 's' : ''}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
+          <div>
+            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">
+              Kids
+            </Label>
+            <Select
+              value={String(searchState.kids)}
+              onValueChange={(v) => setKidsCount(Number(v))}
+            >
+              <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 6 }, (_, i) => i).map((n) => (
+                  <SelectItem key={n} value={String(n)}>{n} Kid{n !== 1 ? 's' : ''}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      {/* Packages */}
-      {(() => {
-        const pkgs = getPackagesByDestination(data.destinationId);
-        if (!pkgs.length) return null;
-        return (
-          <section className="container mx-auto px-4 py-12">
-            {slug === 'durban' && (
-              <>
-                <div id="packages" className="scroll-mt-24" />
-                <div id="beach-getaways" className="scroll-mt-24" />
-                <div id="weekend-getaways" className="scroll-mt-24" />
-                <div id="couples" className="scroll-mt-24" />
-                <div id="family" className="scroll-mt-24" />
-                <div id="holiday-price" className="scroll-mt-24" />
-              </>
-            )}
-            <h2 className="font-display text-3xl font-bold text-navy mb-2">
-              {data.name} Packages
-            </h2>
-            <p className="text-navy/80 mb-8">
-              All available packages for {data.name}. Click any package to get an instant quote.
-            </p>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {pkgs.map((pkg) => (
-                <PackageCard
-                  key={pkg.id}
-                  pkg={pkg}
-                  destinationSlug={data.slug}
-                  fallbackImage={data.heroImage}
-                />
+          {searchState.kids > 0 && (
+            <div className="sm:col-span-2 lg:col-span-4 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-border">
+              {searchState.kidAges.map((age, idx) => (
+                <div key={idx}>
+                  <Label className="text-xs text-muted-foreground mb-1 block">Age of Child {idx + 1}</Label>
+                  <Select
+                    value={String(age)}
+                    onValueChange={(v) => setKidAge(idx, Number(v))}
+                  >
+                    <SelectTrigger className="rounded-xl text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 18 }, (_, i) => i).map((a) => (
+                        <SelectItem key={a} value={String(a)}>Age {a}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               ))}
             </div>
+          )}
+        </div>
 
-          </section>
-        );
-      })()}
+        {/* Package Grid with Calculated Group Prices */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {pkgs.map((pkg) => {
+            const tourCode = extractTourCode(pkg);
+            const pkgCost = tourCode ? calculatePackagePrice(tourCode, {
+              adults: searchState.adults,
+              childrenAges: searchState.kidAges,
+            }) : null;
 
+            // Find cheapest hotel total for group
+            const nights = 2;
+            let cheapestHotelTotal = 0;
+            if (destinationHotels.length > 0) {
+              const hotelTotals = destinationHotels.map((h) => dealHotelTotal(h, nights, searchState.adults) ?? 0).filter((t) => t > 0);
+              if (hotelTotals.length > 0) {
+                cheapestHotelTotal = Math.min(...hotelTotals);
+              }
+            }
+
+            const groupTotalPrice = (pkgCost?.total ?? 0) + cheapestHotelTotal;
+
+            return (
+              <div key={pkg.id} className="bg-card border border-border rounded-3xl overflow-hidden shadow-soft flex flex-col justify-between p-6">
+                <div>
+                  <img src={getPackageImage(pkg, data.heroImage)} alt={pkg.name} className="w-full h-48 object-cover rounded-2xl mb-4" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-accent">TOUR CODE: {tourCode || pkg.id}</span>
+                  <h3 className="text-xl font-black tracking-tight mt-1 text-navy">{pkg.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{pkg.description}</p>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-border">
+                  <div className="text-2xl font-black text-primary">
+                    {groupTotalPrice > 0 ? `R ${groupTotalPrice.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : getTourFromPrice(pkg, data.destinationId)}
+                  </div>
+                  <p className="text-xs font-bold text-foreground mt-0.5">Budget Conscious Hotel Option</p>
+                  <p className="text-xs text-muted-foreground mt-1">Includes hotel and fun activities</p>
+                  <p className="text-[11px] text-muted-foreground/80 italic mt-0.5">discounts subject to availability at various hotels</p>
+
+                  <Button
+                    onClick={() => openRequest(pkg)}
+                    className="mt-5 w-full rounded-2xl bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold py-3 text-sm shadow-lift hover:opacity-90"
+                  >
+                    See your amazing options →
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Internal links */}
       <section className="container mx-auto px-4 py-12">
@@ -242,11 +336,11 @@ const DestinationPage = () => {
         </div>
       </section>
 
-
+      {/* Request Dialog with Budget Upgrade Prompt */}
       <Dialog open={!!requestPkg} onOpenChange={(o) => !o && closeRequest()}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Request Prices</DialogTitle>
+            <DialogTitle>Request Prices & Upgrades</DialogTitle>
             <DialogDescription>
               {requestPkg ? `${requestPkg.name} — ${data.name}` : ''}
             </DialogDescription>
@@ -254,7 +348,7 @@ const DestinationPage = () => {
           <form onSubmit={submitRequest} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Check in date (when you arrive)</Label>
+                <Label>Check in date</Label>
                 <Popover open={checkInOpen} onOpenChange={setCheckInOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -263,7 +357,7 @@ const DestinationPage = () => {
                       className={cn('w-full justify-start text-left font-normal', !checkIn && 'text-muted-foreground')}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {checkIn ? format(checkIn, 'PPP') : 'Pick a date'}
+                      {checkIn ? format(checkIn, 'PPP') : searchState.travelDate || 'Pick a date'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -287,7 +381,7 @@ const DestinationPage = () => {
                 </Popover>
               </div>
               <div className="space-y-1.5">
-                <Label>Check out date (when you leave)</Label>
+                <Label>Check out date</Label>
                 <Popover open={checkOutOpen} onOpenChange={setCheckOutOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -319,10 +413,12 @@ const DestinationPage = () => {
                 </Popover>
               </div>
             </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="rp-name">Name</Label>
               <Input id="rp-name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="rp-tel">Tel</Label>
@@ -333,81 +429,13 @@ const DestinationPage = () => {
                 <Input id="rp-email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label>How many Adults</Label>
-                <Select value={String(form.adults)} onValueChange={(v) => setForm({ ...form, adults: Number(v) })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
-                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>How many Kids</Label>
-                <Select
-                  value={String(form.kids)}
-                  onValueChange={(v) => {
-                    const k = Number(v);
-                    const childAges = Array.from({ length: k }, (_, i) => form.childAges[i] ?? 5);
-                    setForm({ ...form, kids: k, childAges });
-                  }}
-                >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {Array.from({ length: 101 }, (_, i) => i).map((n) => (
-                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Rooms *</Label>
-                <Select value={String(form.rooms)} onValueChange={(v) => setForm({ ...form, rooms: Number(v) })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
-                      <SelectItem key={n} value={String(n)}>{n}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            {form.kids > 0 && (
-              <div className="space-y-2">
-                <Label>Child Ages (3-17 years)</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {form.childAges.map((age, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span className="text-sm whitespace-nowrap">Child {i + 1}:</span>
-                      <Select
-                        value={String(age)}
-                        onValueChange={(v) => {
-                          const next = [...form.childAges];
-                          next[i] = Number(v);
-                          setForm({ ...form, childAges: next });
-                        }}
-                      >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent className="max-h-60">
-                          {Array.from({ length: 15 }, (_, n) => n + 3).map((n) => (
-                            <SelectItem key={n} value={String(n)}>{n} yrs</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            <div className="space-y-1.5">
-              <Label htmlFor="rp-budget">How much would you like to spend for your whole group? (ZAR) *</Label>
-              <p className="text-xs text-muted-foreground">
-                Enter how much you'd like to spend for your whole group so we can find the best options that fit your pocket.
-              </p>
-              <div className="relative">
+
+            {/* Budget Upgrade Prompt */}
+            <div className="space-y-1.5 pt-2 border-t border-border">
+              <Label htmlFor="rp-budget" className="font-bold text-navy">
+                If you need a better hotel, please write the budget you would like to spend to see more options within your proposed budget. (ZAR) *
+              </Label>
+              <div className="relative mt-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R</span>
                 <Input
                   id="rp-budget"
@@ -415,14 +443,16 @@ const DestinationPage = () => {
                   min={0}
                   required
                   className="pl-7"
+                  placeholder="Enter your target budget"
                   value={form.budget}
                   onChange={(e) => setForm({ ...form, budget: e.target.value })}
                 />
               </div>
             </div>
+
             <DialogFooter>
               <Button type="button" variant="outline" onClick={closeRequest}>Cancel</Button>
-              <Button type="submit" disabled={!checkIn || !checkOut}>Send Request</Button>
+              <Button type="submit" disabled={!checkIn && !searchState.travelDate}>Send Request</Button>
             </DialogFooter>
           </form>
         </DialogContent>
