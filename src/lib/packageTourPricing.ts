@@ -18,12 +18,58 @@ export const TOUR_FROM_PRICES: Record<string, number> = {
   'BALI-UBUD': 3800, 'DUBAI-1': 4800, 'PHUKET-1': 4200,
 };
 
-export function extractTourCode(pkg: any): string {
-  if (!pkg) return '';
-  // Safely extract from name, tourCode, or id, ensuring we never call .match() on non-strings
-  const target = pkg.tourCode ?? pkg.name ?? pkg.id ?? '';
-  const str = typeof target === 'string' ? target : String(target);
+type TourSource =
+  | string
+  | { tourCode?: unknown; id?: unknown; name?: unknown; fromPriceOverride?: unknown; basePrice?: unknown }
+  | null
+  | undefined;
+
+const has = (k: string) => Object.prototype.hasOwnProperty.call(TOUR_FROM_PRICES, k);
+
+const CODE_RE =
+  /\b(?:HG|MAG|DUR|UMHLA|UMDL|MP|KRUGER|EMER|KNY|BELA|BLY|CPT|SUN)-?\d+\b|\b(?:BALI|DUBAI|PHUKET)-[A-Z0-9]+\b|\bCPT(?:FW|WTCM)\b/;
+
+function toKey(raw: string): string {
+  const up = raw.trim().toUpperCase();
+  if (has(up)) return up;                              // exact match first
+  const m = up.match(CODE_RE);
+  if (!m) return '';
+  const code = m[0];
+  if (has(code)) return code;
+  const compact = code.replace(/^([A-Z]+)-(\d+)$/, '$1$2'); // HG-1 -> HG1
+  return has(compact) ? compact : '';
+}
+
+export function extractTourCode(src: TourSource): string {
+  if (src == null) return '';
+  const candidates = typeof src === 'string' ? [src] : [src.tourCode, src.id, src.name];
+  for (const c of candidates) {
+    if (c == null || typeof c === 'object') continue;
+    const key = toKey(String(c));
+    if (key) return key;                                // first candidate that yields a real key wins
+  }
+  return '';
+}
+
+export function getTourFromPrice(pkg: TourSource, _destinationId?: string): string {
+  if (pkg == null) return 'On Request';
   
-  const match = str.match(/(?:HG|MAG|DUR|UMHLA|MP|UMDL|KRUGER|EMER|KNY|BELA|BLY|CPT|SUN|BALI|DUBAI|PHUKET)-?\d+/i);
-  return match ? match[0].toUpperCase() : '';
+  if (typeof pkg === 'object') {
+    if (pkg.fromPriceOverride != null && typeof pkg.fromPriceOverride === 'number') {
+      return `From R ${pkg.fromPriceOverride.toLocaleString('en-ZA')} pp`;
+    }
+  }
+
+  const code = extractTourCode(pkg);
+  const price = code ? TOUR_FROM_PRICES[code] : undefined;
+  
+  if (price != null) {
+    return `From R ${price.toLocaleString('en-ZA')} pp`;
+  }
+
+  if (typeof pkg === 'object' && pkg.basePrice != null && typeof pkg.basePrice === 'number') {
+    return `From R ${pkg.basePrice.toLocaleString('en-ZA')} pp`;
+  }
+
+  return 'On Request';
 }
