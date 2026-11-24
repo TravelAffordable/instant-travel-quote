@@ -20,6 +20,7 @@ import { ExperienceCard } from '@/components/cards/ExperienceCard';
 import { AccommodationCard } from '@/components/cards/AccommodationCard';
 import { InlineHotelQuote } from '@/components/cards/InlineHotelQuote';
 import { isPickMode } from '@/lib/pickMode';
+import { getCheapestGroupPrice } from '@/lib/groupPricing';
 import { useFeaturedHotels } from '@/hooks/useFeaturedHotels';
 
 import { BookingSummary } from '@/components/common/BookingSummary';
@@ -600,6 +601,16 @@ export default function BookingPage() {
     setStep('received');
   };
 
+  // Dates and group known: package cards on the experience step show the group total.
+  const experienceTrip = {
+    checkIn: checkIn ? toDateString(checkIn) : undefined,
+    checkOut: checkOut ? toDateString(checkOut) : undefined,
+    adults,
+    childAges: childrenAges,
+  };
+  const experienceTripReady = !oneDay && isTripComplete(experienceTrip);
+  const experienceTripLabel = `${travellersLabel} · ${nights} night${nights === 1 ? '' : 's'}`;
+
   const tripSummary = (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-4">
       <div>
@@ -738,6 +749,12 @@ export default function BookingPage() {
                       destinationName={destination.name}
                       destinationSlug={destination.slug}
                       fallbackImage={destination.image}
+                      groupPrice={
+                        experienceTripReady && destination.destinationId
+                          ? getCheapestGroupPrice(p, destination.destinationId, experienceTrip, rooms)
+                          : undefined
+                      }
+                      tripLabel={experienceTripReady ? experienceTripLabel : undefined}
                     />
                   </button>
                 ))}
