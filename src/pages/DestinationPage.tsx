@@ -6,6 +6,9 @@ import { Footer } from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { DestinationImageMenu } from '@/components/DestinationImageMenu';
 import { PackageCard } from '@/components/cards/PackageCard';
+import { TripSearchForm } from '@/components/TripSearchForm';
+import { getCheapestGroupPrice, stayNights } from '@/lib/groupPricing';
+import { isTripComplete, tripToSearchParams, useTripDetails } from '@/lib/tripDetails';
 
 
 import { Button } from '@/components/ui/button';
@@ -53,6 +56,8 @@ const DestinationPage = () => {
   const [checkOutOpen, setCheckOutOpen] = useState(false);
   const [checkOutMonth, setCheckOutMonth] = useState<Date | undefined>();
   const [form, setForm] = useState({ name: '', tel: '', email: '', adults: 2, kids: 0, rooms: 1, budget: '', childAges: [] as number[] });
+  // Dates and group entered in the search form; remembered across destinations.
+  const trip = useTripDetails();
 
   if (!data) return <NotFound />;
 
@@ -190,7 +195,18 @@ const DestinationPage = () => {
       {(() => {
         const pkgs = getPackagesByDestination(data.destinationId);
         if (!pkgs.length) return null;
+        const tripReady = isTripComplete(trip);
+        const tripQuery = tripReady ? tripToSearchParams(trip).toString() : '';
+        const nightCount = stayNights(trip);
+        const childCount = trip.childAges.length;
+        const tripLabel = tripReady
+          ? `${trip.adults} adult${trip.adults === 1 ? '' : 's'}${
+              childCount ? `, ${childCount} child${childCount === 1 ? '' : 'ren'}` : ''
+            } · ${nightCount} night${nightCount === 1 ? '' : 's'}`
+          : undefined;
         return (
+          <>
+          <TripSearchForm />
           <section className="container mx-auto px-4 py-12">
             {slug === 'durban' && (
               <>
@@ -215,11 +231,15 @@ const DestinationPage = () => {
                   pkg={pkg}
                   destinationSlug={data.slug}
                   fallbackImage={data.heroImage}
+                  groupPrice={tripReady ? getCheapestGroupPrice(pkg, data.destinationId, trip) : undefined}
+                  tripQuery={tripQuery}
+                  tripLabel={tripLabel}
                 />
               ))}
             </div>
 
           </section>
+          </>
         );
       })()}
 

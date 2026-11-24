@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { bookingNameSchema, bookingWhatsAppSchema, bookingBudgetSchema, HOTEL_BATCH_SIZE, matchBudgetHotels } from '@/lib/bookingSelection';
 import { Link, useSearchParams } from 'react-router-dom';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
@@ -37,6 +37,14 @@ import { cn } from '@/lib/utils';
 import { mealBasis } from '@/lib/accommodationTiers';
 import { trackBookingConversion } from '@/lib/adsConversion';
 import { getGoldenMileStayTotal } from '@/data/goldenMileRateCalendar';
+import {
+  childBandCounts,
+  fromDateString,
+  getTripDetails,
+  isTripComplete,
+  saveTripDetails,
+  toDateString,
+} from '@/lib/tripDetails';
 
 
 
@@ -59,31 +67,89 @@ const EXTRAS = [
 
 function parseDate(value: string | null): Date | undefined {
   if (!value) return undefined;
+  // yyyy-MM-dd is read as a local date so it never shifts by a day.
+  const local = fromDateString(value);
+  if (local) return local;
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? undefined : d;
 }
 
+/**
+ * Trip details the guest already gave us — from the link they clicked (package
+ * card or home search) or, failing that, from the search saved on the destination
+ * pages. When complete, the booking steps don't ask for them again.
+ */
+function initialTripFor(params: URLSearchParams) {
+  const oneDayLink = params.get('oneDay') === '1';
+  const urlCheckIn = parseDate(params.get('checkIn'));
+  const urlCheckOut = parseDate(params.get('checkOut'));
+  const urlComplete = !oneDayLink && Boolean(urlCheckIn && urlCheckOut && urlCheckOut > urlCheckIn);
+
+  if (urlComplete) {
+    return {
+      checkIn: urlCheckIn,
+      checkOut: urlCheckOut,
+      adults: Number(params.get('adults') ?? 2) || 2,
+      infants: Number(params.get('c02') ?? 0) || 0,
+      kids: Number(params.get('c312') ?? 0) || 0,
+      teens: Number(params.get('c1317') ?? 0) || 0,
+      prefilled: true,
+      fromUrl: true,
+    };
+  }
+
+  const saved = getTripDetails();
+  if (!oneDayLink && !params.get('checkIn') && isTripComplete(saved)) {
+    const bands = childBandCounts(saved.childAges);
+    return {
+      checkIn: fromDateString(saved.checkIn),
+      checkOut: fromDateString(saved.checkOut),
+      adults: saved.adults,
+      infants: bands.infants,
+      kids: bands.kids,
+      teens: bands.teens,
+      prefilled: true,
+      fromUrl: false,
+    };
+  }
+
+  return {
+    checkIn: urlCheckIn,
+    checkOut: urlCheckOut,
+    adults: Number(params.get('adults') ?? 2) || 2,
+    infants: Number(params.get('c02') ?? 0) || 0,
+    kids: Number(params.get('c312') ?? 0) || 0,
+    teens: Number(params.get('c1317') ?? 0) || 0,
+    prefilled: false,
+    fromUrl: false,
+  };
+}
+
 export default function BookingPage() {
   const [params] = useSearchParams();
+  const [initialTrip] = useState(() => initialTripFor(params));
+  // When the guest already gave dates and group, hide those fields (shown as a summary instead).
+  const [editingTrip, setEditingTrip] = useState(false);
+  const tripLocked = initialTrip.prefilled && !editingTrip;
 
   const [destinationSlug, setDestinationSlug] = useState(params.get('destination') ?? '');
   const [packageId, setPackageId] = useState(params.get('package') ?? '');
   const [oneDay, setOneDay] = useState(params.get('oneDay') === '1');
   const [tourDate, setTourDate] = useState<Date | undefined>(parseDate(params.get('date')));
-  const [checkIn, setCheckIn] = useState<Date | undefined>(parseDate(params.get('checkIn')));
-  const [checkOut, setCheckOut] = useState<Date | undefined>(parseDate(params.get('checkOut')));
+  const [checkIn, setCheckIn] = useState<Date | undefined>(initialTrip.checkIn);
+  const [checkOut, setCheckOut] = useState<Date | undefined>(initialTrip.checkOut);
   const [tourDateOpen, setTourDateOpen] = useState(false);
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [checkOutOpen, setCheckOutOpen] = useState(false);
 
-  const [adults, setAdults] = useState(Number(params.get('adults') ?? 2) || 2);
-  const [infants, setInfants] = useState(Number(params.get('c02') ?? 0) || 0);
-  const [kids, setKids] = useState(Number(params.get('c312') ?? 0) || 0);
-  const [teens, setTeens] = useState(Number(params.get('c1317') ?? 0) || 0);
+  const [adults, setAdults] = useState(initialTrip.adults);
+  const [infants, setInfants] = useState(initialTrip.infants);
+  const [kids, setKids] = useState(initialTrip.kids);
+  const [teens, setTeens] = useState(initialTrip.teens);
   const [hotelId, setHotelId] = useState<string>();
   const [quotesOpen, setQuotesOpen] = useState(false);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
-  const [rooms, setRooms] = useState(1);
+  const [rooms, setRooms] = useState(() => Math.min(30, Math.max(1, Math.round(Number(params.get('rooms'))) || 1)));
   const [contact, setContact] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('ta-booking-contact') ?? 'null');
@@ -297,7 +363,7 @@ export default function BookingPage() {
   const detailsIncomplete = !nameValid || !whatsAppValid;
 
   const handleSelectHotel = (id: string) => {
-    if (detailsIncomplete || budget == null) {
+    if (detailsIncomplete) {
       setBudgetError(true);
       scrollToBudget();
       document
@@ -348,6 +414,35 @@ export default function BookingPage() {
   useEffect(() => {
     if (hotelId && !availableHotels.some((h) => h.id === hotelId)) setHotelId(undefined);
   }, [hotelId, availableHotels]);
+
+  // The cheapest total holiday (package + stay) for this group and these dates.
+  const cheapestHotel = availableHotels.length
+    ? availableHotels.reduce((best, h) => (holidayPriceFor(h) < holidayPriceFor(best) ? h : best))
+    : undefined;
+
+  // Open the cheapest stay for the guest when they reach the accommodation step.
+  const autoPickKey = useRef('');
+  useEffect(() => {
+    if (step !== 'accommodation' || !cheapestHotel) return;
+    const key = [destinationSlug, packageId, checkIn?.getTime(), checkOut?.getTime(), totalGuests, rooms].join('|');
+    if (autoPickKey.current === key) return;
+    autoPickKey.current = key;
+    setHotelId(cheapestHotel.id);
+  }, [step, cheapestHotel, destinationSlug, packageId, checkIn, checkOut, totalGuests, rooms]);
+
+  // Remember trip details that arrived by link, so other destination pages show group prices too.
+  useEffect(() => {
+    if (initialTrip.fromUrl && !isTripComplete(getTripDetails()) && checkIn && checkOut) {
+      saveTripDetails({ checkIn: toDateString(checkIn), checkOut: toDateString(checkOut), adults, childAges: childrenAges });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // If the guest changes their trip details here, keep the saved search in step.
+  useEffect(() => {
+    if (!editingTrip || oneDay || !checkIn || !checkOut || checkOut <= checkIn) return;
+    saveTripDetails({ checkIn: toDateString(checkIn), checkOut: toDateString(checkOut), adults, childAges: childrenAges });
+  }, [editingTrip, oneDay, checkIn, checkOut, adults, childrenAges]);
 
   const accommodationTotal =
     oneDay || !selectedHotel
@@ -439,11 +534,16 @@ export default function BookingPage() {
           guestName: helpForm.name,
           guestEmail: helpForm.email,
           guestTel: helpForm.phone,
-          destination: helpForm.destination || destination?.name,
-          packageNames: helpForm.tourCode || pkg?.name,
-          checkIn: helpForm.dates,
-          adults: helpForm.people,
-          childrenAges: helpForm.kidsAges,
+          destination: tripLocked ? destination?.name : helpForm.destination || destination?.name,
+          packageNames: tripLocked ? pkg?.name : helpForm.tourCode || pkg?.name,
+          checkIn: tripLocked ? datesLabel : helpForm.dates,
+          adults: tripLocked ? travellersLabel : helpForm.people,
+          childrenAges: tripLocked
+            ? (getTripDetails().childAges.length === childrenAges.length
+                ? getTripDetails().childAges
+                : childrenAges
+              ).join(', ')
+            : helpForm.kidsAges,
           budget: helpFormBudget || undefined,
           bookingType: 'Assisted Quote Request',
           reference: `TA-H${Date.now().toString().slice(-6)}`,
@@ -499,6 +599,19 @@ export default function BookingPage() {
 
     setStep('received');
   };
+
+  const tripSummary = (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-4">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Your trip</p>
+        <p className="font-semibold text-foreground">{datesLabel}</p>
+        <p className="text-sm text-muted-foreground">{travellersLabel}</p>
+      </div>
+      <Button type="button" variant="outline" size="sm" onClick={() => setEditingTrip(true)}>
+        Change
+      </Button>
+    </div>
+  );
 
   const summary = (
     <>
@@ -732,6 +845,8 @@ export default function BookingPage() {
                                     onChange={(e) => setHelpForm((f) => ({ ...f, budget: e.target.value }))}
                                   />
                                 </div>
+                                {!tripLocked && (
+                                  <>
                                 <div className="space-y-1.5">
                                   <Label htmlFor="help-destination">Destination</Label>
                                   <Input
@@ -779,6 +894,8 @@ export default function BookingPage() {
                                     onChange={(e) => setHelpForm((f) => ({ ...f, kidsAges: e.target.value }))}
                                   />
                                 </div>
+                                  </>
+                                )}
                               </div>
                               <Button
                                 size="lg"
@@ -794,6 +911,13 @@ export default function BookingPage() {
                       </CardContent>
                     </Card>
 
+                    {tripLocked ? (
+                      <>
+                        <h1 className="font-display text-3xl font-bold text-foreground">Your trip</h1>
+                        <div className="mt-4">{tripSummary}</div>
+                      </>
+                    ) : (
+                      <>
                     <h1 className="font-display text-3xl font-bold text-foreground">Your dates of travel</h1>
                     <label className="mt-6 flex cursor-pointer items-center gap-2 text-sm">
                       <Checkbox checked={oneDay} onCheckedChange={(v) => setOneDay(Boolean(v))} />
@@ -885,6 +1009,9 @@ export default function BookingPage() {
                       )}
                     </div>
 
+                      </>
+                    )}
+
                     <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end">
                       <Button variant="ghost" onClick={() => goto('experience')}>
                         <ArrowLeft className="mr-1 h-4 w-4" /> Back
@@ -907,10 +1034,19 @@ export default function BookingPage() {
                     <Button variant="ghost" className="mb-4 -ml-2" onClick={() => goto('dates')}>
                       <ArrowLeft className="mr-1 h-4 w-4" /> Back
                     </Button>
-                    <h1 className="font-display text-3xl font-bold text-foreground">How many in your travel group</h1>
-                    <p className="mt-2 text-muted-foreground">
-                      Children under 3 travel free on the experience.
-                    </p>
+                    {tripLocked ? (
+                      <>
+                        <h1 className="font-display text-3xl font-bold text-foreground">Your travel group</h1>
+                        <div className="mt-4">{tripSummary}</div>
+                      </>
+                    ) : (
+                      <>
+                        <h1 className="font-display text-3xl font-bold text-foreground">How many in your travel group</h1>
+                        <p className="mt-2 text-muted-foreground">
+                          Children under 3 travel free on the experience.
+                        </p>
+                      </>
+                    )}
                     <div className="mt-6 space-y-4">
                       {[
                         { label: 'Adults', value: adults, set: setAdults, min: 1 },
@@ -918,7 +1054,9 @@ export default function BookingPage() {
                         { label: 'Children 3–12', value: kids, set: setKids, min: 0 },
                         { label: 'Children 13–17', value: teens, set: setTeens, min: 0 },
                         { label: 'How many rooms', value: rooms, set: setRooms, min: 1 },
-                      ].map((row) => (
+                      ]
+                        .filter((row) => !tripLocked || row.label === 'How many rooms')
+                        .map((row) => (
                         <div
                           key={row.label}
                           className="flex items-center justify-between rounded-xl border border-border bg-card p-4"
@@ -983,13 +1121,36 @@ export default function BookingPage() {
                       </p>
                     )}
 
+                    {cheapestHotel && (
+                      <div className="mt-6">
+                        <h2 className="font-display text-xl font-bold text-foreground">Your cheapest option</h2>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          The lowest total price for your group and dates. Keep it, or enter your budget below to
+                          see better accommodation.
+                        </p>
+                        <div className="mt-4 grid gap-6 md:grid-cols-2">
+                          <AccommodationCard
+                            hotel={cheapestHotel}
+                            tier={tierMap.get(cheapestHotel.id) ?? 'standard'}
+                            destinationName={destination.name}
+                            nights={Math.max(1, nights)}
+                            rooms={roomsNeededFor(cheapestHotel.capacity ?? 2)}
+                            price={hotelPrice(cheapestHotel.pricePerNight, cheapestHotel.capacity ?? 2, cheapestHotel.name)}
+                            selected={hotelId === cheapestHotel.id}
+                            onSelect={(id) => handleSelectHotel(id)}
+                          />
+                          {renderHotelQuote(cheapestHotel)}
+                        </div>
+                      </div>
+                    )}
+
                     <Card id="holiday-budget-heading" className="mt-6 scroll-mt-28 rounded-2xl border-primary/30">
                       <CardContent className="space-y-3 p-6">
                         <Label htmlFor="holiday-budget" className="block text-base font-semibold text-destructive">
-                          What would you like to spend for your amazing holiday?
+                          Would you like better accommodation? Enter your total budget for the whole group.
                         </Label>
-                        <p className="text-sm font-medium text-destructive">
-                          Required — tell us your budget and we'll show the stays that fit.
+                        <p className="text-sm font-medium text-foreground">
+                          Tell us your total budget for the whole stay and we'll show the stays that fit.
                         </p>
                         <div className="flex flex-col gap-3 sm:flex-row">
                           <Input
