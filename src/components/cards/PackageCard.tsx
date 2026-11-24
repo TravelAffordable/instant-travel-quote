@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Clock, Check, ArrowRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency, roundToNearest10 } from '@/lib/utils';
 import { extractTourCode, TOUR_FROM_PRICES } from '@/lib/packageTourPricing';
 import { getHolidayTeaserPrice } from '@/lib/holidayTeaserPricing';
 import type { Package } from '@/data/travelData';
 import { getPackageImage } from '@/data/packageImages';
+import type { GroupPrice } from '@/lib/groupPricing';
 
 /** Turn a long package name into a short, human headline. */
 export function getPackageHeadline(name: string): string {
@@ -23,9 +24,15 @@ interface PackageCardProps {
   pkg: Package;
   destinationSlug: string;
   fallbackImage?: string;
+  /** Cheapest total for the guest's whole group, once they have searched. */
+  groupPrice?: GroupPrice;
+  /** Saved trip details (dates, adults, children) passed on to the booking page. */
+  tripQuery?: string;
+  /** Short description of the search, e.g. "2 adults, 2 children · 3 nights". */
+  tripLabel?: string;
 }
 
-export function PackageCard({ pkg, destinationSlug, fallbackImage }: PackageCardProps) {
+export function PackageCard({ pkg, destinationSlug, fallbackImage, groupPrice, tripQuery, tripLabel }: PackageCardProps) {
   const img = getPackageImage(pkg.id) || fallbackImage || '/placeholder.svg';
   const idCode = pkg.id.toUpperCase();
   const idCodePrice = TOUR_FROM_PRICES[idCode] ?? null;
@@ -92,25 +99,54 @@ export function PackageCard({ pkg, destinationSlug, fallbackImage }: PackageCard
 
         {/* Price + CTA */}
         <div className="mt-auto">
-          {fromPrice !== null && (
+          {groupPrice?.status === 'ok' ? (
             <div className="mb-5 space-y-1 text-center">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">From</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Cheapest total for your group
+              </p>
               <div className="flex flex-wrap items-baseline justify-center gap-2">
                 <span className="text-4xl font-black text-sunset">
-                  {formatCurrency(fromPrice)} <span className="text-base font-bold">per person</span>
+                  {`R${roundToNearest10(groupPrice.total).toLocaleString('en-ZA')}`} <span className="text-base font-bold">total</span>
                 </span>
               </div>
+              {tripLabel && <p className="text-xs font-semibold text-muted-foreground">{tripLabel}</p>}
               <p className="text-xs font-semibold text-muted-foreground">
                 Includes hotel and fun activities
               </p>
-              <p className="text-[10px] italic text-muted-foreground">
-                discounts subject to availability at various hotels
-              </p>
+              {groupPrice.childPriceOnRequest && (
+                <p className="text-[10px] italic text-muted-foreground">
+                  Price for some children is on request and not included in this total
+                </p>
+              )}
             </div>
+          ) : groupPrice?.status === 'unavailable' ? (
+            <div className="mb-5 space-y-1 text-center">
+              <p className="text-base font-bold text-navy">Not available for your dates</p>
+              <p className="text-xs text-muted-foreground">Try different dates or ask us for help.</p>
+            </div>
+          ) : (
+            fromPrice !== null && (
+              <div className="mb-5 space-y-1 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">From</p>
+                <div className="flex flex-wrap items-baseline justify-center gap-2">
+                  <span className="text-4xl font-black text-sunset">
+                    {formatCurrency(fromPrice)} <span className="text-base font-bold">per person</span>
+                  </span>
+                </div>
+                <p className="text-xs font-semibold text-muted-foreground">
+                  Includes hotel and fun activities
+                </p>
+                <p className="text-[10px] italic text-muted-foreground">
+                  discounts subject to availability at various hotels
+                </p>
+              </div>
+            )
           )}
 
           <Link
-            to={`/book?destination=${destinationSlug}&package=${pkg.id}`}
+            to={`/book?destination=${destinationSlug}&package=${pkg.id}${tripQuery ? `&${tripQuery}` : ''}${
+              groupPrice?.status === 'ok' && groupPrice.requestedRooms > 1 ? `&rooms=${groupPrice.requestedRooms}` : ''
+            }`}
             className="group flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 px-6 font-bold text-primary-foreground shadow-lg transition-all duration-300 hover:bg-primary/90"
           >
             See your amazing options
