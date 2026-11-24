@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { bookingNameSchema, bookingWhatsAppSchema, bookingBudgetSchema, HOTEL_BATCH_SIZE, matchBudgetHotels } from '@/lib/bookingSelection';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
 import { ArrowLeft, ArrowRight, BedDouble, CalendarIcon, Check, CheckCircle2, Clock, MapPin, Star, Users, Utensils } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,6 +27,7 @@ import { BookingSummary } from '@/components/common/BookingSummary';
 import { ResponsiveImage } from '@/components/common/ResponsiveImage';
 import { ErrorState } from '@/components/common/ErrorState';
 import { catalogueDestinations, getCatalogueDestination } from '@/data/destinationCatalogue';
+import { getDestinationPage } from '@/data/destinationPages';
 import { getHotelsByDestination, getPackagesByDestination, packages } from '@/data/travelData';
 import { calculatePackagePrice } from '@/data/packagePricing';
 import { classifyHotels } from '@/lib/accommodationTiers';
@@ -128,6 +129,7 @@ function initialTripFor(params: URLSearchParams) {
 
 export default function BookingPage() {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const [initialTrip] = useState(() => initialTripFor(params));
   // When the guest already gave dates and group, hide those fields (shown as a summary instead).
   const [editingTrip, setEditingTrip] = useState(false);
@@ -601,6 +603,19 @@ export default function BookingPage() {
     setStep('received');
   };
 
+  // Before sending the guest to a destination page, make sure their trip details go with them.
+  const rememberTripThenOpenDestination = (slug: string) => {
+    if (!isTripComplete(getTripDetails()) && !oneDay && checkIn && checkOut && checkOut > checkIn) {
+      saveTripDetails({
+        checkIn: toDateString(checkIn),
+        checkOut: toDateString(checkOut),
+        adults,
+        childAges: childrenAges,
+      });
+    }
+    navigate(`/destinations/${slug}`);
+  };
+
   // Dates and group known: package cards on the experience step show the group total.
   const experienceTrip = {
     checkIn: checkIn ? toDateString(checkIn) : undefined,
@@ -700,6 +715,12 @@ export default function BookingPage() {
                   key={d.slug}
                   destination={{ ...d, enquireOnly: false }}
                   onSelect={() => {
+                    // Destinations with their own page open it, so the guest can still change their
+                    // dates, adults and children in the search form there. Their details travel with them.
+                    if (getDestinationPage(d.slug)) {
+                      rememberTripThenOpenDestination(d.slug);
+                      return;
+                    }
                     setDestinationSlug(d.slug);
                     setPackageId('');
                     setHotelId(undefined);
@@ -721,8 +742,35 @@ export default function BookingPage() {
               Choose your {destination.name} experience
             </h1>
             <p className="mt-2 text-muted-foreground">
-              Package prices are per person and include the listed activities. Accommodation comes next.
+              {experienceTripReady
+                ? 'Prices shown are the cheapest total for your whole group and include the listed activities. Accommodation comes next.'
+                : 'Package prices are per person and include the listed activities. Accommodation comes next.'}
             </p>
+            {experienceTripReady && destinationPackages.length > 0 && (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Your trip</p>
+                  <p className="font-semibold text-foreground">{datesLabel}</p>
+                  <p className="text-sm text-muted-foreground">{travellersLabel}</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // The search form on the destination page is where dates and group are changed.
+                    if (getDestinationPage(destination.slug)) {
+                      rememberTripThenOpenDestination(destination.slug);
+                    } else {
+                      setEditingTrip(true);
+                      goto('dates');
+                    }
+                  }}
+                >
+                  Change dates or group
+                </Button>
+              </div>
+            )}
             {destinationPackages.length === 0 ? (
               <div className="mt-8">
                 <ErrorState
