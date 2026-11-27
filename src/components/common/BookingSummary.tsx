@@ -1,6 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { roundToNearest10 } from '@/lib/utils';
 
 export interface BookingSummaryProps {
   destinationName: string;
@@ -21,10 +20,6 @@ export interface BookingSummaryProps {
 }
 
 
-function rand(amount: number) {
-  return `R${roundToNearest10(amount).toLocaleString('en-ZA')}`;
-}
-
 export function BookingSummary({
   destinationName,
   packageTitle,
@@ -32,9 +27,6 @@ export function BookingSummary({
   travellers,
   accommodationName,
   roomsLabel,
-  packageTotal,
-  accommodationTotal,
-  extrasTotal = 0,
   childPriceOnRequest,
   onConfirm,
   confirmLabel,
@@ -42,9 +34,6 @@ export function BookingSummary({
   onRequestFinalQuote,
   requestFinalQuoteDisabled,
 }: BookingSummaryProps) {
-  const total = packageTotal + accommodationTotal + extrasTotal;
-
-
   return (
     <Card className="rounded-2xl border-border/70 shadow-md">
       <CardContent className="space-y-4 p-6">
@@ -78,18 +67,6 @@ export function BookingSummary({
             </div>
           )}
         </dl>
-
-        <div className="border-t border-border pt-4">
-          <div className="flex items-end justify-between gap-3">
-            <span className="text-sm font-semibold text-foreground">
-              Complete holiday price for your getaway package
-            </span>
-            <span className="font-display text-2xl font-bold text-sunset">{rand(total)}</span>
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            (Accommodation including all the fun activities)
-          </p>
-        </div>
 
         {onRequestFinalQuote && (
           <Button
